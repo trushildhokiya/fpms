@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+      font-family: AzoSans;
+      src: url('./assets/fonts/AzoSans-Bold.ttf') format("truetype");
+    }
+  }
