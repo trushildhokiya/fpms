@@ -20,7 +20,7 @@ const CommonNavbar = () => {
                 </div>
 
                 {/* LINKS  */}
-                <div className='hidden md:flex mx-4'>
+                <div className='hidden md:flex mx-4 font-OpenSans font-semibold text-gray-600'>
                     <div className='mx-3'>
                         <Link to='/'>
                             Home
@@ -43,7 +43,7 @@ const CommonNavbar = () => {
                     <Hamburger size={20} direction='left' duration={0.8} toggled={open} toggle={setOpen} />
                 </div>
             </div>
-            <div className={`md:hidden ${open ? "block" : "hidden"} p-2 mx-3 shadow-xl`}>
+            <div className={`md:hidden ${open ? "block" : "hidden"} p-2 mx-3 shadow-xl font-OpenSans text-gray-600 font-semibold`}>
                 <Link to='/'>
                     <p className='my-1'>Home</p>
                 </Link>

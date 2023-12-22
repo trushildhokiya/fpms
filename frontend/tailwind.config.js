@@ -20,7 +20,8 @@ module.exports = {
     extend: {
       fontFamily: {
         'AzoSans':['AzoSans','sans-serif'],
-        "Poppins":['Poppins','sans-serif']
+        "Poppins":['Poppins','sans-serif'],
+        "OpenSans":['OpenSans','sans-serif']
       },
       keyframes: {
         "accordion-down": {

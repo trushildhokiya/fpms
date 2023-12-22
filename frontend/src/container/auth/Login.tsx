@@ -13,11 +13,19 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
 import { Input } from "@/components/ui/input"
 import { Link } from 'react-router-dom'
 
 const FormSchema = z.object({
-    username: z.string().min(2, {
+    email: z.string().min(2, {
         message: "Username must be at least 2 characters.",
     }).regex(new RegExp('^[a-zA-Z0-9._%+-]+@somaiya\.edu$'), {
         message: 'Invalid somaiya ID'
@@ -25,6 +33,9 @@ const FormSchema = z.object({
     password: z.string().min(6, {
         message: "Password must be at least 6 characters.",
     }),
+    role: z.string().min(2, {
+        message: 'Select login Type'
+    })
 })
 
 const Login = () => {
@@ -32,8 +43,9 @@ const Login = () => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            username: "",
+            email: "",
             password: "",
+            role: "",
         },
     })
 
@@ -62,7 +74,7 @@ const Login = () => {
                                 <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
                                     <FormField
                                         control={form.control}
-                                        name="username"
+                                        name="email"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Somaiya ID</FormLabel>
@@ -74,6 +86,30 @@ const Login = () => {
                                             </FormItem>
                                         )}
                                     />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="role"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Login Type</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Login Type" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Admin">Admin</SelectItem>
+                                                        <SelectItem value="Head Of Department">Head Of Department</SelectItem>
+                                                        <SelectItem value="Faculty">Faculty</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
                                     <FormField
                                         control={form.control}
                                         name="password"
