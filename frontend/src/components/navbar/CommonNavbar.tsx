@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from "react-router-dom";
 import Logo from '../../assets/svg/kjsitLogo.svg'
 import { Sling as Hamburger } from 'hamburger-react'
+import { Separator } from '@/components/ui/separator';
 
 const CommonNavbar = () => {
 
@@ -42,10 +43,22 @@ const CommonNavbar = () => {
                     <Hamburger size={20} direction='left' duration={0.8} toggled={open} toggle={setOpen} />
                 </div>
             </div>
-            <div className={`md:hidden ${open ? "block" : "hidden"} p-2 mx-3 `}>
-                <p>Home</p>
-                <p>About</p>
-                <p>Login</p>
+            <div className={`md:hidden ${open ? "block" : "hidden"} p-2 mx-3 shadow-xl`}>
+                <Link to='/'>
+                    <p className='my-1'>Home</p>
+                </Link>
+                <Separator />
+                <Link to='/about'>
+                    <p className='my-1'>About</p>
+                </Link>
+                <Separator />
+                <Link to='/auth/login'>
+                    <p className='my-1'>Login</p>
+                </Link>
+                <Separator />
+                <Link to='/auth/register'>
+                    <p className='my-1'>Register</p>
+                </Link>
             </div>
         </div>
     )
