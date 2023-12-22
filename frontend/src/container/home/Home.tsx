@@ -1,4 +1,3 @@
-import React from 'react'
 import CommonNavbar from '../../components/navbar/CommonNavbar'
 
 const Home = () => {
