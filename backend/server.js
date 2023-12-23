@@ -9,6 +9,9 @@ const swaggerUI = require('swagger-ui-express')
 const connectDB = require('./config/dbConnection')
 const authRoutes = require('./routes/authRoutes')
 const errorHandler = require('./middleware/errorHandler')
+const Admin = require('./models/admin')
+const bcrypt = require('bcrypt')
+
 /**
  * CONSTANTS
  */
@@ -40,7 +43,8 @@ const swaggerOptions = {
             contact: {
                 name: 'Trushil Dhokiya',
                 url: 'https://trushildhokiya.netlify.app',
-                email: 'trushil.d@somaiya.edu'
+                email: 'trushil.d@somaiya.edu',
+                
             }
         },
         servers: [{
@@ -65,10 +69,33 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use(errorHandler)
 
 /**
+ * CREATE DEFAULT ADMIN
+ */
+
+
+/**
  * START LISTENING AT PORT
  */
 
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+    try {
+        const admin = await Admin.findOne({ email: 'fpms.tech@somaiya.edu' });
+
+        if (!admin) {
+            const createdAdmin = await Admin.create({
+                email: 'fpms.tech@somaiya.edu',
+                password: await bcrypt.hash('Admin@123', 10),
+                profileImage:'https://w0.peakpx.com/wallpaper/582/516/HD-wallpaper-linux-programmer-pixel-art-linux-computer-hacker-pixel-8-bit.jpg'
+            });
+
+            console.log('Admin created successfully', createdAdmin);
+        } else {
+            console.log('Admin already exists');
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
     console.log(`Server started listening at ${PORT}`);
-})
+});
