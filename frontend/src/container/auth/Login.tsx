@@ -23,6 +23,13 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { Toaster } from '@/components/ui/toaster'
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+import { jwtDecode } from 'jwt-decode'
+
 
 const FormSchema = z.object({
     email: z.string().min(2, {
@@ -38,7 +45,12 @@ const FormSchema = z.object({
     })
 })
 
+
 const Login = () => {
+
+
+    const navigate = useNavigate()
+    const { toast } = useToast()
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -49,9 +61,49 @@ const Login = () => {
         },
     })
 
+    interface JwtPayload{
+        email:string,
+        role:string,
+        profileImage:string
+    }
+
     function onSubmit(data: z.infer<typeof FormSchema>) {
 
-        console.log(data)
+        axios.post('/auth/login', data)
+            .then((res) => {
+                
+                localStorage.setItem('token',res.data.token)
+
+                const decodedResponse:JwtPayload = jwtDecode(res.data.token) 
+
+                switch(decodedResponse.role){
+
+                    case "Admin":
+                        navigate('/admin')
+                        break;
+                    case "Head Of Department":
+                        navigate('/hod')
+                        break;
+                    case "Faculty":
+                        navigate('/faculty')
+                        break;
+                    default:
+                        navigate('/auth/login')
+                }
+                
+            })
+            .catch((err) => {
+                console.log(err);
+                
+                toast({
+                    title: "Error Occurred !",
+                    description: err.response.data.message,
+                    action: (
+                        <ToastAction altText="Ok">Okay</ToastAction>
+                    ),
+                })
+            })
+
     }
 
 
@@ -148,6 +200,7 @@ const Login = () => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

@@ -54,7 +54,7 @@ const loginUsers = asyncHandler( async(req,res)=>{
 
     const payload = {
         email: user.email,
-        role:user.role,
+        role:user.role ? user.role : role,
         profileImage:user.profileImage
     }
 
