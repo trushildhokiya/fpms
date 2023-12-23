@@ -29,6 +29,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { jwtDecode } from 'jwt-decode'
+import { authPayloadInterface } from '@/utils/interface/authPayload'
 
 
 const FormSchema = z.object({
@@ -61,11 +62,6 @@ const Login = () => {
         },
     })
 
-    interface JwtPayload{
-        email:string,
-        role:string,
-        profileImage:string
-    }
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
 
@@ -74,7 +70,7 @@ const Login = () => {
                 
                 localStorage.setItem('token',res.data.token)
 
-                const decodedResponse:JwtPayload = jwtDecode(res.data.token) 
+                const decodedResponse:authPayloadInterface = jwtDecode(res.data.token) 
 
                 switch(decodedResponse.role){
 

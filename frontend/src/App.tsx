@@ -12,7 +12,12 @@ import Login from './container/auth/Login';
 import Register from './container/auth/Register';
 import About from './container/about/About';
 import PageNotFound from './utils/pages/PageNotFound';
+
+/**
+ * ADMIN IMPORTS
+ */
 import Dashboard from './container/views/admin/container/dashboard/Dashboard';
+import AddUser from './container/views/admin/container/addUser/AddUser';
 
 function App() {
   return (
@@ -24,6 +29,7 @@ function App() {
         <Route path='/about' element={<About />} />
         <Route path='*' element={<PageNotFound />} />
         <Route path='/admin' element={ <Dashboard /> } />
+        <Route path='/admin/add-users' element={ <AddUser/> } />
       </Routes>
     </BrowserRouter>
   );

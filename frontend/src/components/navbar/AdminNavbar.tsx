@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../../assets/svg/kjsitLogo.svg';
 import { Sling as Hamburger } from 'hamburger-react';
 import { ChevronDown } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { Separator } from '@/components/ui/separator';
 import {
     Avatar,
@@ -23,13 +23,23 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
+import { useNavigate } from 'react-router-dom';
+import { logout } from '@/features/user/userSlice';
 
 const AdminNavbar = () => {
 
     // HOOKS
     const [open, setOpen] = useState(false);
     const user = useSelector((state: any) => state.userReducer);
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    // functions
+    const logoutAdmin: Function = ()=>{
+
+        localStorage.removeItem('token')
+        dispatch(logout())
+        navigate('/auth/login')
+    }
 
     return (
         <div>
@@ -65,7 +75,7 @@ const AdminNavbar = () => {
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent className="w-56">
-                                
+
                                 <DropdownMenuLabel>Research and Development</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
 
@@ -102,7 +112,7 @@ const AdminNavbar = () => {
                                     </DropdownMenuSub>
                                     <DropdownMenuItem>Consultancy</DropdownMenuItem>
                                 </DropdownMenuGroup>
-                                
+
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -124,7 +134,11 @@ const AdminNavbar = () => {
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>Add Users</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to='/admin/add-users'>
+                                            Add Users
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Show Users</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
@@ -137,7 +151,7 @@ const AdminNavbar = () => {
                                     </DropdownMenuSub>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>Log out</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>{logoutAdmin()}}>Log out</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -224,7 +238,7 @@ const AdminNavbar = () => {
                                 <AvatarImage
                                     src={user.profileImage ? user.profileImage : ''}
                                 />
-                                <AvatarFallback>CN</AvatarFallback>
+                                <AvatarFallback>TD</AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="">
@@ -235,7 +249,11 @@ const AdminNavbar = () => {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem>Add Users</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link to='/admin/add-users'>
+                                        Add Users
+                                    </Link>
+                                </DropdownMenuItem>
                                 <DropdownMenuSub>
                                     <DropdownMenuSubTrigger>Show Users</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
@@ -248,7 +266,7 @@ const AdminNavbar = () => {
                                 </DropdownMenuSub>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Log out</DropdownMenuItem>
+                            <DropdownMenuItem onClick={()=>{logoutAdmin()}}>Log out</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
