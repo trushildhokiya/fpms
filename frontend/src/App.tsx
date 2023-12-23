@@ -12,6 +12,7 @@ import Login from './container/auth/Login';
 import Register from './container/auth/Register';
 import About from './container/about/About';
 import PageNotFound from './utils/pages/PageNotFound';
+import Dashboard from './container/views/admin/container/dashboard/Dashboard';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/auth/register' element={<Register />} />
         <Route path='/about' element={<About />} />
         <Route path='*' element={<PageNotFound />} />
+        <Route path='/admin' element={ <Dashboard /> } />
       </Routes>
     </BrowserRouter>
   );
