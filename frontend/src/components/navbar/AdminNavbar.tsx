@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../../assets/svg/kjsitLogo.svg';
 import { Sling as Hamburger } from 'hamburger-react';
 import { ChevronDown } from 'lucide-react';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Separator } from '@/components/ui/separator';
 import {
     Avatar,
@@ -34,7 +34,7 @@ const AdminNavbar = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     // functions
-    const logoutAdmin: Function = ()=>{
+    const logoutAdmin: Function = () => {
 
         localStorage.removeItem('token')
         dispatch(logout())
@@ -147,15 +147,27 @@ const AdminNavbar = () => {
                                         <DropdownMenuSubTrigger>Show Users</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <DropdownMenuItem>Admin</DropdownMenuItem>
-                                                <DropdownMenuItem>Head Of Departments</DropdownMenuItem>
-                                                <DropdownMenuItem>Faculty</DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to='/admin/users/admin'>
+                                                        Admin
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to='/admin/users/hod'>
+                                                        Head Of Department
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to='/admin/users/faculty'>
+                                                        Faculty
+                                                    </Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={()=>{logoutAdmin()}}>Log out</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { logoutAdmin() }}>Log out</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -266,15 +278,27 @@ const AdminNavbar = () => {
                                     <DropdownMenuSubTrigger>Show Users</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
-                                            <DropdownMenuItem>Admin</DropdownMenuItem>
-                                            <DropdownMenuItem>HODs</DropdownMenuItem>
-                                            <DropdownMenuItem>Faculty</DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <Link to='/admin/users/admin'>
+                                                    Admin
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <Link to='/admin/users/hod'>
+                                                    H.O.D
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <Link to='/admin/users/faculty'>
+                                                    Faculty
+                                                </Link>
+                                            </DropdownMenuItem>
                                         </DropdownMenuSubContent>
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={()=>{logoutAdmin()}}>Log out</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { logoutAdmin() }}>Log out</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
