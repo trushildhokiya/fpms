@@ -18,6 +18,7 @@ import PageNotFound from './utils/pages/PageNotFound';
  */
 import Dashboard from './container/views/admin/container/dashboard/Dashboard';
 import AddUser from './container/views/admin/container/addUser/AddUser';
+import Profile from './container/views/admin/container/profile/Profile';
 
 function App() {
   return (
@@ -27,9 +28,10 @@ function App() {
         <Route path='/auth/login' element={<Login />} />
         <Route path='/auth/register' element={<Register />} />
         <Route path='/about' element={<About />} />
-        <Route path='*' element={<PageNotFound />} />
         <Route path='/admin' element={ <Dashboard /> } />
-        <Route path='/admin/add-users' element={ <AddUser/> } />
+        <Route path='/admin/add-users' element={ <AddUser /> } />
+        <Route path='/admin/profile' element={ <Profile /> } />
+        <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );
