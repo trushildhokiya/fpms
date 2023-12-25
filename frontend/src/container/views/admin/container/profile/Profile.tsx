@@ -49,7 +49,7 @@ const Profile = () => {
 
     })
 
-    const user = useSelector((state: any) => state.userReducer)
+    const user = useSelector((state: any) => state.user)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

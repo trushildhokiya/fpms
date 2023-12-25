@@ -30,7 +30,7 @@ const AdminNavbar = () => {
 
     // HOOKS
     const [open, setOpen] = useState(false);
-    const user = useSelector((state: any) => state.userReducer);
+    const user = useSelector((state: any) => state.user);
     const navigate = useNavigate()
     const dispatch = useDispatch()
     // functions
