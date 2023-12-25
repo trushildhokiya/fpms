@@ -72,17 +72,17 @@ const DisplayUsers = () => {
                 <Card>
                     <CardHeader>
                         <div className="flex justify-end">
-                        <Button onClick={()=>exportCSV(false)}>
+                        <Button className='bg-red-800' onClick={()=>exportCSV(false)}>
                             Download
                         </Button>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable ref={dt} value={data} stripedRows size='large'>
+                        <DataTable ref={dt} value={data} stripedRows size='large'  >
                             <Column field="profileImage" header="Image" body={profileImageTemplate}></Column>
-                            <Column field="email" header="Email"></Column>
+                            <Column field="email" header="Email" filter filterPlaceholder='search by email'></Column>
                             <Column field="name" header="Name" filter filterPlaceholder='search by name'></Column>
-                            <Column field="department" header="Department"></Column>
+                            <Column field="department" filter filterPlaceholder='Search by department' header="Department"></Column>
                         </DataTable>
                     </CardContent>
                 </Card>
