@@ -55,7 +55,8 @@ const loginUsers = asyncHandler( async(req,res)=>{
     const payload = {
         email: user.email,
         role:user.role ? user.role : role,
-        profileImage:user.profileImage
+        profileImage:user.profileImage,
+        institute: user.institute
     }
 
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:'1d'})

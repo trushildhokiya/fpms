@@ -70,7 +70,8 @@ const Login = () => {
                 
                 localStorage.setItem('token',res.data.token)
 
-                const decodedResponse:authPayloadInterface = jwtDecode(res.data.token) 
+                const decodedResponse:authPayloadInterface = jwtDecode(res.data.token)
+                 
 
                 switch(decodedResponse.role){
 

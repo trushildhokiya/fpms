@@ -24,12 +24,18 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Toaster } from "@/components/ui/toaster"
+import axios from "axios"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+
 
 const formSchema = z.object({
     profileImage: z.instanceof(File, { message: 'Image is required' }).refine(
@@ -38,6 +44,12 @@ const formSchema = z.object({
             message: `No file uploaded`,
         }
     )
+    .refine(
+        (file) => file.size <= 600 * 1024, // 600KB in bytes
+        {
+            message: 'File size must be 600KB or less',
+        }
+    ),
 })
 
 
@@ -50,6 +62,7 @@ const Profile = () => {
     })
 
     const user = useSelector((state: any) => state.user)
+    const { toast } = useToast()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -61,6 +74,35 @@ const Profile = () => {
     function onSubmit(values: z.infer<typeof formSchema>) {
 
         console.log(values.profileImage)
+        axios.put('/admin/profile/image',values,{
+            headers:{
+                'Content-Type':'multipart/form-data',
+                'token':localStorage.getItem('token'),
+                'email': user.email
+            }
+        })
+        .then((res)=>{
+            if(res.data.status==='Success'){
+                // taost of success
+                toast({
+                    title:'Update Sucessful',
+                    description:" Logout and login again to see the updations.",
+                    variant:'default',
+                    action: <ToastAction altText="Okay">Okay</ToastAction>,
+                })
+            }
+        })
+        .catch((err)=>{
+            
+            // toast of error
+            toast({
+                title:'Something went wrong!',
+                description:"There was a error making your request. Try again later !",
+                variant:'destructive',
+                action: <ToastAction altText="Okay">Okay</ToastAction>,
+            })
+            
+        })
     }
 
     return (
@@ -112,6 +154,9 @@ const Profile = () => {
                                                                     />
                                                                 </FormControl>
                                                                 <FormMessage />
+                                                                <FormDescription>
+                                                                    Maximum upload size: 600KB
+                                                                </FormDescription>
                                                             </FormItem>
                                                         )}
                                                     />
@@ -128,10 +173,13 @@ const Profile = () => {
                                         </Badge>
                                     </div>
                                 </div>
-                                <div className="col-span-3 mx-3 font-Poppins ">
+                                <div className="col-span-3 mx-3 font-Poppins text-sm">
 
                                     <div className="my-3">
                                         <span className="text-red-800 font-AzoSans tracking-wide"> Email:</span> {user.email ? user.email : ""}
+                                    </div>
+                                    <div className="my-3">
+                                        <span className="text-red-800 font-AzoSans tracking-wide"> Institute:</span> {user.institute ? user.institute : ""}
                                     </div>
                                 </div>
                             </div>
@@ -140,6 +188,7 @@ const Profile = () => {
 
                 </div>
             </div>
+            <Toaster />
         </div>
     )
 }

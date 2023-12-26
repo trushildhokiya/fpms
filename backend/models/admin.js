@@ -9,6 +9,11 @@ const adminSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    institute:{
+        type:String,
+        required:false,
+        default:'K.J Somaiya Institute Of Technology'
+    },
     profileImage:{
         type:String,
         required:false,

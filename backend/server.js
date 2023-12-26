@@ -8,10 +8,10 @@ const swaggerJSDoc = require('swagger-jsdoc')
 const swaggerUI = require('swagger-ui-express')
 const connectDB = require('./config/dbConnection')
 const authRoutes = require('./routes/authRoutes')
+const adminRoutes = require('./routes/adminRoutes')
 const errorHandler = require('./middleware/errorHandler')
 const Admin = require('./models/admin')
 const bcrypt = require('bcrypt')
-
 /**
  * CONSTANTS
  */
@@ -63,8 +63,11 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions)
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static(`${__dirname}/uploads`))
+
 
 app.use('/auth', authRoutes)
+app.use('/admin',adminRoutes)
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use(errorHandler)
 
@@ -86,6 +89,7 @@ app.listen(PORT, async () => {
             const createdAdmin = await Admin.create({
                 email: 'fpms.tech@somaiya.edu',
                 password: await bcrypt.hash('Admin@123', 10),
+                institute:'K.J Somaiya Institute Of Technology',
                 profileImage:'https://w0.peakpx.com/wallpaper/582/516/HD-wallpaper-linux-programmer-pixel-art-linux-computer-hacker-pixel-8-bit.jpg'
             });
 

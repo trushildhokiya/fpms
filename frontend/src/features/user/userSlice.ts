@@ -5,7 +5,8 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 const initialState: authPayloadInterface = {
   email:"",
   role:"",
-  profileImage:""
+  profileImage:"",
+  institute:"",
 }
 
 export const userSlice = createSlice({
@@ -17,6 +18,7 @@ export const userSlice = createSlice({
         state.email = action.payload.email
         state.role = action.payload.role
         state.profileImage = action.payload.profileImage
+        state.institute = action.payload.institute
         
     },
     logout:(state)=>{
