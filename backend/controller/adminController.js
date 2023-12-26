@@ -16,6 +16,9 @@ const transporter = nodemailer.createTransport({
 
 const baseUrl = 'http://localhost:5000';
 
+
+
+
 /**
  * UPDATE PROFILE IMAGE
  */
@@ -52,6 +55,11 @@ const profileImageUpdate = asyncHandler(async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+
+
+
 
 /**
  * REGISTER USERS
@@ -155,8 +163,42 @@ const registerUsers = asyncHandler(async (req, res) => {
 })
 
 
+
+
+/**
+ * GET FACULTY LIST
+ */
+const facultyList = asyncHandler( async(req,res)=>{
+
+    const data = await Faculty.find()
+    res.status(200).json(data)
+
+})
+
+/**
+ * GET HEAD LIST
+ */
+const headList = asyncHandler( async(req,res)=>{
+    const data = await Head.find()
+    res.status(200).json(data)
+})
+
+
+/**
+ * GET ADMIN LIST
+ */
+const adminList =  asyncHandler( async(req,res)=>{
+    const data = await Admin.find()
+    res.status(200).json(data)
+
+})
+
+
+
 module.exports = {
     profileImageUpdate,
     registerUsers,
-
+    facultyList,
+    headList,
+    adminList,
 };

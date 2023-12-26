@@ -152,7 +152,7 @@ const AdminNavbar = () => {
                                                         Admin
                                                     </DropdownMenuItem>
                                                 </Link>
-                                                <Link to='/admin/users/hod'>
+                                                <Link to='/admin/users/head'>
                                                     <DropdownMenuItem>
                                                         Head Of Department
                                                     </DropdownMenuItem>
@@ -283,7 +283,7 @@ const AdminNavbar = () => {
                                                     Admin
                                                 </DropdownMenuItem>
                                             </Link>
-                                            <Link to='/admin/users/hod'>
+                                            <Link to='/admin/users/head'>
                                                 <DropdownMenuItem>
                                                     H.O.D
                                                 </DropdownMenuItem>
