@@ -60,10 +60,18 @@ Create a env file with following fields
 PORT = 5000
 CONNECTION_STRING = <your mongodb connection string>
 JWT_SECRET = any random bytes 
+GMAIL_USER = <gmail account>
+GMAIL_APP_KEY = < gmail app key >
 ```
 
 To run the backend server run the following command
 ```bash
 npm run dev # development server
 npm start # prod server
+```
+> [!TIP]
+> To read backend documentation and try it run backend server and goto url 
+
+```txt
+http://localhost:5000/api-docs
 ```
