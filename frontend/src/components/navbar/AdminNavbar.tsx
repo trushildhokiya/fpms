@@ -130,38 +130,38 @@ const AdminNavbar = () => {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>
-                                        <Link to='/admin/profile'>
+                                    <Link to='/admin/profile'>
+                                        <DropdownMenuItem>
                                             Profile
-                                        </Link>
-                                    </DropdownMenuItem>
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>
-                                        <Link to='/admin/add-users'>
+                                    <Link to='/admin/add-users'>
+                                        <DropdownMenuItem>
                                             Add Users
-                                        </Link>
-                                    </DropdownMenuItem>
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Show Users</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <DropdownMenuItem>
-                                                    <Link to='/admin/users/admin'>
+                                                <Link to='/admin/users/admin'>
+                                                    <DropdownMenuItem>
                                                         Admin
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <Link to='/admin/users/hod'>
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/admin/users/hod'>
+                                                    <DropdownMenuItem>
                                                         Head Of Department
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <Link to='/admin/users/faculty'>
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/admin/users/faculty'>
+                                                    <DropdownMenuItem>
                                                         Faculty
-                                                    </Link>
-                                                </DropdownMenuItem>
+                                                    </DropdownMenuItem>
+                                                </Link>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
@@ -261,38 +261,38 @@ const AdminNavbar = () => {
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem>
-                                    <Link to='/admin/profile'>
+                                <Link to='/admin/profile'>
+                                    <DropdownMenuItem>
                                         Profile
-                                    </Link>
-                                </DropdownMenuItem>
+                                    </DropdownMenuItem>
+                                </Link>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem>
-                                    <Link to='/admin/add-users'>
+                                <Link to='/admin/add-users'>
+                                    <DropdownMenuItem>
                                         Add Users
-                                    </Link>
-                                </DropdownMenuItem>
+                                    </DropdownMenuItem>
+                                </Link>
                                 <DropdownMenuSub>
                                     <DropdownMenuSubTrigger>Show Users</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
-                                            <DropdownMenuItem>
-                                                <Link to='/admin/users/admin'>
+                                            <Link to='/admin/users/admin'>
+                                                <DropdownMenuItem>
                                                     Admin
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Link to='/admin/users/hod'>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link to='/admin/users/hod'>
+                                                <DropdownMenuItem>
                                                     H.O.D
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Link to='/admin/users/faculty'>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link to='/admin/users/faculty'>
+                                                <DropdownMenuItem>
                                                     Faculty
-                                                </Link>
-                                            </DropdownMenuItem>
+                                                </DropdownMenuItem>
+                                            </Link>
                                         </DropdownMenuSubContent>
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
