@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form"
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -37,8 +38,9 @@ import {
 import { Toaster } from '@/components/ui/toaster'
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
+import axios from "axios"
 
-const formSchema = z.object({
+const AdminFormSchema = z.object({
 
     email: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -50,6 +52,25 @@ const formSchema = z.object({
     }),
     role: z.string().min(2, {
         message: 'Select login Type'
+    }),
+
+})
+
+const HeadFormSchema = z.object({
+
+    email: z.string().min(2, {
+        message: "Username must be at least 2 characters.",
+    }).regex(new RegExp('^[a-zA-Z0-9._%+-]+@somaiya\.edu$'), {
+        message: 'Invalid somaiya ID'
+    }),
+    password: z.string().min(6, {
+        message: "Password must be at least 6 characters.",
+    }),
+    role: z.string().min(2, {
+        message: 'Select login Type'
+    }),
+    department: z.string().min(2, {
+        message: 'Select Department'
     })
 
 })
@@ -63,8 +84,8 @@ const AddUser = () => {
 
     const { toast } = useToast()
 
-    const formAdmin = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const formAdmin = useForm<z.infer<typeof AdminFormSchema>>({
+        resolver: zodResolver(AdminFormSchema),
         defaultValues: {
             email: "",
             password: "",
@@ -72,27 +93,49 @@ const AddUser = () => {
         },
     })
 
-    const formHead = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const formHead = useForm<z.infer<typeof HeadFormSchema>>({
+        resolver: zodResolver(HeadFormSchema),
         defaultValues: {
             email: "",
             password: "",
+            department: "",
             role: "Head Of Department",
         },
     })
 
     // 2. Define a submit handler.
-    function onSubmit(data: z.infer<typeof formSchema>) {
+    function onSubmit(data: z.infer<typeof HeadFormSchema>) {
 
-        console.log(data)
-        toast({
-            title:`New ${data.role} created`,
-            description:`new ${data.role} created successfully`,
-            variant:'default',
-            action: (
-                <ToastAction altText="Ok">Okay</ToastAction>
-            ),
+        console.log(data);
+
+
+        axios.post('/admin/create-user', data, {
+            headers: {
+                'token': localStorage.getItem('token'),
+            }
         })
+            .then((res) => {
+                if (res.data.status === 'Success') {
+                    toast({
+                        title: `New ${data.role} created`,
+                        description: `new ${data.role} created successfully`,
+                        variant: 'default',
+                        action: (
+                            <ToastAction altText="Ok">Okay</ToastAction>
+                        ),
+                    })
+                }
+            })
+            .catch((err) => {
+                toast({
+                    title: `Something went wrong`,
+                    description: `${err.response.data.message}`,
+                    variant: 'destructive',
+                    action: (
+                        <ToastAction altText="Ok">Okay</ToastAction>
+                    ),
+                })
+            })
 
         formAdmin.reset()
         formHead.reset()
@@ -229,6 +272,30 @@ const AddUser = () => {
 
                                             <FormField
                                                 control={formHead.control}
+                                                name="department"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Department</FormLabel>
+                                                        <Select onValueChange={field.onChange} value={field.value} >
+                                                            <FormControl>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder='Select Department' />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="Computer">Computer</SelectItem>
+                                                                <SelectItem value="Information Technology">Information Technology</SelectItem>
+                                                                <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
+                                                                <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={formHead.control}
                                                 name="password"
                                                 render={({ field }) => (
                                                     <FormItem>
@@ -236,6 +303,9 @@ const AddUser = () => {
                                                         <FormControl>
                                                             <Input type='password' placeholder="*******" autoComplete='off' {...field} />
                                                         </FormControl>
+                                                        <FormDescription>
+                                                            Minimum length of password must be 6
+                                                        </FormDescription>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
