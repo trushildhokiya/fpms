@@ -59,7 +59,7 @@ const HeadNavbar = () => {
                 {/* LINKS  */}
                 <div className="hidden md:flex mx-4 font-OpenSans font-semibold text-gray-600 items-center">
                     <div className="mx-5">
-                        <Link to="/admin">Dashboard</Link>
+                        <Link to="/hod">Dashboard</Link>
                     </div>
                     <div className="mx-5">Others</div>
                     <div className="mx-5">
@@ -131,7 +131,7 @@ const HeadNavbar = () => {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <Link to='/admin/profile'>
+                                    <Link to='/hod/profile'>
                                         <DropdownMenuItem>
                                             Profile
                                         </DropdownMenuItem>
@@ -164,6 +164,11 @@ const HeadNavbar = () => {
                                             Faculties
                                         </DropdownMenuItem>
                                     </Link>
+                                    <Link to='/hod/notify'>
+                                        <DropdownMenuItem>
+                                            Notify
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => { logoutHead() }}>Log out</DropdownMenuItem>
@@ -186,7 +191,7 @@ const HeadNavbar = () => {
             <div
                 className={`md:hidden ${open ? 'block' : 'hidden'} p-2 mx-3 shadow-xl font-OpenSans text-gray-600 font-semibold`}
             >
-                <Link to="/admin">
+                <Link to="/hod">
                     <p className="my-2">Dashboard</p>
                 </Link>
                 <Separator />
@@ -293,7 +298,11 @@ const HeadNavbar = () => {
                                         Faculties
                                     </DropdownMenuItem>
                                 </Link>
-
+                                <Link to='/hod/notify'>
+                                    <DropdownMenuItem>
+                                        Notify
+                                    </DropdownMenuItem>
+                                </Link>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => { logoutHead() }}>Log out</DropdownMenuItem>
