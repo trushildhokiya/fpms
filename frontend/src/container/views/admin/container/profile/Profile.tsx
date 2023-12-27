@@ -73,7 +73,6 @@ const Profile = () => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values.profileImage)
         axios.put('/admin/profile/image',values,{
             headers:{
                 'Content-Type':'multipart/form-data',

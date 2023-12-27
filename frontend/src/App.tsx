@@ -28,7 +28,6 @@ import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
 
 function App() {
 
-  const token = localStorage.getItem('token')
 
   return (
     <BrowserRouter>
@@ -37,10 +36,10 @@ function App() {
         <Route path='/auth/login' element={<Login />} />
         <Route path='/auth/register' element={<Register />} />
         <Route path='/about' element={<About />} />
-        <Route path='/admin' element={<AdminProtectedRoute token={token}> <Dashboard /> </AdminProtectedRoute>} />
-        <Route path='/admin/add-users' element={<AdminProtectedRoute token={token}> <AddUser /> </AdminProtectedRoute>} />
-        <Route path='/admin/profile' element={<AdminProtectedRoute token={token}> <Profile /> </AdminProtectedRoute>} />
-        <Route path='/admin/users/:type' element={<AdminProtectedRoute token={token}> <DisplayUsers /> </AdminProtectedRoute>} />
+        <Route path='/admin' element={<AdminProtectedRoute> <Dashboard /> </AdminProtectedRoute>} />
+        <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
+        <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
+        <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
         <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>

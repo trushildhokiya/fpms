@@ -87,13 +87,13 @@ const DisplayUsers = () => {
                                 </>
                             )
                             : (
-                                <p className='text-xl'>
+                                <div className='text-xl'>
                                     <Card>
                                         <CardHeader>
                                             No Records found
                                         </CardHeader>
                                     </Card>
-                                </p>
+                                </div>
                             )
                     }
                 </div>
