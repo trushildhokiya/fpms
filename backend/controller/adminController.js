@@ -1,6 +1,5 @@
 const asyncHandler = require('express-async-handler');
 const Admin = require('../models/admin');
-const Head = require('../models/head')
 const Faculty = require('../models/faculty')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
@@ -70,10 +69,9 @@ const registerUsers = asyncHandler(async (req, res) => {
     console.log(email, role, password);
 
     const userAdmin = await Admin.findOne({ email })
-    const userHead = await Head.findOne({ email })
     const userFaculty = await Faculty.findOne({ email })
 
-    if (!userAdmin && !userHead && !userFaculty) {
+    if (!userAdmin && !userFaculty) {
 
         if (role === 'Admin') {
 
@@ -92,7 +90,7 @@ const registerUsers = asyncHandler(async (req, res) => {
         }
         else if (role === 'Head Of Department') {
 
-            const result = await Head.create({
+            const result = await Faculty.create({
                 email: email,
                 password: await bcrypt.hash(password, 10),
                 role: role,
@@ -170,7 +168,7 @@ const registerUsers = asyncHandler(async (req, res) => {
  */
 const facultyList = asyncHandler( async(req,res)=>{
 
-    const data = await Faculty.find()
+    const data = await Faculty.find({role:'Faculty'})
     res.status(200).json(data)
 
 })
@@ -179,7 +177,7 @@ const facultyList = asyncHandler( async(req,res)=>{
  * GET HEAD LIST
  */
 const headList = asyncHandler( async(req,res)=>{
-    const data = await Head.find()
+    const data = await Faculty.find({role:'Head Of Department'})
     res.status(200).json(data)
 })
 

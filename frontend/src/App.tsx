@@ -22,9 +22,16 @@ import Profile from './container/views/admin/container/profile/Profile';
 import DisplayUsers from './container/views/admin/container/displayUsers/DisplayUsers';
 
 /**
+ * HEAD OF DEPARTMENT IMPORTS
+ */
+import HeadDashboard from './container/views/head/container/dashboard/Dashboard';
+
+
+/**
  * PROTECTED ROUTES
  */
 import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
+import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
 
 function App() {
 
@@ -40,6 +47,7 @@ function App() {
         <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
         <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
         <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
+        <Route path='/hod' element={ <HeadProtectedRoute><HeadDashboard /> </HeadProtectedRoute>} />
         <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>

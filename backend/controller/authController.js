@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const asyncHandler = require('express-async-handler')
 const Admin = require('../models/admin')
+const Faculty = require('../models/faculty')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -43,8 +44,23 @@ const loginUsers = asyncHandler( async(req,res)=>{
     }
     else if (role==="Faculty" || role==="Head Of Department")
     {
+        user = await Faculty.findOne({email:email,role:role})
+        
+        if(!user){
 
-        // TODO
+            res.status(400)
+            throw new Error("User not found")
+        }
+        else{
+
+            const validUser = await bcrypt.compare(password, user.password)
+
+            if(!validUser){
+
+                res.status(400)
+                throw new Error('Invalid credentials')
+            }
+        }
     }
     else{
         
@@ -56,7 +72,8 @@ const loginUsers = asyncHandler( async(req,res)=>{
         email: user.email,
         role:user.role ? user.role : role,
         profileImage:user.profileImage,
-        institute: user.institute
+        institute: user.institute,
+        department: user.department ? user.department: null
     }
 
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:'1d'})
