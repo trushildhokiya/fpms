@@ -1,15 +1,17 @@
+import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { loadUserData } from '@/utils/functions/reduxFunctions'
 import { useEffect } from 'react'
 
 const Dashboard = () => {
 
-  useEffect(()=>{
+  useEffect(() => {
     loadUserData()
-  },[])
+  }, [])
 
   return (
     <div>
-    Head Dashboard
+      <HeadNavbar />
+      Head Dashboard
     </div>
   )
 }
