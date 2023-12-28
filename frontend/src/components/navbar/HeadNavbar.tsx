@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../../assets/svg/kjsitLogo.svg';
 import { Sling as Hamburger } from 'hamburger-react';
-import { ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -116,6 +116,11 @@ const HeadNavbar = () => {
 
                             </DropdownMenuContent>
                         </DropdownMenu>
+                    </div>
+                    <div className="mx-5">
+                        <Link to='hod/notifications'>
+                            <Bell />
+                        </Link>
                     </div>
                     <div className="mx-5 mr-[2rem]">
                         <DropdownMenu>
@@ -248,6 +253,13 @@ const HeadNavbar = () => {
                 <Separator />
                 <div className="">
                     <p className="my-2">Others</p>
+                </div>
+
+                <Separator />
+                <div className=" my-2">
+                    <Link to='hod/notifications'>
+                        <Bell />
+                    </Link>
                 </div>
 
                 <Separator />

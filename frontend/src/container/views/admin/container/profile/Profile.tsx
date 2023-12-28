@@ -174,10 +174,10 @@ const Profile = () => {
                                 </div>
                                 <div className="col-span-3 mx-3 font-Poppins text-sm">
 
-                                    <div className="my-3">
+                                    <div className="my-3  whitespace-normal break-all">
                                         <span className="text-red-800 font-AzoSans tracking-wide"> Email:</span> {user.email ? user.email : ""}
                                     </div>
-                                    <div className="my-3">
+                                    <div className="my-3  whitespace-normal break-all">
                                         <span className="text-red-800 font-AzoSans tracking-wide"> Institute:</span> {user.institute ? user.institute : ""}
                                     </div>
                                 </div>

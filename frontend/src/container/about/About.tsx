@@ -96,7 +96,7 @@ const About = () => {
                   <CardContent className="p-0 m-0">
                     <div className="grid grid-cols-3">
                       <div className="col-span-1">
-                        <img src='https://picsum.photos/400/700' className="rounded-lg" alt='random-image' />
+                        <img src='https://picsum.photos/1280/720' className="rounded-lg object-cover h-full" alt='random-image' />
                       </div>
                       <div className="col-span-2 mx-4 my-4">
                         <h2 className="font-OpenSans text-lg text-gray-700 font-bold">

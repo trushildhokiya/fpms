@@ -34,8 +34,8 @@ router.route('/register').post(registerUsers)
  * @swagger
  * /auth/login:
  *   post:
- *     summary: User Login
- *     description: Endpoint for user authentication and login.
+ *     summary: Login User
+ *     description: Authenticate a user and generate an access token.
  *     tags:
  *       - Authentication
  *     requestBody:
@@ -47,13 +47,13 @@ router.route('/register').post(registerUsers)
  *             properties:
  *               email:
  *                 type: string
- *               password:
- *                 type: string
  *               role:
+ *                 type: string
+ *               password:
  *                 type: string
  *     responses:
  *       200:
- *         description: User successfully authenticated.
+ *         description: Successfully logged in. Returns an access token.
  *         content:
  *           application/json:
  *             schema:
@@ -61,9 +61,15 @@ router.route('/register').post(registerUsers)
  *               properties:
  *                 token:
  *                   type: string
+ *                   description: The generated access token.
  *       400:
- *         description: Bad request. Invalid credentials or user not found.
+ *         description: Bad Request. Invalid input or user not found.
+ *       401:
+ *         description: Unauthorized. Invalid credentials or account not activated.
+ *       500:
+ *         description: Internal Server Error.
  */
+
 
 router.route('/login').post(loginUsers)
 
