@@ -2,6 +2,12 @@ import CommonNavbar from "@/components/navbar/CommonNavbar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Linkedin, Github } from "lucide-react"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+
 
 const About = () => {
 
@@ -103,9 +109,17 @@ const About = () => {
                           {member.name}
                         </h2>
                         <div className="">
-                          <Badge variant='secondary' className="bg-amber-400">
-                            Active
-                          </Badge>
+                          <HoverCard>
+                            <HoverCardTrigger>
+                              <Badge variant='secondary' className="bg-amber-400">
+                                Active
+                              </Badge>
+                            </HoverCardTrigger>
+                            <HoverCardContent>
+                              This Badge indicates that the person has actively contributed in the development of the software
+                            </HoverCardContent>
+                          </HoverCard>
+
                         </div>
                         <p className="text-sm text-gray-600 leading-6 my-3">
                           {member.description}

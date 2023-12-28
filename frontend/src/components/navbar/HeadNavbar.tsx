@@ -118,7 +118,7 @@ const HeadNavbar = () => {
                         </DropdownMenu>
                     </div>
                     <div className="mx-5">
-                        <Link to='hod/notifications'>
+                        <Link to='/hod/notifications'>
                             <Bell />
                         </Link>
                     </div>
@@ -257,7 +257,7 @@ const HeadNavbar = () => {
 
                 <Separator />
                 <div className=" my-2">
-                    <Link to='hod/notifications'>
+                    <Link to='/hod/notifications'>
                         <Bell />
                     </Link>
                 </div>

@@ -34,6 +34,7 @@ import Notify from './container/views/head/container/notify/Notify';
  */
 import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
 import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
+import Notifications from './container/views/head/container/notifications/Notifications';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
         <Route path='/hod/profile' element={<HeadProtectedRoute> <HeadProfile /> </HeadProtectedRoute>} />
         <Route path='/hod/users/faculty' element={<HeadProtectedRoute> <Faculty /> </HeadProtectedRoute>} />
         <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
+        <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
         <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
