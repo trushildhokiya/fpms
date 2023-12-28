@@ -53,6 +53,13 @@ const loginUsers = asyncHandler( async(req,res)=>{
         }
         else{
 
+            if( user.tags.includes('inactive')){
+
+                res.status(400)
+                throw new Error('Account not activated')
+                
+            }
+
             const validUser = await bcrypt.compare(password, user.password)
 
             if(!validUser){
@@ -73,7 +80,8 @@ const loginUsers = asyncHandler( async(req,res)=>{
         role:user.role ? user.role : role,
         profileImage:user.profileImage,
         institute: user.institute,
-        department: user.department ? user.department: null
+        department: user.department ? user.department: null,
+        tags: user.tags? user.tags : null
     }
 
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:'1d'})

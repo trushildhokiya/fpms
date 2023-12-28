@@ -95,6 +95,7 @@ const registerUsers = asyncHandler(async (req, res) => {
                 password: await bcrypt.hash(password, 10),
                 role: role,
                 department:department,
+                tags:['active'],
                 profileImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGBu2FMepxzOa0KZBisB0uUrvDEiU-g1Hl2g&usqp=CAU'
             })
 

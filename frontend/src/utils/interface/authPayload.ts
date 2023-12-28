@@ -3,5 +3,6 @@ export  interface authPayloadInterface {
     role: string,
     profileImage: string ,
     institute: string| null,
-    department: string|null
+    department: string|null,
+    tags: [string] | null
 }

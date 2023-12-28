@@ -8,6 +8,7 @@ const initialState: authPayloadInterface = {
   profileImage:"",
   institute:"",
   department:"",
+  tags:[''],
 }
 
 export const userSlice = createSlice({
@@ -21,7 +22,7 @@ export const userSlice = createSlice({
         state.profileImage = action.payload.profileImage
         state.institute = action.payload.institute
         state.department = action.payload.department
-        
+        state.tags = action.payload.tags
     },
     logout:(state)=>{
         

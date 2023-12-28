@@ -14,7 +14,8 @@ export const loadUserData = ()=>{
         role : decryptedData.role,
         profileImage :decryptedData.profileImage,
         institute : decryptedData.institute,
-        department: decryptedData.department
+        department: decryptedData.department,
+        tags: decryptedData.tags
     }
 
     store.dispatch( login(payload) )
