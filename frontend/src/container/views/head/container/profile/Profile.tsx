@@ -53,6 +53,12 @@ const Profile = () => {
         console.log(data);
         
     }
+
+
+    const colors:string[] = [
+        'bg-emerald-400',
+        'bg-rose-500'
+    ]
     
     return (
         <div>
@@ -133,7 +139,7 @@ const Profile = () => {
                                                 ?
                                                 user.tags.map((item: string, index: number) => {
                                                     return (
-                                                        <Badge key={index} className="bg-emerald-500 font-OpenSans">
+                                                        <Badge key={index} className={`${ index% colors.length ===0 ? colors[0]: colors[1]} font-OpenSans mx-1 }`}>
                                                             {item}
                                                         </Badge>
                                                     )

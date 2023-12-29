@@ -35,4 +35,11 @@ const facultySchema = new mongoose.Schema({
 }, { timestamps: true }
 )
 
+facultySchema.pre('save', function (next) {
+    if (this.isNew) {
+        this.tags.push('incomplete profile');
+    }
+    next();
+});
+
 module.exports = mongoose.model('faculty', facultySchema)

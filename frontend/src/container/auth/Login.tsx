@@ -89,12 +89,13 @@ const Login = () => {
                 }
                 
             })
-            .catch((err) => {
+            .catch((err:any) => {
                 console.log(err);
                 
                 toast({
                     title: "Error Occurred !",
                     description: err.response.data.message,
+                    variant:'destructive',
                     action: (
                         <ToastAction altText="Ok">Okay</ToastAction>
                     ),

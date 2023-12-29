@@ -43,7 +43,7 @@ const DisplayUsers = () => {
 
     const [data, setData] = useState<UserData[]>([]);
 
-    const dt = useRef<DataTable>(null);
+    const dt = useRef<any>(null);
 
     const exportCSV = (selectionOnly: boolean) => {
         dt.current!.exportCSV({ selectionOnly });
