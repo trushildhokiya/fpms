@@ -115,7 +115,7 @@ const About = () => {
                                 Active
                               </Badge>
                             </HoverCardTrigger>
-                            <HoverCardContent>
+                            <HoverCardContent className="text-xs text-gray-500">
                               This Badge indicates that the person has actively contributed in the development of the software
                             </HoverCardContent>
                           </HoverCard>

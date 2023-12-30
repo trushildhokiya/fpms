@@ -9,6 +9,7 @@ const swaggerUI = require('swagger-ui-express')
 const connectDB = require('./config/dbConnection')
 const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const headRoutes = require('./routes/headRoutes')
 const errorHandler = require('./middleware/errorHandler')
 const Admin = require('./models/admin')
 const bcrypt = require('bcrypt')
@@ -44,7 +45,7 @@ const swaggerOptions = {
                 name: 'Trushil Dhokiya',
                 url: 'https://trushildhokiya.netlify.app',
                 email: 'trushil.d@somaiya.edu',
-                
+
             }
         },
         servers: [{
@@ -67,13 +68,10 @@ app.use(express.static(`${__dirname}/uploads`))
 
 
 app.use('/auth', authRoutes)
-app.use('/admin',adminRoutes)
+app.use('/admin', adminRoutes)
+app.use('/head', headRoutes)
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use(errorHandler)
-
-/**
- * CREATE DEFAULT ADMIN
- */
 
 
 /**
@@ -82,6 +80,12 @@ app.use(errorHandler)
 
 
 app.listen(PORT, async () => {
+
+
+    /**
+     * CREATE DEFAULT ADMIN
+     */
+
     try {
         const admin = await Admin.findOne({ email: 'fpms.tech@somaiya.edu' });
 
@@ -89,8 +93,8 @@ app.listen(PORT, async () => {
             const createdAdmin = await Admin.create({
                 email: 'fpms.tech@somaiya.edu',
                 password: await bcrypt.hash('Admin@123', 10),
-                institute:'K.J Somaiya Institute Of Technology',
-                profileImage:'https://w0.peakpx.com/wallpaper/582/516/HD-wallpaper-linux-programmer-pixel-art-linux-computer-hacker-pixel-8-bit.jpg'
+                institute: 'K.J Somaiya Institute Of Technology',
+                profileImage: 'https://w0.peakpx.com/wallpaper/582/516/HD-wallpaper-linux-programmer-pixel-art-linux-computer-hacker-pixel-8-bit.jpg'
             });
 
             console.log('Admin created successfully', createdAdmin);

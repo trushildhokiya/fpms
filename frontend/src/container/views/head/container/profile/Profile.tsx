@@ -16,6 +16,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import { Toaster } from "@/components/ui/toaster"
+import axios from "axios"
 
 const formSchema = z.object({
     profileImage: z.instanceof(File, { message: 'Image is required' }).refine(
@@ -40,6 +44,7 @@ const Profile = () => {
     }, [])
 
     const user = useSelector((state: any) => state.user)
+    const { toast } = useToast()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -50,7 +55,35 @@ const Profile = () => {
 
     function onSubmit(data: z.infer<typeof formSchema>) {
 
-        console.log(data);
+        axios.put('/head/profile/image',data,{
+            headers:{
+                'Content-Type':'multipart/form-data',
+                'token':localStorage.getItem('token'),
+                'email': user.email
+            }
+        })
+        .then((res)=>{
+            if(res.data.status==='Success'){
+                // taost of success
+                toast({
+                    title:'Update Sucessful',
+                    description:" Logout and login again to see the updations.",
+                    variant:'default',
+                    action: <ToastAction altText="Okay">Okay</ToastAction>,
+                })
+            }
+        })
+        .catch((err)=>{
+            
+            // toast of error
+            toast({
+                title:'Something went wrong!',
+                description:"There was a error making your request. Try again later !",
+                variant:'destructive',
+                action: <ToastAction altText="Okay">Okay</ToastAction>,
+            })
+            
+        })
         
     }
 
@@ -155,6 +188,7 @@ const Profile = () => {
 
                 </div>
             </div>
+            <Toaster />
         </div>
     )
 }
