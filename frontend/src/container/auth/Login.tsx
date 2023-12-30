@@ -30,7 +30,8 @@ import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { jwtDecode } from 'jwt-decode'
 import { authPayloadInterface } from '@/utils/interface/authPayload'
-
+import { useDispatch } from 'react-redux'
+import { login } from '@/features/user/userSlice'
 
 const FormSchema = z.object({
     email: z.string().min(2, {
@@ -52,6 +53,7 @@ const Login = () => {
 
     const navigate = useNavigate()
     const { toast } = useToast()
+    const dispatch = useDispatch()
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -71,7 +73,7 @@ const Login = () => {
                 localStorage.setItem('token',res.data.token)
 
                 const decodedResponse:authPayloadInterface = jwtDecode(res.data.token)
-                 
+                dispatch(login(decodedResponse))
 
                 switch(decodedResponse.role){
 

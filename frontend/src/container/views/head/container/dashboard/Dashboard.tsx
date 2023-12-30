@@ -2,15 +2,10 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Line from '@/components/visual/Line'
 import Pie from '@/components/visual/Pie'
-import { loadUserData } from '@/utils/functions/reduxFunctions'
-import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
 const Dashboard = () => {
 
-  useEffect(() => {
-    loadUserData()
-  }, [])
 
   const user = useSelector((state: any) => state.user)
 

@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-import { loadUserData } from "@/utils/functions/reduxFunctions"
 import { useSelector } from "react-redux"
 import AdminNavbar from "@/components/navbar/AdminNavbar"
 import Pie from "@/components/visual/Pie"
@@ -7,12 +5,6 @@ import Line from "@/components/visual/Line"
 import Radar from "@/components/visual/Radar"
 
 const Dashboard = () => {
-
-  useEffect(() => {
-
-    loadUserData()
-
-  }, [])
 
   const user = useSelector((state: any) => state.user)
 

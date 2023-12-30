@@ -35,10 +35,15 @@ import Notify from './container/views/head/container/notify/Notify';
 import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
 import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
 import Notifications from './container/views/head/container/notifications/Notifications';
+import { useEffect } from 'react';
+import { loadUserData } from './utils/functions/reduxFunctions';
 
 
 function App() {
 
+  useEffect(()=>{
+    loadUserData()
+  })
 
   return (
     <BrowserRouter>

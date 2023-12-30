@@ -1,5 +1,4 @@
 import AdminNavbar from '@/components/navbar/AdminNavbar';
-import { loadUserData } from '@/utils/functions/reduxFunctions';
 import { useEffect, useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -21,7 +20,6 @@ const DisplayUsers = () => {
     const location = useLocation();
 
     useEffect(() => {
-        loadUserData();
         getData();
     }, [location]);
 

@@ -26,7 +26,12 @@ export const userSlice = createSlice({
     },
     logout:(state)=>{
         
-        state = initialState
+      state.email = ''
+      state.role =''
+      state.profileImage = ''
+      state.institute = ''
+      state.department = ''
+      state.tags = ['']
     }
   },
 })

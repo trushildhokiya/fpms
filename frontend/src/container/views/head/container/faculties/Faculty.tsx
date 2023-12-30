@@ -1,8 +1,7 @@
 import HeadNavbar from "@/components/navbar/HeadNavbar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { loadUserData } from "@/utils/functions/reduxFunctions"
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Avatar } from "@/components/ui/avatar"
@@ -12,9 +11,6 @@ import { BadgeCheck, BadgeX } from "lucide-react"
 
 const Faculty = () => {
 
-    useEffect(() => {
-        loadUserData()
-    }, [])
 
     const data = [
         {

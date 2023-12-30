@@ -7,8 +7,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { loadUserData } from "@/utils/functions/reduxFunctions"
-import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -56,10 +54,6 @@ const formSchema = z.object({
 
 const Profile = () => {
 
-    useEffect(() => {
-        loadUserData()
-
-    })
 
     const user = useSelector((state: any) => state.user)
     const { toast } = useToast()

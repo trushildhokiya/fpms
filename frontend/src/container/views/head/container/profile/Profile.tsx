@@ -2,8 +2,6 @@ import HeadNavbar from "@/components/navbar/HeadNavbar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { loadUserData } from "@/utils/functions/reduxFunctions"
-import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import {
     Popover,
@@ -38,10 +36,6 @@ const formSchema = z.object({
 
 
 const Profile = () => {
-
-    useEffect(() => {
-        loadUserData()
-    }, [])
 
     const user = useSelector((state: any) => state.user)
     const { toast } = useToast()

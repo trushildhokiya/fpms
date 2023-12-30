@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import AdminNavbar from "@/components/navbar/AdminNavbar"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,7 +14,6 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import { loadUserData } from "@/utils/functions/reduxFunctions"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -77,10 +75,6 @@ const HeadFormSchema = z.object({
 
 const AddUser = () => {
 
-    useEffect(() => {
-
-        loadUserData()
-    }, [])
 
     const { toast } = useToast()
 

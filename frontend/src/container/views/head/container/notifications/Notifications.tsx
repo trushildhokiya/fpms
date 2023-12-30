@@ -2,7 +2,6 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getDecodedToken } from '@/utils/functions/authFunctions';
-import { loadUserData } from '@/utils/functions/reduxFunctions';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { ToastAction } from "@/components/ui/toast"
@@ -13,7 +12,6 @@ const Notifications = () => {
 
     
     useEffect(()=>{
-        loadUserData()
         getNotifications()
     },[])
 

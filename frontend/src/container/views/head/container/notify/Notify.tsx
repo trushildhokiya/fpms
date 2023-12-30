@@ -1,7 +1,5 @@
 import HeadNavbar from "@/components/navbar/HeadNavbar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { loadUserData } from "@/utils/functions/reduxFunctions"
-import { useEffect } from "react"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -49,10 +47,6 @@ const formSchema = z.object({
 })
 
 const Notify = () => {
-
-    useEffect(() => {
-        loadUserData()
-    }, [])
 
     const { department } = getDecodedToken()
 
