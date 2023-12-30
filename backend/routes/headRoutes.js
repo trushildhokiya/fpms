@@ -1,7 +1,7 @@
 const express = require('express')
 const headAuthenticator = require('../middleware/headAuthenticator')
 const { headProfileImageUpload } = require('../middleware/fileUpload')
-const { profileImageUpdate } = require('../controller/headController')
+const { profileImageUpdate, createNotification } = require('../controller/headController')
 const router = express.Router()
 
 /**
@@ -58,5 +58,7 @@ const router = express.Router()
 
 router.route('/profile/image').put(headAuthenticator,headProfileImageUpload.single('profileImage'),profileImageUpdate)
 
+
+router.route('/notify').post(headAuthenticator,createNotification)
 
 module.exports = router

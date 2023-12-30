@@ -17,6 +17,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import axios from "axios"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+import { Toaster } from "@/components/ui/toaster"
+import { jwtDecode } from "jwt-decode"
+import { authPayloadInterface } from "@/utils/interface/authPayload"
 
 const formSchema = z.object({
     title: z.string().min(3, {
@@ -31,13 +37,15 @@ const formSchema = z.object({
         message: 'Description must not exceed 250 characters'
     }),
 
-    imageUrl: z.string().regex(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i, {
+    imageUrl: z.string().regex(/^(https?|ftp):\/\/[^\s/$.?#]*[^\s]*$|^$/, {
         message: 'Invalid Url'
     }),
-    
-    referenceUrl: z.string().regex(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i, {
+
+    referenceUrl: z.string().regex(/^(https?|ftp):\/\/[^\s/$.?#]*[^\s]*$|^$/, {
         message: 'Invalid reference link'
-    })
+    }),
+
+    department: z.string().min(2)
 
 })
 
@@ -47,19 +55,57 @@ const Notify = () => {
         loadUserData()
     }, [])
 
+    const decodedToken = jwtDecode( localStorage.getItem('token')! ) as authPayloadInterface
+    const department = decodedToken.department!
+
+    const { toast } = useToast()
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
             description: "",
             imageUrl: "",
-            referenceUrl: ""
+            referenceUrl: "",
+            department: department ? department : '',
         },
     })
 
     function onSubmit(data: z.infer<typeof formSchema>) {
 
-        console.log(data)
+        axios.post('/head/notify', data, {
+            headers: {
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then((res) => {
+
+                if (res.data.status === 'Success') {
+
+                    // toast of success
+                    toast({
+                        title: 'Notfication created',
+                        description: 'Notification created successfully ',
+                        action: (
+                            <ToastAction altText="Okay">Okay</ToastAction>
+                        ),
+                    })
+                }
+            })
+            .catch((err) => {
+
+                //toast of error
+                toast({
+                    title: 'Something went wrong',
+                    description: err.response.data.message,
+                    variant: 'destructive',
+                    action: (
+                        <ToastAction altText="Okay">Okay</ToastAction>
+                    ),
+                })
+            })
+
+            form.reset()
     }
 
     return (
@@ -161,6 +207,7 @@ const Notify = () => {
                     </CardContent>
                 </Card>
             </div>
+            <Toaster />
         </div>
     )
 }

@@ -17,6 +17,10 @@ const notificationSchema = new mongoose.Schema({
     referenceUrl:{
         type:String,
         required:false,
+    },
+    department:{
+        type:String,
+        required: true
     }
 }, { timestamps: true }
 )

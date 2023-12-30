@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Faculty = require('../models/faculty')
+const Notification = require('../models/notification')
 const fs = require('fs');
 
 const baseUrl = 'http://localhost:5000';
@@ -44,7 +45,35 @@ const profileImageUpdate = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * CREATE NOTIFICATION 
+ */
+
+const createNotification = asyncHandler( async(req,res)=>{
+
+    const { title,description, imageUrl, referenceUrl, department } = req.body
+
+    const notification = await Notification.create({
+        title:title,
+        description: description,
+        imageUrl: imageUrl,
+        referenceUrl: referenceUrl,
+        department: department
+    })
+
+    if( !notification){
+        //Error
+        res.status(500)
+        throw new Error('Internal Server Error')
+    }
+
+    res.status(200).json({
+        status:'Success'
+    })
+
+})
 
 module.exports={
-    profileImageUpdate
+    profileImageUpdate,
+    createNotification,
 }
