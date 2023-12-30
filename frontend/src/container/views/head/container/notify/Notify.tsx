@@ -21,8 +21,7 @@ import axios from "axios"
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
-import { jwtDecode } from "jwt-decode"
-import { authPayloadInterface } from "@/utils/interface/authPayload"
+import { getDecodedToken } from "@/utils/functions/authFunctions"
 
 const formSchema = z.object({
     title: z.string().min(3, {
@@ -55,8 +54,7 @@ const Notify = () => {
         loadUserData()
     }, [])
 
-    const decodedToken = jwtDecode( localStorage.getItem('token')! ) as authPayloadInterface
-    const department = decodedToken.department!
+    const { department } = getDecodedToken()
 
     const { toast } = useToast()
 
@@ -67,7 +65,7 @@ const Notify = () => {
             description: "",
             imageUrl: "",
             referenceUrl: "",
-            department: department ? department : '',
+            department: department!,
         },
     })
 

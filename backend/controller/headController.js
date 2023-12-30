@@ -73,7 +73,32 @@ const createNotification = asyncHandler( async(req,res)=>{
 
 })
 
+/**
+ * GET NOTIFICATIONS
+ */
+
+const getNotifications = asyncHandler( async(req,res)=>{
+
+    const { email } = req.headers
+
+    const user = await Faculty.findOne({email:email})
+
+    if(!user){
+        //Error
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    const department = user.department
+
+    const notification = await Notification.find({department:department})
+
+    res.status(200).json(notification)
+
+})
+
 module.exports={
     profileImageUpdate,
     createNotification,
+    getNotifications
 }

@@ -77,7 +77,7 @@ const Profile = () => {
             headers:{
                 'Content-Type':'multipart/form-data',
                 'token':localStorage.getItem('token'),
-                'email': user.email
+                'email': user.email ? user.email: ''
             }
         })
         .then((res)=>{

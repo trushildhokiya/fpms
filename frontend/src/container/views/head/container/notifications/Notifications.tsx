@@ -1,38 +1,64 @@
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { getDecodedToken } from '@/utils/functions/authFunctions';
 import { loadUserData } from '@/utils/functions/reduxFunctions';
-import { useEffect } from 'react';
-
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+import { Toaster } from "@/components/ui/toaster"
 
 const Notifications = () => {
 
+    
     useEffect(()=>{
         loadUserData()
-    })
+        getNotifications()
+    },[])
 
+     
     interface ResearchNotification {
         title: string;
         description: string;
         imageUrl: string;
         referenceUrl: string;
+        department:string;
     }
 
-    const researchNotifications: ResearchNotification[] = [
-        {
-            title: 'Exciting Research Opportunity',
-            description: 'Join our team in exploring new horizons in science and technology.',
-            imageUrl: 'https://picsum.photos/1280/720',
-            referenceUrl: 'https://www.cornell.edu/'
-        },
-        {
-            title: 'Call for Papers',
-            description: 'Submit your research papers for an upcoming conference.',
-            imageUrl: 'https://picsum.photos/1080/720',
-            referenceUrl: 'https://www.nature.com/'
-        },
-    ];
+    const [ notifications, setNotifications ] = useState<ResearchNotification[]>([])
+   
 
+    const { email }  = getDecodedToken()
+    const { toast } = useToast()
+
+    const getNotifications:Function = ()=>{
+        
+        axios.get('/head/notifications',{
+            headers:{
+                'token':localStorage.getItem('token'),
+                'email':email
+            }
+        })
+        .then((res)=>{
+            
+            setNotifications(res.data)
+            
+        })
+        .catch((err)=>{
+            
+            // toast of error
+            toast({
+                title:'Something went wrong!',
+                description:err.response.data.message,
+                variant:'destructive',
+                action: <ToastAction altText="Okay">Okay</ToastAction>,
+            })
+        })
+        
+        
+    }
+    
     return (
         <div>
             <HeadNavbar />
@@ -46,7 +72,7 @@ const Notifications = () => {
 
                 <div className="w-full md:w-[50%] lg:w-[40%] mx-auto">
                     {
-                        researchNotifications.map((post,index) => {
+                        notifications.map((post,index) => {
                             return (
                                 <Card className='my-8' key={index}>
                                     <div className="h-[150px] rounded-t overflow-hidden brightness-75 ">
@@ -73,6 +99,7 @@ const Notifications = () => {
                     }
                 </div>
             </div>
+            <Toaster />
         </div>
     )
 }
