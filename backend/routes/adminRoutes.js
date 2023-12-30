@@ -27,11 +27,16 @@ const router = express.Router()
  *         description: Authentication token of the admin.
  *         schema:
  *           type: string
- *       - in: formData
- *         name: profileImage
- *         required: true
- *         description: New profile image file to upload.
- *         type: file
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profileImage:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Profile image successfully updated.
