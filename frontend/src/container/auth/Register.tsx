@@ -104,6 +104,7 @@ const Register = () => {
                             <SelectItem value="Information Technology">Information Technology</SelectItem>
                             <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
                             <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
+                            <SelectItem value="Basic Science and Humanities">Basic Science and Humanities</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

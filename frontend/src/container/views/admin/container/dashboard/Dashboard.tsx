@@ -33,6 +33,13 @@ const Dashboard = () => {
           <div className="">
             <Pie />
             <p className="my-3 font-xl text-center text-red-800">
+              BSH Department
+            </p>
+          </div>
+
+          <div className="">
+            <Pie />
+            <p className="my-3 font-xl text-center text-red-800">
               IT Department
             </p>
           </div>

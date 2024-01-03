@@ -31,6 +31,13 @@ const Radar = () => {
             project: 1,
             consultancy: 1
         },
+        {
+            "department": 'Basic Science and Humanities',
+            patent: 1,
+            publication: 4,
+            project: 6,
+            consultancy: 1
+        },
     ]
 
     return (
