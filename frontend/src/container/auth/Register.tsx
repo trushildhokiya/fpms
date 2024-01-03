@@ -19,21 +19,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
 import { Input } from "@/components/ui/input"
 import { Link } from 'react-router-dom'
+import axios from "axios"
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  email: z.string().min(2, {
+    message: "Email must be at least 2 characters.",
   }).regex(new RegExp('^[a-zA-Z0-9._%+-]+@somaiya\.edu$'), {
     message: 'Invalid somaiya ID'
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
-  department: z.string().min(2,{
-    message:'Select your department'
+  department: z.string().min(2, {
+    message: 'Select your department'
   }),
 })
 
@@ -43,15 +46,40 @@ const Register = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
-      department:""
+      department: ""
     },
   })
 
+  const { toast } = useToast()
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
 
-    console.log(data)
+    axios.post('auth/register', data)
+      .then((res) => {
+
+        if (res.data.status === 'Success') {
+
+          toast({
+            title: 'Registeration Successful',
+            description: ' Faculty registered successfully',
+            action: <ToastAction altText="Okay">Okay</ToastAction>,
+          })
+
+        }
+
+      })
+      .catch((err) => {
+        
+        toast({
+          title: 'Something went wrong!',
+          description: err.response.data.message,
+          variant: 'destructive',
+          action: <ToastAction altText="Okay">Okay</ToastAction>,
+        })
+      })
+
     form.reset()
   }
 
@@ -74,7 +102,7 @@ const Register = () => {
                 <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
                   <FormField
                     control={form.control}
-                    name="username"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Somaiya ID</FormLabel>
@@ -150,6 +178,7 @@ const Register = () => {
         </div>
 
       </div>
+      <Toaster />
     </div>
   )
 }

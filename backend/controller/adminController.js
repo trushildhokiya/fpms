@@ -94,8 +94,8 @@ const registerUsers = asyncHandler(async (req, res) => {
                 email: email,
                 password: await bcrypt.hash(password, 10),
                 role: role,
-                department:department,
-                tags:['active'],
+                department: department,
+                tags: ['active'],
                 profileImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGBu2FMepxzOa0KZBisB0uUrvDEiU-g1Hl2g&usqp=CAU'
             })
 
@@ -141,10 +141,8 @@ const registerUsers = asyncHandler(async (req, res) => {
 
         transporter.sendMail(mailOptions, (err, info) => {
             if (err) {
-                console.log(err);
-            }
-            else {
-                console.log(info.response);
+                res.status(500)
+                throw new Error('Internal Server Error in mailer!')
             }
         });
 
@@ -167,9 +165,9 @@ const registerUsers = asyncHandler(async (req, res) => {
 /**
  * GET FACULTY LIST
  */
-const facultyList = asyncHandler( async(req,res)=>{
+const facultyList = asyncHandler(async (req, res) => {
 
-    const data = await Faculty.find({role:'Faculty'})
+    const data = await Faculty.find({ role: 'Faculty' })
     res.status(200).json(data)
 
 })
@@ -177,8 +175,8 @@ const facultyList = asyncHandler( async(req,res)=>{
 /**
  * GET HEAD LIST
  */
-const headList = asyncHandler( async(req,res)=>{
-    const data = await Faculty.find({role:'Head Of Department'})
+const headList = asyncHandler(async (req, res) => {
+    const data = await Faculty.find({ role: 'Head Of Department' })
     res.status(200).json(data)
 })
 
@@ -186,7 +184,7 @@ const headList = asyncHandler( async(req,res)=>{
 /**
  * GET ADMIN LIST
  */
-const adminList =  asyncHandler( async(req,res)=>{
+const adminList = asyncHandler(async (req, res) => {
     const data = await Admin.find()
     res.status(200).json(data)
 

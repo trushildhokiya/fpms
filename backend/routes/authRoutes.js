@@ -7,8 +7,8 @@ const { registerUsers, loginUsers, validateUser } = require('../controller/authC
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Register user 
- *     description: Register user based on specified roles
+ *     summary: Register Faculty
+ *     description: Register a faculty member in FPMS.
  *     tags:
  *       - Authentication
  *     requestBody:
@@ -20,14 +20,31 @@ const { registerUsers, loginUsers, validateUser } = require('../controller/authC
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *                 description: The email address of the faculty member.
  *               password:
  *                 type: string
- *               role:
+ *                 description: The password for the faculty member.
+ *               department:
  *                 type: string
+ *                 description: The department to which the faculty member belongs.
  *     responses:
  *       200:
- *         description: Successfully created user
+ *         description: Faculty registered successfully. An approval email will be sent upon department head approval.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Indicates the success status.
+ *       400:
+ *         description: Bad Request. User with this email already exists.
+ *       500:
+ *         description: Internal Server Error.
  */
+
 router.route('/register').post(registerUsers)
 
 /**
