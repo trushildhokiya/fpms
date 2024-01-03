@@ -10,53 +10,52 @@ import { Toaster } from "@/components/ui/toaster"
 
 const Notifications = () => {
 
-    
-    useEffect(()=>{
-        getNotifications()
-    },[])
 
-     
+    useEffect(() => {
+        getNotifications()
+    }, [])
+
+
     interface ResearchNotification {
         title: string;
         description: string;
         imageUrl: string;
         referenceUrl: string;
-        department:string;
+        department: string;
     }
 
-    const [ notifications, setNotifications ] = useState<ResearchNotification[]>([])
-   
+    const [notifications, setNotifications] = useState<ResearchNotification[]>([])
 
-    const { email }  = getDecodedToken()
+    const { email } = getDecodedToken()
     const { toast } = useToast()
 
-    const getNotifications:Function = ()=>{
-        
-        axios.get('/head/notifications',{
-            headers:{
-                'token':localStorage.getItem('token'),
-                'email':email
+    const getNotifications: Function = () => {
+
+        axios.get('/head/notifications', {
+            headers: {
+                'token': localStorage.getItem('token'),
+                'email': email
             }
         })
-        .then((res)=>{
-            
-            setNotifications(res.data)
-            
-        })
-        .catch((err)=>{
-            
-            // toast of error
-            toast({
-                title:'Something went wrong!',
-                description:err.response.data.message,
-                variant:'destructive',
-                action: <ToastAction altText="Okay">Okay</ToastAction>,
+            .then((res) => {
+
+                setNotifications(res.data)
+
             })
-        })
-        
-        
+            .catch((err) => {
+
+                // toast of error
+                toast({
+                    title: 'Something went wrong!',
+                    description: err.response.data.message,
+                    variant: 'destructive',
+                    action: <ToastAction altText="Okay">Okay</ToastAction>,
+                })
+            })
+
+
     }
-    
+
     return (
         <div>
             <HeadNavbar />
@@ -68,34 +67,46 @@ const Notifications = () => {
                     </span>
                 </div>
 
-                <div className="w-full md:w-[50%] lg:w-[40%] mx-auto">
-                    {
-                        notifications.map((post,index) => {
-                            return (
-                                <Card className='my-8' key={index}>
-                                    <div className="h-[150px] rounded-t overflow-hidden brightness-75 ">
-                                        <img src={post.imageUrl} className=' object-cover w-full h-full' alt="Research Image" />
-                                    </div>
-                                    <CardHeader>
-                                        <CardTitle className='text-gray-700 font-OpenSans leading-7'>
-                                            {post.title}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className='text-sm '>
-                                        {post.description}
-                                    </CardContent>
-                                    <CardFooter className='flex justify-end'>
-                                        <Button className='mx-5 bg-red-800'>
-                                            <a href={post.referenceUrl} target='_blank'>
-                                                See More
-                                            </a>
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            )
-                        })
-                    }
-                </div>
+                {
+                    notifications.length > 0
+                        ?
+                        <div className="w-full md:w-[50%] lg:w-[40%] mx-auto">
+                            {
+                                notifications.map((post, index) => {
+                                    return (
+                                        <Card className='my-8' key={index}>
+                                            <div className="h-[150px] rounded-t overflow-hidden brightness-75 ">
+                                                <img src={post.imageUrl} className=' object-cover w-full h-full' alt="Research Image" />
+                                            </div>
+                                            <CardHeader>
+                                                <CardTitle className='text-gray-700 font-OpenSans leading-7'>
+                                                    {post.title}
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className='text-sm '>
+                                                {post.description}
+                                            </CardContent>
+                                            <CardFooter className='flex justify-end'>
+                                                <Button className='mx-5 bg-red-800'>
+                                                    <a href={post.referenceUrl} target='_blank'>
+                                                        See More
+                                                    </a>
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    )
+                                })
+                            }
+                        </div>
+                        :
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='text-gray-600 font-OpenSans'>
+                                    No Records Found
+                                </CardTitle>
+                            </CardHeader>
+                        </Card>
+                }
             </div>
             <Toaster />
         </div>

@@ -1,7 +1,7 @@
 const express = require('express')
 const headAuthenticator = require('../middleware/headAuthenticator')
 const { headProfileImageUpload } = require('../middleware/fileUpload')
-const { profileImageUpdate, createNotification, getNotifications } = require('../controller/headController')
+const { profileImageUpdate, createNotification, getNotifications, getFacultiesList } = require('../controller/headController')
 const router = express.Router()
 
 /**
@@ -172,4 +172,65 @@ router.route('/notify').post(headAuthenticator,createNotification)
  *         description: Internal Server Error.
  */
 router.route('/notifications').get(headAuthenticator,getNotifications)
+
+/**
+ * @swagger
+ * /head/faculties:
+ *   get:
+ *     summary: Get Faculty List
+ *     description: Retrieve a list of faculties for the Head of Department.
+ *     tags:
+ *       - Head Of Department
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for Head of Department authentication.
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: email
+ *         required: true
+ *         description: Email of the Head of Department.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved list of faculties.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   email:
+ *                     type: string
+ *                     description: Email of the faculty member.
+ *                   profileImage:
+ *                     type: string
+ *                     description: URL of the faculty member's profile image.
+ *                   department:
+ *                     type: string
+ *                     description: Department of the faculty member.
+ *                   tags:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     description: Tags associated with the faculty member.
+ *                   verified:
+ *                     type: boolean
+ *                     description: Indicates whether the faculty member is verified or not.
+ *       401:
+ *         description: Unauthorized. User not found.
+ *       403:
+ *         description: Forbidden. Not a Head Of Department.
+ *       500:
+ *         description: Internal Server Error.
+ */
+
+router.route('/faculties').get(headAuthenticator,getFacultiesList)
+
 module.exports = router

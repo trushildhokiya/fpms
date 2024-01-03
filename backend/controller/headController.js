@@ -38,7 +38,7 @@ const profileImageUpdate = asyncHandler(async (req, res) => {
         res.status(200).json({
             status: 'Success'
         });
-        
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -49,26 +49,26 @@ const profileImageUpdate = asyncHandler(async (req, res) => {
  * CREATE NOTIFICATION 
  */
 
-const createNotification = asyncHandler( async(req,res)=>{
+const createNotification = asyncHandler(async (req, res) => {
 
-    const { title,description, imageUrl, referenceUrl, department } = req.body
+    const { title, description, imageUrl, referenceUrl, department } = req.body
 
     const notification = await Notification.create({
-        title:title,
+        title: title,
         description: description,
         imageUrl: imageUrl,
         referenceUrl: referenceUrl,
         department: department
     })
 
-    if( !notification){
+    if (!notification) {
         //Error
         res.status(500)
         throw new Error('Internal Server Error')
     }
 
     res.status(200).json({
-        status:'Success'
+        status: 'Success'
     })
 
 })
@@ -77,13 +77,13 @@ const createNotification = asyncHandler( async(req,res)=>{
  * GET NOTIFICATIONS
  */
 
-const getNotifications = asyncHandler( async(req,res)=>{
+const getNotifications = asyncHandler(async (req, res) => {
 
     const { email } = req.headers
 
-    const user = await Faculty.findOne({email:email})
+    const user = await Faculty.findOne({ email: email })
 
-    if(!user){
+    if (!user) {
         //Error
         res.status(401)
         throw new Error('User not found')
@@ -91,14 +91,58 @@ const getNotifications = asyncHandler( async(req,res)=>{
 
     const department = user.department
 
-    const notification = await Notification.find({department:department})
+    const notification = await Notification.find({ department: department })
 
     res.status(200).json(notification)
 
 })
 
-module.exports={
+/**
+ * GET FACULTIES LIST
+ */
+const getFacultiesList = asyncHandler(async (req, res) => {
+
+    const { email } = req.headers
+
+    const user = await Faculty.findOne({ email: email })
+
+
+    if (!user) {
+        //Error
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    const department = user.department
+
+    const faculties = await Faculty.find({ department: department })
+        .select('profileImage email department tags')
+        .exec();
+
+    // formatting data
+
+    const formattedFaculties = faculties.map((faculty) => {
+
+        const formattedFaculty = faculty.toObject(); // convert to plain js object
+
+        if (formattedFaculty.tags.includes('inactive')) {
+
+            formattedFaculty.verified = false;
+        }
+        else {
+
+            formattedFaculty.verified = true;
+        }
+
+        return formattedFaculty;
+    });
+
+    res.status(200).json(formattedFaculties);
+})
+
+module.exports = {
     profileImageUpdate,
     createNotification,
-    getNotifications
+    getNotifications,
+    getFacultiesList
 }
