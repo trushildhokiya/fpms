@@ -14,7 +14,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -50,17 +50,51 @@ const Faculty = () => {
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>, option:any) {
-        console.log(option);
-        
-        console.log(data);
-        
-    }
-
-
     const [data, setData] = useState<facultyInterface[]>([])
     const { email } = getDecodedToken()
     const { toast } = useToast()
+
+    function onSubmit(data: z.infer<typeof FormSchema>, option: any) {
+
+
+        const payload = {
+            email: option.email,
+            isCoordinator: data.isCoordinator
+        }
+
+        axios.put('/head/faculties', payload, {
+            headers: {
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then((res) => {
+                if (res.data.status === "Success") {
+                    // toast of success
+                    toast({
+                        title: 'Updated',
+                        description: 'Faculty data updated successfully ',
+                        action: (
+                            <ToastAction altText="Okay">Okay</ToastAction>
+                        ),
+                    })
+                }
+            })
+            .catch((err) => {
+                // toast of error
+                toast({
+                    title: 'Something went wrong',
+                    description: err.response.data.message,
+                    variant: 'destructive',
+                    action: (
+                        <ToastAction altText="Okay">Okay</ToastAction>
+                    ),
+                })
+            })
+
+    }
+
+
+    
 
     useEffect(() => {
 
@@ -172,7 +206,7 @@ const Faculty = () => {
 
                                 <div className="flex justify-end">
                                     <AlertDialogCancel className="mx-2">Cancel</AlertDialogCancel>
-                                    <Button type="submit" className="mx-2 bg-red-800">Submit</Button>
+                                    <AlertDialogAction type="submit" className="mx-2 bg-red-800"> Save </AlertDialogAction>
                                 </div>
                             </form>
 

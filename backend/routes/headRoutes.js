@@ -1,7 +1,7 @@
 const express = require('express')
 const headAuthenticator = require('../middleware/headAuthenticator')
 const { headProfileImageUpload } = require('../middleware/fileUpload')
-const { profileImageUpdate, createNotification, getNotifications, getFacultiesList } = require('../controller/headController')
+const { profileImageUpdate, createNotification, getNotifications, getFacultiesList, toggleFacultyApproval } = require('../controller/headController')
 const router = express.Router()
 
 /**
@@ -232,5 +232,58 @@ router.route('/notifications').get(headAuthenticator,getNotifications)
  */
 
 router.route('/faculties').get(headAuthenticator,getFacultiesList)
+
+/**
+ * @swagger
+ * /head/faculties:
+ *   put:
+ *     summary: Toggle Faculty Approval
+ *     description: Approve or deactivate a faculty member in FPMS.
+ *     tags:
+ *       - Head Of Department
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isCoordinator:
+ *                 type: boolean
+ *                 description: Indicates whether the faculty member is a Research and Development Coordinator.
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The email address of the faculty member.
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for Head Of Department authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Faculty approval status updated successfully. An email will be sent to the faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Indicates the success status.
+ *       400:
+ *         description: Bad Request. User not found.
+ *       401:
+ *         description: Unauthorized. Token is missing or invalid.
+ *       500:
+ *         description: Internal Server Error.
+ */
+
+router.route('/faculties').put(headAuthenticator, toggleFacultyApproval)
+
 
 module.exports = router

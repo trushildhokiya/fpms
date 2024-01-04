@@ -2,10 +2,17 @@ const asyncHandler = require('express-async-handler');
 const Faculty = require('../models/faculty')
 const Notification = require('../models/notification')
 const fs = require('fs');
+const nodemailer = require('nodemailer')
 
 const baseUrl = 'http://localhost:5000';
 
-
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_KEY
+    }
+});
 
 /**
  * UPDATE PROFILE IMAGE
@@ -140,9 +147,90 @@ const getFacultiesList = asyncHandler(async (req, res) => {
     res.status(200).json(formattedFaculties);
 })
 
+
+/**
+ * TOGGLE APPROVAL
+ */
+
+const toggleFacultyApproval = asyncHandler( async(req,res)=>{
+
+    const { isCoordinator, email } = req.body
+
+    const user = await Faculty.findOne({email: email})
+    let message
+
+
+    if(!user){
+        //Error
+        res.status(400)
+        throw new Error('User not found')
+    }
+
+    const verified = user.tags.includes('active')
+
+    if (verified) {
+        // If user is currently verified, remove 'active' and add 'inactive'
+        const index = user.tags.indexOf('active')
+        user.tags.set(index,'inactive')
+
+        message = 'Your account has been deactivated by your Department Head. Please contact your department head in case of any queries. We are sad to see you leave. Rest assured your data is safe with us. '
+
+    } else {
+        // If user is currently not verified, remove 'inactive' and add 'active'
+        const index = user.tags.indexOf('inactive')
+        user.tags.set(index,'active')
+
+        message = '<strong> Congratulations ! </strong> You are now approved by your department Head for using the FPMS software. Login with your credentials and get ready for exciting journey ahead.<br /> Best regards <br /> <strong> TEAM FPMS </strong>'
+
+        if(isCoordinator){
+            user.tags.push('research coordinator')
+
+            message = '<strong> Congratulations ! </strong> You are now approved by your department Head for using the FPMS software and have been appointed as <strong> Research and Development Coordinator </strong> . Login with your credentials and get ready for exciting journey ahead.<br /> Best regards <br /> <strong> TEAM FPMS </strong>'
+        }
+
+    }
+
+    await user.save()
+
+    const mailOptions = {
+
+        from: '"FPMS SERVER 💀" <phantomcoder325@gmail.com>',
+        to: email,
+        subject: "ACCOUNT CREDENTIALS",
+        html: `
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                     <div style="background-color: #ef4444; color: #fff; padding: 10px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 4px;">
+                         🚀 ACCOUNT UPDATE : FPMS
+                    </div>
+                    <div style="margin-top: 20px;">
+                         <p> ${message} <p>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; color: #888;">
+                        &copy; FPMS. All rights reserved. ${new Date().getFullYear()}
+                    </div>
+                    </div>
+    
+            `,
+    }
+
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            res.status(500)
+            throw new Error('Internal Server Error in mailer!')
+        }
+    });
+
+
+    res.status(200).json({
+        status:'Success',
+    })
+})
+
 module.exports = {
     profileImageUpdate,
     createNotification,
     getNotifications,
-    getFacultiesList
+    getFacultiesList,
+    toggleFacultyApproval,
 }
