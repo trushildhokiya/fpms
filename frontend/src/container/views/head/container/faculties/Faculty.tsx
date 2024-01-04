@@ -13,6 +13,23 @@ import { getDecodedToken } from "@/utils/functions/authFunctions";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+} from "@/components/ui/form"
+
+const FormSchema = z.object({
+    isCoordinator: z.boolean().default(false).optional(),
+})
 
 const Faculty = () => {
 
@@ -24,6 +41,20 @@ const Faculty = () => {
         tags: string[],
         verified: boolean
 
+    }
+
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+        defaultValues: {
+            isCoordinator: false,
+        },
+    })
+
+    function onSubmit(data: z.infer<typeof FormSchema>, option:any) {
+        console.log(option);
+        
+        console.log(data);
+        
     }
 
 
@@ -96,6 +127,65 @@ const Faculty = () => {
         )
     }
 
+    const approvalTemplate = (option: any) => {
+
+        return (
+            <>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant='outline' className="border-red-800 text-red-800">Toggle</Button>
+                    </AlertDialogTrigger>
+
+                    <AlertDialogContent>
+
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                By continuing this action. You categorize the requester as the faculty of you department and toggle the account activation for the requester.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <Form {...form}>
+                            <form onSubmit={(e) => form.handleSubmit((data) => onSubmit(data, option))(e)} className="space-y-6">
+                                <FormField
+                                    control={form.control}
+                                    name="isCoordinator"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                            <div className="space-y-1 leading-none">
+                                                <FormLabel>
+                                                    Is the faculty a Research Coordinator
+                                                </FormLabel>
+                                                <FormDescription>
+                                                    Select the checkbox if the faculty is the research coordinator of your department
+                                                </FormDescription>
+                                            </div>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <div className="flex justify-end">
+                                    <AlertDialogCancel className="mx-2">Cancel</AlertDialogCancel>
+                                    <Button type="submit" className="mx-2 bg-red-800">Submit</Button>
+                                </div>
+                            </form>
+
+                        </Form>
+
+                    </AlertDialogContent>
+                </AlertDialog>
+
+            </>
+        )
+    }
+
+
     const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
@@ -127,6 +217,7 @@ const Faculty = () => {
                                         <Column field="department" header="Department"></Column>
                                         <Column field="tags" header="Tags" body={tagsTemplate} filter filterPlaceholder="Select tags"></Column>
                                         <Column field="verified" header="Verified" body={verifiedTemplate} filter filterPlaceholder="Filter by verification (T/F)" dataType="boolean"></Column>
+                                        <Column field='approval' header='Toggle Approval' body={approvalTemplate}></Column>
                                     </DataTable>
                                 </CardContent>
 
