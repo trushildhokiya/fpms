@@ -1,70 +1,294 @@
-import "./navbar.css"
-import { RxAvatar } from "react-icons/rx";
-
-import logo from "../../assets/svg/kjsitLogo.svg"
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Logo from '../../assets/svg/kjsitLogo.svg';
+import { Sling as Hamburger } from 'hamburger-react';
+import { Bell, ChevronDown } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Separator } from '@/components/ui/separator';
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '@/features/user/userSlice';
 
 const FacultyNavbar = () => {
-  return (
-    <div className='nav'>
-        <img src={logo} style={{width:'25rem'}} />
 
-        <div className="dropdown">
-        <button className="dropbtn">Publications</button>
-        <div className="dropdown-content">
-            <a href="#">Link 1</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 2</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 3</a>
-        </div>
-        </div>
+    // HOOKS
+    const [open, setOpen] = useState(false);
+    const user = useSelector((state: any) => state.user);
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-        <div className="dropdown">
-        <button className="dropbtn">Research</button>
-        <div className="dropdown-content">
-            <a href="#">Link 1</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 2</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 3</a>
-        </div>
-        </div>
+    // functions
+    const logoutFaculty: Function = () => {
 
-        <div className="dropdown">
-        <button className="dropbtn">Consultancy</button>
-        <div className="dropdown-content">
-            <a href="#">Link 1</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 2</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 3</a>
-        </div>
-        </div>
+        localStorage.removeItem('token')
+        dispatch(logout())
+        navigate('/auth/login')
+    }
 
-        <div className="dropdown">
-        <button className="dropbtn">Patents</button>
-        <div className="dropdown-content">
-            <a href="#">Link 1</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 2</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 3</a>
-        </div>
-        </div>
+    return (
+        <div>
+            <div className="flex p-2 items-center justify-between">
+                {/* LOGO */}
+                <div>
+                    <Link to="/">
+                        <img
+                            src={Logo}
+                            className="w-28 md:w-44 h-auto"
+                            alt="kjsit-logo"
+                        />
+                    </Link>
+                </div>
 
-        <div className="dropdown" style={{marginLeft:'auto',marginRight:'3.5rem'}}>
-        <button className="dropbtn" style={{width:'5rem',height:'5rem'}}><RxAvatar style={{width:'50px',height:'50px'}} /></button>
-        <div className="dropdown-content">
-            <a href="#">Link 1</a>
-            <hr style={{height:'0.15rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 2</a>
-            <hr style={{height:'0.1rem',backgroundColor:'#a02929',width:'70%',marginLeft:'15%'}}></hr>
-            <a href="#">Link 3</a>
-        </div>
-        </div>
+                {/* LINKS  */}
+                <div className="hidden md:flex mx-4 font-OpenSans font-semibold text-gray-600 items-center">
+                    <div className="mx-5">
+                        <Link to="/faculty">Dashboard</Link>
+                    </div>
+                    <div className="mx-5">Others</div>
+                    <div className="mx-5">
 
-    </div>
-  )
-}
+                        <DropdownMenu>
 
-export default FacultyNavbar
+                            <DropdownMenuTrigger>
+                                <span className="flex items-center">
+                                    Research
+                                    <span>
+                                        <ChevronDown />
+                                    </span>
+                                </span>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent className="w-56">
+
+                                <DropdownMenuLabel>Research and Development</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>Patents</DropdownMenuItem>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>Publications</DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuItem>Article</DropdownMenuItem>
+                                                <DropdownMenuItem>Conference</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Book</DropdownMenuItem>
+                                                <DropdownMenuItem>Chapter in Book</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Others</DropdownMenuItem>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>Projects</DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuItem>Major Research</DropdownMenuItem>
+                                                <DropdownMenuItem>Minor Research</DropdownMenuItem>
+                                                <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Department</DropdownMenuItem>
+                                                <DropdownMenuItem>Institute</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Others</DropdownMenuItem>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                    <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                </DropdownMenuGroup>
+
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <div className="mx-5">
+                        <Link to='/faculty/notifications'>
+                            <Bell />
+                        </Link>
+                    </div>
+                    <div className="mx-5 mr-[2rem]">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Avatar>
+                                    <AvatarImage
+                                        src={user.profileImage ? user.profileImage : ''}
+                                    />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56">
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <Link to='/faculty/profile'>
+                                        <DropdownMenuItem>
+                                            Profile
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <DropdownMenuItem>
+                                        Personal Details
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>My Details</DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuItem>Patent</DropdownMenuItem>
+                                                <DropdownMenuItem>Publication</DropdownMenuItem>
+                                                <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Projects</DropdownMenuItem>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator />
+                                
+                                <DropdownMenuItem onClick={() => { logoutFaculty() }}>Log out</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </div>
+
+                {/* Hamburger Icon  */}
+                <div className="block md:hidden">
+                    <Hamburger
+                        size={20}
+                        direction="left"
+                        duration={0.8}
+                        toggled={open}
+                        toggle={setOpen}
+                    />
+                </div>
+            </div>
+            <div
+                className={`md:hidden ${open ? 'block' : 'hidden'} p-2 mx-3 shadow-xl font-OpenSans text-gray-600 font-semibold`}
+            >
+                <Link to="/hod">
+                    <p className="my-2">Dashboard</p>
+                </Link>
+                <Separator />
+
+                <div className="my-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <span className="flex items-center">
+                                Research
+                                <span>
+                                    <ChevronDown />
+                                </span>
+                            </span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                            <DropdownMenuLabel>Research and Development</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem>Patents</DropdownMenuItem>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>Publications</DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <DropdownMenuItem>Article</DropdownMenuItem>
+                                            <DropdownMenuItem>Conference</DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>Book</DropdownMenuItem>
+                                            <DropdownMenuItem>Chapter in Book</DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>Others</DropdownMenuItem>
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>Projects</DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <DropdownMenuItem>Major Research</DropdownMenuItem>
+                                            <DropdownMenuItem>Minor Research</DropdownMenuItem>
+                                            <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>Department</DropdownMenuItem>
+                                            <DropdownMenuItem>Institute</DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>Others</DropdownMenuItem>
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                                <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <Separator />
+                <div className="">
+                    <p className="my-2">Others</p>
+                </div>
+
+                <Separator />
+                <div className=" my-2">
+                    <Link to='/faculty/notifications'>
+                        <Bell />
+                    </Link>
+                </div>
+
+                <Separator />
+                <div className="my-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <Avatar>
+                                <AvatarImage
+                                    src={user.profileImage ? user.profileImage : ''}
+                                />
+                                <AvatarFallback>TD</AvatarFallback>
+                            </Avatar>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="">
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <Link to='/faculty/profile'>
+                                    <DropdownMenuItem>
+                                        Profile
+                                    </DropdownMenuItem>
+                                </Link>
+                                <DropdownMenuItem>
+                                    Personal Details
+                                </DropdownMenuItem>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>My Details</DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <DropdownMenuItem>Patent</DropdownMenuItem>
+                                            <DropdownMenuItem>Publication</DropdownMenuItem>
+                                            <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>Projects</DropdownMenuItem>
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => { logoutFaculty() }}>Log out</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default FacultyNavbar;
