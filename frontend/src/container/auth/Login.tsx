@@ -69,13 +69,13 @@ const Login = () => {
 
         axios.post('/auth/login', data)
             .then((res) => {
-                
-                localStorage.setItem('token',res.data.token)
 
-                const decodedResponse:authPayloadInterface = jwtDecode(res.data.token)
+                localStorage.setItem('token', res.data.token)
+
+                const decodedResponse: authPayloadInterface = jwtDecode(res.data.token)
                 dispatch(login(decodedResponse))
 
-                switch(decodedResponse.role){
+                switch (decodedResponse.role) {
 
                     case "Admin":
                         navigate('/admin')
@@ -84,20 +84,27 @@ const Login = () => {
                         navigate('/hod')
                         break;
                     case "Faculty":
-                        navigate('/faculty')
-                        break;
+                        if (decodedResponse.tags!.includes('research coordinator')) {
+                            navigate('/hod')
+                            break;
+                        }
+                        else{
+                            navigate('/faculty')
+                            break;
+                        }
+                        
                     default:
                         navigate('/auth/login')
                 }
-                
+
             })
-            .catch((err:any) => {
+            .catch((err: any) => {
                 console.log(err);
-                
+
                 toast({
                     title: "Error Occurred !",
                     description: err.response.data.message,
-                    variant:'destructive',
+                    variant: 'destructive',
                     action: (
                         <ToastAction altText="Ok">Okay</ToastAction>
                     ),

@@ -14,11 +14,18 @@ const FacultyProtectedRoute: React.FC<FacultyProtectedRouteProps> = ({ children 
     return <Navigate to='/auth/login' />;
   } else {
     try {
-      const decryptedData: { role: string } = jwtDecode(token);
+      const decryptedData: { role: string, exp:number } = jwtDecode(token);
 
-      if (decryptedData.role === 'Faculty') {
-        return <>{children}</>;
-      }
+      
+      if (Math.floor(Date.now() / 1000) < decryptedData.exp) {
+
+        if (decryptedData.role === 'Faculty') {
+          return <>{children}</>;
+        }
+
+     }
+
+      
     } catch (error) {
       console.error('Error decoding token:', error);
     }

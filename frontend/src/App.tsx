@@ -28,13 +28,20 @@ import HeadDashboard from './container/views/head/container/dashboard/Dashboard'
 import HeadProfile from '@/container/views/head/container/profile/Profile'
 import Faculty from './container/views/head/container/faculties/Faculty';
 import Notify from './container/views/head/container/notify/Notify';
+import Notifications from './container/views/head/container/notifications/Notifications';
+
+/**
+ * FACULTY IMPORTS
+ */
+import FacultyDashboard from './container/views/faculty/container/dashboard/Dashboard';
 
 /**
  * PROTECTED ROUTES
  */
 import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
 import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
-import Notifications from './container/views/head/container/notifications/Notifications';
+import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute';
+
 import { useEffect } from 'react';
 import { loadUserData } from './utils/functions/reduxFunctions';
 
@@ -61,6 +68,7 @@ function App() {
         <Route path='/hod/users/faculty' element={<HeadProtectedRoute> <Faculty /> </HeadProtectedRoute>} />
         <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
         <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
+        <Route path='/faculty' element={ <FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
         <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>

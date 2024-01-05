@@ -26,8 +26,8 @@ const adminAuthenticator = asyncHandler(async (req, res, next) => {
         }
     } catch (err) {
 
-        res.status(500)
-        throw new Error('Internal Server Error')
+        res.status(res.statusCode ? res.statusCode :500)
+        throw new Error(err.message? err.message :'Internal Server Error')
     }
 });
 

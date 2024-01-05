@@ -14,11 +14,16 @@ const HeadProtectedRoute: React.FC<HeadProtectedRouteProps> = ({ children }) => 
       return <Navigate to='/auth/login' />;
    } else {
       try {
-         const decryptedData: { role: string } = jwtDecode(token);
+         const decryptedData: { role: string, tags: string[], exp: number } = jwtDecode(token);
 
-         if (decryptedData.role === 'Head Of Department') {
-            return <>{children}</>;
+         if (Math.floor(Date.now() / 1000) < decryptedData.exp) {
+
+            if (decryptedData.role === 'Head Of Department' || decryptedData.tags.includes('research coordinator')) {
+               return <>{children}</>;
+            }
+
          }
+
       } catch (error) {
          console.error('Error decoding token:', error);
       }

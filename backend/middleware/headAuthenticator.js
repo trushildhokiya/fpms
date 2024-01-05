@@ -16,19 +16,22 @@ const headAuthenticator = asyncHandler(async (req, res, next) => {
 
         const decodedData = jwtDecode(token);
 
-        if (decodedData.role === 'Head Of Department') {
+
+        if (decodedData.role === 'Head Of Department' || decodedData.tags.includes('research coordinator') ) {
 
             next();
 
-        } else {
+        } 
+        else {
 
             res.status(403)
             throw new Error('Forbidden: Not an Head Of Department')
         }
+
     } catch (err) {
 
-        res.status(500)
-        throw new Error('Internal Server Error')
+        res.status(res.statusCode ? res.statusCode :500)
+        throw new Error(err.message? err.message :'Internal Server Error')
     }
 });
 
