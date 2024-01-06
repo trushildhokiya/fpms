@@ -85,7 +85,7 @@ const Profile = () => {
                 })
             }
         })
-        .catch((err)=>{
+        .catch(()=>{
             
             // toast of error
             toast({

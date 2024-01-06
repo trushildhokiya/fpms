@@ -98,7 +98,7 @@ const AddUser = () => {
     })
 
     // 2. Define a submit handler.
-    function onSubmit(data: z.infer<typeof HeadFormSchema>) {
+    function onSubmit(data: any) {
 
         console.log(data);
 
