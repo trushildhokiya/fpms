@@ -1,9 +1,12 @@
+/**
+ * IMPORTS
+ */
 import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -19,26 +22,41 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { CalendarIcon } from 'lucide-react'
+import { AlertCircle, CalendarIcon } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 type Props = {}
 
+/**
+ * SCHEMAS 
+ */
 const transactionSchema = z.object({
-    purchaseOrderNo: z.string().min(1).max(100),
+    purchaseOrderNumber: z.string().min(1).max(100),
     purchaseOrderDate: z.date(),
-    purchaseInvoice: z
-        .any()
-        .refine((file) => file?.size <= 2 * 1024 * 1024, `Max file size is 2MB.`),
+    purchaseInvoiceNumber: z.string().min(1).max(100),
     purchaseInvoiceDate: z.date(),
     bankName: z.string().min(1).max(100),
     branchName: z.string().min(1).max(100),
     amountRecieved: z.coerce.number().nonnegative(),
     remarks: z.string().optional(),
 })
+
+const ACCEPTED_FILE_TYPES = [
+    'application/pdf'
+];
+const pdfFileSchema = z
+    .instanceof(File)
+    .refine((file) => {
+        return !file || file.size <= 5 * 1024 * 1024;
+    }, `File size must be less than 5MB`)
+    .refine((file) => {
+        return ACCEPTED_FILE_TYPES.includes(file.type);
+    }, 'File must be a pdf'
+    )
 
 const formSchema = z.object({
     projectTitle: z.string().min(2, {
@@ -84,6 +102,11 @@ const formSchema = z.object({
     description: z.string().min(1).max(1000),
     transactionDetails: z.array(transactionSchema).nonempty(),
 
+    sanctionedOrder: pdfFileSchema,
+    transactionProof: pdfFileSchema,
+    completionCertificate: pdfFileSchema,
+    supportingDocuments: pdfFileSchema,
+
 }).refine((data) => data.endDate > data.startDate, {
     message: "End date must be greater than start date",
     path: ["endDate"], // Field to which the error will be attached
@@ -92,194 +115,8 @@ const formSchema = z.object({
 const ConsultancyForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-    const [transactionCount, setTransactionCount] = useState(0)
 
     // functions
-    const handleTransactionClick = (event: any) => {
-
-        setTransactionCount(transactionCount + 1);
-        event.preventDefault();
-        console.log(transactionCount)
-    }
-
-    const renderTransactionBlock = () => {
-
-        return (
-            <>
-                <div className="">
-                    <Separator className='my-8 bg-red-800' />
-                    <div className="grid md:grid-cols-2 gap-6 ">
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Purchase Order Number </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="sample" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="endDate"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Purchase Order Date</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="endDate"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Purchase Invoice Date</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Purchase Invoice </FormLabel>
-                                    <FormControl>
-                                        <Input type='file' placeholder="sample" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Bank Name </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="sample" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Branch Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="sample" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                    </div>
-                    <div className="">
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Amount Recieved</FormLabel>
-                                    <FormControl>
-                                        <Input type='number' placeholder="sample" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Remarks</FormLabel>
-                                    <FormControl>
-                                        <Textarea placeholder="sample" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                    <Separator className='my-8 bg-red-800' />
-                </div>
-            </>
-        )
-    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -298,15 +135,190 @@ const ConsultancyForm = (props: Props) => {
             areaOfExpertise: "",
             description: "",
             transactionDetails: undefined,
+            sanctionedOrder: new File([], ''),
+            transactionProof: new File([], ''),
+            completionCertificate: new File([], ''),
+            supportingDocuments: new File([], ''),
         },
     })
 
-    // 2. Define a submit handler.
+    const { control, handleSubmit, formState: { errors } } = form;
+    const { fields, append } = useFieldArray({
+        control,
+        name: "transactionDetails"
+    });
+
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+      
         console.log(values)
     }
+
+    const handleTransactionClick = (event:any) => {
+        append({
+            purchaseOrderNumber: '',
+            purchaseOrderDate: new Date(),
+            purchaseInvoiceNumber: '',
+            purchaseInvoiceDate: new Date(),
+            bankName: '',
+            branchName: '',
+            amountRecieved: 0,
+            remarks: '',
+        });
+
+        event.preventDefault()
+    };
+
+    const renderTransactionBlock = (index: number) => (
+        <div key={index}>
+            <Separator className='my-8 bg-red-800' />
+            <div className="grid md:grid-cols-2 gap-6">
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseOrderNumber`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Purchase Order Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="sample" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseOrderDate`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Purchase Order Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                            variant={"outline"}
+                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                        >
+                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseInvoiceNumber`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Purchase Invoice Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="sample" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseInvoiceDate`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Purchase Invoice Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                            variant={"outline"}
+                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                        >
+                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.bankName`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Bank Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="sample" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.branchName`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Branch Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="sample" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <div className="">
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.amountRecieved`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Amount Received</FormLabel>
+                            <FormControl>
+                                <Input type='number' placeholder="sample" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.remarks`}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Remarks</FormLabel>
+                            <FormControl>
+                                <Textarea placeholder="sample" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <Separator className='my-8 bg-red-800' />
+        </div>
+    );
+
 
     return (
         <div>
@@ -598,15 +610,99 @@ const ConsultancyForm = (props: Props) => {
                             </h2>
 
                             <Button size={'lg'} onClick={handleTransactionClick}> Add Transaction </Button>
-                            
-                            {renderTransactionBlock()}
-                            {renderTransactionBlock()}
-                            
+
+                            {fields.map((field, index) => (
+                                renderTransactionBlock(index)
+                            ))}
+
                             {/* Proof Upload */}
                             <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Proof Uploads
                             </h2>
+                            <div>
+                                <Alert variant="default" className='bg-amber-500'>
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle>NOTE</AlertTitle>
+                                    <AlertDescription>
+                                        All proof for respective uploads must be in a single pdf file of maximum size 5MB.
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
 
+                            <div className="grid md:grid-cols-2 gap-6">
+
+                                <FormField
+                                    control={form.control}
+                                    name="sanctionedOrder"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Sanctioned Order </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf, .docx"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="transactionProof"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Transaction Proof </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf, .docx"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="completionCertificate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Completion Certificate </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf, .docx"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="supportingDocuments"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Supporting Documents </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf, .docx"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
 
                             <Button type="submit">Submit</Button>
                         </form>
