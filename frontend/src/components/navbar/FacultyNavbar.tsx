@@ -111,7 +111,11 @@ const FacultyNavbar = () => {
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
-                                    <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to="/common/forms/consultancy">
+                                            Consultancy
+                                        </Link>
+                                    </DropdownMenuItem>
                                 </DropdownMenuGroup>
 
                             </DropdownMenuContent>
@@ -158,7 +162,7 @@ const FacultyNavbar = () => {
                                     </DropdownMenuSub>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                
+
                                 <DropdownMenuItem onClick={() => { logoutFaculty() }}>Log out</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
