@@ -22,11 +22,22 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { AlertCircle, CalendarIcon } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import {
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+    CommandShortcut,
+} from "@/components/ui/command"
+import { useState, useEffect } from 'react'
 
 type Props = {}
 
@@ -41,8 +52,8 @@ const transactionSchema = z.object({
     bankName: z.string().min(1).max(100),
     branchName: z.string().min(1).max(100),
     amountRecieved: z.coerce.number().nonnegative(),
-    remarks: z.string().max(1000,{
-        message:"Remarks must not exceed 1000 characters"
+    remarks: z.string().max(1000, {
+        message: "Remarks must not exceed 1000 characters"
     }).optional(),
 })
 
@@ -117,6 +128,22 @@ const ConsultancyForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
+    // command
+    const [open, setOpen] = useState(false)
+
+    useEffect(() => {
+        const down = (e: KeyboardEvent) => {
+            if (e.key === "d" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                setOpen((open) => !open)
+            }
+        }
+
+        document.addEventListener("keydown", down)
+        return () => document.removeEventListener("keydown", down)
+    }, [])
+
+
     // functions
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -180,7 +207,7 @@ const ConsultancyForm = (props: Props) => {
                         <FormItem>
                             <FormLabel className='text-grey-800'>Purchase Order Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="Purchase Order Number"  autoComplete='off' {...field}  />
+                                <Input placeholder="Purchase Order Number" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -268,7 +295,7 @@ const ConsultancyForm = (props: Props) => {
                         <FormItem>
                             <FormLabel className='text-grey-800'>Bank Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="Bank Name"  autoComplete='off' {...field} />
+                                <Input placeholder="Bank Name" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -281,7 +308,7 @@ const ConsultancyForm = (props: Props) => {
                         <FormItem>
                             <FormLabel className='text-grey-800'>Branch Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="Branch Name"  autoComplete='off' {...field} />
+                                <Input placeholder="Branch Name" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -309,7 +336,7 @@ const ConsultancyForm = (props: Props) => {
                         <FormItem className='my-4'>
                             <FormLabel className='text-grey-800'>Remarks</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Remarks ( if any ) "  autoComplete='off' {...field} />
+                                <Textarea placeholder="Remarks ( if any ) " autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -337,8 +364,30 @@ const ConsultancyForm = (props: Props) => {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
+                            {/* COMMAND DIALOG  */}
+                            <CommandDialog open={open} onOpenChange={setOpen}>
+                                <CommandInput placeholder="Type a command or search..." />
+                                <CommandList>
+                                    <CommandEmpty>No results found.</CommandEmpty>
+                                    <CommandGroup heading="Suggestions">
+                                        <CommandItem>
+                                            <BookUser className="mr-2 h-4 w-4" />
+                                            <span><a href='#basicDetails' onClick={()=>setOpen(false)}>Basic Details</a></span>
+                                        </CommandItem>
+                                        <CommandItem>
+                                            <Receipt className="mr-2 h-4 w-4" />
+                                            <span><a href='#transactionDetails' onClick={()=>setOpen(false)}>Transaction Details</a></span>
+                                        </CommandItem>
+                                        <CommandItem>
+                                            <FileArchive className="mr-2 h-4 w-4" />
+                                            <span><a href='#proofUpload' onClick={()=>setOpen(false)}>Proof Upload</a></span>
+                                        </CommandItem>
+                                    </CommandGroup>
+                                </CommandList>
+                            </CommandDialog>
+
                             {/* BASIC DETAILS */}
-                            <h2 className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                            <h2 id='basicDetails' className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Basic Details
                             </h2>
 
@@ -406,7 +455,7 @@ const ConsultancyForm = (props: Props) => {
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Funding Agency</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="funding Agency " {...field}  autoComplete='off' />
+                                                <Input type='text' placeholder="funding Agency " {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -573,7 +622,7 @@ const ConsultancyForm = (props: Props) => {
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Domain </FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="eg: Neuro Science"  autoComplete='off' {...field} />
+                                                <Input type='text' placeholder="eg: Neuro Science" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -591,7 +640,7 @@ const ConsultancyForm = (props: Props) => {
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Area of Expertise </FormLabel>
                                             <FormControl>
-                                                <Input type='text'  autoComplete='off' placeholder="eg: Human Psychology" {...field} />
+                                                <Input type='text' autoComplete='off' placeholder="eg: Human Psychology" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -605,7 +654,7 @@ const ConsultancyForm = (props: Props) => {
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Description </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="description must not exceed 1000 characters"  autoComplete='off' {...field} />
+                                                <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -617,7 +666,7 @@ const ConsultancyForm = (props: Props) => {
                             <Separator className='my-5 bg-red-800' />
 
                             {/* Transaction DETAILS */}
-                            <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                            <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500' id='transactionDetails'>
                                 Transaction Details
                             </h2>
 
@@ -636,7 +685,7 @@ const ConsultancyForm = (props: Props) => {
                             ))}
 
                             {/* Proof Upload */}
-                            <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                            <h2 id='proofUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Proof Uploads
                             </h2>
                             <div>
