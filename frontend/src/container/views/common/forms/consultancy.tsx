@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils'
 import { AlertCircle, CalendarIcon } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
-import { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
@@ -42,7 +41,9 @@ const transactionSchema = z.object({
     bankName: z.string().min(1).max(100),
     branchName: z.string().min(1).max(100),
     amountRecieved: z.coerce.number().nonnegative(),
-    remarks: z.string().optional(),
+    remarks: z.string().max(1000,{
+        message:"Remarks must not exceed 1000 characters"
+    }).optional(),
 })
 
 const ACCEPTED_FILE_TYPES = [
@@ -72,7 +73,7 @@ const formSchema = z.object({
     }),
 
     coInvestigators: z.string({
-        invalid_type_error: "English"
+        invalid_type_error: "Required fields must be filled !"
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
     fundingAgency: z.string().min(2, {
@@ -82,7 +83,7 @@ const formSchema = z.object({
     }),
 
     nationalInternational: z.string().min(1, {
-        message: "This field must be marked"
+        message: "Funding Agency type required!"
     }),
 
     budgetAmount: z.coerce.number().nonnegative(),
@@ -93,9 +94,9 @@ const formSchema = z.object({
 
     totalGrantRecieved: z.coerce.number().nonnegative(),
     domain: z.string().min(1, {
-        message: "Enter required domain!"
+        message: "Domain is required!"
     }).max(100, {
-        message: "Domain must be maximum of 100 characters"
+        message: "Domain must not exceed maximum of 100 characters"
     }),
 
     areaOfExpertise: z.string().min(1).max(100),
@@ -149,11 +150,11 @@ const ConsultancyForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-      
+
         console.log(values)
     }
 
-    const handleTransactionClick = (event:any) => {
+    const handleTransactionClick = (event: any) => {
         append({
             purchaseOrderNumber: '',
             purchaseOrderDate: new Date(),
@@ -177,9 +178,9 @@ const ConsultancyForm = (props: Props) => {
                     name={`transactionDetails.${index}.purchaseOrderNumber`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Purchase Order Number</FormLabel>
+                            <FormLabel className='text-grey-800'>Purchase Order Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="sample" {...field} />
+                                <Input placeholder="Purchase Order Number"  autoComplete='off' {...field}  />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -190,7 +191,7 @@ const ConsultancyForm = (props: Props) => {
                     name={`transactionDetails.${index}.purchaseOrderDate`}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>Purchase Order Date</FormLabel>
+                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <FormControl>
@@ -221,9 +222,9 @@ const ConsultancyForm = (props: Props) => {
                     name={`transactionDetails.${index}.purchaseInvoiceNumber`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Purchase Invoice Number</FormLabel>
+                            <FormLabel className='text-grey-800'>Purchase Invoice Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="sample" {...field} />
+                                <Input placeholder="Purchase Invoice number" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -234,7 +235,7 @@ const ConsultancyForm = (props: Props) => {
                     name={`transactionDetails.${index}.purchaseInvoiceDate`}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>Purchase Invoice Date</FormLabel>
+                            <FormLabel className='text-grey-800'>Purchase Invoice Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <FormControl>
@@ -265,9 +266,9 @@ const ConsultancyForm = (props: Props) => {
                     name={`transactionDetails.${index}.bankName`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Bank Name</FormLabel>
+                            <FormLabel className='text-grey-800'>Bank Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="sample" {...field} />
+                                <Input placeholder="Bank Name"  autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -278,9 +279,9 @@ const ConsultancyForm = (props: Props) => {
                     name={`transactionDetails.${index}.branchName`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Branch Name</FormLabel>
+                            <FormLabel className='text-grey-800'>Branch Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="sample" {...field} />
+                                <Input placeholder="Branch Name"  autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -292,10 +293,10 @@ const ConsultancyForm = (props: Props) => {
                     control={control}
                     name={`transactionDetails.${index}.amountRecieved`}
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Amount Received</FormLabel>
+                        <FormItem className='my-4'>
+                            <FormLabel className='text-grey-800'>Amount Received</FormLabel>
                             <FormControl>
-                                <Input type='number' placeholder="sample" {...field} />
+                                <Input type='number' placeholder="0" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -305,10 +306,10 @@ const ConsultancyForm = (props: Props) => {
                     control={control}
                     name={`transactionDetails.${index}.remarks`}
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Remarks</FormLabel>
+                        <FormItem className='my-4'>
+                            <FormLabel className='text-grey-800'>Remarks</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="sample" {...field} />
+                                <Textarea placeholder="Remarks ( if any ) "  autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -340,15 +341,24 @@ const ConsultancyForm = (props: Props) => {
                             <h2 className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Basic Details
                             </h2>
+
+                            <Alert className='bg-sky-500'>
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>NOTE</AlertTitle>
+                                <AlertDescription>
+                                    Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
+                                </AlertDescription>
+                            </Alert>
+
                             <div className="">
                                 <FormField
                                     control={form.control}
                                     name="projectTitle"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Project Title</FormLabel>
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Project Title</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="shadcn" {...field} autoComplete='off' />
+                                                <Input placeholder="project Title" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -359,10 +369,10 @@ const ConsultancyForm = (props: Props) => {
                                     control={form.control}
                                     name="principalInvestigator"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Principal Investigator</FormLabel>
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Principal Investigator</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="shadcn" {...field} autoComplete='off' />
+                                                <Input placeholder="principal Investigator" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -374,9 +384,9 @@ const ConsultancyForm = (props: Props) => {
                                     name="coInvestigators"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Co-Investigators</FormLabel>
+                                            <FormLabel className='text-gray-800'>Co-Investigators</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="shadcn" {...field} autoComplete='off' />
+                                                <Textarea placeholder="eg: John Smith, David Fawling" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
@@ -394,9 +404,9 @@ const ConsultancyForm = (props: Props) => {
                                     name="fundingAgency"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Funding Agency</FormLabel>
+                                            <FormLabel className='text-gray-800'>Funding Agency</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="shadcn" {...field} />
+                                                <Input type='text' placeholder="funding Agency " {...field}  autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -408,7 +418,7 @@ const ConsultancyForm = (props: Props) => {
                                     name="nationalInternational"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Funding Agency Type</FormLabel>
+                                            <FormLabel className='text-gray-800'>Funding Agency Type</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -430,7 +440,7 @@ const ConsultancyForm = (props: Props) => {
                                     name="budgetAmount"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Budget Amount</FormLabel>
+                                            <FormLabel className='text-gray-800'>Budget Amount</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Budget Amount" autoComplete='off' {...field} />
                                             </FormControl>
@@ -444,7 +454,7 @@ const ConsultancyForm = (props: Props) => {
                                     name="sanctionedAmount"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Grant Sanctioned Amount</FormLabel>
+                                            <FormLabel className='text-gray-800'>Grant Sanctioned Amount</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Sanctioned Amount" autoComplete='off' {...field} />
                                             </FormControl>
@@ -459,7 +469,7 @@ const ConsultancyForm = (props: Props) => {
                                     name="startDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>Start Date</FormLabel>
+                                            <FormLabel className='text-gray-800'>Start Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -505,7 +515,7 @@ const ConsultancyForm = (props: Props) => {
                                     name="endDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>End Date</FormLabel>
+                                            <FormLabel className='text-gray-800'>End Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -547,7 +557,7 @@ const ConsultancyForm = (props: Props) => {
                                     name="totalGrantRecieved"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Total Grant Recieved </FormLabel>
+                                            <FormLabel className='text-gray-800'>Total Grant Recieved </FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Total Grant Recieved" autoComplete='off' {...field} />
                                             </FormControl>
@@ -561,9 +571,9 @@ const ConsultancyForm = (props: Props) => {
                                     name="domain"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Domain </FormLabel>
+                                            <FormLabel className='text-gray-800'>Domain </FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="shadcn" {...field} />
+                                                <Input type='text' placeholder="eg: Neuro Science"  autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -579,9 +589,9 @@ const ConsultancyForm = (props: Props) => {
                                     name="areaOfExpertise"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel>Area of Expertise </FormLabel>
+                                            <FormLabel className='text-gray-800'>Area of Expertise </FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="shadcn" {...field} />
+                                                <Input type='text'  autoComplete='off' placeholder="eg: Human Psychology" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -593,9 +603,9 @@ const ConsultancyForm = (props: Props) => {
                                     name="description"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Description </FormLabel>
+                                            <FormLabel className='text-gray-800'>Description </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="description max 1000 chars" {...field} />
+                                                <Textarea placeholder="description must not exceed 1000 characters"  autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -604,12 +614,22 @@ const ConsultancyForm = (props: Props) => {
 
                             </div>
 
+                            <Separator className='my-5 bg-red-800' />
+
                             {/* Transaction DETAILS */}
                             <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Transaction Details
                             </h2>
 
-                            <Button size={'lg'} onClick={handleTransactionClick}> Add Transaction </Button>
+                            <Alert className='bg-green-500'>
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>NOTE</AlertTitle>
+                                <AlertDescription>
+                                    Click the Add Transaction button to enter a new transaction . Please take care that the enetered amount is not greater than the amount you have been sanctioned. The proofs for all the transaction must be attached at the end of this form.
+                                </AlertDescription>
+                            </Alert>
+
+                            <Button size={'lg'} onClick={handleTransactionClick} className='text-black hover:bg-emerald-600 bg-emerald-500'> Add Transaction </Button>
 
                             {fields.map((field, index) => (
                                 renderTransactionBlock(index)
@@ -636,10 +656,10 @@ const ConsultancyForm = (props: Props) => {
                                     name="sanctionedOrder"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Sanctioned Order </FormLabel>
+                                            <FormLabel className='text-gray-800'>Sanctioned Order </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    accept=".pdf, .docx"
+                                                    accept=".pdf"
                                                     type="file"
                                                     onChange={(e) => field.onChange(e.target.files?.[0])}
                                                 />
@@ -654,10 +674,10 @@ const ConsultancyForm = (props: Props) => {
                                     name="transactionProof"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Transaction Proof </FormLabel>
+                                            <FormLabel className='text-gray-800'>Transaction Proof </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    accept=".pdf, .docx"
+                                                    accept=".pdf"
                                                     type="file"
                                                     onChange={(e) => field.onChange(e.target.files?.[0])}
                                                 />
@@ -672,10 +692,10 @@ const ConsultancyForm = (props: Props) => {
                                     name="completionCertificate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Completion Certificate </FormLabel>
+                                            <FormLabel className='text-gray-800'>Completion Certificate </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    accept=".pdf, .docx"
+                                                    accept=".pdf"
                                                     type="file"
                                                     onChange={(e) => field.onChange(e.target.files?.[0])}
                                                 />
@@ -690,10 +710,10 @@ const ConsultancyForm = (props: Props) => {
                                     name="supportingDocuments"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Supporting Documents </FormLabel>
+                                            <FormLabel className='text-gray-800'>Supporting Documents </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    accept=".pdf, .docx"
+                                                    accept=".pdf"
                                                     type="file"
                                                     onChange={(e) => field.onChange(e.target.files?.[0])}
                                                 />
@@ -704,7 +724,7 @@ const ConsultancyForm = (props: Props) => {
                                 />
                             </div>
 
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" className='bg-red-800 hover:bg-red-700'>Submit</Button>
                         </form>
                     </Form>
                 </div>
