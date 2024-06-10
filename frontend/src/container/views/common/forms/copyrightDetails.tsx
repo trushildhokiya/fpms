@@ -258,7 +258,7 @@ const CopyrightDetails = (props: Props) => {
                                     name="nationalInternational"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Funding Agency Type</FormLabel>
+                                            <FormLabel className='text-gray-800'>Copyright Type</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
