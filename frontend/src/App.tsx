@@ -15,6 +15,12 @@ import PageNotFound from './utils/pages/PageNotFound';
 import Loader from './utils/pages/Loader';
 
 /**
+ * SUPER ADMIN IMPORTS
+ */
+
+const SuperAdminDashboard = lazy(() => import('./container/views/superadmin/container/dashboard/dashboard'));
+
+/**
  * ADMIN IMPORTS
  */
 const Dashboard = lazy(() => import('./container/views/admin/container/dashboard/Dashboard'));
@@ -53,7 +59,6 @@ import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
 import ConsultancyForm from './container/views/common/forms/consultancy';
 import CopyrightDetails from './container/views/common/forms/copyrightDetails';
 import MajorMinorProject from './container/views/common/forms/majorMinorProject';
-import JournelPublication from '@/container/views/common/forms/journelPublication'
 
 function App() {
 
@@ -69,6 +74,7 @@ function App() {
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
           <Route path='/about' element={<About />} />
+          <Route path='/superadmin' element={<SuperAdminProtectedRoute> <SuperAdminDashboard /> </SuperAdminProtectedRoute>} />
           <Route path='/admin' element={<AdminProtectedRoute> <Dashboard /> </AdminProtectedRoute>} />
           <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />

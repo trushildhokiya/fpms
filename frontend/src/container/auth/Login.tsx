@@ -76,7 +76,9 @@ const Login = () => {
                 dispatch(login(decodedResponse))
 
                 switch (decodedResponse.role) {
-
+                    case "Super Admin":
+                        navigate('/superadmin')
+                        break;
                     case "Admin":
                         navigate('/admin')
                         break;
@@ -88,11 +90,11 @@ const Login = () => {
                             navigate('/hod')
                             break;
                         }
-                        else{
+                        else {
                             navigate('/faculty')
                             break;
                         }
-                        
+
                     default:
                         navigate('/auth/login')
                 }
@@ -159,6 +161,7 @@ const Login = () => {
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
+                                                        <SelectItem value="Super Admin">Super Admin</SelectItem>
                                                         <SelectItem value="Admin">Admin</SelectItem>
                                                         <SelectItem value="Head Of Department">Head Of Department</SelectItem>
                                                         <SelectItem value="Faculty">Faculty</SelectItem>

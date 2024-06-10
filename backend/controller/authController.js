@@ -5,6 +5,7 @@ const Faculty = require('../models/faculty')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require("nodemailer")
+const SuperAdmin = require('../models/superadmin')
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -95,7 +96,28 @@ const loginUsers = asyncHandler(async (req, res) => {
 
     let user
 
-    if (role === 'Admin') {
+    if (role === 'Super Admin') {
+
+        user = await SuperAdmin.findOne({ email: email })
+
+        if (!user) {
+
+            res.status(400)
+            throw new Error("User not found")
+        }
+        else {
+
+            const validUser = await bcrypt.compare(password, user.password)
+
+            if (!validUser) {
+
+                res.status(400)
+                throw new Error('Invalid credentials')
+            }
+        }
+
+    }
+    else if (role === 'Admin') {
 
         user = await Admin.findOne({ email: email })
 
