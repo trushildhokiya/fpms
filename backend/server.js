@@ -13,6 +13,7 @@ const headRoutes = require('./routes/headRoutes')
 const errorHandler = require('./middleware/errorHandler')
 const Admin = require('./models/admin')
 const bcrypt = require('bcrypt')
+const SuperAdmin = require('./models/superadmin')
 /**
  * CONSTANTS
  */
@@ -88,6 +89,8 @@ app.listen(PORT, async () => {
 
     try {
         const admin = await Admin.findOne({ email: 'fpms.tech@somaiya.edu' });
+        const superadmin = await SuperAdmin.findOne({ email: 'sadmin.fpms@somaiya.edu' });
+
 
         if (!admin) {
             const createdAdmin = await Admin.create({
@@ -101,6 +104,19 @@ app.listen(PORT, async () => {
         } else {
             console.log('Admin already exists');
         }
+
+        if (!superadmin) {
+            const createdAdmin = await SuperAdmin.create({
+                email:'sadmin.fpms@somaiya.edu',
+                password: await bcrypt.hash('Sadmin@123', 10),
+                profileImage: 'https://w0.peakpx.com/wallpaper/582/516/HD-wallpaper-linux-programmer-pixel-art-linux-computer-hacker-pixel-8-bit.jpg'
+            })
+
+            console.log('Super Admin created successfully', createdAdmin);
+        } else {
+            console.log('Super Admin already exists');
+        }
+
     } catch (err) {
         console.error(err);
     }
