@@ -52,6 +52,7 @@ import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute'
 import { useEffect } from 'react';
 import { loadUserData } from './utils/functions/reduxFunctions';
 import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
+import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
 
 /**
  * FORM ROUTES
