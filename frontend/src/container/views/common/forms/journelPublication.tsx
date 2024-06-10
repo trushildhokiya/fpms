@@ -191,7 +191,7 @@ const JournelPublication: React.FC = (props: Props) => {
 
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
                     <span className="border-b-4 border-red-800 break-words ">
-                        CONSULTANCY <span className='hidden sm:inline-block'>PROJECTS</span>
+                        JOURNEL <span className='hidden sm:inline-block'>PUBLICATION</span>
                     </span>
                 </h1>
 
@@ -253,7 +253,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="authors"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=' my-4'>
                                             <FormLabel className='text-gray-800'>Authors</FormLabel>
                                             <FormControl>
                                                 <Textarea placeholder="eg: John Smith, David Fawling" {...field} autoComplete='off' />
@@ -330,7 +330,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="ISSNnumber"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=' my-4'>
                                             <FormLabel className='text-gray-800'>ISSN / ISBN Number</FormLabel>
                                             <FormControl>
                                                 <Input type='text' placeholder="ISSN / ISBN Number" autoComplete='off' {...field} />
@@ -344,7 +344,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="impactFactor"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=' my-4'>
                                             <FormLabel className='text-gray-800'>Impact Factor</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="impactFactor" autoComplete='off' {...field} />
@@ -403,7 +403,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="journelPageNumberFrom"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=' my-4'>
                                             <FormLabel className=' text-gray-800'>Journel Page From</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder='Journel Page Number' autoComplete='off' {...field} />
@@ -416,7 +416,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="journelPageNumberTo"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=' my-4'>
                                             <FormLabel className=' text-gray-800'>Journel Page To</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder='Journel Page Number' autoComplete='off' {...field} />
@@ -493,7 +493,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        Document must be in a single pdf file of maximum size 50MB.
+                                        Documents must be in a single pdf file of maximum size 50MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>

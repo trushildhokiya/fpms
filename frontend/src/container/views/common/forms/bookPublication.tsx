@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt, Underline } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -59,18 +59,18 @@ const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
 
-const pdfFileSchemaForPaper = z
+const pdfFileSchemaForProof = z
     .instanceof(File)
     .refine((file) => {
-        return !file || file.size <= 50 * 1024 * 1024;
+        return !file || file.size <= 5 * 1024 * 1024;
     }, `File Size must be less than 50 mb`)
     .refine((file) => {
         return ACCEPTED_FILE_TYPES.includes(file.type);
-    }, `File Type must be of pdf`   
+    }, `File Type must be of pdf`
     )
 
 const formSchema = z.object({
-    researchPaperTitle: z.string().min(2, {
+    bookTitle: z.string().min(2, {
         message: "Research Paper Title required!"
     }).max(100, {
         message: "Research Paper Title must not exceed 100 characters"
@@ -80,7 +80,7 @@ const formSchema = z.object({
         invalid_type_error: "Authors Name Required!"
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
-    journelTitle: z.string().min(2, {
+    publisherName: z.string().min(2, {
         message: "Journel Title Title required!"
     }).max(100, {
         message: "Journel Title Title must not exceed 100 characters"
@@ -114,12 +114,20 @@ const formSchema = z.object({
     }),
 
     indexing: z.string().min(2, {
-        message: "Indexing Required!"
+        message: "Indexing Required"
     }).max(100, {
         message: "Indexing count exceeded"
     }),
 
-    fullPaperLink: z.string().min(10, {
+    intendedAuidence: z.string().min(2, {
+        message: "Field Required!"
+    }).max(100, {
+        message: "Field count exceeded"
+    }),
+
+    description: z.string().min(1).max(1000),
+
+    bookLink: z.string().min(10, {
         message: "Paper Link Required!"
     }).max(500, {
         message: "Paper Link exceeded"
@@ -127,8 +135,7 @@ const formSchema = z.object({
 
     citationCount: z.coerce.number().nonnegative(),
 
-    paperUpload: pdfFileSchemaForPaper,
-    certificateUpload: pdfFileSchemaForPaper,
+    proofUpload: pdfFileSchemaForProof,
 
 });
 
@@ -157,7 +164,8 @@ const BookPublication: React.FC = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            researchPaperTitle: "",
+            bookTitle: "",
+            publisherName: "",
             authors: [''],
             authorsAffiliation: [''],
             nationalInternational: "",
@@ -167,11 +175,12 @@ const BookPublication: React.FC = (props: Props) => {
             journelPageNumberTo: undefined,
             dateOfPublication: undefined,
             digitalObjectIdentifier: undefined,
+            intendedAuidence: undefined,
+            description: "",
             indexing: undefined,
-            fullPaperLink: undefined,
+            bookLink: undefined,
             citationCount: undefined,
-            paperUpload: new File([], ''),
-            certificateUpload: new File([], ''),
+            proofUpload: new File([], ''),
         },
     })
 
@@ -191,7 +200,7 @@ const BookPublication: React.FC = (props: Props) => {
 
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
                     <span className="border-b-4 border-red-800 break-words ">
-                        CONSULTANCY <span className='hidden sm:inline-block'>PROJECTS</span>
+                        BOOK <span className='hidden sm:inline-block'>PUBLICATIONS</span>
                     </span>
                 </h1>
 
@@ -237,12 +246,12 @@ const BookPublication: React.FC = (props: Props) => {
                             <div>
                                 <FormField
                                     control={form.control}
-                                    name="researchPaperTitle"
+                                    name="bookTitle"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Research Paper Title</FormLabel>
+                                            <FormLabel className='text-gray-800'>Book Title</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="research paper title" {...field} autoComplete='off' />
+                                                <Input placeholder="Book title" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -289,12 +298,12 @@ const BookPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="journelTitle"
+                                    name="publisherName"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Journey Paper Title</FormLabel>
+                                            <FormLabel className='text-gray-800'>Publisher Title</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Journey Paper title" {...field} autoComplete='off' />
+                                                <Input placeholder="Publisher title" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -347,7 +356,7 @@ const BookPublication: React.FC = (props: Props) => {
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Impact Factor</FormLabel>
                                             <FormControl>
-                                                <Input type='number' placeholder="impactFactor" autoComplete='off' {...field} />
+                                                <Input type='number' placeholder="Impact Factor" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -401,32 +410,6 @@ const BookPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="journelPageNumberFrom"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className=' text-gray-800'>Journel Page From</FormLabel>
-                                            <FormControl>
-                                                <Input type='number' placeholder='Journel Page Number' autoComplete='off' {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="journelPageNumberTo"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className=' text-gray-800'>Journel Page To</FormLabel>
-                                            <FormControl>
-                                                <Input type='number' placeholder='Journel Page Number' autoComplete='off' {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
                                     name="digitalObjectIdentifier"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
@@ -441,9 +424,40 @@ const BookPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
+                                    name="intendedAuidence"
+                                    render={({ field }) => (
+                                        <FormItem className=' my-4'>
+                                            <FormLabel className=' text-gray-800'>Intended Auidence</FormLabel>
+                                            <FormControl>
+                                                <Input type='text' placeholder='Engineering Students , Researchers, others' {...field} autoComplete='off' />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className='text-gray-800'>Description </FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className=' grid md:grid-cols-1 grid-cols-1 gap-6'>
+
+                                <FormField
+                                    control={form.control}
                                     name="indexing"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=' my-4'>
                                             <FormLabel className='text-gray-800'>Indexing</FormLabel>
                                             <FormControl>
                                                 <Input type='text' placeholder="Scopus, Web of Science, UGC CARE-I, UGC CARE-II, others." {...field} autoComplete='off' />
@@ -452,15 +466,18 @@ const BookPublication: React.FC = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
+                            </div>
+
+                            <div className=' grid md:grid-cols-2 grid-cols-2 gap-6'>
 
                                 <FormField
                                     control={form.control}
-                                    name="fullPaperLink"
+                                    name="bookLink"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Full Paper Link</FormLabel>
+                                            <FormLabel className='text-gray-800'>Book Link</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="Full Paper Link" {...field} autoComplete='off' />
+                                                <Input type='text' placeholder="Book Link" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -480,50 +497,32 @@ const BookPublication: React.FC = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-                            </div>
 
+                            </div>
                             <Separator className='my-5 bg-red-800' />
 
                             {/* Document Upload */}
                             <h2 id='paperUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
-                                Document Upload
+                                Proof Upload
                             </h2>
                             <div>
                                 <Alert variant="default" className='bg-amber-500'>
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        Document must be in a single pdf file of maximum size 50MB.
+                                        Documents must be in a single pdf file of maximum size 5MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid md:grid-cols-1 gap-6">
 
                                 <FormField
                                     control={form.control}
-                                    name="paperUpload"
+                                    name="proofUpload"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Paper Upload</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    accept=".pdf"
-                                                    type="file"
-                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="certificateUpload"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Certificate Upload</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"

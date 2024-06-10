@@ -91,8 +91,8 @@ function App() {
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/majorMinorProject' element={<CommonProtectedRoute> <MajorMinorProject/> </CommonProtectedRoute>} />
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightDetails/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <JournelPublication/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <BookPublication/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/journelpublication' element={<CommonProtectedRoute> <JournelPublication/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/bookpublication' element={<CommonProtectedRoute> <BookPublication/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
