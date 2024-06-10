@@ -60,6 +60,8 @@ import SuperAdminProtectedRoute from './components/protected/SuperAdminProtected
 import ConsultancyForm from './container/views/common/forms/consultancy';
 import CopyrightDetails from './container/views/common/forms/copyrightDetails';
 import MajorMinorProject from './container/views/common/forms/majorMinorProject';
+import JournelPublication from './container/views/common/forms/journelPublication';
+import BookPublication from './container/views/common/forms/bookPublication';
 
 function App() {
 
@@ -89,7 +91,8 @@ function App() {
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/majorMinorProject' element={<CommonProtectedRoute> <MajorMinorProject/> </CommonProtectedRoute>} />
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightDetails/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/journelpublication' element={<JournelPublication> <MajorMinorProject/> </JournelPublication>} />
+          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <JournelPublication/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <BookPublication/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
