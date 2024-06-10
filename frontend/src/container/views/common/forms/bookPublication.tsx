@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt, Underline } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -42,19 +42,6 @@ type Props = {}
 /**
  * SCHEMAS 
  */
-const transactionSchema = z.object({
-    purchaseOrderNumber: z.string().min(1).max(100),
-    purchaseOrderDate: z.date(),
-    purchaseInvoiceNumber: z.string().min(1).max(100),
-    purchaseInvoiceDate: z.date(),
-    bankName: z.string().min(1).max(100),
-    branchName: z.string().min(1).max(100),
-    amountRecieved: z.coerce.number().nonnegative(),
-    remarks: z.string().max(1000, {
-        message: "Remarks must not exceed 1000 characters"
-    }).optional(),
-})
-
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
@@ -71,9 +58,9 @@ const pdfFileSchemaForProof = z
 
 const formSchema = z.object({
     bookTitle: z.string().min(2, {
-        message: "Research Paper Title required!"
+        message: "Book Title required!"
     }).max(100, {
-        message: "Research Paper Title must not exceed 100 characters"
+        message: "Book Title must not exceed 100 characters"
     }),
 
     authors: z.string({
@@ -81,9 +68,9 @@ const formSchema = z.object({
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
     publisherName: z.string().min(2, {
-        message: "Journel Title Title required!"
+        message: "Publisher Title required!"
     }).max(100, {
-        message: "Journel Title Title must not exceed 100 characters"
+        message: "Publisher Title must not exceed 100 characters"
     }),
 
     authorsAffiliation: z.string({
@@ -91,7 +78,7 @@ const formSchema = z.object({
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
     nationalInternational: z.string().min(1, {
-        message: "Funding Agency type required!"
+        message: "Publisher type required!"
     }),
 
     ISSNnumber: z.string({
@@ -101,9 +88,6 @@ const formSchema = z.object({
     }),
 
     impactFactor: z.coerce.number().nonnegative(),
-
-    journelPageNumberFrom: z.coerce.number().nonnegative(),
-    journelPageNumberTo: z.coerce.number().nonnegative(),
 
     dateOfPublication: z.date(),
 
@@ -171,8 +155,6 @@ const BookPublication: React.FC = (props: Props) => {
             nationalInternational: "",
             ISSNnumber: "",
             impactFactor: undefined,
-            journelPageNumberFrom: 0,
-            journelPageNumberTo: undefined,
             dateOfPublication: undefined,
             digitalObjectIdentifier: undefined,
             intendedAuidence: undefined,

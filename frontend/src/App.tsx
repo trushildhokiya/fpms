@@ -62,6 +62,7 @@ import CopyrightDetails from './container/views/common/forms/copyrightDetails';
 import MajorMinorProject from './container/views/common/forms/majorMinorProject';
 import JournelPublication from './container/views/common/forms/journelPublication';
 import BookPublication from './container/views/common/forms/bookPublication';
+import BookChapterPublication from './container/views/common/forms/bookChapterPublication';
 
 function App() {
 
@@ -93,6 +94,7 @@ function App() {
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightDetails/> </CommonProtectedRoute>} />
           <Route path='/common/forms/journelpublication' element={<CommonProtectedRoute> <JournelPublication/> </CommonProtectedRoute>} />
           <Route path='/common/forms/bookpublication' element={<CommonProtectedRoute> <BookPublication/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/bookchapterpublication' element={<CommonProtectedRoute> <BookChapterPublication/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
