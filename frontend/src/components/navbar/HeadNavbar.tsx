@@ -111,7 +111,11 @@ const HeadNavbar = () => {
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
-                                    <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to="/common/forms/consultancy">
+                                            Consultancy
+                                        </Link>
+                                    </DropdownMenuItem>
                                 </DropdownMenuGroup>
 
                             </DropdownMenuContent>

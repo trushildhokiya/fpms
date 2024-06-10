@@ -45,6 +45,8 @@ import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute'
 
 import { useEffect } from 'react';
 import { loadUserData } from './utils/functions/reduxFunctions';
+import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
+import ConsultancyForm from './container/views/common/forms/consultancy';
 
 
 function App() {
@@ -71,6 +73,7 @@ function App() {
           <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
+          <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
