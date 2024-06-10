@@ -46,9 +46,14 @@ import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute'
 import { useEffect } from 'react';
 import { loadUserData } from './utils/functions/reduxFunctions';
 import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
+
+/**
+ * FORM ROUTES
+ */
 import ConsultancyForm from './container/views/common/forms/consultancy';
 import CopyrightDetails from './container/views/common/forms/copyrightDetails';
 import MajorMinorProject from './container/views/common/forms/majorMinorProject';
+import JournelPublication from '@/container/views/common/forms/journelPublication'
 
 function App() {
 
@@ -77,6 +82,7 @@ function App() {
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/majorMinorProject' element={<CommonProtectedRoute> <MajorMinorProject/> </CommonProtectedRoute>} />
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightDetails/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/journelpublication' element={<JournelPublication> <MajorMinorProject/> </JournelPublication>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

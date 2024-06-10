@@ -126,12 +126,12 @@ const loginUsers = asyncHandler(async (req, res) => {
         }
         else {
 
-            if (user.tags.includes('inactive')) {
+            // if (user.tags.includes('inactive')) {
 
-                res.status(401)
-                throw new Error('Account not activated')
+            //     res.status(401)
+            //     throw new Error('Account not activated')
 
-            }
+            // }
 
             const validUser = await bcrypt.compare(password, user.password)
 
