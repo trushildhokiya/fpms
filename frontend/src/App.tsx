@@ -49,6 +49,7 @@ import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
 import ConsultancyForm from './container/views/common/forms/consultancy';
 import CopyrightDetails from './container/views/common/forms/copyrightDetails';
 import MajorMinorProject from './container/views/common/forms/majorMinorProject';
+import NeedsBasedProjects from './container/views/common/forms/needsBasedProjects';
 
 function App() {
 
@@ -75,8 +76,11 @@ function App() {
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/majorMinorProject' element={<CommonProtectedRoute> <MajorMinorProject/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/majorMinorProject' element={<CommonProtectedRoute> <MajorMinorProject/>  </CommonProtectedRoute> } />
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightDetails/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/needBasedProjects' element={<CommonProtectedRoute> <NeedsBasedProjects/> </CommonProtectedRoute>} />
+
+
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

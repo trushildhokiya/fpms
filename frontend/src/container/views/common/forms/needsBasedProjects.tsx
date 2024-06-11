@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt , Users , UserCheck , GraduationCap } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -44,22 +44,11 @@ type Props = {}
 /**
  * SCHEMAS 
  */
-const transactionSchema = z.object({
-    purchaseOrderNumber: z.string().min(1).max(100),
-    purchaseOrderDate: z.date(),
-    purchaseInvoiceNumber: z.string().min(1).max(100),
-    purchaseInvoiceDate: z.date(),
-    bankName: z.string().min(1).max(100),
-    branchName: z.string().min(1).max(100),
-    amountRecieved: z.coerce.number().nonnegative(),
-    remarks: z.string().max(1000, {
-        message: "Remarks must not exceed 1000 characters"
-    }).optional(),
-})
 
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
+
 const pdfFileSchema = z
     .instanceof(File)
     .refine((file) => {
@@ -77,60 +66,91 @@ const formSchema = z.object({
         message: "Project Title must not exceed 100 characters"
     }),
 
-    principalInvestigator: z.string().min(2, {
-        message: "Principal Investigator is required!"
+    institutionName: z.string().min(2, {
+        message: "Institution/Organisation Name required!"
     }).max(100, {
-        message: "Principal Investigator must not exceed 100 characters"
+        message: "Institution/Organisation Name must not exceed 100 characters"
     }),
 
-    coInvestigators: z.string({
-        invalid_type_error: "Required fields must be filled !"
-    }).transform((value) => value.split(',').map((name) => name.trim())),
-
-    fundingScheme: z.string().min(2, {
-        message: "Funding Scheme required!"
+    facultyCoordinatorName: z.string().min(2, {
+        message: "Faculty Coordinator Name required!"
     }).max(100, {
-        message: "Funding Scheme must not exceed 100 characters"
+        message: "Faculty Coordinator Name must not exceed 100 characters"
     }),
 
-    fundingAgency: z.string().min(2, {
-        message: "Funding Agency required !"
+    facultyCoordinatorDepartment: z.string().min(2, {
+        message: "Faculty Coordinator Department required!"
     }).max(100, {
-        message: "Funding agency must be less than 100 characters"
+        message: "Faculty Coordinator Department must not exceed 100 characters"
     }),
 
-    nationalInternational: z.string().min(1, {
-        message: "Funding Agency type required!"
+    facultyCoordinatorContactNo: z.string().regex(/^[0-9]{10}$/, {
+        message: "Contact number must be 10 digits"
     }),
 
-    budgetAmount: z.coerce.number().nonnegative(),
-    sanctionedAmount: z.coerce.number().nonnegative(),
+    facultyCoordinatorEmail: z.string().email({
+        message: "Invalid email address format"
+    }).min(5, {
+        message: "Email required!"
+    }).max(100, {
+        message: "Email must not exceed 100 characters"
+    }),
+
+    studentTeamMembers: z.string()
+    .min(2, {message: "Student name is required!"})
+    .transform((value) => value.split(',').map((name) => name.trim()))
+    .refine((value) => value.length >= 1 && value.length <= 10, {
+        message: "Must Enter at least 1 and at most 10 Inventors.",
+    }),
+
+    studentDepartment: z.string().min(2, {
+        message: "Student Department required!"
+    }).max(100, {
+        message: "Student Department must not exceed 100 characters"
+    }),
+
+    studentContactNo: z.string().regex(/^[0-9]{10}$/, {
+        message: "Contact number must be 10 digits"
+    }),
+
+    studentEmail: z.string().email({
+        message: "Invalid email address format"
+    }).min(5, {
+        message: "Email required!"
+    }).max(100, {
+        message: "Email must not exceed 100 characters"
+    }),
+
+    collaborationType: z.string().min(1, {
+        message: "Collaboration Type required!"
+    }),
+
+    institutionWebsite: z.string().url({
+        message: "Invalid website URL format"
+    }).min(5, {
+        message: "Website URL required!"
+    }).max(1000, {
+        message: "Website URL must not exceed 1000 characters"
+    }),
 
     startDate: z.date(),
     endDate: z.date(),
 
-    totalGrantRecieved: z.coerce.number().nonnegative(),
-    domain: z.string().min(1, {
-        message: "Domain is required!"
-    }).max(100, {
-        message: "Domain must not exceed maximum of 100 characters"
-    }),
-
-    areaOfExpertise: z.string().min(1).max(100),
     description: z.string().min(1).max(1000),
-    transactionDetails: z.array(transactionSchema).nonempty(),
+    institutionAddress: z.string().min(1).max(1000),
+    outcomes: z.string().min(1).max(1000),
 
-    sanctionedOrder: pdfFileSchema,
-    transactionProof: pdfFileSchema,
-    completionCertificate: pdfFileSchema,
-    supportingDocuments: pdfFileSchema,
+    sanctionedDocuments: pdfFileSchema,
+    projectReport: pdfFileSchema,
+    completionLetter: pdfFileSchema,
+    visitDocuments: pdfFileSchema,
 
 }).refine((data) => data.endDate > data.startDate, {
     message: "End date must be greater than start date",
     path: ["endDate"], // Field to which the error will be attached
 });
 
-const MajorMinorProject = (props: Props) => {
+const ConsultancyForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
@@ -156,204 +176,36 @@ const MajorMinorProject = (props: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             projectTitle: "",
-            principalInvestigator: "",
-            coInvestigators: [''],
-            fundingScheme: "",
-            fundingAgency: "",
-            nationalInternational: "",
-            budgetAmount: 0,
-            sanctionedAmount: 0,
+            institutionName: "",
+            collaborationType: "",
             startDate: undefined,
             endDate: undefined,
-            totalGrantRecieved: 0,
-            domain: "",
-            areaOfExpertise: "",
+            institutionAddress: "",
+            institutionWebsite: "",
+            facultyCoordinatorName: "",
+            facultyCoordinatorDepartment: "",
+            facultyCoordinatorContactNo: "",
+            facultyCoordinatorEmail: "",
+            studentTeamMembers: undefined,
+            studentDepartment: "",
+            studentContactNo: "",
+            studentEmail: "",
             description: "",
-            transactionDetails: undefined,
-            sanctionedOrder: new File([], ''),
-            transactionProof: new File([], ''),
-            completionCertificate: new File([], ''),
-            supportingDocuments: new File([], ''),
+            outcomes: "",
+            sanctionedDocuments: new File([], ''),
+            projectReport: new File([], ''),
+            completionLetter: new File([], ''),
+            visitDocuments: new File([], ''),
         },
     })
 
     const { control, handleSubmit, formState: { errors } } = form;
-    const { fields, append } = useFieldArray({
-        control,
-        name: "transactionDetails"
-    });
+    
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
         console.log(values)
     }
-
-    const handleTransactionClick = (event: any) => {
-        append({
-            purchaseOrderNumber: '',
-            purchaseOrderDate: new Date(),
-            purchaseInvoiceNumber: '',
-            purchaseInvoiceDate: new Date(),
-            bankName: '',
-            branchName: '',
-            amountRecieved: 0,
-            remarks: '',
-        });
-
-        event.preventDefault()
-    };
-
-    const renderTransactionBlock = (index: number) => (
-        <div key={index}>
-            <Separator className='my-8 bg-red-800' />
-            <div className="grid md:grid-cols-2 gap-6">
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.purchaseOrderNumber`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Purchase Order Number</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Purchase Order Number" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.purchaseOrderDate`}
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.purchaseInvoiceNumber`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Purchase Invoice Number</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Purchase Invoice number" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.purchaseInvoiceDate`}
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel className='text-grey-800'>Purchase Invoice Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.bankName`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Bank Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Bank Name" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.branchName`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Branch Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Branch Name" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </div>
-            <div className="">
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.amountRecieved`}
-                    render={({ field }) => (
-                        <FormItem className='my-4'>
-                            <FormLabel className='text-grey-800'>Amount Received</FormLabel>
-                            <FormControl>
-                                <Input type='number' placeholder="0" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.remarks`}
-                    render={({ field }) => (
-                        <FormItem className='my-4'>
-                            <FormLabel className='text-grey-800'>Remarks</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Remarks ( if any ) " autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </div>
-            <Separator className='my-8 bg-red-800' />
-        </div>
-    );
-
 
     return (
         <div>
@@ -363,7 +215,7 @@ const MajorMinorProject = (props: Props) => {
 
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
                     <span className="border-b-4 border-red-800 break-words ">
-                        MAJOR/MINOR <span className='hidden sm:inline-block'>PROJECTS</span>
+                        NEEDBASED <span className='hidden sm:inline-block'>PROJECTS</span>
                     </span>
                 </h1>
 
@@ -382,8 +234,16 @@ const MajorMinorProject = (props: Props) => {
                                             <span><a href='#basicDetails' onClick={()=>setOpen(false)}>Basic Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
-                                            <Receipt className="mr-2 h-4 w-4" />
-                                            <span><a href='#transactionDetails' onClick={()=>setOpen(false)}>Transaction Details</a></span>
+                                            <Users className="mr-2 h-4 w-4" />
+                                            <span><a href='#partnerInstitutionDetails' onClick={()=>setOpen(false)}>Partner Institution Details</a></span>
+                                        </CommandItem>
+                                        <CommandItem>
+                                            <UserCheck className="mr-2 h-4 w-4" />
+                                            <span><a href='#facultyCoordinator' onClick={()=>setOpen(false)}>Faculty Coordinator Details</a></span>
+                                        </CommandItem>
+                                        <CommandItem>
+                                            <GraduationCap className="mr-2 h-4 w-4" />
+                                            <span><a href='#studentDetails' onClick={()=>setOpen(false)}>Student Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
@@ -412,7 +272,7 @@ const MajorMinorProject = (props: Props) => {
                                     name="projectTitle"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Major/Minor Project Title</FormLabel>
+                                            <FormLabel className='text-gray-800'>Project/Research Title</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="project Title" {...field} autoComplete='off' />
                                             </FormControl>
@@ -423,12 +283,12 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="principalInvestigator"
+                                    name="description"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Principal Investigator</FormLabel>
+                                            <FormLabel className='text-gray-800'>Description </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="principal Investigator" {...field} autoComplete='off' />
+                                                <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -437,46 +297,12 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="coInvestigators"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Co-Investigators</FormLabel>
-                                            <FormControl>
-                                                <Textarea placeholder="eg: John Smith, David Fawling" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Write mutiple names seperated by commas(,)
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="fundingScheme"
+                                    name="outcomes"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Funding Scheme</FormLabel>
+                                            <FormLabel className='text-gray-800'>Outcome </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="funding Scheme" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-
-                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-                                <FormField
-                                    control={form.control}
-                                    name="fundingAgency"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Funding Agency</FormLabel>
-                                            <FormControl>
-                                                <Input type='text' placeholder="funding Agency " {...field} autoComplete='off' />
+                                                <Textarea placeholder="outcome must not exceed 1000 characters" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -485,10 +311,10 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="nationalInternational"
+                                    name="collaborationType"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Funding Agency Type</FormLabel>
+                                            <FormLabel className='text-gray-800'>Collaboration Type</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -496,8 +322,8 @@ const MajorMinorProject = (props: Props) => {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="national">National</SelectItem>
-                                                    <SelectItem value="international">International</SelectItem>
+                                                    <SelectItem value="academic">Academic</SelectItem>
+                                                    <SelectItem value="industrial">Industrial</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -505,33 +331,10 @@ const MajorMinorProject = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="budgetAmount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Budget Amount</FormLabel>
-                                            <FormControl>
-                                                <Input type='number' placeholder="Budget Amount" autoComplete='off' {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
 
-                                <FormField
-                                    control={form.control}
-                                    name="sanctionedAmount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Grant Sanctioned Amount</FormLabel>
-                                            <FormControl>
-                                                <Input type='number' placeholder="Sanctioned Amount" autoComplete='off' {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            </div>
+
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
 
                                 <FormField
                                     control={form.control}
@@ -622,46 +425,33 @@ const MajorMinorProject = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="totalGrantRecieved"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Total Grant Recieved </FormLabel>
-                                            <FormControl>
-                                                <Input type='number' placeholder="Total Grant Recieved" autoComplete='off' {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="domain"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Domain </FormLabel>
-                                            <FormControl>
-                                                <Input type='text' placeholder="eg: Neuro Science" autoComplete='off' {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
                             </div>
 
-                            <div className="">
 
+                            <Separator className='my-5 bg-red-800' />
+
+                            {/* Partner Institution/Organisation Details */}
+                            <h2 id='partnerInstitutionDetails' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Partner Institution/Organisation Details
+                            </h2>
+
+                            <Alert className='bg-sky-500'>
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>NOTE</AlertTitle>
+                                <AlertDescription>
+                                    Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
+                                </AlertDescription>
+                            </Alert>
+
+                            <div className="">
                                 <FormField
                                     control={form.control}
-                                    name="areaOfExpertise"
+                                    name="institutionName"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Area of Expertise </FormLabel>
+                                            <FormLabel className='text-gray-800'>Name</FormLabel>
                                             <FormControl>
-                                                <Input type='text' autoComplete='off' placeholder="eg: Human Psychology" {...field} />
+                                                <Input placeholder="institution/organisation Name" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -670,12 +460,26 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="description"
+                                    name="institutionAddress"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-gray-800'>Description </FormLabel>
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Address </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Textarea placeholder="instituion/organisation Name must not exceed 1000 characters" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="institutionWebsite"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Website Link</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="institution/organisation Website Link" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -686,29 +490,173 @@ const MajorMinorProject = (props: Props) => {
 
                             <Separator className='my-5 bg-red-800' />
 
-                            {/* Transaction DETAILS */}
-                            <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500' id='transactionDetails'>
-                                Transaction Details
+                            {/* Faculty Coordinator */}
+
+                            <h2 id='facultyCoordinator' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Faculty Coordinator Details
                             </h2>
 
-                            <Alert className='bg-green-500'>
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>NOTE</AlertTitle>
-                                <AlertDescription>
-                                    Click the Add Transaction button to enter a new transaction . Please take care that the enetered amount is not greater than the amount you have been sanctioned. The proofs for all the transaction must be attached at the end of this form.
-                                </AlertDescription>
-                            </Alert>
+                            <div>
+                                <Alert className='bg-sky-500'>
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle>NOTE</AlertTitle>
+                                    <AlertDescription>
+                                        Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
 
-                            <Button size={'lg'} onClick={handleTransactionClick} className='text-black hover:bg-emerald-600 bg-emerald-500'> Add Transaction </Button>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="facultyCoordinatorName"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Name</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="faculty Coordinator Name" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            {fields.map((field, index) => (
-                                renderTransactionBlock(index)
-                            ))}
+                                <FormField
+                                    control={form.control}
+                                    name="facultyCoordinatorDepartment"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Department</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="faculty Coordinator Department" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="facultyCoordinatorContactNo"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Contact Number</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="faculty Coordinator Contact Number" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="facultyCoordinatorEmail"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Email-Id</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Faculty Coordinator Email" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+                            <Separator className='my-5 bg-red-800' />
+
+                            {/* Student Details */}
+
+                            <h2 id='studentDetails' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Student Details
+                            </h2>
+
+                            <div>
+                                <Alert className='bg-sky-500'>
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle>NOTE</AlertTitle>
+                                    <AlertDescription>
+                                        Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
+
+                            <div className="">
+                                <FormField
+                                    control={form.control}
+                                    name="studentTeamMembers"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Team Members</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="Student Team Member Names" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple names seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="studentDepartment"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Department</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="student Department" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="studentContactNo"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Contact Number</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="student Contact Number" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="studentEmail"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Email-Id</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Student Email" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+
+
+                            <Separator className='my-5 bg-red-800' />
 
                             {/* Proof Upload */}
+
                             <h2 id='proofUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Proof Uploads
                             </h2>
+
                             <div>
                                 <Alert variant="default" className='bg-amber-500'>
                                     <AlertCircle className="h-4 w-4" />
@@ -723,10 +671,10 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="sanctionedOrder"
+                                    name="sanctionedDocuments"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Sanctioned Order </FormLabel>
+                                            <FormLabel className='text-gray-800'>Sanctioned Documents </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -741,10 +689,10 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="transactionProof"
+                                    name="projectReport"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Transaction Proof </FormLabel>
+                                            <FormLabel className='text-gray-800'>Project Report </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -759,10 +707,10 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="completionCertificate"
+                                    name="completionLetter"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Completion Certificate </FormLabel>
+                                            <FormLabel className='text-gray-800'>Completion Letter </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -777,10 +725,10 @@ const MajorMinorProject = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="supportingDocuments"
+                                    name="visitDocuments"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Supporting Documents </FormLabel>
+                                            <FormLabel className='text-gray-800'>Visit Documents and Photos </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -804,4 +752,4 @@ const MajorMinorProject = (props: Props) => {
     )
 }
 
-export default MajorMinorProject
+export default ConsultancyForm
