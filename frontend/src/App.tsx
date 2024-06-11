@@ -65,6 +65,9 @@ import BookPublication from './container/views/common/forms/bookPublication';
 import BookChapterPublication from './container/views/common/forms/bookChapterPublication';
 import PatentDetails from './container/views/common/forms/patentDetails';
 import FacultyResearchProfile from './container/views/common/forms/facultyResearchProfile';
+import ProfileManagementForm from './container/views/common/forms/profileManagement';
+import ExperienceDetailsForm from './container/views/common/forms/experienceDetails';
+import AwardsAndHonorsForm from './container/views/common/forms/awardsAndHonors';
 
 function App() {
 
@@ -99,6 +102,9 @@ function App() {
           <Route path='/common/forms/bookchapterpublication' element={<CommonProtectedRoute> <BookChapterPublication /> </CommonProtectedRoute>} />
           <Route path='/common/forms/patent' element={<CommonProtectedRoute> <PatentDetails /> </CommonProtectedRoute>} />
           <Route path='/common/forms/facultyresearchprofile' element={<CommonProtectedRoute> <FacultyResearchProfile /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/profileManagement' element={<CommonProtectedRoute> <ProfileManagementForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/experienceDetails' element={<CommonProtectedRoute> <ExperienceDetailsForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awardsAndHonors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
