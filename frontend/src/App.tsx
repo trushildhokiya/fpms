@@ -64,6 +64,7 @@ import JournelPublication from './container/views/common/forms/journelPublicatio
 import BookPublication from './container/views/common/forms/bookPublication';
 import BookChapterPublication from './container/views/common/forms/bookChapterPublication';
 import PatentDetails from './container/views/common/forms/patentDetails';
+import FacultyResearchProfile from './container/views/common/forms/facultyResearchProfile';
 
 function App() {
 
@@ -97,6 +98,7 @@ function App() {
           <Route path='/common/forms/bookpublication' element={<CommonProtectedRoute> <BookPublication /> </CommonProtectedRoute>} />
           <Route path='/common/forms/bookchapterpublication' element={<CommonProtectedRoute> <BookChapterPublication /> </CommonProtectedRoute>} />
           <Route path='/common/forms/patent' element={<CommonProtectedRoute> <PatentDetails /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/facultyresearchprofile' element={<CommonProtectedRoute> <FacultyResearchProfile /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

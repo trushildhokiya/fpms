@@ -74,11 +74,11 @@ const registerUsers = asyncHandler(async (req, res) => {
 
 
     transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
+        // if (err) {
 
-            res.status(500)
-            throw new Error('Internal Server Error in mailer!')
-        }
+        //     res.status(500)
+        //     throw new Error('Internal Server Error in mailer!')
+        // }
 
     });
 
@@ -148,12 +148,12 @@ const loginUsers = asyncHandler(async (req, res) => {
         }
         else {
 
-            if (user.tags.includes('inactive')) {
+            // if (user.tags.includes('inactive')) {
 
-                res.status(401)
-                throw new Error('Account not activated')
+            //     res.status(401)
+            //     throw new Error('Account not activated')
 
-            }
+            // }
 
             const validUser = await bcrypt.compare(password, user.password)
 
