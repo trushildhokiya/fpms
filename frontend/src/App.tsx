@@ -68,6 +68,7 @@ import FacultyResearchProfile from './container/views/common/forms/facultyResear
 import ProfileManagementForm from './container/views/common/forms/profileManagement';
 import ExperienceDetailsForm from './container/views/common/forms/experienceDetails';
 import AwardsAndHonorsForm from './container/views/common/forms/awardsAndHonors';
+import Conference from './container/views/common/forms/conference';
 
 function App() {
 
@@ -105,6 +106,7 @@ function App() {
           <Route path='/common/forms/profileManagement' element={<CommonProtectedRoute> <ProfileManagementForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/experienceDetails' element={<CommonProtectedRoute> <ExperienceDetailsForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/awardsAndHonors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/conference' element={<CommonProtectedRoute> <Conference/> </CommonProtectedRoute>  } />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
