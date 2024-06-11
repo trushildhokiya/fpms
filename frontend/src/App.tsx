@@ -3,6 +3,8 @@
  */
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import { useEffect } from 'react';
+import { loadUserData } from './utils/functions/reduxFunctions';
 /**
  * CUSTOM IMPORTS
  */
@@ -48,9 +50,6 @@ const FacultyDashboard = lazy(() => import('./container/views/faculty/container/
 import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
 import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
 import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute';
-
-import { useEffect } from 'react';
-import { loadUserData } from './utils/functions/reduxFunctions';
 import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
 import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
 
