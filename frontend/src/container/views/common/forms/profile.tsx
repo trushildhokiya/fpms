@@ -6,26 +6,18 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
-    Form, 
+    Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { Separator } from '@/components/ui/separator'
+import { AlertCircle, BookUser } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
     CommandDialog,
@@ -34,55 +26,80 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 type Props = {}
+
 
 /**
  * SCHEMAS 
  */
 
 const formSchema = z.object({
-    Name: z.string().min(2, {
-        message: "Name required!"
+
+    name: z.string().min(1, {
+        message: "Name is required!"
     }).max(100, {
         message: "Name must not exceed 100 characters"
     }),
 
-    Department: z.string().min(2, {
+    department: z.string().min(2, {
         message: "Department is required!"
     }).max(100, {
         message: "Department must not exceed 100 characters"
     }),
 
-    Designation: z.string().min(2, {
+    designation: z.string().min(2, {
         message: "Designation is required!"
     }).max(100, {
         message: "Designation must not exceed 100 characters"
     }),
 
-    ContactNumber: z.coerce.number().nonnegative(),
-
-    EmailId: z.string().min(2, {
-        message: "EmailId is required!"
-    }).max(100, {
-        message: "EmailId must not exceed 100 characters"
+    contact: z.coerce.number({
+        invalid_type_error: "Contact number is required "
+    }).nonnegative({
+        message: "Contact number must be a non-negative number"
+    }).min(1000000000, {
+        message: "Contact number must be of atleast 10 digits"
+    }).max(9999999999, {
+        message: "Contact number must not exceed 10 digits"
     }),
 
-    alternateContactNumber: z.coerce.number().nonnegative(),
-
-    alternateEmailId: z.string().min(2, {
-        message: "Alternate EmailId is required!"
-    }).max(100, {
-        message: "Alternate EmailId must not exceed 100 characters"
+    email: z.string().min(1, {
+        message: "Email Address is required!"
+    }).email({
+        message: "Invalid email address!"
+    }).regex(new RegExp('^[a-zA-Z0-9._%+-]+@somaiya\.edu$'), {
+        message: 'Invalid somaiya ID'
     }),
 
-})
+    alternateContact:z.coerce.number({
+        invalid_type_error: "Contact number is required "
+    }).nonnegative({
+        message: "Contact number must be a non-negative number"
+    }).min(1000000000, {
+        message: "Contact number must be of atleast 10 digits"
+    }).max(9999999999, {
+        message: "Contact number must not exceed 10 digits"
+    }),
 
-const ProfileManagementForm = (props: Props) => {
+    alternateEmail: z.string().min(1, {
+        message: "Alternate Email is required!"
+    }).email({
+        message: "Invalid email address!"
+    }),
+
+}).refine(data => data.contact !== data.alternateContact, {
+    message: "Contact and alternate contact numbers must not be the same",
+    path: ["alternateContact"],
+}).refine(data => data.email !== data.alternateEmail, {
+    message: "Email and alternate email must not be the same",
+    path: ["alternateEmail"],
+});
+
+const ProfileForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
@@ -107,17 +124,15 @@ const ProfileManagementForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            Name: "",
-            Department: "",
-            Designation: "",
-            ContactNumber: 0,
-            EmailId: "",
-            alternateContactNumber: 0,
-            alternateEmailId: "",
+            name: "",
+            department: "",
+            designation: "",
+            contact: 0,
+            email: "",
+            alternateContact: 0,
+            alternateEmail: "",
         },
     })
-
-    const { control, handleSubmit, formState: { errors } } = form;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -130,7 +145,7 @@ const ProfileManagementForm = (props: Props) => {
 
             <div className="container my-8">
 
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
                     <span className="border-b-4 border-red-800 break-words ">
                         Profile <span className='hidden sm:inline-block'>Management</span>
                     </span>
@@ -148,7 +163,7 @@ const ProfileManagementForm = (props: Props) => {
                                     <CommandGroup heading="Suggestions">
                                         <CommandItem>
                                             <BookUser className="mr-2 h-4 w-4" />
-                                            <span><a href='#basicDetails' onClick={()=>setOpen(false)}>Basic Details</a></span>
+                                            <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
                                         </CommandItem>
                                     </CommandGroup>
                                 </CommandList>
@@ -170,9 +185,9 @@ const ProfileManagementForm = (props: Props) => {
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
                                 <FormField
                                     control={form.control}
-                                    name="Name"
+                                    name="name"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Name</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Name" {...field} autoComplete='off' />
@@ -184,13 +199,24 @@ const ProfileManagementForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="Department"
+                                    name="department"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem>
                                             <FormLabel className='text-gray-800'>Department</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Department" {...field} autoComplete='off' />
-                                            </FormControl>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select your department" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Computer">Computer</SelectItem>
+                                                    <SelectItem value="Information Technology">Information Technology</SelectItem>
+                                                    <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
+                                                    <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
+                                                    <SelectItem value="Basic Science and Humanities">Basic Science and Humanities</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -198,9 +224,9 @@ const ProfileManagementForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="Designation"
+                                    name="designation"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Designation</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Designation" {...field} autoComplete='off' />
@@ -212,9 +238,9 @@ const ProfileManagementForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="ContactNumber"
+                                    name="contact"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Contact Number</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Contact Number" {...field} autoComplete='off' />
@@ -226,12 +252,12 @@ const ProfileManagementForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="EmailId"
+                                    name="email"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>EmailId</FormLabel>
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Email Address</FormLabel>
                                             <FormControl>
-                                                <Input type='email' placeholder="EmailId" {...field} autoComplete='off' />
+                                                <Input type='email' placeholder="email address <somaiya>" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -240,9 +266,9 @@ const ProfileManagementForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="alternateContactNumber"
+                                    name="alternateContact"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Alternate Contact Number</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Alternate Contact Number" {...field} autoComplete='off' />
@@ -254,12 +280,12 @@ const ProfileManagementForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="alternateEmailId"
+                                    name="alternateEmail"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Alternate EmailId</FormLabel>
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Alternate Email Address</FormLabel>
                                             <FormControl>
-                                                <Input type='email' placeholder="Alternate EmailId" {...field} autoComplete='off' />
+                                                <Input type='email' placeholder="alternate email address" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -278,4 +304,4 @@ const ProfileManagementForm = (props: Props) => {
     )
 }
 
-export default ProfileManagementForm
+export default ProfileForm

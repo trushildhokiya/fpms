@@ -57,18 +57,18 @@ import SuperAdminProtectedRoute from './components/protected/SuperAdminProtected
 /**
  * FORM ROUTES
  */
-import ConsultancyForm from './container/views/common/forms/consultancy';
-import CopyrightDetails from './container/views/common/forms/copyrightDetails';
-import MajorMinorProject from './container/views/common/forms/majorMinorProject';
-import JournelPublication from './container/views/common/forms/journelPublication';
-import BookPublication from './container/views/common/forms/bookPublication';
-import BookChapterPublication from './container/views/common/forms/bookChapterPublication';
-import PatentDetails from './container/views/common/forms/patentDetails';
-import FacultyResearchProfile from './container/views/common/forms/facultyResearchProfile';
-import ProfileManagementForm from './container/views/common/forms/profileManagement';
-import ExperienceDetailsForm from './container/views/common/forms/experienceDetails';
-import AwardsAndHonorsForm from './container/views/common/forms/awardsAndHonors';
-import Conference from './container/views/common/forms/conference';
+const ConsultancyForm = lazy(() => import('./container/views/common/forms/consultancy'));
+const CopyrightForm = lazy(() => import('./container/views/common/forms/copyrightDetails'));
+const ProjectForm = lazy(() => import('./container/views/common/forms/majorMinorProject'));
+const JournalForm = lazy(() => import('./container/views/common/forms/journelPublication'));
+const BookForm = lazy(() => import('./container/views/common/forms/bookPublication'));
+const BookChapterForm = lazy(() => import('./container/views/common/forms/bookChapterPublication'));
+const PatentForm = lazy(() => import('./container/views/common/forms/patentDetails'));
+const ResearchProfileForm = lazy(() => import('./container/views/common/forms/facultyResearchProfile'));
+const ProfileForm = lazy(() => import('./container/views/common/forms/profile'));
+const ExperienceForm = lazy(() => import('./container/views/common/forms/experience'));
+const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awardsAndHonors'));
+const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
 
 function App() {
 
@@ -95,18 +95,18 @@ function App() {
           <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
+          <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/experience' element={<CommonProtectedRoute> <ExperienceForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/researchprofile' element={<CommonProtectedRoute> <ResearchProfileForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/journal' element={<CommonProtectedRoute> <JournalForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/conference' element={<CommonProtectedRoute> <ConferenceForm/> </CommonProtectedRoute>  } />
+          <Route path='/common/forms/book' element={<CommonProtectedRoute> <BookForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/bookchapter' element={<CommonProtectedRoute> <BookChapterForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/patent' element={<CommonProtectedRoute> <PatentForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/majorMinorProject' element={<CommonProtectedRoute> <MajorMinorProject/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightDetails/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/journelpublication' element={<CommonProtectedRoute> <JournelPublication/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/bookpublication' element={<CommonProtectedRoute> <BookPublication /> </CommonProtectedRoute>} />
-          <Route path='/common/forms/bookchapterpublication' element={<CommonProtectedRoute> <BookChapterPublication /> </CommonProtectedRoute>} />
-          <Route path='/common/forms/patent' element={<CommonProtectedRoute> <PatentDetails /> </CommonProtectedRoute>} />
-          <Route path='/common/forms/facultyresearchprofile' element={<CommonProtectedRoute> <FacultyResearchProfile /> </CommonProtectedRoute>} />
-          <Route path='/common/forms/profileManagement' element={<CommonProtectedRoute> <ProfileManagementForm/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/experienceDetails' element={<CommonProtectedRoute> <ExperienceDetailsForm/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/awardsAndHonors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/conference' element={<CommonProtectedRoute> <Conference/> </CommonProtectedRoute>  } />
+          <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

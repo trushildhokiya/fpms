@@ -7,8 +7,8 @@
 @tailwind utilities;
 
 @layer base {
-    @font-face {
-      font-family: AzoSans;
-      src: url('./assets/fonts/AzoSans-Bold.ttf') format("truetype");
-    }
+  @font-face {
+    font-family: AzoSans;
+    src: url('./assets/fonts/AzoSans-Bold.ttf') format("truetype");
   }
+}

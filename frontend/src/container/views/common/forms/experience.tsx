@@ -9,9 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
-    Form, 
+    Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -21,8 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
+import { AlertCircle, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -34,8 +32,6 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 
@@ -44,19 +40,7 @@ type Props = {}
 /**
  * SCHEMAS 
  */
-const transactionSchema = z.object({
-    CurrentPastExperience: z.string().min(1).max(100),
-    OrganizationName: z.string().min(1).max(100),
-    OrganizationAddress: z.string().min(1).max(100),
-    OrganizationWebsiteLink: z.string().min(1).max(100),
-    Designation: z.string().min(1).max(100),
-    FromDate: z.date(),
-    ToDate: z.date(),
-    Experience: z.string().min(1, {
-        message: "Experience type required!"
-    }),
-    TotalExperience: z.string().min(1).max(100),
-})
+
 
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
@@ -64,21 +48,67 @@ const ACCEPTED_FILE_TYPES = [
 const pdfFileSchema = z
     .instanceof(File)
     .refine((file) => {
-        return !file || file.size <= 5 * 1024 * 1024;
-    }, `File size must be less than 5MB`)
+        return !file || file.size <= 1 * 1024 * 1024;
+    }, `File size must be less than 1MB`)
     .refine((file) => {
         return ACCEPTED_FILE_TYPES.includes(file.type);
     }, 'File must be a pdf'
     )
 
+
+const experienceSchema = z.object({
+    
+    experienceType: z.string().min(1,{
+        message:"experience type is required!"
+    }),
+
+    organizationName: z.string().min(1,{
+        message:"organization name is required!"
+    }).max(100,{
+        message:"organization name must not exceed 100 characters"
+    }),
+
+    organizationAddress: z.string().min(1,{
+        message:"organization name is required!"
+    }).max(1000,{
+         message:"organization address must not exceed 1000 characters"
+    }),
+
+    organizationUrl: z.string().min(1,{
+         message:"organization website url is required!"
+    }).regex( new RegExp(/^(ftp|http|https):\/\/[^ "]+$/),{
+        message:"Invalid url"
+    }),
+
+    designation: z.string().min(1,{
+        message:"designation is required!"
+    }).max(1000,{
+         message:"designation must not exceed 1000 characters"
+    }),
+
+    fromDate: z.date(),
+    toDate: z.date(),
+    experienceIndustry: z.string().min(1, {
+        message: "Experience Industry required!"
+    }),
+
+    totalExperience: z.string().min(1,{
+        message:"total experience is required!"
+    }).max(1000,{
+         message:"total experience must not exceed 1000 characters"
+    }),
+
+    experienceProof: pdfFileSchema
+
+})
+
 const formSchema = z.object({
 
-    experienceDetails: z.array(transactionSchema).nonempty(),
-    sanctionedOrder: pdfFileSchema,
+    experienceDetails: z.array(experienceSchema).nonempty(),
 
 });
 
-const ExperienceDetailsForm = (props: Props) => {
+const ExperienceForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
@@ -104,7 +134,6 @@ const ExperienceDetailsForm = (props: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             experienceDetails: undefined,
-            sanctionedOrder: new File([], ''),
         },
     })
 
@@ -119,59 +148,74 @@ const ExperienceDetailsForm = (props: Props) => {
         console.log(values)
     }
 
-    const handleTransactionClick = (event: any) => {
+    const handleExperienceClick = (event: any) => {
         append({
-            CurrentPastExperience: '',
-            OrganizationName: '',
-            OrganizationAddress:  '',
-            OrganizationWebsiteLink:  '',
-            Designation:  '',
-            FromDate: new Date(),
-            ToDate: new Date(),
-            Experience: '',
-            TotalExperience: '',
+            experienceType: '',
+            organizationName: '',
+            organizationAddress: '',
+            organizationUrl: '',
+            designation: '',
+            fromDate: new Date(),
+            toDate: new Date(),
+            experienceIndustry: '',
+            totalExperience: '',
+            experienceProof: new File([], ''),
         });
 
         event.preventDefault()
     };
 
-    const renderTransactionBlock = (index: number) => (
+    const renderExperienceBlock = (index: number) => (
         <div key={index}>
             <Separator className='my-8 bg-red-800' />
-            <div className="grid md:grid-cols-2 gap-6">
-                <FormField
-                    control={control}
-                    name={`experienceDetails.${index}.CurrentPastExperience`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Current / Past Experience</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Current / Past Experience" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+            <div className="">
+
+                <div className="grid md:grid-cols-2 gap-6 my-4">
+
+                    <FormField
+                        control={form.control}
+                        name={`experienceDetails.${index}.experienceType`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className='text-gray-800'>Experience Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select experience type" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Current">Current</SelectItem>
+                                        <SelectItem value="Past">Past</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name={`experienceDetails.${index}.organizationName`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className='text-grey-800'>Organization Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Organization Name" autoComplete='off' {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                </div>
+
 
                 <FormField
                     control={control}
-                    name={`experienceDetails.${index}.OrganizationName`}
+                    name={`experienceDetails.${index}.organizationAddress`}
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Organization Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Organization Name" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={control}
-                    name={`experienceDetails.${index}.OrganizationAddress`}
-                    render={({ field }) => (
-                        <FormItem>
+                        <FormItem className='my-3'>
                             <FormLabel className='text-grey-800'>Organization Address</FormLabel>
                             <FormControl>
                                 <Textarea placeholder="Organization Address" autoComplete='off' {...field} />
@@ -183,7 +227,7 @@ const ExperienceDetailsForm = (props: Props) => {
 
                 <FormField
                     control={control}
-                    name={`experienceDetails.${index}.OrganizationWebsiteLink`}
+                    name={`experienceDetails.${index}.organizationUrl`}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className='text-grey-800'>Organization Website Link</FormLabel>
@@ -199,7 +243,7 @@ const ExperienceDetailsForm = (props: Props) => {
             <div className='grid md:grid-cols-2 gap-6 my-4'>
                 <FormField
                     control={control}
-                    name={`experienceDetails.${index}.Designation`}
+                    name={`experienceDetails.${index}.designation`}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className='text-grey-800'>Designation</FormLabel>
@@ -213,7 +257,7 @@ const ExperienceDetailsForm = (props: Props) => {
 
                 <FormField
                     control={form.control}
-                    name={`experienceDetails.${index}.Experience`}
+                    name={`experienceDetails.${index}.experienceIndustry`}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className='text-gray-800'>Experience</FormLabel>
@@ -233,30 +277,32 @@ const ExperienceDetailsForm = (props: Props) => {
                     )}
                 />
 
+
+
                 <FormField
                     control={control}
-                    name={`experienceDetails.${index}.FromDate`}
+                    name={`experienceDetails.${index}.fromDate`}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel className='text-grey-800'>From Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent align="start" className=" w-auto p-0">
                                     <Calendar
                                         mode="single"
+                                        captionLayout="dropdown-buttons"
                                         selected={field.value}
                                         onSelect={field.onChange}
-                                        initialFocus
+                                        fromYear={1900}
+                                        toYear={2100}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -267,28 +313,28 @@ const ExperienceDetailsForm = (props: Props) => {
 
                 <FormField
                     control={control}
-                    name={`experienceDetails.${index}.ToDate`}
+                    name={`experienceDetails.${index}.toDate`}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel className='text-grey-800'>To Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent align="start" className=" w-auto p-0">
                                     <Calendar
                                         mode="single"
+                                        captionLayout="dropdown-buttons"
                                         selected={field.value}
                                         onSelect={field.onChange}
-                                        initialFocus
+                                        fromYear={1900}
+                                        toYear={2100}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -299,12 +345,12 @@ const ExperienceDetailsForm = (props: Props) => {
 
                 <FormField
                     control={control}
-                    name={`experienceDetails.${index}.TotalExperience`}
+                    name={`experienceDetails.${index}.totalExperience`}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className='text-grey-800'>Total Experience in years and months</FormLabel>
                             <FormControl>
-                                <Input placeholder="Total Experience in years and months" autoComplete='off' {...field} />
+                                <Input placeholder="eg: 5years, 2months" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -313,10 +359,10 @@ const ExperienceDetailsForm = (props: Props) => {
 
                 <FormField
                     control={form.control}
-                    name="sanctionedOrder"
+                    name={`experienceDetails.${index}.experienceProof`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-gray-800'>Sanctioned Order </FormLabel>
+                            <FormLabel className='text-gray-800'>Experience Proof </FormLabel>
                             <FormControl>
                                 <Input
                                     accept=".pdf"
@@ -339,7 +385,7 @@ const ExperienceDetailsForm = (props: Props) => {
 
             <div className="container my-8">
 
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
                     <span className="border-b-4 border-red-800 break-words ">
                         Experience <span className='hidden sm:inline-block'>Details</span>
                     </span>
@@ -357,11 +403,11 @@ const ExperienceDetailsForm = (props: Props) => {
                                     <CommandGroup heading="Suggestions">
                                         <CommandItem>
                                             <Receipt className="mr-2 h-4 w-4" />
-                                            <span><a href='#experienceDetails' onClick={()=>setOpen(false)}>Experience Details</a></span>
+                                            <span><a href='#experienceDetails' onClick={() => setOpen(false)}>Experience Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={()=>setOpen(false)}>Proof Upload</a></span>
+                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
                                         </CommandItem>
                                     </CommandGroup>
                                 </CommandList>
@@ -373,25 +419,15 @@ const ExperienceDetailsForm = (props: Props) => {
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>NOTE</AlertTitle>
                                 <AlertDescription>
-                                    Click the Add experience button to enter a new experience . Please take care that the enetered amount is not greater than the amount you have been sanctioned. The proofs for all the experience must be attached at the end of this form.
+                                    Click the Add experience button to enter a new experience . Proof for respective experience must be in a  pdf file of maximum size 1MB.
                                 </AlertDescription>
                             </Alert>
-                            
-                             {/* Proof Upload */}
-                             <div>
-                                <Alert variant="default" className='bg-amber-500'>
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertTitle>NOTE</AlertTitle>
-                                    <AlertDescription>
-                                        All proof for respective uploads must be in a single pdf file of maximum size 5MB.
-                                    </AlertDescription>
-                                </Alert>
-                            </div>
 
-                            <Button size={'lg'} onClick={handleTransactionClick} className='text-black hover:bg-emerald-600 bg-emerald-500'> Add Experience </Button>
+
+                            <Button size={'lg'} onClick={handleExperienceClick} className='text-black hover:bg-emerald-600 bg-emerald-500'> Add Experience </Button>
 
                             {fields.map((field, index) => (
-                                renderTransactionBlock(index)
+                                renderExperienceBlock(index)
                             ))}
                             <div>
                                 <Button type="submit" className='bg-red-800 hover:bg-red-700'>Submit</Button>
@@ -405,4 +441,4 @@ const ExperienceDetailsForm = (props: Props) => {
     )
 }
 
-export default ExperienceDetailsForm
+export default ExperienceForm
