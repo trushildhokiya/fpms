@@ -194,7 +194,7 @@ const CopyrightDetails = (props: Props) => {
                             name="copyrightTitle"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Copyright Title</FormLabel>
+                                    <FormLabel className='text-gray-800'>Copyright Title</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Enter Title" {...field} autoComplete='off' />
                                     </FormControl>
@@ -208,7 +208,7 @@ const CopyrightDetails = (props: Props) => {
                             name="inventors"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Inventors</FormLabel>
+                                    <FormLabel className='text-gray-800'>Inventors</FormLabel>
                                     <FormControl>
                                         <Textarea placeholder="Enter Inventor Names" {...field} autoComplete='off' />
                                     </FormControl>
@@ -225,7 +225,7 @@ const CopyrightDetails = (props: Props) => {
                             name="affiliationInventors"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Affiliation Inventors</FormLabel>
+                                    <FormLabel className='text-gray-800'>Affiliation Inventors</FormLabel>
                                     <FormControl>
                                         <Textarea placeholder="Enter Affiliation Inventor Names" {...field} autoComplete='off' />
                                     </FormControl>
@@ -242,7 +242,7 @@ const CopyrightDetails = (props: Props) => {
                             name="copyrightApplicationNumber"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Copyright Application Number</FormLabel>
+                                    <FormLabel className='text-gray-800'>Copyright Application Number</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Enter Copyright Application Number" {...field} autoComplete='off' />
                                     </FormControl>
@@ -280,7 +280,7 @@ const CopyrightDetails = (props: Props) => {
                                     name="country"
                                     render={({ field }) => (
                                         <FormItem>
-                                        <FormLabel>Country</FormLabel>
+                                        <FormLabel className='text-gray-800'>Country</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
                                             <SelectTrigger>
