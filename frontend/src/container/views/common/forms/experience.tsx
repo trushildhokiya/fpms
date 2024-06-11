@@ -405,16 +405,14 @@ const ExperienceForm = (props: Props) => {
                                             <Receipt className="mr-2 h-4 w-4" />
                                             <span><a href='#experienceDetails' onClick={() => setOpen(false)}>Experience Details</a></span>
                                         </CommandItem>
-                                        <CommandItem>
-                                            <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
-                                        </CommandItem>
                                     </CommandGroup>
                                 </CommandList>
                             </CommandDialog>
 
                             {/* Experience DETAILS */}
-
+                            <h2 id='experienceDetails' className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Details
+                            </h2>
                             <Alert className='bg-green-500'>
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>NOTE</AlertTitle>
