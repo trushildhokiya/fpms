@@ -62,7 +62,7 @@ const pdfFileSchema = z
 
 const formSchema = z.object({
 
-    researchPaperTitle: z.string().min(1, {
+    title: z.string().min(1, {
         message: "research paper title is required!"
     }).max(100, {
         message: "research paper title must not exceed 100 characters"
@@ -84,13 +84,17 @@ const formSchema = z.object({
 
     departmentInvolved: z.array(z.string()).nonempty(),
 
+    paidUnpaid: z.string().min(1, {
+        message: "This field is required!"
+    }),
+
     facultiesInvolved: z.string({
         invalid_type_error: "Faculties Somaiya ID is required!"
     })
-    .transform(value => value.split(',').map(email => email.trim()))
-    .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
-        message: "Each faculty email must be a valid email address",
-    }),
+        .transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
 
 
     journalType: z.string().min(1, {
@@ -180,13 +184,14 @@ const journalPublication: React.FC = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            researchPaperTitle: "",
+            title: "",
             authors: [''],
             authorsAffiliation: [''],
             departmentInvolved: [],
+            paidUnpaid: "",
             facultiesInvolved: [],
             journalType: "",
-            journalTitle:"",
+            journalTitle: "",
             issn: "",
             impactFactor: 0,
             pageFrom: 0,
@@ -257,7 +262,7 @@ const journalPublication: React.FC = (props: Props) => {
                             <div>
                                 <FormField
                                     control={form.control}
-                                    name="researchPaperTitle"
+                                    name="title"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Research Paper Title</FormLabel>
@@ -320,43 +325,67 @@ const journalPublication: React.FC = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="departmentInvolved"
-                                    render={({ field }) => (
-                                        <FormItem className=''>
-                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
-                                            <FormControl>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="outline" className='w-full'>
-                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent className="">
-                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        {departments.map(option => (
-                                                            <DropdownMenuCheckboxItem
-                                                                key={option}
-                                                                checked={field.value?.includes(option)}
-                                                                onCheckedChange={() => {
-                                                                    const newValue = field.value?.includes(option)
-                                                                        ? field.value.filter(val => val !== option)
-                                                                        : [...(field.value || []), option];
-                                                                    field.onChange(newValue);
-                                                                }}
-                                                            >
-                                                                {option}
-                                                            </DropdownMenuCheckboxItem>
-                                                        ))}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="departmentInvolved"
+                                        render={({ field }) => (
+                                            <FormItem className=''>
+                                                <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                                <FormControl>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="outline" className='w-full overflow-hidden'>
+                                                                {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent className="">
+                                                            <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                            <DropdownMenuSeparator />
+                                                            {departments.map(option => (
+                                                                <DropdownMenuCheckboxItem
+                                                                    key={option}
+                                                                    checked={field.value?.includes(option)}
+                                                                    onCheckedChange={() => {
+                                                                        const newValue = field.value?.includes(option)
+                                                                            ? field.value.filter(val => val !== option)
+                                                                            : [...(field.value || []), option];
+                                                                        field.onChange(newValue);
+                                                                    }}
+                                                                >
+                                                                    {option}
+                                                                </DropdownMenuCheckboxItem>
+                                                            ))}
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="paidUnpaid"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className='text-gray-800'>Paid / Unpaid</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select funding type" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Paid">Paid</SelectItem>
+                                                        <SelectItem value="Unpaid">Unpaid</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
 
                                 <FormField
                                     control={form.control}
@@ -388,8 +417,8 @@ const journalPublication: React.FC = (props: Props) => {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="National">National</SelectItem>
-                                                    <SelectItem value="International">International</SelectItem>
+                                                    <SelectItem value="national">National</SelectItem>
+                                                    <SelectItem value="international">International</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
