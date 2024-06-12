@@ -6,7 +6,7 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -20,12 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { Separator } from '@/components/ui/separator'
+import { AlertCircle, BookUser, FileArchive } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
     CommandDialog,
@@ -35,6 +30,15 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import React, { useState, useEffect } from 'react'
 
 type Props = {}
@@ -46,10 +50,10 @@ const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
 
-const pdfFileSchemaForPaper = z
+const pdfFileSchema = z
     .instanceof(File)
     .refine((file) => {
-        return !file || file.size <= 50 * 1024 * 1024;
+        return !file || file.size <= 5 * 1024 * 1024;
     }, `File Size must be less than 50 mb`)
     .refine((file) => {
         return ACCEPTED_FILE_TYPES.includes(file.type);
@@ -57,42 +61,58 @@ const pdfFileSchemaForPaper = z
     )
 
 const formSchema = z.object({
-    researchPaperTitle: z.string().min(2, {
-        message: "Research Paper Title required!"
+
+    researchPaperTitle: z.string().min(1, {
+        message: "research paper title is required!"
     }).max(100, {
-        message: "Research Paper Title must not exceed 100 characters"
+        message: "research paper title must not exceed 100 characters"
     }),
 
     authors: z.string({
         invalid_type_error: "Authors Name Required!"
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
-    journelTitle: z.string().min(2, {
-        message: "Journel Title Title required!"
+    journalTitle: z.string().min(1, {
+        message: "journal Title is required!"
     }).max(100, {
-        message: "Journel Title Title must not exceed 100 characters"
+        message: "journal Title  must not exceed 100 characters"
     }),
 
     authorsAffiliation: z.string({
-        invalid_type_error: "Required fields must be filled !"
+        invalid_type_error: "Authors affiliation is required!"
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
-    nationalInternational: z.string().min(1, {
-        message: "Journel type required!"
+    departmentInvolved: z.array(z.string()).nonempty(),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    })
+    .transform(value => value.split(',').map(email => email.trim()))
+    .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+        message: "Each faculty email must be a valid email address",
     }),
 
-    ISSNnumber: z.string({
-        invalid_type_error: "ISSN / ISBN Number Required"
+
+    journalType: z.string().min(1, {
+        message: "journal type is required!"
+    }),
+
+    issn: z.string({
+        invalid_type_error: "ISSN/ISBN Number is required!"
     }).max(100, {
-        message: "ISSN / ISBN Number exceed!"
+        message: "ISSN/ISBN number must not exceed 100 characters"
     }),
 
     impactFactor: z.coerce.number().nonnegative(),
 
-    journelPageNumberFrom: z.coerce.number().nonnegative(),
-    journelPageNumberTo: z.coerce.number().nonnegative(),
+    pageFrom: z.coerce.number().nonnegative(),
+    pageTo: z.coerce.number().nonnegative(),
 
-    dateOfPublication: z.date(),
+    year: z.coerce.number().nonnegative().min(1900, {
+        message: "Invalid year!"
+    }).max(3000, {
+        message: "Invalid year!"
+    }),
 
     digitalObjectIdentifier: z.string().min(2, {
         message: "Digital Object Identifier required!"
@@ -100,28 +120,44 @@ const formSchema = z.object({
         message: "Digital Object Identifier must not exceed 100 characters"
     }),
 
-    indexing: z.string().min(2, {
-        message: "Indexing Required!"
-    }).max(100, {
-        message: "Indexing count exceeded"
-    }),
+    indexing: z.array(z.string()).nonempty(),
 
-    fullPaperLink: z.string().min(10, {
+    fullPaperLink: z.string().min(1, {
         message: "Paper Link Required!"
     }).max(500, {
         message: "Paper Link exceeded"
+    }).regex(new RegExp(/^(ftp|http|https):\/\/[^ "]+$/), {
+        message: "Invalid url"
     }),
 
     citationCount: z.coerce.number().nonnegative(),
 
-    paperUpload: pdfFileSchemaForPaper,
-    certificateUpload: pdfFileSchemaForPaper,
+    paper: pdfFileSchema,
+    certificate: pdfFileSchema,
 
 });
 
-const JournelPublication: React.FC = (props: Props) => {
+const journalPublication: React.FC = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
+
+    //constants
+    const indexingOptions = [
+        "Scopus",
+        "Web of Science",
+        "UGC CARE-I",
+        "UGC CARE-II",
+        "others"
+    ];
+
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
+
 
     // command
     const [open, setOpen] = useState(false)
@@ -147,22 +183,23 @@ const JournelPublication: React.FC = (props: Props) => {
             researchPaperTitle: "",
             authors: [''],
             authorsAffiliation: [''],
-            nationalInternational: "",
-            ISSNnumber: "",
-            impactFactor: undefined,
-            journelPageNumberFrom: 0,
-            journelPageNumberTo: undefined,
-            dateOfPublication: undefined,
-            digitalObjectIdentifier: undefined,
-            indexing: undefined,
-            fullPaperLink: undefined,
-            citationCount: undefined,
-            paperUpload: new File([], ''),
-            certificateUpload: new File([], ''),
+            departmentInvolved: [],
+            facultiesInvolved: [],
+            journalType: "",
+            journalTitle:"",
+            issn: "",
+            impactFactor: 0,
+            pageFrom: 0,
+            pageTo: 0,
+            year: 0,
+            digitalObjectIdentifier: "",
+            indexing: [],
+            fullPaperLink: "",
+            citationCount: 0,
+            paper: new File([], ''),
+            certificate: new File([], ''),
         },
     })
-
-    const { control, handleSubmit, formState: { errors } } = form;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -177,8 +214,8 @@ const JournelPublication: React.FC = (props: Props) => {
             <div className="container my-8">
 
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
-                    <span className="border-b-4 border-red-800 break-words ">
-                        JOURNEL <span className='hidden sm:inline-block'>PUBLICATION</span>
+                    <span className="border-b-4 border-red-800 break-words uppercase ">
+                        journal <span className='hidden sm:inline-block'>PUBLICATION</span>
                     </span>
                 </h1>
 
@@ -195,10 +232,6 @@ const JournelPublication: React.FC = (props: Props) => {
                                         <CommandItem>
                                             <BookUser className="mr-2 h-4 w-4" />
                                             <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
-                                        </CommandItem>
-                                        <CommandItem>
-                                            <Receipt className="mr-2 h-4 w-4" />
-                                            <span><a href='#transactionDetails' onClick={() => setOpen(false)}>Transaction Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
@@ -247,8 +280,6 @@ const JournelPublication: React.FC = (props: Props) => {
                                             </FormControl>
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
-                                                <br />
-                                                <span className=' text-red-600'>Max 8 aurthors</span>
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -266,8 +297,6 @@ const JournelPublication: React.FC = (props: Props) => {
                                             </FormControl>
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
-                                                <br />
-                                                <span className=' text-red-600'>Max 8 aurthors</span>
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -276,12 +305,67 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="journelTitle"
+                                    name="facultiesInvolved"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Journey Paper Title</FormLabel>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Journey Paper title" {...field} autoComplete='off' />
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="journalTitle"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Journal Title</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Journal title" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -293,19 +377,19 @@ const JournelPublication: React.FC = (props: Props) => {
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
                                 <FormField
                                     control={form.control}
-                                    name="nationalInternational"
+                                    name="journalType"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Journel Type</FormLabel>
+                                            <FormLabel className='text-gray-800'>journal Type</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select a category" />
+                                                        <SelectValue placeholder="Select journal type" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="national">National</SelectItem>
-                                                    <SelectItem value="international">International</SelectItem>
+                                                    <SelectItem value="National">National</SelectItem>
+                                                    <SelectItem value="International">International</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -315,12 +399,12 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="ISSNnumber"
+                                    name="issn"
                                     render={({ field }) => (
-                                        <FormItem className=' my-4'>
-                                            <FormLabel className='text-gray-800'>ISSN / ISBN Number</FormLabel>
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>ISSN/ISBN Number</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="ISSN / ISBN Number" autoComplete='off' {...field} />
+                                                <Input type='text' placeholder="ISSN/ISBN Number" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -331,7 +415,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="impactFactor"
                                     render={({ field }) => (
-                                        <FormItem className=' my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Impact Factor</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="impactFactor" autoComplete='off' {...field} />
@@ -343,44 +427,13 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="dateOfPublication"
+                                    name="year"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel className='text-gray-800'>Date of Publication</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormDescription>
-                                                Please select a year.
-                                            </FormDescription>
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Year of Publication</FormLabel>
+                                            <FormControl>
+                                                <Input type='number' placeholder="eg:2003" autoComplete='off' {...field} />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -388,12 +441,12 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="journelPageNumberFrom"
+                                    name="pageFrom"
                                     render={({ field }) => (
-                                        <FormItem className=' my-4'>
-                                            <FormLabel className=' text-gray-800'>Journel Page From</FormLabel>
+                                        <FormItem className=''>
+                                            <FormLabel className=' text-gray-800'>Journal Page From</FormLabel>
                                             <FormControl>
-                                                <Input type='number' placeholder='Journel Page Number' autoComplete='off' {...field} />
+                                                <Input type='number' placeholder='journal page start number' autoComplete='off' {...field} />
                                             </FormControl>
                                         </FormItem>
                                     )}
@@ -401,12 +454,12 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="journelPageNumberTo"
+                                    name="pageTo"
                                     render={({ field }) => (
-                                        <FormItem className=' my-4'>
-                                            <FormLabel className=' text-gray-800'>Journel Page To</FormLabel>
+                                        <FormItem className=''>
+                                            <FormLabel className=' text-gray-800'>journal Page To</FormLabel>
                                             <FormControl>
-                                                <Input type='number' placeholder='Journel Page Number' autoComplete='off' {...field} />
+                                                <Input type='number' placeholder='journal page end number' autoComplete='off' {...field} />
                                             </FormControl>
                                         </FormItem>
                                     )}
@@ -416,7 +469,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="digitalObjectIdentifier"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Digital Object Identifier</FormLabel>
                                             <FormControl>
                                                 <Input type='text' placeholder="Digital Object Identifier" {...field} autoComplete='off' />
@@ -430,10 +483,34 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="indexing"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Indexing</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="Scopus, Web of Science, UGC CARE-I, UGC CARE-II, others." {...field} autoComplete='off' />
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select indexing options"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Indexing Options</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {indexingOptions.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -444,7 +521,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="fullPaperLink"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Full Paper Link</FormLabel>
                                             <FormControl>
                                                 <Input type='text' placeholder="Full Paper Link" {...field} autoComplete='off' />
@@ -458,7 +535,7 @@ const JournelPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="citationCount"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Citation Count</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Citation Count" {...field} autoComplete='off' />
@@ -469,18 +546,17 @@ const JournelPublication: React.FC = (props: Props) => {
                                 />
                             </div>
 
-                            <Separator className='my-5 bg-red-800' />
 
                             {/* Document Upload */}
-                            <h2 id='paperUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
-                                Document Upload
+                            <h2 id='proofUpload' className='my-6 pt-8 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Proof Upload
                             </h2>
                             <div>
                                 <Alert variant="default" className='bg-amber-500'>
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        Documents must be in a single pdf file of maximum size 50MB.
+                                        Documents must be in a single pdf file of maximum size 5MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>
@@ -489,10 +565,10 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="paperUpload"
+                                    name="paper"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Paper Upload</FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Paper</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -507,10 +583,10 @@ const JournelPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="certificateUpload"
+                                    name="certificate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Certificate Upload</FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Certificate</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -534,4 +610,4 @@ const JournelPublication: React.FC = (props: Props) => {
     )
 }
 
-export default JournelPublication;
+export default journalPublication;

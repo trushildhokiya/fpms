@@ -59,11 +59,11 @@ import SuperAdminProtectedRoute from './components/protected/SuperAdminProtected
 const ConsultancyForm = lazy(() => import('./container/views/common/forms/consultancy'));
 const CopyrightForm = lazy(() => import('./container/views/common/forms/copyrightDetails'));
 const ProjectForm = lazy(() => import('./container/views/common/forms/majorMinorProject'));
-const JournalForm = lazy(() => import('./container/views/common/forms/journelPublication'));
+const JournalForm = lazy(() => import('./container/views/common/forms/journal'));
 const BookForm = lazy(() => import('./container/views/common/forms/bookPublication'));
 const BookChapterForm = lazy(() => import('./container/views/common/forms/bookChapterPublication'));
 const PatentForm = lazy(() => import('./container/views/common/forms/patentDetails'));
-const ResearchProfileForm = lazy(() => import('./container/views/common/forms/facultyResearchProfile'));
+const ResearchProfileForm = lazy(() => import('./container/views/common/forms/research-profile'));
 const ProfileForm = lazy(() => import('./container/views/common/forms/profile'));
 const ExperienceForm = lazy(() => import('./container/views/common/forms/experience'));
 const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awardsAndHonors'));

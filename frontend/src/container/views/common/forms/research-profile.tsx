@@ -8,17 +8,14 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useEffect, useState } from 'react'
-import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, BookUser, FileArchive } from 'lucide-react'
 import {
@@ -37,67 +34,68 @@ type Props = {}
 /**
  * SCHEMAS 
  */
-const ACCEPTED_FILE_TYPES = [
-    'application/pdf'
-];
-const pdfFileSchema = z
-    .instanceof(File)
-    .refine((file) => {
-        return !file || file.size <= 5 * 1024 * 1024;
-    }, `File size must be less than 5MB`)
-    .refine((file) => {
-        return ACCEPTED_FILE_TYPES.includes(file.type);
-    }, 'File must be a pdf'
-    )
 
 const formSchema = z.object({
-    Name: z.string().min(2, {
-        message: "Name required!"
-    }).max(500, {
-        message: "Name must not exceed 500 characters"
-    }),
-
-    Department: z.string().min(1, {
-        message: "Journel type required!"
-    }),
-
-    Designation: z.string().min(2, {
-        message: "Designation required!"
-    }).max(500, {
-        message: "Designation must not exceed 500 characters"
-    }),
-
-    contactInfromation: z.string()
-        .min(2, { message: "Contact Information is required!" })
-        .transform((value) => value.split(',').map((name) => name.trim()))
-        .refine((value) => value.length >= 1 && value.length <= 10, {
-            message: "Must Enter at least 1 and at most 10 Inventors.",
-        }),
-
-    googleScholarID: z.string().min(2, {
-        message: "ID required!"
+    name: z.string().min(2, {
+        message: "name is required!"
     }).max(100, {
-        message: "ID must not exceed 100 characters"
+        message: "name must not exceed 100 characters"
     }),
 
-    googleScholarLink: z.string().min(2, {
-        message: "Link required!"
+    department: z.string().min(1, {
+        message: "department is required!"
     }),
 
-    scopusID: z.string().min(2, {
-        message: "ID required!"
+    designation: z.string().min(1, {
+        message: "designation is required!"
     }).max(100, {
-        message: "ID must not exceed 100 characters"
+        message: "designation must not exceed 500 characters"
     }),
 
-    scopusLink: z.string().min(2, {
-        message: "Link required!"
+    contact: z.coerce.number({
+        invalid_type_error: "Contact number is required "
+    }).nonnegative({
+        message: "Contact number must be a non-negative number"
+    }).min(1000000000, {
+        message: "Contact number must be of atleast 10 digits"
+    }).max(9999999999, {
+        message: "Contact number must not exceed 10 digits"
     }),
 
-    orcidID: z.string().min(2, {
-        message: "ID required!"
+    email: z.string().min(1, {
+        message: "email address is required!"
+    }).email({
+        message: "Invalid email address!"
+    }),
+
+    googleScholarId: z.string().min(1, {
+        message: "google scholar id is required!"
     }).max(100, {
-        message: "ID must not exceed 100 characters"
+        message: "id must not exceed 100 characters"
+    }),
+
+    googleScholarUrl: z.string().min(1, {
+        message: "google scholar link is required!"
+    }).regex(new RegExp(/^(ftp|http|https):\/\/[^ "]+$/), {
+        message: "Invalid url"
+    }),
+
+    scopusId: z.string().min(2, {
+        message: "scopus id is required!"
+    }).max(100, {
+        message: "id must not exceed 100 characters"
+    }),
+
+    scopusUrl: z.string().min(2, {
+        message: "scopus link is required!"
+    }).regex(new RegExp(/^(ftp|http|https):\/\/[^ "]+$/), {
+        message: "Invalid url"
+    }),
+
+    orcidId: z.string().min(2, {
+        message: "orchid id is required!"
+    }).max(100, {
+        message: "id must not exceed 100 characters"
     }),
 
     hIndexGoogleScholar: z.string().min(2, {
@@ -108,20 +106,16 @@ const formSchema = z.object({
         message: "H-Index Required"
     }),
 
-    citationCountGoogleScholar: z.string().min(2, {
-        message: "Citation Count Needed"
+    citationCountGoogleScholar: z.coerce.number().nonnegative(),
+
+    citationCountScopus: z.coerce.number().nonnegative(),
+
+    iTenIndexGoogleScholar: z.string().min(2, {
+        message: "i-10 Index (google scholar) is required"
     }),
 
-    citationCountScopus: z.string().min(2, {
-        message: "Citation Count Needed"
-    }),
-
-    i10IndexGoogleScholar: z.string().min(2, {
-        message: "I-10 Index Required"
-    }),
-
-    i10IndexScopus: z.string().min(2, {
-        message: "I-10 Index Required"
+    iTenIndexScopus: z.string().min(2, {
+        message: "i-10 index (scopus) is required!"
     }),
 
 });
@@ -151,21 +145,22 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            Name: "",
-            Department: "",
-            Designation: "",
-            contactInfromation: undefined,
-            googleScholarID: "",
-            googleScholarLink: "",
-            scopusID: "",
-            scopusLink: "",
-            orcidID: "",
+            name: "",
+            department: "",
+            designation: "",
+            contact: 0,
+            email: "",
+            googleScholarId: "",
+            googleScholarUrl: "",
+            scopusId: "",
+            scopusUrl: "",
+            orcidId: "",
             hIndexGoogleScholar: "",
             hIndexScopus: "",
-            citationCountGoogleScholar: "",
-            citationCountScopus: "",
-            i10IndexGoogleScholar: "",
-            i10IndexScopus: "",
+            citationCountGoogleScholar: 0,
+            citationCountScopus: 0,
+            iTenIndexGoogleScholar: "",
+            iTenIndexScopus: "",
         },
     })
 
@@ -173,7 +168,6 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
         console.log(values);
     }
 
-    const { control, handleSubmit, formState: { errors } } = form;
 
     return (
         <>
@@ -204,7 +198,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
+                                            <span><a href='#researchDetails' onClick={() => setOpen(false)}>Research Details</a></span>
                                         </CommandItem>
                                     </CommandGroup>
                                 </CommandList>
@@ -224,81 +218,110 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                 </AlertDescription>
                             </Alert>
 
-                            <FormField
-                                control={form.control}
-                                name="Name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Name" {...field} autoComplete='off' />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="grid gap-6 md:grid-cols-2">
 
-                            <FormField
-                                control={form.control}
-                                name="Department"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='text-gray-800'>Department</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Name</FormLabel>
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a category" />
-                                                </SelectTrigger>
+                                                <Input placeholder="Name" {...field} autoComplete='off' />
                                             </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="computer">Computer</SelectItem>
-                                                <SelectItem value="information technology">Information Technology</SelectItem>
-                                                <SelectItem value="artificial intelligence and data science">Artificial Intelligence and Data Science</SelectItem>
-                                                <SelectItem value="electronics and telecommunication">Electronics and Telecommunication</SelectItem>
-                                                <SelectItem value="basic science and humanities">Basic Science and Humanities</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="Designation"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Designation</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Designation" {...field} autoComplete='off' />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                <FormField
+                                    control={form.control}
+                                    name="department"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Department</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select your department" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Computer">Computer</SelectItem>
+                                                    <SelectItem value="Information Technology">Information Technology</SelectItem>
+                                                    <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
+                                                    <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
+                                                    <SelectItem value="Basic Science and Humanities">Basic Science and Humanities</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="contactInfromation"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Contact Information</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder="Email, phone..." {...field} autoComplete='off' />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Write mutiple names seperated by commas(,)
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                <FormField
+                                    control={form.control}
+                                    name="designation"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Designation</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Designation" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="contact"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Contact Number</FormLabel>
+                                            <FormControl>
+                                                <Input type='number' placeholder="contact number" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email Address</FormLabel>
+                                            <FormControl>
+                                                <Input type='email' placeholder="email address" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+
+                            {/* BASIC DETAILS */}
+                             <h2 id='researchDetails' className='my-6 pt-10 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Research Details
+                            </h2>
+
+                            <Alert className='bg-amber-500'>
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>NOTE</AlertTitle>
+                                <AlertDescription>
+                                    Please fill all the latest details correctly as per your knowledege.
+                                </AlertDescription>
+                            </Alert> 
 
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
 
                                 <FormField
                                     control={form.control}
-                                    name="googleScholarID"
+                                    name="googleScholarId"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Google Scholar ID</FormLabel>
@@ -312,12 +335,12 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="googleScholarLink"
+                                    name="googleScholarUrl"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Google Scholar Link</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Google Scholar Link" {...field} autoComplete='off' />
+                                                <Input placeholder="Google Scholar Url" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -326,7 +349,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="scopusID"
+                                    name="scopusId"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Scopus ID</FormLabel>
@@ -340,7 +363,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="scopusLink"
+                                    name="scopusUrl"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Scopus Link</FormLabel>
@@ -352,23 +375,22 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                     )}
                                 />
 
-                            </div>
 
-                            <FormField
-                                control={form.control}
-                                name="orcidID"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Orcid ID</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Orcid ID" {...field} autoComplete='off' />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
 
-                            <div className=' grid md:grid-cols-2 grid-cols-1 gap-6'>
+                                <FormField
+                                    control={form.control}
+                                    name="orcidId"
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-2'>
+                                            <FormLabel>Orcid ID</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Orcid ID" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <FormField
                                     control={form.control}
                                     name="hIndexGoogleScholar"
@@ -427,7 +449,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="i10IndexGoogleScholar"
+                                    name="iTenIndexGoogleScholar"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>I-10 Index Goolge Scholar</FormLabel>
@@ -441,7 +463,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="i10IndexScopus"
+                                    name="iTenIndexScopus"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>I-10 Index Scopus</FormLabel>
@@ -454,8 +476,6 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                 />
 
                             </div>
-
-                            <Separator className='my-5 bg-red-800' />
 
                             <Button type="submit" className='bg-red-800 hover:bg-red-700'>Submit</Button>
                         </form>
