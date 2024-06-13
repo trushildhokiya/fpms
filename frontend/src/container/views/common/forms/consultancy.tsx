@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
 import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -34,10 +33,9 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 type Props = {}
 
@@ -87,6 +85,15 @@ const formSchema = z.object({
         invalid_type_error: "Required fields must be filled !"
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
+    departmentInvolved: z.array(z.string()).nonempty(),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    }).transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
+
     fundingAgency: z.string().min(2, {
         message: "Funding Agency required !"
     }).max(100, {
@@ -119,10 +126,10 @@ const formSchema = z.object({
     completionCertificate: pdfFileSchema,
     supportingDocuments: pdfFileSchema,
 
-}).refine((data) => data.endDate > data.startDate, {
-    message: "End date must be greater than start date",
-    path: ["endDate"], // Field to which the error will be attached
-});
+}).refine((data) => new Date(data.endDate) > new Date(data.startDate), {
+    message: "End Date must be greater than start date",
+    path: ['endDate']
+}) // Field to which the error will be attached);
 
 const ConsultancyForm = (props: Props) => {
 
@@ -130,6 +137,16 @@ const ConsultancyForm = (props: Props) => {
 
     // command
     const [open, setOpen] = useState(false)
+
+    //constants
+
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -152,17 +169,19 @@ const ConsultancyForm = (props: Props) => {
             projectTitle: "",
             principalInvestigator: "",
             coInvestigators: [''],
+            departmentInvolved: [],
+            facultiesInvolved: [],
             fundingAgency: "",
             nationalInternational: "",
             budgetAmount: 0,
             sanctionedAmount: 0,
-            startDate: undefined,
-            endDate: undefined,
+            startDate: new Date(),
+            endDate: new Date(),
             totalGrantRecieved: 0,
             domain: "",
             areaOfExpertise: "",
             description: "",
-            transactionDetails: undefined,
+            transactionDetails: [],
             sanctionedOrder: new File([], ''),
             transactionProof: new File([], ''),
             completionCertificate: new File([], ''),
@@ -213,37 +232,7 @@ const ConsultancyForm = (props: Props) => {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.purchaseOrderDate`}
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
                 <FormField
                     control={control}
                     name={`transactionDetails.${index}.purchaseInvoiceNumber`}
@@ -257,6 +246,39 @@ const ConsultancyForm = (props: Props) => {
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseOrderDate`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className=" w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        captionLayout="dropdown-buttons"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        fromYear={1900}
+                                        toYear={2100}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
                 <FormField
                     control={control}
                     name={`transactionDetails.${index}.purchaseInvoiceDate`}
@@ -265,22 +287,22 @@ const ConsultancyForm = (props: Props) => {
                             <FormLabel className='text-grey-800'>Purchase Invoice Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent align="start" className=" w-auto p-0">
                                     <Calendar
                                         mode="single"
+                                        captionLayout="dropdown-buttons"
                                         selected={field.value}
                                         onSelect={field.onChange}
-                                        initialFocus
+                                        fromYear={1900}
+                                        toYear={2100}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -372,15 +394,15 @@ const ConsultancyForm = (props: Props) => {
                                     <CommandGroup heading="Suggestions">
                                         <CommandItem>
                                             <BookUser className="mr-2 h-4 w-4" />
-                                            <span><a href='#basicDetails' onClick={()=>setOpen(false)}>Basic Details</a></span>
+                                            <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <Receipt className="mr-2 h-4 w-4" />
-                                            <span><a href='#transactionDetails' onClick={()=>setOpen(false)}>Transaction Details</a></span>
+                                            <span><a href='#transactionDetails' onClick={() => setOpen(false)}>Transaction Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={()=>setOpen(false)}>Proof Upload</a></span>
+                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
                                         </CommandItem>
                                     </CommandGroup>
                                 </CommandList>
@@ -440,6 +462,61 @@ const ConsultancyForm = (props: Props) => {
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
                                             </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="facultiesInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full overflow-hidden'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -518,41 +595,28 @@ const ConsultancyForm = (props: Props) => {
                                     name="startDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-gray-800'>Start Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>From Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                    </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
+                                                <PopoverContent align="start" className=" w-auto p-0">
                                                     <Calendar
                                                         mode="single"
+                                                        captionLayout="dropdown-buttons"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
+                                                        fromYear={1900}
+                                                        toYear={2100}
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            <FormDescription>
-                                                Please select the start date.
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -564,38 +628,28 @@ const ConsultancyForm = (props: Props) => {
                                     name="endDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-gray-800'>End Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>End Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                    </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
+                                                <PopoverContent align="start" className=" w-auto p-0">
                                                     <Calendar
                                                         mode="single"
+                                                        captionLayout="dropdown-buttons"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        initialFocus
+                                                        fromYear={1900}
+                                                        toYear={2100}
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            <FormDescription>
-                                                Please select the start date.
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}

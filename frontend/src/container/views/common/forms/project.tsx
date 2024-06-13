@@ -130,7 +130,7 @@ const formSchema = z.object({
     path: ["endDate"], // Field to which the error will be attached
 });
 
-const MajorMinorProject = (props: Props) => {
+const ProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
@@ -804,4 +804,4 @@ const MajorMinorProject = (props: Props) => {
     )
 }
 
-export default MajorMinorProject
+export default ProjectForm
