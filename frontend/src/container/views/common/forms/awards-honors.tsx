@@ -6,12 +6,11 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -19,12 +18,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
+import { AlertCircle, BookUser, FileArchive } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
@@ -34,8 +28,6 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 
@@ -59,22 +51,22 @@ const pdfFileSchema = z
     )
 
 const formSchema = z.object({
-    Title: z.string().min(2, {
+    title: z.string().min(2, {
         message: "Title required!"
     }).max(100, {
         message: "Title must not exceed 100 characters"
     }),
 
-    AwardingBody: z.string().min(2, {
+    awardingBody: z.string().min(2, {
         message: "Awarding Body is required!"
     }).max(100, {
         message: "Awarding Body must not exceed 100 characters"
     }),
 
-    Year: z.coerce.number().nonnegative(),
+    year: z.coerce.number().min(1900).max(2300).nonnegative(),
     description: z.string().min(1).max(1000),
 
-    Photo: pdfFileSchema,
+    proof: pdfFileSchema,
 
 });
 
@@ -103,15 +95,13 @@ const AwardsAndHonorsForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            Title: "",
-            AwardingBody: "",
-            Year: 0,
+            title: "",
+            awardingBody: "",
+            year: new Date().getFullYear(),
             description: "",
-            Photo: new File([], ''),
+            proof: new File([], ''),
         },
     })
-
-    const { control, handleSubmit, formState: { errors } } = form;
 
 
     function onSubmit(values: z.infer<typeof formSchema>) {
@@ -126,7 +116,7 @@ const AwardsAndHonorsForm = (props: Props) => {
 
             <div className="container my-8">
 
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
                     <span className="border-b-4 border-red-800 break-words ">
                         Awards And <span className='hidden sm:inline-block'>Honors</span>
                     </span>
@@ -170,7 +160,7 @@ const AwardsAndHonorsForm = (props: Props) => {
                             <div className="">
                                 <FormField
                                     control={form.control}
-                                    name="Title"
+                                    name="title"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Title</FormLabel>
@@ -184,7 +174,7 @@ const AwardsAndHonorsForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="AwardingBody"
+                                    name="awardingBody"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Awarding Body</FormLabel>
@@ -198,7 +188,7 @@ const AwardsAndHonorsForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="Year"
+                                    name="year"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Year</FormLabel>
@@ -243,10 +233,10 @@ const AwardsAndHonorsForm = (props: Props) => {
                             <div className="grid md:grid-cols-2 gap-6">
                                 <FormField
                                     control={form.control}
-                                    name="Photo"
+                                    name="proof"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Upload Photo / Certificate </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Photo and Certificate </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"

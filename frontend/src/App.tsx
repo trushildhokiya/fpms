@@ -66,9 +66,9 @@ const PatentForm = lazy(() => import('./container/views/common/forms/patent'));
 const ResearchProfileForm = lazy(() => import('./container/views/common/forms/research-profile'));
 const ProfileForm = lazy(() => import('./container/views/common/forms/profile'));
 const ExperienceForm = lazy(() => import('./container/views/common/forms/experience'));
-const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awardsAndHonors'));
+const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awards-honors'));
 const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
-const NeedProjectsForm =  lazy(() => import('./container/views/common/forms/needsBasedProjects'));;
+const NeedProjectsForm =  lazy(() => import('./container/views/common/forms/need-based-project'));;
 
 function App() {
 
@@ -97,17 +97,17 @@ function App() {
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/experience' element={<CommonProtectedRoute> <ExperienceForm/> </CommonProtectedRoute>} />
-          <Route path='/common/forms/researchprofile' element={<CommonProtectedRoute> <ResearchProfileForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/research-profile' element={<CommonProtectedRoute> <ResearchProfileForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/journal' element={<CommonProtectedRoute> <JournalForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/conference' element={<CommonProtectedRoute> <ConferenceForm/> </CommonProtectedRoute>  } />
           <Route path='/common/forms/book' element={<CommonProtectedRoute> <BookForm /> </CommonProtectedRoute>} />
-          <Route path='/common/forms/bookchapter' element={<CommonProtectedRoute> <BookChapterForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/book-chapter' element={<CommonProtectedRoute> <BookChapterForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/patent' element={<CommonProtectedRoute> <PatentForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
-           <Route path='/common/forms/need-projects' element={<CommonProtectedRoute> <NeedProjectsForm/> </CommonProtectedRoute>} />
+           <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm/> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

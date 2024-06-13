@@ -34,10 +34,9 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 type Props = {}
 
@@ -87,6 +86,15 @@ const formSchema = z.object({
         invalid_type_error: "Required fields must be filled !"
     }).transform((value) => value.split(',').map((name) => name.trim())),
 
+    departmentInvolved: z.array(z.string()).nonempty(),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    }).transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
+
     fundingScheme: z.string().min(2, {
         message: "Funding Scheme required!"
     }).max(100, {
@@ -134,6 +142,17 @@ const ProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
+    //constants
+
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
+
+
     // command
     const [open, setOpen] = useState(false)
 
@@ -158,18 +177,20 @@ const ProjectForm = (props: Props) => {
             projectTitle: "",
             principalInvestigator: "",
             coInvestigators: [''],
+            facultiesInvolved: [],
+            departmentInvolved: [],
             fundingScheme: "",
             fundingAgency: "",
             nationalInternational: "",
             budgetAmount: 0,
             sanctionedAmount: 0,
-            startDate: undefined,
-            endDate: undefined,
+            startDate: new Date(),
+            endDate: new Date(),
             totalGrantRecieved: 0,
             domain: "",
             areaOfExpertise: "",
             description: "",
-            transactionDetails: undefined,
+            transactionDetails: [],
             sanctionedOrder: new File([], ''),
             transactionProof: new File([], ''),
             completionCertificate: new File([], ''),
@@ -379,15 +400,15 @@ const ProjectForm = (props: Props) => {
                                     <CommandGroup heading="Suggestions">
                                         <CommandItem>
                                             <BookUser className="mr-2 h-4 w-4" />
-                                            <span><a href='#basicDetails' onClick={()=>setOpen(false)}>Basic Details</a></span>
+                                            <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <Receipt className="mr-2 h-4 w-4" />
-                                            <span><a href='#transactionDetails' onClick={()=>setOpen(false)}>Transaction Details</a></span>
+                                            <span><a href='#transactionDetails' onClick={() => setOpen(false)}>Transaction Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={()=>setOpen(false)}>Proof Upload</a></span>
+                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
                                         </CommandItem>
                                     </CommandGroup>
                                 </CommandList>
@@ -447,6 +468,60 @@ const ProjectForm = (props: Props) => {
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
                                             </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="facultiesInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full overflow-hidden'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
