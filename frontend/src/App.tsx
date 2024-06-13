@@ -60,8 +60,8 @@ const ConsultancyForm = lazy(() => import('./container/views/common/forms/consul
 const CopyrightForm = lazy(() => import('./container/views/common/forms/copyrightDetails'));
 const ProjectForm = lazy(() => import('./container/views/common/forms/majorMinorProject'));
 const JournalForm = lazy(() => import('./container/views/common/forms/journal'));
-const BookForm = lazy(() => import('./container/views/common/forms/bookPublication'));
-const BookChapterForm = lazy(() => import('./container/views/common/forms/bookChapterPublication'));
+const BookForm = lazy(() => import('./container/views/common/forms/book'));
+const BookChapterForm = lazy(() => import('./container/views/common/forms/book-chapter'));
 const PatentForm = lazy(() => import('./container/views/common/forms/patentDetails'));
 const ResearchProfileForm = lazy(() => import('./container/views/common/forms/research-profile'));
 const ProfileForm = lazy(() => import('./container/views/common/forms/profile'));

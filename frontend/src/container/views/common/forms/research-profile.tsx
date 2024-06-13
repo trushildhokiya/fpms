@@ -317,9 +317,10 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                 </AlertDescription>
                             </Alert> 
 
-                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+                            <div className="grid gap-6 md:grid-cols-2">
 
-                                <FormField
+                                
+                                 <FormField
                                     control={form.control}
                                     name="googleScholarId"
                                     render={({ field }) => (
@@ -381,7 +382,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="orcidId"
                                     render={({ field }) => (
-                                        <FormItem className='col-span-2'>
+                                        <FormItem className='md:col-span-2'>
                                             <FormLabel>Orcid ID</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Orcid ID" {...field} autoComplete='off' />

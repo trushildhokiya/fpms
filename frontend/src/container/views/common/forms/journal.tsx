@@ -126,7 +126,7 @@ const formSchema = z.object({
 
     indexing: z.array(z.string()).nonempty(),
 
-    fullPaperLink: z.string().min(1, {
+    paperUrl: z.string().min(1, {
         message: "Paper Link Required!"
     }).max(500, {
         message: "Paper Link exceeded"
@@ -199,7 +199,7 @@ const journalPublication: React.FC = (props: Props) => {
             year: 0,
             digitalObjectIdentifier: "",
             indexing: [],
-            fullPaperLink: "",
+            paperUrl: "",
             citationCount: 0,
             paper: new File([], ''),
             certificate: new File([], ''),
@@ -548,7 +548,7 @@ const journalPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="fullPaperLink"
+                                    name="paperUrl"
                                     render={({ field }) => (
                                         <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Full Paper Link</FormLabel>

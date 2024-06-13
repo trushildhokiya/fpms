@@ -543,7 +543,7 @@ const ConferenceForm: React.FC = (props: Props) => {
                                     control={form.control}
                                     name='publicationDate'
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col col-span-2">
+                                        <FormItem className="flex flex-col md:col-span-2">
                                             <FormLabel className='text-grey-800'>Publication Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>

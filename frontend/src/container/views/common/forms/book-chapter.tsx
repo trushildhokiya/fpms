@@ -6,7 +6,7 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -20,11 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
+import { AlertCircle, BookUser, FileArchive, Receipt } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
@@ -36,6 +32,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import React, { useState, useEffect } from 'react'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 type Props = {}
 
@@ -46,7 +43,7 @@ const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
 
-const pdfFileSchemaForProof = z
+const pdfFileSchema = z
     .instanceof(File)
     .refine((file) => {
         return !file || file.size <= 5 * 1024 * 1024;
@@ -57,22 +54,38 @@ const pdfFileSchemaForProof = z
     )
 
 const formSchema = z.object({
-    bookTitle: z.string().min(2, {
-        message: "Book Title required!"
+    bookTitle: z.string().min(1, {
+        message: "Book Title is required!"
     }).max(100, {
         message: "Book Title must not exceed 100 characters"
     }),
 
 
-    bookChapterTitle: z.string().min(2, {
+    chapterTitle: z.string().min(1, {
         message: "Book Chapter Title Required"
-    }).max(500, {
-        message: "Title count exceeded"
+    }).max(100, {
+        message: "Book chapter title must not exceed 100 characters"
     }),
 
     authors: z.string({
-        invalid_type_error: "Authors Name Required!"
+        invalid_type_error: "Authors name is required!"
     }).transform((value) => value.split(',').map((name) => name.trim())),
+
+    authorsAffiliation: z.string({
+        invalid_type_error: "Authors affiliation is required!"
+    }).transform((value) => value.split(',').map((name) => name.trim())),
+
+    departmentInvolved: z.array(z.string()).nonempty(),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    })
+        .transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
+
+
 
     publisherName: z.string().min(2, {
         message: "Publisher Title required!"
@@ -80,15 +93,12 @@ const formSchema = z.object({
         message: "Publisher Title must not exceed 100 characters"
     }),
 
-    authorsAffiliation: z.string({
-        invalid_type_error: "Required fields must be filled !"
-    }).transform((value) => value.split(',').map((name) => name.trim())),
 
     nationalInternational: z.string().min(1, {
         message: "Publisher type required!"
     }),
 
-    ISSNnumber: z.string({
+    issn: z.string({
         invalid_type_error: "ISSN / ISBN Number Required"
     }).max(100, {
         message: "ISSN / ISBN Number exceed!"
@@ -96,43 +106,56 @@ const formSchema = z.object({
 
     impactFactor: z.coerce.number().nonnegative(),
 
-    dateOfPublication: z.date(),
+    yearOfPublication: z.coerce.number().min(1900).max(2300),
 
-    digitalObjectIdentifier: z.string().min(2, {
+    doi: z.string().min(2, {
         message: "Digital Object Identifier required!"
     }).max(100, {
         message: "Digital Object Identifier must not exceed 100 characters"
     }),
 
-    indexing: z.string().min(2, {
-        message: "Indexing Required"
-    }).max(100, {
-        message: "Indexing count exceeded"
-    }),
+    indexing: z.array(z.string()).nonempty(),
 
     intendedAuidence: z.string().min(2, {
-        message: "Field Required!"
-    }).max(100, {
-        message: "Field count exceeded"
+        message: "intended audience is required!"
     }),
 
     description: z.string().min(1).max(1000),
 
-    bookLink: z.string().min(10, {
-        message: "Paper Link Required!"
-    }).max(500, {
-        message: "Paper Link exceeded"
+    bookUrl: z.string().min(10, {
+        message: "Book url is required!"
+    }).max(100, {
+        message: "Book url must not exceed 100 characters"
+    }).regex(new RegExp(/^(ftp|http|https):\/\/[^ "]+$/), {
+        message: "Invalid url"
     }),
 
     citationCount: z.coerce.number().nonnegative(),
 
-    proofUpload: pdfFileSchemaForProof,
+    proof: pdfFileSchema,
 
 });
 
-const BookChapterPublication: React.FC = (props: Props) => {
+const BookChapterForm: React.FC = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
+
+    //constants
+    const indexingOptions = [
+        "Scopus",
+        "Web of Science",
+        "UGC CARE-I",
+        "UGC CARE-II",
+        "others"
+    ];
+
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
 
     // command
     const [open, setOpen] = useState(false)
@@ -156,25 +179,25 @@ const BookChapterPublication: React.FC = (props: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             bookTitle: "",
-            bookChapterTitle: "",
-            publisherName: "",
             authors: [''],
             authorsAffiliation: [''],
+            chapterTitle: "",
+            facultiesInvolved: [],
+            departmentInvolved: [],
+            publisherName: "",
             nationalInternational: "",
-            ISSNnumber: "",
-            impactFactor: undefined,
-            dateOfPublication: undefined,
-            digitalObjectIdentifier: undefined,
-            intendedAuidence: undefined,
+            issn: "",
+            impactFactor: 0,
+            yearOfPublication: new Date().getFullYear(),
+            doi: '',
+            intendedAuidence: '',
             description: "",
-            indexing: undefined,
-            bookLink: undefined,
-            citationCount: undefined,
-            proofUpload: new File([], ''),
+            indexing: [],
+            bookUrl: '',
+            citationCount: 0,
+            proof: new File([], ''),
         },
     })
-
-    const { control, handleSubmit, formState: { errors } } = form;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -210,7 +233,7 @@ const BookChapterPublication: React.FC = (props: Props) => {
                                         </CommandItem>
                                         <CommandItem>
                                             <Receipt className="mr-2 h-4 w-4" />
-                                            <span><a href='#transactionDetails' onClick={() => setOpen(false)}>Transaction Details</a></span>
+                                            <span><a href='#bookChapterDetails' onClick={() => setOpen(false)}>Book Chapter Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
@@ -250,7 +273,7 @@ const BookChapterPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="bookChapterTitle"
+                                    name="chapterTitle"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Book Chapter Title</FormLabel>
@@ -273,8 +296,6 @@ const BookChapterPublication: React.FC = (props: Props) => {
                                             </FormControl>
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
-                                                <br />
-                                                <span className=' text-red-600'>Max 8 aurthors</span>
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -292,8 +313,6 @@ const BookChapterPublication: React.FC = (props: Props) => {
                                             </FormControl>
                                             <FormDescription>
                                                 Write mutiple names seperated by commas(,)
-                                                <br />
-                                                <span className=' text-red-600'>Max 8 aurthors</span>
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -302,9 +321,82 @@ const BookChapterPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="publisherName"
+                                    name="facultiesInvolved"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full overflow-hidden'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
+
+                            </div>
+
+                            <h2 id='bookChapterDetails' className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                                Book Chapter Details
+                            </h2>
+
+                            <Alert className='bg-teal-500'>
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>NOTE</AlertTitle>
+                                <AlertDescription>
+                                    Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
+                                </AlertDescription>
+                            </Alert>
+
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+
+                                <FormField
+                                    control={form.control}
+                                    name="publisherName"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Publisher Title</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Publisher title" {...field} autoComplete='off' />
@@ -314,15 +406,12 @@ const BookChapterPublication: React.FC = (props: Props) => {
                                     )}
                                 />
 
-                            </div>
-
-                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
                                 <FormField
                                     control={form.control}
                                     name="nationalInternational"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Journel Type</FormLabel>
+                                            <FormLabel className='text-gray-800'>Book Chapter Type</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -341,7 +430,7 @@ const BookChapterPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="ISSNnumber"
+                                    name="issn"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>ISSN / ISBN Number</FormLabel>
@@ -369,54 +458,22 @@ const BookChapterPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="dateOfPublication"
+                                    name="yearOfPublication"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel className='text-gray-800'>Date of Publication</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormDescription>
-                                                Please select a year.
-                                            </FormDescription>
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Year of Publication</FormLabel>
+                                            <FormControl>
+                                                <Input type='number' placeholder="eg:2003" autoComplete='off' {...field} />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-
                                 <FormField
                                     control={form.control}
-                                    name="digitalObjectIdentifier"
+                                    name="doi"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Digital Object Identifier</FormLabel>
                                             <FormControl>
                                                 <Input type='text' placeholder="Digital Object Identifier" {...field} autoComplete='off' />
@@ -430,55 +487,83 @@ const BookChapterPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="intendedAuidence"
                                     render={({ field }) => (
-                                        <FormItem className=' my-4'>
-                                            <FormLabel className=' text-gray-800'>Intended Auidence</FormLabel>
-                                            <FormControl>
-                                                <Input type='text' placeholder='Engineering Students , Researchers, others' {...field} autoComplete='off' />
-                                            </FormControl>
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Intended Audience</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select audience  type" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="engineering students">Engineering Students</SelectItem>
+                                                    <SelectItem value="researchers">Researchers</SelectItem>
+                                                    <SelectItem value="others">Others</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                            </div>
-
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='text-gray-800'>Description </FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <div className=' grid md:grid-cols-1 grid-cols-1 gap-6'>
 
                                 <FormField
                                     control={form.control}
                                     name="indexing"
                                     render={({ field }) => (
-                                        <FormItem className=' my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Indexing</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder="Scopus, Web of Science, UGC CARE-I, UGC CARE-II, others." {...field} autoComplete='off' />
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select indexing options"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Indexing Options</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {indexingOptions.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                            </div>
-
-                            <div className=' grid md:grid-cols-2 grid-cols-2 gap-6'>
 
                                 <FormField
                                     control={form.control}
-                                    name="bookLink"
+                                    name="description"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className='md:col-span-2'>
+                                            <FormLabel className='text-gray-800'>Description </FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="bookUrl"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Book Link</FormLabel>
                                             <FormControl>
                                                 <Input type='text' placeholder="Book Link" {...field} autoComplete='off' />
@@ -492,7 +577,7 @@ const BookChapterPublication: React.FC = (props: Props) => {
                                     control={form.control}
                                     name="citationCount"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Citation Count</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Citation Count" {...field} autoComplete='off' />
@@ -506,7 +591,7 @@ const BookChapterPublication: React.FC = (props: Props) => {
                             <Separator className='my-5 bg-red-800' />
 
                             {/* Document Upload */}
-                            <h2 id='paperUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
+                            <h2 id='proofUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Proof Upload
                             </h2>
                             <div>
@@ -523,10 +608,10 @@ const BookChapterPublication: React.FC = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="proofUpload"
+                                    name="proof"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Paper Upload</FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Proof</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -550,4 +635,4 @@ const BookChapterPublication: React.FC = (props: Props) => {
     )
 }
 
-export default BookChapterPublication;
+export default BookChapterForm;
