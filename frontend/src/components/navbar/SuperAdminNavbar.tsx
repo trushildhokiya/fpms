@@ -60,6 +60,13 @@ const SuperAdminNavbar = () => {
                     <div className="mx-5">
                         <Link to="/superadmin">Dashboard</Link>
                     </div>
+                    <Link className='mx-5' to="/superadmin/add">
+                        <p className="my-2">Add Users</p>
+                    </Link>
+
+                    <Link className='mx-5' to="/superadmin/toggle">
+                        <p className="my-2">Toggle Users</p>
+                    </Link>
                     <div className="mx-5">Others</div>
                     
                     <div className="mx-5 mr-[2rem]">
@@ -135,6 +142,20 @@ const SuperAdminNavbar = () => {
             >
                 <Link to="/superadmin">
                     <p className="my-2">Dashboard</p>
+                </Link>
+
+                
+                <Separator />
+
+                <Link to="/superadmin/add">
+                    <p className="my-2">Add Users</p>
+                </Link>
+
+                
+                <Separator />
+
+                <Link to="/superadmin/toggle">
+                    <p className="my-2">Toggle Users</p>
                 </Link>
 
                 
