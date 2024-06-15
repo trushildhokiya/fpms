@@ -100,52 +100,52 @@ const facultySchema = new mongoose.Schema({
     },
 
     journal: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'journal' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'journal' }],
         required: false
     },
 
     conference: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'conference' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'conference' }],
         required: false
     },
 
     book: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'book' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'book' }],
         required: false
     },
 
     bookChapter: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'bookChapter' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'bookChapter' }],
         required: false
     },
 
     patent: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'patent' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'patent' }],
         required: false
     },
 
     copyright: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'copyright' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'copyright' }],
         required: false
     },
 
     consultancy: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'consultancy' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'consultancy' }],
         required: false
     },
 
     projects: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'project' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'project' }],
         required: false
     },
 
     awardsHonors: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'awardHonor' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'awardHonor' }],
         required: false
     },
-    
+
     needBasedProjects: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'needBasedProject' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'needBasedProject' }],
         required: false
     }
 

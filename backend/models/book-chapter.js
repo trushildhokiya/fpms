@@ -98,6 +98,6 @@ const bookChapterSchema = new Schema({
 });
 
 // Compile the schema into a model
-const BookChapter = mongoose.model('bookChapter', bookChapterSchema);
+module.exports  = mongoose.model('bookChapter', bookChapterSchema);
 
-module.exports = BookChapter;
+

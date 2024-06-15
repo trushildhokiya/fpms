@@ -29,7 +29,6 @@ const awardHonorsSchema = new mongoose.Schema({
     }
 });
 
-// Compile the schema into a model
-const AwardHonor = mongoose.model('awardHonor', awardHonorsSchema);
+module.exports = mongoose.model('awardHonor', awardHonorsSchema);
 
-module.exports = AwardHonor;
+
