@@ -28,7 +28,11 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
 
 type Props = {}
 
@@ -102,6 +106,7 @@ const formSchema = z.object({
 const ProfileForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
+    const { toast } = useToast()
 
     // command
     const [open, setOpen] = useState(false)
@@ -136,7 +141,26 @@ const ProfileForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        axios.post('/common/profile',values)
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+
+                toast({
+                    title: "Profile updated successfully",
+                    description: "Your profile information has been added/updated successfully",
+                    action: (
+                      <ToastAction altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset()
+                
+            }
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+
     }
 
     return (
@@ -300,6 +324,7 @@ const ProfileForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

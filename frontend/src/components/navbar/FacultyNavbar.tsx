@@ -172,13 +172,13 @@ const FacultyNavbar = () => {
                                         </DropdownMenuItem>
                                     </Link>
                                     <DropdownMenuItem>
-                                        Personal Details
+                                        My Details
                                     </DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <Link to="/common/forms/profile">
+                                                <Link to="/common/display/profile">
                                                     <DropdownMenuItem>
                                                         Basic
                                                     </DropdownMenuItem>
@@ -342,13 +342,13 @@ const FacultyNavbar = () => {
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuItem>
-                                    Personal Details
+                                    My Details
                                 </DropdownMenuItem>
                                 <DropdownMenuSub>
                                     <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
-                                            <Link to="/common/forms/profile">
+                                            <Link to="/common/display/profile">
                                                 <DropdownMenuItem>
                                                     Basic
                                                 </DropdownMenuItem>

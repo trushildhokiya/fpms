@@ -1,5 +1,56 @@
 const mongoose = require('mongoose')
 
+/**
+ * SUB SCHEMAS
+ */
+
+const profileSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    department: { type: String, required: true },
+    designation: { type: String, required: true },
+    contact: { type: Number, required: true },
+    email: { type: String, required: true },
+    alternateContact: { type: Number, required: true },
+    alternateEmail: { type: String, required: true }
+});
+
+const experienceSchema = new mongoose.Schema({
+    experienceType: { type: String, required: true },
+    organizationName: { type: String, required: true },
+    organizationAddress: { type: String, required: true },
+    organizationUrl: { type: String, required: true },
+    designation: { type: String, required: true },
+    fromDate: { type: Date, required: true },
+    toDate: { type: Date, required: true },
+    experienceIndustry: { type: String, required: true },
+    totalExperience: { type: String, required: true },
+    experienceProof: { type: String, required: true } // Assuming you store file paths or GridFS file IDs here
+});
+
+const researchSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    department: { type: String, required: true },
+    designation: { type: String, required: true },
+    contact: { type: Number, required: true },
+    email: { type: String, required: true },
+    googleScholarId: { type: String, required: false },
+    googleScholarUrl: { type: String, required: false },
+    scopusId: { type: String, required: false },
+    scopusUrl: { type: String, required: false },
+    orcidId: { type: String, required: false },
+    hIndexGoogleScholar: { type: String, required: false },
+    hIndexScopus: { type: String, required: false },
+    citationCountGoogleScholar: { type: Number, required: false },
+    citationCountScopus: { type: Number, required: false },
+    iTenIndexGoogleScholar: { type: String, required: false },
+    iTenIndexScopus: { type: String, required: false }
+});
+
+
+/**
+ * MAIN SCHEMA
+ */
+
 const facultySchema = new mongoose.Schema({
     email: {
         type: String,
@@ -32,6 +83,25 @@ const facultySchema = new mongoose.Schema({
         type: [String],
         default: ['inactive']
     },
+
+    profile: {
+        type: profileSchema,
+        required: false
+    },
+
+    experience: {
+        type: [experienceSchema],
+        required: false
+    },
+
+    researchProfile:{
+        type:researchSchema,
+        required:false,
+    },
+
+    
+
+
 }, { timestamps: true }
 )
 
