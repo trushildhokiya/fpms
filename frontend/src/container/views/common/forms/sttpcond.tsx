@@ -44,6 +44,8 @@ const pdfFileSchema = z
     }, 'File must be a pdf'
     )
 
+    const imageFileSchema = z.instanceof(File);
+
     const sttpSchema = z.object({
         sttpTitle: z.string()
           .min(2, { message: "STTP / FDP Title is required and must be at least 2 characters" })
@@ -74,6 +76,10 @@ const pdfFileSchema = z
         
         noOfDays: z.string()
           .min(1, { message: "Number of days must be at least 1" }),
+
+        title: z.string()
+        .min(2, { message: "Title is required and must be at least 2 characters" })
+        .max(100, { message: "Title must not exceed 100 characters" }),
         
         level: z.enum(["International", "National", "Regional"], { 
           required_error: "Level is required" 
@@ -84,18 +90,21 @@ const pdfFileSchema = z
           .optional(),
         
         uploadCertificate: pdfFileSchema,
+        uploadInvitation: pdfFileSchema,
+        uploadPhotos: z.array(imageFileSchema).optional(),
+
       }).refine(data => new Date(data.toDate) > new Date(data.fromDate), {
         message: "End date must be greater than start date",
         path: ["toDate"], // Field to which the error will be attached
       });  
 
-const Sttattended = (props: Props) => {
+const Sttpcond = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
     // command
     const [open, setOpen] = useState(false)
-
+    const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -124,9 +133,12 @@ const Sttattended = (props: Props) => {
           fromDate: undefined,
           toDate: undefined,
           noOfDays: "",
+          title: "",
           level: "",
           remarks: "",
           uploadCertificate: new File([], ''),
+          uploadInvitation: new File([], ''),
+          uploadPhotos: [],
         },
       });
 
@@ -146,7 +158,7 @@ const Sttattended = (props: Props) => {
 
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
                     <span className="border-b-4 border-red-800 break-words ">
-                        STTP / FDP <span className='hidden sm:inline-block'>ATTENDED</span>
+                        STTP / FDP <span className='hidden sm:inline-block'>CONDUCTED</span>
                     </span>
                 </h1>
 
@@ -367,6 +379,21 @@ const Sttattended = (props: Props) => {
 
                         <FormField
                             control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem className='mt-2'>
+                                <FormLabel className='text-gray-800'>Title of Session Conducted</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Title of Session Conducted" {...field} autoComplete='off' />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+
+                        <FormField
+                            control={form.control}
                             name="uploadCertificate"
                             render={({ field }) => (
                                 <FormItem className='mt-2'>
@@ -382,7 +409,61 @@ const Sttattended = (props: Props) => {
                                 </FormItem>
                             )}
                         />
+                        
+                        <FormField
+                            control={form.control}
+                            name="uploadInvitation"
+                            render={({ field }) => (
+                                <FormItem className='mt-2'>
+                                    <FormLabel className='text-gray-800'>Upload Invitation Letter</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            accept=".pdf"
+                                            type="file"
+                                            onChange={(e) => field.onChange(e.target.files?.[0])}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="uploadPhotos"
+                            render={({ field }) => (
+                                <FormItem className='mt-2'>
+                                    <FormLabel className='text-gray-800'>Upload Photos</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            accept=".jpg,.jpeg,.png"
+                                            type="file"
+                                            multiple
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files || []);
+                                                field.onChange(files)
+                                                setUploadPhotos(files)
+                                            }
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         </div>
+
+                        <div className='grid grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-2 gap-4'>
+                            {uploadPhotos.map((img, index) => (
+                            <img 
+                                key={index}
+                                src={URL.createObjectURL(img)} 
+                                className='max-w-[200px] max-h-[100px] max-lg:max-w-[150px] max-lg:max-h-[75px] m-2'
+                            />
+                            ))}
+                        </div>
+
 
                         <FormField
                             control={control}
@@ -408,4 +489,4 @@ const Sttattended = (props: Props) => {
     )
 }
 
-export default Sttattended
+export default Sttpcond

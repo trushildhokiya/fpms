@@ -55,6 +55,7 @@ import SuperAdminProtectedRoute from './components/protected/SuperAdminProtected
 import Toggleusers from './container/views/superadmin/container/Toggleusers';
 import Adduser from './container/views/superadmin/container/Adduser';
 import Sttattended from './container/views/common/forms/sttpattended';
+import Sttpcond from './container/views/common/forms/sttpcond';
 
 /**
  * FORM ROUTES
@@ -120,6 +121,7 @@ function App() {
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/sttpattend' element={<CommonProtectedRoute> <Sttattended/> </CommonProtectedRoute>  } />
+          <Route path='/common/forms/sttpcond' element={<CommonProtectedRoute> <Sttpcond/> </CommonProtectedRoute> } />
           <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
            <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm/> </CommonProtectedRoute>} />
