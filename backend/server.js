@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
 const headRoutes = require('./routes/headRoutes')
 const superRoutes = require('./routes/superRoutes')
+const commonRoutes = require('./routes/commonRoutes')
 const errorHandler = require('./middleware/errorHandler')
 const Admin = require('./models/admin')
 const bcrypt = require('bcrypt')
@@ -45,7 +46,7 @@ const swaggerOptions = {
             description: "Backend REST API for Faculty Profile Management System",
             contact: {
                 name: 'Trushil Dhokiya',
-                url: 'https://trushildhokiya.netlify.app',
+                url: 'https://trushildhokiya.vercel.app',
                 email: 'trushil.d@somaiya.edu',
 
             }
@@ -73,6 +74,7 @@ app.use('/auth', authRoutes)
 app.use('/admin', adminRoutes)
 app.use('/head', headRoutes)
 app.use('/super', superRoutes)
+app.use('/common',commonRoutes)
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use(errorHandler)
 

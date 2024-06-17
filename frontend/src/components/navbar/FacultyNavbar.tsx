@@ -172,23 +172,23 @@ const FacultyNavbar = () => {
                                         </DropdownMenuItem>
                                     </Link>
                                     <DropdownMenuItem>
-                                        Personal Details
+                                        My Details
                                     </DropdownMenuItem>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <Link to="/common/forms/profile">
+                                                <Link to="/common/display/profile">
                                                     <DropdownMenuItem>
                                                         Basic
                                                     </DropdownMenuItem>
                                                 </Link>
-                                                <Link to="/common/forms/experience">
+                                                <Link to="/common/display/experience">
                                                     <DropdownMenuItem>
                                                         Experience
                                                     </DropdownMenuItem>
                                                 </Link>
-                                                <Link to="/common/forms/research-profile">
+                                                <Link to="/common/display/research-profile">
                                                     <DropdownMenuItem>
                                                         Research Profile
                                                     </DropdownMenuItem>
@@ -342,13 +342,13 @@ const FacultyNavbar = () => {
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuItem>
-                                    Personal Details
+                                    My Details
                                 </DropdownMenuItem>
                                 <DropdownMenuSub>
                                     <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
-                                            <Link to="/common/forms/profile">
+                                            <Link to="/common/display/profile">
                                                 <DropdownMenuItem>
                                                     Basic
                                                 </DropdownMenuItem>

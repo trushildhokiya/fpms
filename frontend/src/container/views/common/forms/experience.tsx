@@ -34,6 +34,10 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { toast, useToast } from '@/components/ui/use-toast'
+import { ToastAction } from '@radix-ui/react-toast'
+import { Toaster } from '@/components/ui/toaster'
 
 type Props = {}
 
@@ -111,6 +115,7 @@ const formSchema = z.object({
 const ExperienceForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
+    const {toast} = useToast()
 
     // command
     const [open, setOpen] = useState(false)
@@ -133,7 +138,7 @@ const ExperienceForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            experienceDetails: undefined,
+            experienceDetails: [],
         },
     })
 
@@ -144,6 +149,30 @@ const ExperienceForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
+
+        axios.post('/common/experience',values,{
+            headers:{
+                'Content-Type':'multipart/form-data'
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+
+                toast({
+                    title: "Experience updated successfully",
+                    description: "Your experience data has been added/updated successfully",
+                    action: (
+                      <ToastAction altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset()
+                
+            }
+        })
+        .catch((err)=>{
+            console.log(err);  
+        })
 
         console.log(values)
     }
@@ -435,6 +464,7 @@ const ExperienceForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

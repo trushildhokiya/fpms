@@ -7,6 +7,8 @@ import { store } from './app/store.ts'
 import { Provider } from 'react-redux'
 
 axios.defaults.baseURL = 'http://localhost:5000'
+axios.defaults.headers.common['token'] = localStorage.getItem('token') ;
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
