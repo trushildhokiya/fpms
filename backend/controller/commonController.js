@@ -134,10 +134,54 @@ const getExperienceData = asyncHandler(async (req, res) => {
 
 
 
+const addResearchProfile = asyncHandler( async(req,res)=>{
+
+    //get required data
+    const data = req.body;
+    const {email} = req.decodedData;
+
+    // find user
+    const user = await Faculty.findOne({email: email})
+
+    if(!user){
+        res.status(400)
+        throw new Error("User not found!")
+    }
+
+    // save data
+    user.researchProfile = data
+    await user.save()
+
+    res.status(200).json({
+        message: "success"
+    })
+    
+})
+
+const getResearchProfileData = asyncHandler( async(req,res)=>{
+
+    //get required data
+    const {email} = req.decodedData;
+
+    // find user
+    const user = await Faculty.findOne({email: email})
+
+    if(!user){
+        res.status(400)
+        throw new Error("User not found!")
+    }
+
+    const researchProfileData = user.researchProfile
+
+    res.status(200).json(researchProfileData)
+    
+})
 
 module.exports={
     addProfile,
     getProfileData,
     addExperience,
-    getExperienceData
+    getExperienceData,
+    addResearchProfile,
+    getResearchProfileData
 }
