@@ -124,7 +124,6 @@ const ProfileDisplay = (props: Props) => {
                                                             <AlertTitle>{data.alternateEmail}</AlertTitle>
                                                         </Alert>
 
-
                                                     </div>
 
                                                 </div>
