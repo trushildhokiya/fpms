@@ -33,17 +33,17 @@ const researchSchema = new mongoose.Schema({
     designation: { type: String, required: true },
     contact: { type: Number, required: true },
     email: { type: String, required: true },
-    googleScholarId: { type: String, required: false },
-    googleScholarUrl: { type: String, required: false },
-    scopusId: { type: String, required: false },
-    scopusUrl: { type: String, required: false },
-    orcidId: { type: String, required: false },
-    hIndexGoogleScholar: { type: String, required: false },
-    hIndexScopus: { type: String, required: false },
-    citationCountGoogleScholar: { type: Number, required: false },
-    citationCountScopus: { type: Number, required: false },
-    iTenIndexGoogleScholar: { type: String, required: false },
-    iTenIndexScopus: { type: String, required: false }
+    googleScholarId: { type: String, required: true },
+    googleScholarUrl: { type: String, required: true },
+    scopusId: { type: String, required: true },
+    scopusUrl: { type: String, required: true },
+    orcidId: { type: String, required: true },
+    hIndexGoogleScholar: { type: String, required: true },
+    hIndexScopus: { type: String, required: true },
+    citationCountGoogleScholar: { type: Number, required: true },
+    citationCountScopus: { type: Number, required: true },
+    iTenIndexGoogleScholar: { type: String, required: true },
+    iTenIndexScopus: { type: String, required: true }
 });
 
 

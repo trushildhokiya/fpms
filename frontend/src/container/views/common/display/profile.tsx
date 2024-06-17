@@ -159,7 +159,7 @@ const ProfileDisplay = (props: Props) => {
                                 }
                             </div>
                         </CardContent>
-                        <CardFooter className="flex gap-6">
+                        <CardFooter className="flex gap-6 flex-wrap">
 
                             <Button size={'lg'}>
                                 <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
