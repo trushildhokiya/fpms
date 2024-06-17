@@ -183,7 +183,7 @@ const FacultyNavbar = () => {
                                                         Basic
                                                     </DropdownMenuItem>
                                                 </Link>
-                                                <Link to="/common/forms/experience">
+                                                <Link to="/common/display/experience">
                                                     <DropdownMenuItem>
                                                         Experience
                                                     </DropdownMenuItem>

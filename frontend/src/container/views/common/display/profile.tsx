@@ -1,15 +1,16 @@
 import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Alert, AlertTitle } from '@/components/ui/alert'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import axios from 'axios'
-import { Mail, Pencil, Phone, Terminal } from 'lucide-react'
+import { Mail, Pencil, Phone, PlusCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 // Define interface for profile data
 interface ProfileData {
@@ -28,6 +29,7 @@ type Props = {}
 const ProfileDisplay = (props: Props) => {
     const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<ProfileData | undefined>(undefined);
+    const navigate = useNavigate()
 
     // Fetch data from API
     useEffect(() => {
@@ -62,7 +64,12 @@ const ProfileDisplay = (props: Props) => {
                                 {data ?
                                     <Badge className='bg-red-800'> {data._id} </Badge>
                                     :
-                                    <Skeleton className="h-4 inline-block w-1/4" />
+                                    <>
+                                        <p className='text-sm text-red-800 '>
+                                        No data found make sure you have filled your basic details
+                                        </p>
+                                        <Skeleton className="h-4 mt-4 block w-1/4" />
+                                    </>
                                 }
 
                             </div>
@@ -152,11 +159,19 @@ const ProfileDisplay = (props: Props) => {
                                 }
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between">
+                        <CardFooter className="flex gap-6">
 
                             <Button size={'lg'}>
                                 <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
                             </Button>
+
+                            <Button size={'lg'} className='bg-teal-600'
+                            disabled={data? true : false}
+                            onClick={()=>navigate('/common/forms/profile')}
+                            >
+                                <PlusCircle className='w-4 h-4 mr-2' color='#fff' /> Add basic details
+                            </Button>
+
                         </CardFooter>
                     </Card>
                 </div>

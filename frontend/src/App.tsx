@@ -74,6 +74,7 @@ const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-
  * COMMON DISPLAY ROUTES
  */
 const ProfileDisplay = lazy(() => import('./container/views/common/display/profile'));
+const ExperienceDisplay = lazy(() => import('./container/views/common/display/experience'));
 
 
 
@@ -116,6 +117,7 @@ function App() {
           <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
