@@ -1,5 +1,7 @@
 const express = require("express");
 const facultyAuthenticator = require("../middleware/facultyAuthenticator");
+
+//add the addTable modules here
 const {
   addProfile,
   getProfileData,
@@ -9,11 +11,15 @@ const {
   getResearchProfileData,
   addPatents,
   addBook,
+  addJournal,
 } = require("../controller/commonController");
+
+//add the file upload modules here
 const {
   experienceFileUpload,
   patentFileUpload,
   bookFileUpload,
+  journalFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -136,6 +142,11 @@ router
   .route("/research-profile")
   .get(facultyAuthenticator, getResearchProfileData);
 
+/*
+ROUTES PATENT
+*/
+
+//IF you have single file input -> use single
 router
   .route("/patent")
   .post(
@@ -144,8 +155,53 @@ router
     addPatents
   );
 
+/*
+ROUTES BOOK
+*/
 router
   .route("/book")
   .post(facultyAuthenticator, bookFileUpload.single("proof"), addBook);
+
+/*
+ROUTES JOURNAL
+*/
+
+//IF you have multiple file inputs -> use fields
+router.route("/journal").post(
+  facultyAuthenticator,
+  journalFileUpload.fields([
+    { name: "paper", maxCount: 1 },
+    { name: "certificate", maxCount: 1 },
+  ]),
+  addJournal
+);
+
+/*
+ROUTES COPYRIGHTS
+*/
+
+/*
+ROUTES MAJOR/MINOR
+*/
+
+/*
+ROUTES NEED BASED
+*/
+
+/*
+ROUTES AWARDS & HONORS
+*/
+
+/*
+ROUTES CONSULTANCY
+*/
+
+/*
+ROUTES CONFERENCE
+*/
+
+/*
+ROUTES BOOK CHAPTER
+*/
 
 module.exports = router;

@@ -121,10 +121,61 @@ const bookFileStorage = multer.diskStorage({
 
 const bookFileUpload = multer({ storage: bookFileStorage });
 
+/**
+ * JOURNAL FILE UPLOAD
+ */
+const journalFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "journal");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "journalproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const journalFileUpload = multer({ storage: journalFileStorage });
+
+/*
+FILE UPLOAD COPYRIGHTS
+*/
+
+/*
+FILE UPLOAD MAJOR/MINOR
+*/
+
+/*
+FILE UPLOAD NEED BASED
+*/
+
+/*
+FILE UPLOAD AWARDS & HONORS
+*/
+
+/*
+FILE UPLOAD CONSULTANCY
+*/
+
+/*
+FILE UPLOAD CONFERENCE
+*/
+
+/*
+FILE UPLOAD BOOK CHAPTER
+*/
+
 module.exports = {
   adminProfileImageUpload,
   headProfileImageUpload,
   experienceFileUpload,
   patentFileUpload,
   bookFileUpload,
+  journalFileUpload,
 };

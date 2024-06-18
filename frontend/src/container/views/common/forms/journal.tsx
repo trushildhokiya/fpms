@@ -44,7 +44,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { ToastAction } from "@/components/ui/toast";
 import React, { useState, useEffect } from "react";
 
 type Props = {};
@@ -171,6 +174,7 @@ const formSchema = z.object({
 
 const journalPublication: React.FC = (props: Props) => {
   const user = useSelector((state: any) => state.user);
+  const { toast } = useToast();
 
   //constants
   const indexingOptions = [
@@ -233,6 +237,27 @@ const journalPublication: React.FC = (props: Props) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    axios
+      .post("/common/journal", values, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.message === "success") {
+          toast({
+            title: "Journal updated successfully",
+            description:
+              "Your Journal information has been added/updated successfully",
+            action: <ToastAction altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -789,6 +814,7 @@ const journalPublication: React.FC = (props: Props) => {
           </Form>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };

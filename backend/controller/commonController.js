@@ -2,6 +2,15 @@ const asyncHandler = require("express-async-handler");
 const Faculty = require("../models/faculty");
 const Patent = require("../models/patent");
 const Book = require("../models/book");
+const Journal = require("../models/journal");
+
+//uncomment this ->
+// const Conference = require("../models/conference");
+// const Consultancy = require("../models/consultancy");
+// const AwardHonors = require("../models/award-honors");
+// const BookChapter = require("../models/book-chapter");
+// const Copyright = require("../models/copyright");
+// const NeedBasedProjects = require("../models/need-based-projects");
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -163,6 +172,9 @@ const getResearchProfileData = asyncHandler(async (req, res) => {
   res.status(200).json(researchProfileData);
 });
 
+/*
+ADD PATENTS
+*/
 const addPatents = asyncHandler(async (req, res) => {
   //get required data
   const data = req.body;
@@ -192,6 +204,10 @@ const addPatents = asyncHandler(async (req, res) => {
   });
 });
 
+/*
+ADD BOOK
+*/
+
 const addBook = asyncHandler(async (req, res) => {
   //get required data
   const data = req.body;
@@ -206,6 +222,7 @@ const addBook = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
 
+  //if you have single file input
   const certificateURL = req.file.path;
   data.proof = certificateURL;
   const book = await Book.create(data);
@@ -222,6 +239,72 @@ const addBook = asyncHandler(async (req, res) => {
   });
 });
 
+/*
+ADD JOURNAL
+*/
+
+const addJournal = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+  // console.log(data);
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  //if you have multiple file inputs
+  const paperURL = req.files.paper[0].path;
+  const certificateURL = req.files.certificate[0].path;
+
+  data.paper = paperURL;
+  data.certificate = certificateURL;
+  const journal = await Journal.create(data);
+  // console.log(data);
+
+  for (const email of data.facultiesInvolved) {
+    const faculty = await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { journal: journal._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+});
+
+/*
+ADD COPYRIGHTS
+*/
+
+/*
+ADD MAJOR/MINOR
+*/
+
+/*
+ADD NEED BASED
+*/
+
+/*
+ADD AWARDS & HONORS
+*/
+
+/*
+ADD CONSULTANCY
+*/
+
+/*
+ADD CONFERENCE
+*/
+
+/*
+ADD BOOK CHAPTER
+*/
+
 module.exports = {
   addProfile,
   getProfileData,
@@ -231,4 +314,5 @@ module.exports = {
   getResearchProfileData,
   addPatents,
   addBook,
+  addJournal,
 };

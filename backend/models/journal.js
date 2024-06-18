@@ -40,6 +40,7 @@ const journalSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     certificate: {
       type: String,
       required: true,
