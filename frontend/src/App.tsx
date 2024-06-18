@@ -52,6 +52,10 @@ import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
 import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute';
 import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
 import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
+import Toggleusers from './container/views/superadmin/container/Toggleusers';
+import Adduser from './container/views/superadmin/container/Adduser';
+import Sttattended from './container/views/common/forms/sttpattended';
+import Sttpcond from './container/views/common/forms/sttpcond';
 
 /**
  * FORM ROUTES
@@ -77,6 +81,8 @@ const ActivityConducted = lazy(() => import('./container/views/common/forms/acti
  * COMMON DISPLAY ROUTES
  */
 const ProfileDisplay = lazy(() => import('./container/views/common/display/profile'));
+const ExperienceDisplay = lazy(() => import('./container/views/common/display/experience'));
+const ResearchProfileDisplay = lazy(() => import('./container/views/common/display/research-profile'));
 
 
 
@@ -94,7 +100,9 @@ function App() {
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
           <Route path='/about' element={<About />} />
-          <Route path='/superadmin' element={<SuperAdminProtectedRoute> <SuperAdminDashboard /> </SuperAdminProtectedRoute>} />
+          <Route path='/superadmin' element={ <SuperAdminProtectedRoute> <SuperAdminDashboard /> </SuperAdminProtectedRoute> } />
+          <Route path='/superadmin/toggle' element={ <SuperAdminProtectedRoute> <Toggleusers /> </SuperAdminProtectedRoute> } />
+          <Route path='/superadmin/add' element={ <SuperAdminProtectedRoute> <Adduser /> </SuperAdminProtectedRoute> } />
           <Route path='/admin' element={<AdminProtectedRoute> <Dashboard /> </AdminProtectedRoute>} />
           <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
@@ -113,6 +121,13 @@ function App() {
           <Route path='/common/forms/book' element={<CommonProtectedRoute> <BookForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/book-chapter' element={<CommonProtectedRoute> <BookChapterForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/patent' element={<CommonProtectedRoute> <PatentForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/sttpattend' element={<CommonProtectedRoute> <Sttattended/> </CommonProtectedRoute>  } />
+          <Route path='/common/forms/sttpcond' element={<CommonProtectedRoute> <Sttpcond/> </CommonProtectedRoute> } />
+          <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm/> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm/> </CommonProtectedRoute>} />
+           <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm/> </CommonProtectedRoute>} />
           <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm /> </CommonProtectedRoute>} />
@@ -121,6 +136,8 @@ function App() {
           <Route path='/common/forms/seminar' element={<CommonProtectedRoute> <Seminar /> </CommonProtectedRoute>} />
           <Route path='/common/forms/activity-conducted' element={<CommonProtectedRoute> <ActivityConducted /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

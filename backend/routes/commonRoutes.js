@@ -1,6 +1,7 @@
 const express = require('express')
 const facultyAuthenticator = require('../middleware/facultyAuthenticator')
-const { addProfile, getProfileData } = require('../controller/commonController')
+const { addProfile, getProfileData, addExperience, getExperienceData, addResearchProfile, getResearchProfileData } = require('../controller/commonController')
+const { experienceFileUpload } = require('../middleware/fileUpload')
 const router = express.Router()
 
 /**
@@ -104,5 +105,13 @@ router.route('/profile').post(facultyAuthenticator,addProfile)
 
 
 router.route('/profile').get(facultyAuthenticator,getProfileData)
+
+router.route('/experience').post(facultyAuthenticator,experienceFileUpload.any('experienceProof'), addExperience)
+
+router.route('/experience').get(facultyAuthenticator,getExperienceData)
+
+router.route('/research-profile').post(facultyAuthenticator,addResearchProfile)
+
+router.route('/research-profile').get(facultyAuthenticator,getResearchProfileData)
 
 module.exports = router
