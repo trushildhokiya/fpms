@@ -56,6 +56,9 @@ import Toggleusers from './container/views/superadmin/container/Toggleusers';
 import Adduser from './container/views/superadmin/container/Adduser';
 import Sttattended from './container/views/common/forms/sttpattended';
 import Sttpcond from './container/views/common/forms/sttpcond';
+import CourseCertificate from './container/views/common/forms/course-certificate';
+import AwardRecieved from './container/views/common/forms/awards-recieved';
+import SeminarsAttended from './container/views/common/forms/seminars-attended';
 
 /**
  * FORM ROUTES
@@ -133,6 +136,9 @@ function App() {
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/course-certifications' element={<CommonProtectedRoute> <CourseCertificate /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awards-recieved' element={<CommonProtectedRoute> <AwardRecieved /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminars-attended' element={<CommonProtectedRoute> <SeminarsAttended /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
