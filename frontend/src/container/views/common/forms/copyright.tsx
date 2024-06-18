@@ -190,7 +190,7 @@ const CopyrightForm = (props: Props) => {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data.message === "success") {
           toast({
             title: "Copyright updated successfully",

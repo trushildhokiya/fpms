@@ -14,6 +14,7 @@ const {
   addJournal,
   addConference,
   addCopyright,
+  addBookChapter,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -24,6 +25,7 @@ const {
   journalFileUpload,
   conferenceFileUpload,
   copyrightFileUpload,
+  bookChapterUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -222,5 +224,12 @@ router.route("/conference").post(
 /*
 ROUTES BOOK CHAPTER
 */
+router
+  .route("/book-chapter")
+  .post(
+    facultyAuthenticator,
+    bookChapterUpload.single("proof"),
+    addBookChapter
+  );
 
 module.exports = router;

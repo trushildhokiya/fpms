@@ -5,6 +5,7 @@ const Book = require("../models/book");
 const Journal = require("../models/journal");
 const Conference = require("../models/conference");
 const Copyright = require("../models/copyright");
+const BookChapter = require("../models/book-chapter");
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -361,6 +362,36 @@ const addConference = asyncHandler(async (req, res) => {
 /*
 ADD BOOK CHAPTER
 */
+const addBookChapter = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  console.log(data);
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  //if you have single file input
+  const certificateURL = req.file.path;
+  data.proof = certificateURL;
+  const bookChapter = await BookChapter.create(data);
+
+  for (const email of data.facultiesInvolved) {
+    const faculty = await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { bookChapter: bookChapter._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+});
 
 module.exports = {
   addProfile,
@@ -374,4 +405,5 @@ module.exports = {
   addJournal,
   addConference,
   addCopyright,
+  addBookChapter,
 };

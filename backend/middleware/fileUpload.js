@@ -206,6 +206,24 @@ const conferenceFileUpload = multer({ storage: conferenceFileStorage });
 /*
 FILE UPLOAD BOOK CHAPTER
 */
+const bookChapterFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "book-chapter");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "bookchapterproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const bookChapterUpload = multer({ storage: bookChapterFileStorage });
 
 module.exports = {
   adminProfileImageUpload,
@@ -216,4 +234,5 @@ module.exports = {
   journalFileUpload,
   conferenceFileUpload,
   copyrightFileUpload,
+  bookChapterUpload,
 };
