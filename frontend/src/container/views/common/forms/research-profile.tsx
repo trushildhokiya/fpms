@@ -171,10 +171,9 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         
-        
         axios.post('/common/research-profile',values)
         .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if(res.data.message==='success'){
 
                 toast({

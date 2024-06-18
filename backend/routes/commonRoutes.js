@@ -13,6 +13,7 @@ const {
   addBook,
   addJournal,
   addConference,
+  addCopyright,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -22,6 +23,7 @@ const {
   bookFileUpload,
   journalFileUpload,
   conferenceFileUpload,
+  copyrightFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -181,6 +183,13 @@ router.route("/journal").post(
 /*
 ROUTES COPYRIGHTS
 */
+router
+  .route("/copyright")
+  .post(
+    facultyAuthenticator,
+    copyrightFileUpload.single("copyrightCertificate"),
+    addCopyright
+  );
 
 /*
 ROUTES MAJOR/MINOR

@@ -156,7 +156,7 @@ const ExperienceForm = (props: Props) => {
             }
         })
         .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if(res.data.message==='success'){
 
                 toast({
@@ -174,7 +174,7 @@ const ExperienceForm = (props: Props) => {
             console.log(err);  
         })
 
-        console.log(values)
+        // console.log(values)
     }
 
     const handleExperienceClick = (event: any) => {

@@ -146,6 +146,24 @@ const journalFileUpload = multer({ storage: journalFileStorage });
 /*
 FILE UPLOAD COPYRIGHTS
 */
+const copyrightFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "copyright");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "copyrightproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const copyrightFileUpload = multer({ storage: copyrightFileStorage });
 
 /*
 FILE UPLOAD MAJOR/MINOR
@@ -197,4 +215,5 @@ module.exports = {
   bookFileUpload,
   journalFileUpload,
   conferenceFileUpload,
+  copyrightFileUpload,
 };

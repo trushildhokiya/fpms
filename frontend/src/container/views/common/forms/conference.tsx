@@ -213,7 +213,7 @@ const ConferenceForm: React.FC = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    // console.log(values);
     axios
       .post("/common/conference", values, {
         headers: {

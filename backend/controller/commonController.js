@@ -4,6 +4,7 @@ const Patent = require("../models/patent");
 const Book = require("../models/book");
 const Journal = require("../models/journal");
 const Conference = require("../models/conference");
+const Copyright = require("../models/copyright");
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -273,6 +274,36 @@ const addJournal = asyncHandler(async (req, res) => {
 /*
 ADD COPYRIGHTS
 */
+const addCopyright = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // console.log(data);
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  //if you have single file input
+  const certificateURL = req.file.path;
+  data.copyrightCertificate = certificateURL;
+  const copyright = await Copyright.create(data);
+
+  for (const email of data.facultiesInvolved) {
+    const faculty = await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { copyright: copyright._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+});
 
 /*
 ADD MAJOR/MINOR
@@ -342,4 +373,5 @@ module.exports = {
   addBook,
   addJournal,
   addConference,
+  addCopyright,
 };
