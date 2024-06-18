@@ -99,9 +99,32 @@ const patentFileStorage = multer.diskStorage({
 
 const patentFileUpload = multer({ storage: patentFileStorage });
 
+/**
+ * BOOK FILE UPLOAD
+ */
+const bookFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "book");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "bookproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const bookFileUpload = multer({ storage: bookFileStorage });
+
 module.exports = {
   adminProfileImageUpload,
   headProfileImageUpload,
   experienceFileUpload,
   patentFileUpload,
+  bookFileUpload,
 };

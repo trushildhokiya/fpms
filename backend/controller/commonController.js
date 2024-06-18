@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Faculty = require("../models/faculty");
 const Patent = require("../models/patent");
+const Book = require("../models/book");
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -191,6 +192,36 @@ const addPatents = asyncHandler(async (req, res) => {
   });
 });
 
+const addBook = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // console.log(data);
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  const certificateURL = req.file.path;
+  data.proof = certificateURL;
+  const book = await Book.create(data);
+
+  for (const email of data.facultiesInvolved) {
+    const faculty = await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { book: book._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+});
+
 module.exports = {
   addProfile,
   getProfileData,
@@ -199,4 +230,5 @@ module.exports = {
   addResearchProfile,
   getResearchProfileData,
   addPatents,
+  addBook,
 };

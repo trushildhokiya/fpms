@@ -8,10 +8,12 @@ const {
   addResearchProfile,
   getResearchProfileData,
   addPatents,
+  addBook,
 } = require("../controller/commonController");
 const {
   experienceFileUpload,
   patentFileUpload,
+  bookFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -141,5 +143,9 @@ router
     patentFileUpload.single("patentCertificate"),
     addPatents
   );
+
+router
+  .route("/book")
+  .post(facultyAuthenticator, bookFileUpload.single("proof"), addBook);
 
 module.exports = router;
