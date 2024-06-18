@@ -56,6 +56,9 @@ import Toggleusers from './container/views/superadmin/container/Toggleusers';
 import Adduser from './container/views/superadmin/container/Adduser';
 import Sttattended from './container/views/common/forms/sttpattended';
 import Sttpcond from './container/views/common/forms/sttpcond';
+import CourseCertificate from './container/views/common/forms/course-certificate';
+import AwardRecieved from './container/views/common/forms/awards-recieved';
+import SeminarsAttended from './container/views/common/forms/seminars-attended';
 
 /**
  * FORM ROUTES
@@ -73,6 +76,9 @@ const ExperienceForm = lazy(() => import('./container/views/common/forms/experie
 const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awards-honors'));
 const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
 const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-based-project'));
+const Seminar = lazy(() => import('./container/views/common/forms/seminar'));
+const ActivityConducted = lazy(() => import('./container/views/common/forms/activity-conducted'));
+
 
 /**
  * COMMON DISPLAY ROUTES
@@ -130,9 +136,14 @@ function App() {
           <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminar' element={<CommonProtectedRoute> <Seminar /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/activity-conducted' element={<CommonProtectedRoute> <ActivityConducted /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/course-certifications' element={<CommonProtectedRoute> <CourseCertificate /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awards-recieved' element={<CommonProtectedRoute> <AwardRecieved /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminars-attended' element={<CommonProtectedRoute> <SeminarsAttended /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>
