@@ -1,8 +1,19 @@
-const express = require('express')
-const facultyAuthenticator = require('../middleware/facultyAuthenticator')
-const { addProfile, getProfileData, addExperience, getExperienceData, addResearchProfile, getResearchProfileData } = require('../controller/commonController')
-const { experienceFileUpload } = require('../middleware/fileUpload')
-const router = express.Router()
+const express = require("express");
+const facultyAuthenticator = require("../middleware/facultyAuthenticator");
+const {
+  addProfile,
+  getProfileData,
+  addExperience,
+  getExperienceData,
+  addResearchProfile,
+  getResearchProfileData,
+  addPatents,
+} = require("../controller/commonController");
+const {
+  experienceFileUpload,
+  patentFileUpload,
+} = require("../middleware/fileUpload");
+const router = express.Router();
 
 /**
  * @swagger
@@ -101,17 +112,34 @@ const router = express.Router()
  *                   type: string
  *                   example: Internal Server Error
  */
-router.route('/profile').post(facultyAuthenticator,addProfile)
+router.route("/profile").post(facultyAuthenticator, addProfile);
 
+router.route("/profile").get(facultyAuthenticator, getProfileData);
 
-router.route('/profile').get(facultyAuthenticator,getProfileData)
+router
+  .route("/experience")
+  .post(
+    facultyAuthenticator,
+    experienceFileUpload.any("experienceProof"),
+    addExperience
+  );
 
-router.route('/experience').post(facultyAuthenticator,experienceFileUpload.any('experienceProof'), addExperience)
+router.route("/experience").get(facultyAuthenticator, getExperienceData);
 
-router.route('/experience').get(facultyAuthenticator,getExperienceData)
+router
+  .route("/research-profile")
+  .post(facultyAuthenticator, addResearchProfile);
 
-router.route('/research-profile').post(facultyAuthenticator,addResearchProfile)
+router
+  .route("/research-profile")
+  .get(facultyAuthenticator, getResearchProfileData);
 
-router.route('/research-profile').get(facultyAuthenticator,getResearchProfileData)
+router
+  .route("/patent")
+  .post(
+    facultyAuthenticator,
+    patentFileUpload.single("patentCertificate"),
+    addPatents
+  );
 
-module.exports = router
+module.exports = router;

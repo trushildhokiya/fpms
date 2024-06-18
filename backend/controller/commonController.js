@@ -1,187 +1,202 @@
-const asyncHandler = require('express-async-handler');
-const Faculty = require('../models/faculty')
+const asyncHandler = require("express-async-handler");
+const Faculty = require("../models/faculty");
+const Patent = require("../models/patent");
 
+const addProfile = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
 
-const addProfile = asyncHandler( async(req,res)=>{
+  // find user
+  const user = await Faculty.findOne({ email: email });
 
-    //get required data
-    const data = req.body;
-    const {email} = req.decodedData;
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
 
-    // find user
-    const user = await Faculty.findOne({email: email})
+  // save data
+  user.profile = data;
+  await user.save();
 
-    if(!user){
-        res.status(400)
-        throw new Error("User not found!")
-    }
+  res.status(200).json({
+    message: "success",
+  });
+});
 
-    // save data
-    user.profile = data
-    await user.save()
+const getProfileData = asyncHandler(async (req, res) => {
+  //get required data
+  const { email } = req.decodedData;
 
-    res.status(200).json({
-        message: "success"
-    })
-    
-})
+  // find user
+  const user = await Faculty.findOne({ email: email });
 
-const getProfileData = asyncHandler( async(req,res)=>{
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
 
-    //get required data
-    const {email} = req.decodedData;
+  const profileData = user.profile;
 
-    // find user
-    const user = await Faculty.findOne({email: email})
-
-    if(!user){
-        res.status(400)
-        throw new Error("User not found!")
-    }
-
-    const profileData = user.profile
-
-    res.status(200).json(profileData)
-    
-})
-
+  res.status(200).json(profileData);
+});
 
 const addExperience = async (req, res) => {
+  //get required data
+  const { email } = req.decodedData;
 
-    //get required data
-    const {email} = req.decodedData;
+  // find user
+  const user = await Faculty.findOne({ email: email });
 
-    // find user
-    const user = await Faculty.findOne({email: email})
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
 
-    if(!user){
-        res.status(400)
-        throw new Error("User not found!")
-    }
+  // add xperience json in array
+  for (let i = 0; i < req.body.experienceDetails.length; i++) {
+    const data = req.body.experienceDetails[i];
+    data.experienceProof = req.files[i].path;
 
-    // add xperience json in array
-    for( let i=0 ; i<req.body.experienceDetails.length ; i++){
+    user.experience.push(data);
+  }
 
-        const data = req.body.experienceDetails[i]
-        data.experienceProof = req.files[i].path
+  await user.save();
 
-        user.experience.push(data)
-    }
-
-    await user.save()
-
-    res.status(200).json({
-        message:"success"
-    })
+  res.status(200).json({
+    message: "success",
+  });
 };
 
 const getExperienceData = asyncHandler(async (req, res) => {
-    const { email } = req.decodedData;
+  const { email } = req.decodedData;
 
-    // Find user
-    const user = await Faculty.findOne({ email: email });
+  // Find user
+  const user = await Faculty.findOne({ email: email });
 
-    if (!user) {
-        res.status(400);
-        throw new Error("User not found!");
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  const experienceData = user.experience;
+
+  let industryExperienceMonths = 0;
+  let teachingExperienceMonths = 0;
+
+  experienceData.forEach((exp) => {
+    // convert to Date
+    const fromDate = new Date(exp.fromDate);
+    const toDate = new Date(exp.toDate);
+
+    //cqalculate total months
+    let months = (toDate.getFullYear() - fromDate.getFullYear()) * 12;
+    months += toDate.getMonth() - fromDate.getMonth();
+
+    // handle partial months
+    if (toDate.getDate() >= fromDate.getDate()) {
+      months += 1;
     }
 
-    const experienceData = user.experience;
+    // segregate data
+    if (exp.experienceIndustry.toLowerCase() === "industry") {
+      industryExperienceMonths += months;
+    } else if (exp.experienceIndustry.toLowerCase() === "teaching") {
+      teachingExperienceMonths += months;
+    }
+  });
 
-    let industryExperienceMonths = 0;
-    let teachingExperienceMonths = 0;
+  const totalExperienceMonths =
+    industryExperienceMonths + teachingExperienceMonths;
 
-    experienceData.forEach(exp => {
+  const formatExperience = (months) => {
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    return `${years} years and ${remainingMonths} months`;
+  };
 
-        // convert to Date
-        const fromDate = new Date(exp.fromDate);
-        const toDate = new Date(exp.toDate);
-
-        //cqalculate total months
-        let months = (toDate.getFullYear() - fromDate.getFullYear()) * 12;
-        months += toDate.getMonth() - fromDate.getMonth();
-
-        // handle partial months
-        if (toDate.getDate() >= fromDate.getDate()) {
-            months += 1;
-        }
-
-        // segregate data
-        if (exp.experienceIndustry.toLowerCase() === 'industry') {
-            industryExperienceMonths += months;
-        } else if (exp.experienceIndustry.toLowerCase() === 'teaching') {
-            teachingExperienceMonths += months;
-        }
-
-    });
-
-    const totalExperienceMonths = industryExperienceMonths + teachingExperienceMonths;
-
-    const formatExperience = (months) => {
-        const years = Math.floor(months / 12);
-        const remainingMonths = months % 12;
-        return `${years} years and ${remainingMonths} months`;
-    };
-
-    res.status(200).json({
-        experience: experienceData,
-        industryExperience: formatExperience(industryExperienceMonths),
-        teachingExperience: formatExperience(teachingExperienceMonths),
-        totalExperience: formatExperience(totalExperienceMonths),
-    });
-    
+  res.status(200).json({
+    experience: experienceData,
+    industryExperience: formatExperience(industryExperienceMonths),
+    teachingExperience: formatExperience(teachingExperienceMonths),
+    totalExperience: formatExperience(totalExperienceMonths),
+  });
 });
 
+const addResearchProfile = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
 
+  // find user
+  const user = await Faculty.findOne({ email: email });
 
-const addResearchProfile = asyncHandler( async(req,res)=>{
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
 
-    //get required data
-    const data = req.body;
-    const {email} = req.decodedData;
+  // save data
+  user.researchProfile = data;
+  await user.save();
 
-    // find user
-    const user = await Faculty.findOne({email: email})
+  res.status(200).json({
+    message: "success",
+  });
+});
 
-    if(!user){
-        res.status(400)
-        throw new Error("User not found!")
-    }
+const getResearchProfileData = asyncHandler(async (req, res) => {
+  //get required data
+  const { email } = req.decodedData;
 
-    // save data
-    user.researchProfile = data
-    await user.save()
+  // find user
+  const user = await Faculty.findOne({ email: email });
 
-    res.status(200).json({
-        message: "success"
-    })
-    
-})
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
 
-const getResearchProfileData = asyncHandler( async(req,res)=>{
+  const researchProfileData = user.researchProfile;
 
-    //get required data
-    const {email} = req.decodedData;
+  res.status(200).json(researchProfileData);
+});
 
-    // find user
-    const user = await Faculty.findOne({email: email})
+const addPatents = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
 
-    if(!user){
-        res.status(400)
-        throw new Error("User not found!")
-    }
+  console.log(data);
+  // find user
+  const user = await Faculty.findOne({ email: email });
 
-    const researchProfileData = user.researchProfile
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
 
-    res.status(200).json(researchProfileData)
-    
-})
+  const certificateURL = req.file.path;
+  data.patentCertificate = certificateURL;
+  const patent = await Patent.create(data);
+  for (const email of data.facultiesInvolved) {
+    const faculty = await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { patent: patent._id } }
+    );
+  }
 
-module.exports={
-    addProfile,
-    getProfileData,
-    addExperience,
-    getExperienceData,
-    addResearchProfile,
-    getResearchProfileData
-}
+  res.status(200).json({
+    message: "success",
+  });
+});
+
+module.exports = {
+  addProfile,
+  getProfileData,
+  addExperience,
+  getExperienceData,
+  addResearchProfile,
+  getResearchProfileData,
+  addPatents,
+};
