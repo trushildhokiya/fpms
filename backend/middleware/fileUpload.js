@@ -166,6 +166,24 @@ FILE UPLOAD CONSULTANCY
 /*
 FILE UPLOAD CONFERENCE
 */
+const conferenceFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "conference");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "conferenceproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const conferenceFileUpload = multer({ storage: conferenceFileStorage });
 
 /*
 FILE UPLOAD BOOK CHAPTER
@@ -178,4 +196,5 @@ module.exports = {
   patentFileUpload,
   bookFileUpload,
   journalFileUpload,
+  conferenceFileUpload,
 };

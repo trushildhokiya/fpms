@@ -12,6 +12,7 @@ const {
   addPatents,
   addBook,
   addJournal,
+  addConference,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -20,6 +21,7 @@ const {
   patentFileUpload,
   bookFileUpload,
   journalFileUpload,
+  conferenceFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -199,6 +201,14 @@ ROUTES CONSULTANCY
 /*
 ROUTES CONFERENCE
 */
+router.route("/conference").post(
+  facultyAuthenticator,
+  conferenceFileUpload.fields([
+    { name: "paper", maxCount: 1 },
+    { name: "certificate", maxCount: 1 },
+  ]),
+  addConference
+);
 
 /*
 ROUTES BOOK CHAPTER

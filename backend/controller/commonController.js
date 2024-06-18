@@ -3,14 +3,7 @@ const Faculty = require("../models/faculty");
 const Patent = require("../models/patent");
 const Book = require("../models/book");
 const Journal = require("../models/journal");
-
-//uncomment this ->
-// const Conference = require("../models/conference");
-// const Consultancy = require("../models/consultancy");
-// const AwardHonors = require("../models/award-honors");
-// const BookChapter = require("../models/book-chapter");
-// const Copyright = require("../models/copyright");
-// const NeedBasedProjects = require("../models/need-based-projects");
+const Conference = require("../models/conference");
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -300,6 +293,39 @@ ADD CONSULTANCY
 /*
 ADD CONFERENCE
 */
+const addConference = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+  // console.log(data);
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  //if you have multiple file inputs
+  const paperURL = req.files.paper[0].path;
+  const certificateURL = req.files.certificate[0].path;
+
+  data.paper = paperURL;
+  data.certificate = certificateURL;
+  const conference = await Conference.create(data);
+  // console.log(data);
+
+  for (const email of data.facultiesInvolved) {
+    const faculty = await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { conference: conference._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+});
 
 /*
 ADD BOOK CHAPTER
@@ -315,4 +341,5 @@ module.exports = {
   addPatents,
   addBook,
   addJournal,
+  addConference,
 };
