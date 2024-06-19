@@ -27,12 +27,49 @@ const experienceSchema = new mongoose.Schema({
     experienceProof: { type: String, required: true } // Assuming you store file paths or GridFS file IDs here
 });
 
+// Awards and Honors Schema
 const awardsHonorsSchema = new mongoose.Schema({
     title: { type: String, required: true },
     awardingBody: { type: String, required: true },
     year: { type: Date, required: true },
     description: { type: String, required: true },
     awardsHonorsProof: { type: String, required: true },
+});
+
+// Major and Minor Project 
+const transactionDetails = new mongoose.Schema({
+    purchaseOrderNumber: { type: String, required: true },
+    purchaseOrderDate: { type: Date, required: true },
+    purchaseInvoiceNumber: { type: String, required: true },
+    purchaseInvoiceDate: { type: Date, required: true },
+    bankName: { type: String, required: true },
+    branchName: { type: String, required: true },
+    amountRecieved: { type: Number, required: true },
+    remarks: { type: String, required: true },
+});
+
+const majorminorSchema = new mongoose.Schema({
+    projectTitle: { type: String, required: true },
+    principalInvestigator: { type: String, required: true },
+    coInvestigators: { type: [String], required: true },
+    facultiesInvolved: { type: [String], required: true },
+    departmentInvolved: { type: [String], required: true },
+    fundingScheme: { type: String, required: true },
+    fundingAgency: { type: String, required: true },
+    nationalInternational: { type: String, required: true },
+    budgetAmount: { type: Number, required: true },
+    sanctionedAmount: { type: Number, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    totalGrantRecieved: { type: Number, required: true },
+    domain: { type: String, required: true },
+    areaOfExpertise: { type: String, required: true },
+    description: { type: String, required: true },
+    transactionDetails: { type: [transactionDetails], required: false },
+    sanctionedOrder: { type: String, required: true },
+    transactionProof: { type: String, required: true },
+    completionCertificate: { type: String, required: true },
+    supportingDocuments: { type: String, required: true },
 });
 
 const researchSchema = new mongoose.Schema({
@@ -143,7 +180,7 @@ const facultySchema = new mongoose.Schema({
     },
 
     projects: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'project' }],
+        type: [majorminorSchema],
         required: false
     },
 

@@ -58,7 +58,7 @@ const addExperience = async (req, res) => {
     throw new Error("User not found!");
   }
 
-  // add xperience json in array
+  // add experience json in array
   for (let i = 0; i < req.body.experienceDetails.length; i++) {
     const data = req.body.experienceDetails[i];
     data.experienceProof = req.files[i].path;
@@ -310,6 +310,36 @@ const addCopyright = asyncHandler(async (req, res) => {
 ADD MAJOR/MINOR
 */
 
+const addMajorMinor = asyncHandler(async (request, response) => {
+  const data = request.body;
+  const { email } = request.decodedData;
+  
+
+  const user = await Faculty.findOne({
+    email: email,
+  });
+
+  if (!user) {
+    response.status(400);
+    throw new Error("User not found!");
+  } else {
+    
+    for (let i = 0; i < data.transactionDetails.length; i++) {
+      const data = data.transactionDetails[i];
+      data.transactionDetailsProof = request.files[i].path;
+      user.projects.push(data);
+    }
+
+    await user.save();
+
+    console.log(user.projects);
+
+    response.status(200).json({
+      message: "success"
+    });
+  }
+})
+
 /*
 ADD NEED BASED
 */
@@ -437,6 +467,7 @@ module.exports = {
   addPatents,
   addBook,
   addJournal,
+  addMajorMinor,
   addAwardsHonor,
   addConference,
   addCopyright,

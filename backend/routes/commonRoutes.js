@@ -12,6 +12,7 @@ const {
   addPatents,
   addBook,
   addJournal,
+  addMajorMinor,
   addAwardsHonor,
   addConference,
   addCopyright,
@@ -28,6 +29,7 @@ const {
   conferenceFileUpload,
   copyrightFileUpload,
   bookChapterUpload,
+  majorAndMinorUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -198,6 +200,13 @@ router
 /*
 ROUTES MAJOR/MINOR
 */
+router
+  .route("/majorminor")
+  .post(
+    facultyAuthenticator,
+    majorAndMinorUpload.single("transactionDetails"),
+    addMajorMinor
+  )
 
 /*
 ROUTES NEED BASED

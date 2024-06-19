@@ -37,6 +37,9 @@ import {
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import axios from 'axios'
+import { toast } from '@/components/ui/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
 type Props = {}
 
@@ -205,7 +208,26 @@ const ProjectForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-
+        axios.post("/common/majorminor", values, {
+            headers: {
+                'Content-Type':'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            if (response.data.message === "success") {
+                toast({
+                    title: "Experience updated successfully",
+                    description: "Your experience data has been added/updated successfully",
+                    action: (
+                      <ToastAction altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset()
+            }
+        })
+        .catch((error) => {
+            console.error(error)
+        })
         console.log(values)
     }
 

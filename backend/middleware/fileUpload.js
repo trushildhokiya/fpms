@@ -168,6 +168,24 @@ const copyrightFileUpload = multer({ storage: copyrightFileStorage });
 /*
 FILE UPLOAD MAJOR/MINOR
 */
+const majorAndMinorStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "copyright");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "majorandminor" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const majorAndMinorUpload = multer({ storage: majorAndMinorStorage });
 
 /*
 FILE UPLOAD NEED BASED
@@ -188,7 +206,7 @@ const awardsHonorsFileStorage = multer.diskStorage({
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "bookchapterproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "awardsandhonors" + "-" + uniqueSuffix + path.extname(file.originalname)
     );
   },
 });
@@ -248,6 +266,7 @@ module.exports = {
   headProfileImageUpload,
   experienceFileUpload,
   patentFileUpload,
+  majorAndMinorUpload,
   bookFileUpload,
   journalFileUpload,
   awardsHonorsFileUpload,
