@@ -58,55 +58,50 @@ const pdfFileSchema = z
   }, "File must be a pdf");
 
 const formSchema = z.object({
-  title: z
-    .string()
-    .min(2, {
-      message: "Title required!",
-    })
-    .max(100, {
-      message: "Title must not exceed 100 characters",
-    }),
 
-  organization: z
-    .string()
-    .min(2, {
-      message: "Awardee Organization required!",
-    })
-    .max(100, {
-      message: "Awardee Organization must not exceed 100 characters",
-    }),
+  title: z.string().min(2, {
+    message: "Title is required!",
+  }).max(100, {
+    message: "Title must not exceed 100 characters",
+  }),
 
-  venue: z
-    .string()
-    .min(2, {
-      message: "Venue required!",
-    })
-    .max(100, {
-      message: "Venue must not exceed 100 characters",
-    }),
+  organization: z.string().min(2, {
+    message: "Awardee Organization is required!",
+  }).max(100, {
+    message: "Awardee Organization must not exceed 100 characters",
+  }),
+
+  venue: z.string().min(2, {
+    message: "Venue is required!",
+  }).max(100, {
+    message: "Venue must not exceed 100 characters",
+  }),
 
   type: z.string().min(1, {
-    message: "This field must be marked",
+    message: "Type is required",
   }),
 
-  filingDate: z.date(),
+  date: z.date(),
 
   level: z.string().min(1, {
-    message: "This field must be marked",
+    message: "Level is required!",
   }),
 
-  remarks: z
-    .string({
-      invalid_type_error: "Remarks name is required!",
-    })
-    .transform((value) => value.split(",").map((name) => name.trim())),
+  remarks: z.string().min(1, {
+    message: "Remark is required!"
+  }).max(200, {
+    message: "Remark mus not exceed 200 characters"
+  }),
 
-  Certificate: pdfFileSchema,
-  photo: pdfFileSchema,
-  video: pdfFileSchema,
+  certificate: pdfFileSchema,
+  photos: pdfFileSchema,
+  videoUrl: z.string().min(1).url({
+    message: 'Invalid url'
+  }),
+
 });
 
-const AwardRecieved = (props: Props) => {
+const AwardRecievedForm = (props: Props) => {
   const user = useSelector((state: any) => state.user);
 
   // command
@@ -132,12 +127,12 @@ const AwardRecieved = (props: Props) => {
       venue: "",
       organization: "",
       type: "",
-      filingDate: new Date(),
+      date: new Date(),
       level: "",
-      remarks: [""],
-      Certificate: new File([], ""),
-      photo: new File([], ""),
-      video: new File([], ""),
+      remarks: "",
+      certificate: new File([], ""),
+      photos: new File([], ""),
+      videoUrl: "",
     },
   });
 
@@ -156,34 +151,37 @@ const AwardRecieved = (props: Props) => {
           </span>
         </h1>
 
+        {/* COMMAND DIALOG  */}
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Suggestions">
+              <CommandItem>
+                <BookUser className="mr-2 h-4 w-4" />
+                <span>
+                  <a href="#basicDetails" onClick={() => setOpen(false)}>
+                    Basic Details
+                  </a>
+                </span>
+              </CommandItem>
+              <CommandItem>
+                <FileArchive className="mr-2 h-4 w-4" />
+                <span>
+                  <a href="#proofUpload" onClick={() => setOpen(false)}>
+                    Proof Upload
+                  </a>
+                </span>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
+
+        {/* FORM */}
+
         <div className="p-2 font-Poppins text-xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* COMMAND DIALOG  */}
-              <CommandDialog open={open} onOpenChange={setOpen}>
-                <CommandInput placeholder="Type a command or search..." />
-                <CommandList>
-                  <CommandEmpty>No results found.</CommandEmpty>
-                  <CommandGroup heading="Suggestions">
-                    <CommandItem>
-                      <BookUser className="mr-2 h-4 w-4" />
-                      <span>
-                        <a href="#basicDetails" onClick={() => setOpen(false)}>
-                          Basic Details
-                        </a>
-                      </span>
-                    </CommandItem>
-                    <CommandItem>
-                      <FileArchive className="mr-2 h-4 w-4" />
-                      <span>
-                        <a href="#proofUpload" onClick={() => setOpen(false)}>
-                          Proof Upload
-                        </a>
-                      </span>
-                    </CommandItem>
-                  </CommandGroup>
-                </CommandList>
-              </CommandDialog>
 
               {/* BASIC DETAILS */}
               <h2
@@ -211,7 +209,7 @@ const AwardRecieved = (props: Props) => {
                     <FormLabel className="text-gray-800">Award Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter Title"
+                        placeholder="Award Title"
                         {...field}
                         autoComplete="off"
                       />
@@ -220,153 +218,158 @@ const AwardRecieved = (props: Props) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Type</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+
+
+              <div className="grid md:grid-cols-2 gap-6">
+
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="award">Award</SelectItem>
+                          <SelectItem value="recognition">Recognition</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="level"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Level</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a level" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="international">International</SelectItem>
+                          <SelectItem value="national">National</SelectItem>
+                          <SelectItem value="state">State</SelectItem>
+                          <SelectItem value="regional">Regional</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="organization"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">
+                        Awardee Organization
+                      </FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="award">Award</SelectItem>
-                        <SelectItem value="recognition">Recognition</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="organization"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">
-                      Awardee Organization
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Awardee Organization Name"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="venue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Venue</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Venue Name"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="filingDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-grey-800">From Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={`w-full pl-3 text-left font-normal ${
-                            !field.value ? "text-muted-foreground" : ""
-                          }`}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent align="start" className=" w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          captionLayout="dropdown-buttons"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          fromYear={1900}
-                          toYear={2100}
+                        <Input
+                          placeholder="Awardee Organization"
+                          {...field}
+                          autoComplete="off"
                         />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Level</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="international">
-                          International
-                        </SelectItem>
-                        <SelectItem value="national">National</SelectItem>
-                        <SelectItem value="state">State</SelectItem>
-                        <SelectItem value="regional">Regional</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="remarks"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Remarks</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter Remarks"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="venue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Venue</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="venue"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col md:col-span-2">
+                      <FormLabel className="text-grey-800">Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className=" w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            captionLayout="dropdown-buttons"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            fromYear={1900}
+                            toYear={2100}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+
+
+                <FormField
+                  control={form.control}
+                  name="remarks"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel className="text-gray-800">Remarks</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Remarks ( NA if not )"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+              </div>
 
               <Separator className="bg-red-800" />
 
@@ -386,65 +389,67 @@ const AwardRecieved = (props: Props) => {
                 </Alert>
               </div>
 
-              <FormField
-                control={form.control}
-                name="Certificate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">
-                      Upload Certificate
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        accept=".pdf"
-                        type="file"
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="certificate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">
+                        Upload Certificate
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          accept=".pdf"
+                          type="file"
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="photo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">
-                      Upload Photos
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        accept=".pdf"
-                        type="file"
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="photos"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">
+                        Upload Photos
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          accept=".pdf"
+                          type="file"
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="video"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">
-                      Upload Video Link
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        accept=".pdf"
-                        type="file"
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="videoUrl"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel className="text-gray-800">Video Url</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="video link"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+
 
               <Button type="submit" className="bg-red-800 hover:bg-red-700">
                 Submit
@@ -457,4 +462,4 @@ const AwardRecieved = (props: Props) => {
   );
 };
 
-export default AwardRecieved;
+export default AwardRecievedForm;

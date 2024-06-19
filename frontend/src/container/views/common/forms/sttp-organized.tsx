@@ -149,7 +149,7 @@ const formSchema = z.object({
         message: "Remarks must not exceed 100 characters"
     }),
 
-    videoUrl: z.string().url({
+    videoUrl: z.string().min(1).url({
         message: "Not a valid Url"
     }),
 

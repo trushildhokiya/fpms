@@ -59,73 +59,54 @@ const pdfFileSchema = z
 
 const formSchema = z
   .object({
-    title: z
-      .string()
-      .min(2, {
-        message: "Course Title required!",
-      })
-      .max(100, {
-        message: "Course Title must not exceed 100 characters",
-      }),
-
-    organized: z
-      .string()
-      .min(2, {
-        message: "Course Organized by required!",
-      })
-      .max(100, {
-        message: "Course Organized By must not exceed 100 characters",
-      }),
-
-    association: z
-      .string()
-      .min(2, {
-        message: "In association with required!",
-      })
-      .max(100, {
-        message: "In association with must not exceed 100 characters",
-      }),
-
-    venue: z
-      .string()
-      .min(2, {
-        message: "Venue required!",
-      })
-      .max(100, {
-        message: "Venue must not exceed 100 characters",
-      }),
-
-    mode: z.string().min(1, {
-      message: "This field must be marked",
+    title: z.string().min(1, {
+      message: "Course Title required!",
+    }).max(100, {
+      message: "Course Title must not exceed 100 characters",
     }),
 
-    filingDate: z.date(),
-    grantDate: z.date(),
+    organizedBy: z.string().min(1, {
+      message: "Course Organized by required!",
+    }).max(100, {
+      message: "Course Organized By must not exceed 100 characters",
+    }),
 
-    days: z
-      .string()
-      .min(2, {
-        message: "Days required!",
-      })
-      .max(100, {
-        message: "Days must not exceed 100 characters",
-      }),
+    associationWith: z.string().min(1, {
+      message: "In association with required!",
+    }).max(100, {
+      message: "In association with must not exceed 100 characters",
+    }),
 
-      level: z.string().min(1, {
-        message: "This field must be marked",
-      }),
+    venue: z.string().min(1, {
+      message: "Venue required!",
+    }).max(100, {
+      message: "Venue must not exceed 100 characters",
+    }),
 
-    remarks: z
-      .string({
-        invalid_type_error: "Remarks name is required!",
-      })
-      .transform((value) => value.split(",").map((name) => name.trim())),
+    mode: z.string().min(1, {
+      message: "Mode is required",
+    }),
 
-    Certificate: pdfFileSchema,
+    fromDate: z.date(),
+    toDate: z.date(),
+
+    totalDays: z.coerce.number().nonnegative(),
+
+    level: z.string().min(1, {
+      message: "Level is required!",
+    }),
+
+    remarks: z.string().min(1, {
+      message: "Remarks required!",
+    }).max(200, {
+      message: "Remarks must not exceed 100 characters",
+    }),
+
+    certificate: pdfFileSchema,
   })
-  .refine((data) => new Date(data.grantDate) > new Date(data.filingDate), {
+  .refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End date must be greater than start date",
-    path: ["endDate"], // Field to which the error will be attached
+    path: ["toDate"], // Field to which the error will be attached
   });
 
 const CourseCertificate = (props: Props) => {
@@ -151,16 +132,16 @@ const CourseCertificate = (props: Props) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      organized: "",
+      organizedBy: "",
       venue: "",
-      association: "",
+      associationWith: "",
       mode: "",
-      filingDate: new Date(),
-      grantDate: new Date(),
-      days: "",
+      fromDate: new Date(),
+      toDate: new Date(),
+      totalDays: 0,
       level: "",
-      remarks: [""],
-      Certificate: new File([], ""),
+      remarks: '',
+      certificate: new File([], ""),
     },
   });
 
@@ -178,34 +159,38 @@ const CourseCertificate = (props: Props) => {
           </span>
         </h1>
 
+        {/* COMMAND DIALOG  */}
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Suggestions">
+              <CommandItem>
+                <BookUser className="mr-2 h-4 w-4" />
+                <span>
+                  <a href="#basicDetails" onClick={() => setOpen(false)}>
+                    Basic Details
+                  </a>
+                </span>
+              </CommandItem>
+              <CommandItem>
+                <FileArchive className="mr-2 h-4 w-4" />
+                <span>
+                  <a href="#proofUpload" onClick={() => setOpen(false)}>
+                    Proof Upload
+                  </a>
+                </span>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
+
+        {/* FORM */}
+
         <div className="p-2 font-Poppins text-xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* COMMAND DIALOG  */}
-              <CommandDialog open={open} onOpenChange={setOpen}>
-                <CommandInput placeholder="Type a command or search..." />
-                <CommandList>
-                  <CommandEmpty>No results found.</CommandEmpty>
-                  <CommandGroup heading="Suggestions">
-                    <CommandItem>
-                      <BookUser className="mr-2 h-4 w-4" />
-                      <span>
-                        <a href="#basicDetails" onClick={() => setOpen(false)}>
-                          Basic Details
-                        </a>
-                      </span>
-                    </CommandItem>
-                    <CommandItem>
-                      <FileArchive className="mr-2 h-4 w-4" />
-                      <span>
-                        <a href="#proofUpload" onClick={() => setOpen(false)}>
-                          Proof Upload
-                        </a>
-                      </span>
-                    </CommandItem>
-                  </CommandGroup>
-                </CommandList>
-              </CommandDialog>
+
 
               {/* BASIC DETAILS */}
               <h2
@@ -235,26 +220,7 @@ const CourseCertificate = (props: Props) => {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter Title"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="organized"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">
-                      Course Organized by
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Organizer Name"
+                        placeholder="Course Title"
                         {...field}
                         autoComplete="off"
                       />
@@ -264,72 +230,96 @@ const CourseCertificate = (props: Props) => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="association"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">
-                      In Association With
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Association Name"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="venue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Venue</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Venue Name"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="mode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Mode</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="offline">Offline</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+
                 <FormField
                   control={form.control}
-                  name="filingDate"
+                  name="organizedBy"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">
+                        Course Organized by
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="course organized by..."
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="associationWith"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">
+                        Association With
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="association with"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="venue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Venue</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="venue"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="mode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Mode</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a mode" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="online">Online</SelectItem>
+                          <SelectItem value="offline">Offline</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+
+                <FormField
+                  control={form.control}
+                  name="fromDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-grey-800">From Date</FormLabel>
@@ -337,9 +327,8 @@ const CourseCertificate = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -367,7 +356,7 @@ const CourseCertificate = (props: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="grantDate"
+                  name="toDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-grey-800">To Date</FormLabel>
@@ -375,9 +364,8 @@ const CourseCertificate = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -402,71 +390,73 @@ const CourseCertificate = (props: Props) => {
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <FormField
-                control={form.control}
-                name="days"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">No. Of Days</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Enter No. Of Days"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Level</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                <FormField
+                  control={form.control}
+                  name="totalDays"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">No. Of Days</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
+                        <Input
+                          type="number"
+                          placeholder="Number of days"
+                          {...field}
+                          autoComplete="off"
+                        />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="international">International</SelectItem>
-                        <SelectItem value="national">National</SelectItem>
-                        <SelectItem value="state">State</SelectItem>
-                        <SelectItem value="regional">Regional</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="remarks"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-800">Remarks</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter Remarks"
-                        {...field}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="level"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-800">Level</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="international">International</SelectItem>
+                          <SelectItem value="national">National</SelectItem>
+                          <SelectItem value="state">State</SelectItem>
+                          <SelectItem value="regional">Regional</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="remarks"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel className="text-gray-800">Remarks</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter Remarks"
+                          {...field}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+
+              </div>
 
               <Separator className="bg-red-800" />
 
@@ -489,7 +479,7 @@ const CourseCertificate = (props: Props) => {
 
               <FormField
                 control={form.control}
-                name="Certificate"
+                name="certificate"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-800">
