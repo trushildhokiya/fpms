@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../../assets/svg/kjsitLogo.svg';
 import { Sling as Hamburger } from 'hamburger-react';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown, Trophy } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -61,7 +61,98 @@ const HeadNavbar = () => {
                     <div className="mx-5">
                         <Link to="/hod">Dashboard</Link>
                     </div>
-                    <div className="mx-5">Others</div>
+                    <div className="mx-5">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <span className="flex items-center">
+                                    Others
+                                    <span>
+                                        <ChevronDown />
+                                    </span>
+                                </span>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='w-56'>
+                                <DropdownMenuLabel>Others</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>
+                                            <Trophy className="mr-2 h-4 w-4" />
+                                            <span>Achievements</span>
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        Sttp/Fdp
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <Link to='/common/forms/sttp-conducted'>
+                                                                <DropdownMenuItem>
+                                                                    Conducted
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/sttp-attended'>
+                                                                <DropdownMenuItem>
+                                                                    Attended
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/sttp-organized'>
+                                                                <DropdownMenuItem>
+                                                                    Organized
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        Seminars
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <Link to='/common/forms/seminar-conducted'>
+                                                                <DropdownMenuItem>
+                                                                    Conducted
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/seminar-attended'>
+                                                                <DropdownMenuItem>
+                                                                    Attended
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/seminar-organized'>
+                                                                <DropdownMenuItem>
+                                                                    Organized
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSeparator />
+                                                <Link to='/common/forms/course-certification'>
+                                                    <DropdownMenuItem>
+                                                        Course Certification
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/common/forms/awards-recieved'>
+                                                    <DropdownMenuItem>
+                                                        Awards and Recognitions
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/common/forms/activity-conducted'>
+                                                    <DropdownMenuItem>
+                                                        Activity Conducted
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                     <div className="mx-5">
 
                         <DropdownMenu>
@@ -271,80 +362,171 @@ const HeadNavbar = () => {
                             <DropdownMenuLabel>Research and Development</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                    <Link to="/common/forms/patent">
-                                        <DropdownMenuItem>
-                                            Patent
-                                        </DropdownMenuItem>
-                                    </Link>
-                                    <Link to="/common/forms/copyright">
-                                        <DropdownMenuItem>
-                                            Copyright
-                                        </DropdownMenuItem>
-                                    </Link>
-                                    <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger>Publications</DropdownMenuSubTrigger>
-                                        <DropdownMenuPortal>
-                                            <DropdownMenuSubContent>
-                                                <Link to="/common/forms/journal">
-                                                    <DropdownMenuItem>
-                                                        Journal
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <Link to="/common/forms/conference">
-                                                    <DropdownMenuItem>
-                                                        Conference
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <DropdownMenuSeparator />
-                                                <Link to="/common/forms/book">
-                                                    <DropdownMenuItem>
-                                                        Book
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <Link to="/common/forms/book-chapter">
-                                                    <DropdownMenuItem>
-                                                        Book Chapter
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuPortal>
-                                    </DropdownMenuSub>
-                                    <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger>Projects</DropdownMenuSubTrigger>
-                                        <DropdownMenuPortal>
-                                            <DropdownMenuSubContent>
-                                                <Link to="/common/forms/projects">
-                                                    <DropdownMenuItem>
-                                                        Major/Minor
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <Link to="/common/forms/need-based-projects">
-                                                    <DropdownMenuItem>
-                                                        Need based
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <DropdownMenuSeparator />
-                                                <Link to="/common/forms/awards-honors">
-                                                    <DropdownMenuItem>
-                                                        Awards/Honors
-                                                    </DropdownMenuItem>
-                                                </Link>
-
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuPortal>
-                                    </DropdownMenuSub>
+                                <Link to="/common/forms/patent">
                                     <DropdownMenuItem>
-                                        <Link to="/common/forms/consultancy">
-                                            Consultancy
-                                        </Link>
+                                        Patent
                                     </DropdownMenuItem>
-                                </DropdownMenuGroup> 
+                                </Link>
+                                <Link to="/common/forms/copyright">
+                                    <DropdownMenuItem>
+                                        Copyright
+                                    </DropdownMenuItem>
+                                </Link>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>Publications</DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <Link to="/common/forms/journal">
+                                                <DropdownMenuItem>
+                                                    Journal
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link to="/common/forms/conference">
+                                                <DropdownMenuItem>
+                                                    Conference
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <DropdownMenuSeparator />
+                                            <Link to="/common/forms/book">
+                                                <DropdownMenuItem>
+                                                    Book
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link to="/common/forms/book-chapter">
+                                                <DropdownMenuItem>
+                                                    Book Chapter
+                                                </DropdownMenuItem>
+                                            </Link>
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>Projects</DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <Link to="/common/forms/projects">
+                                                <DropdownMenuItem>
+                                                    Major/Minor
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link to="/common/forms/need-based-projects">
+                                                <DropdownMenuItem>
+                                                    Need based
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <DropdownMenuSeparator />
+                                            <Link to="/common/forms/awards-honors">
+                                                <DropdownMenuItem>
+                                                    Awards/Honors
+                                                </DropdownMenuItem>
+                                            </Link>
+
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                                <DropdownMenuItem>
+                                    <Link to="/common/forms/consultancy">
+                                        Consultancy
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
                 <Separator />
                 <div className="">
-                    <p className="my-2">Others</p>
+                    <p className="my-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <span className="flex items-center">
+                                    Others
+                                    <span>
+                                        <ChevronDown />
+                                    </span>
+                                </span>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='w-56'>
+                                <DropdownMenuLabel>Others</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>
+                                            <Trophy className="mr-2 h-4 w-4" />
+                                            <span>Achievements</span>
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        Sttp/Fdp
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <Link to='/common/forms/sttp-conducted'>
+                                                                <DropdownMenuItem>
+                                                                    Conducted
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/sttp-attended'>
+                                                                <DropdownMenuItem>
+                                                                    Attended
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/sttp-organized'>
+                                                                <DropdownMenuItem>
+                                                                    Organized
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        Seminars
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <Link to='/common/forms/seminar-conducted'>
+                                                                <DropdownMenuItem>
+                                                                    Conducted
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/seminar-attended'>
+                                                                <DropdownMenuItem>
+                                                                    Attended
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/forms/seminar-organized'>
+                                                                <DropdownMenuItem>
+                                                                    Organized
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSeparator />
+                                                <Link to='/common/forms/course-certification'>
+                                                    <DropdownMenuItem>
+                                                        Course Certification
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/common/forms/awards-recieved'>
+                                                    <DropdownMenuItem>
+                                                        Awards and Recognitions
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/common/forms/activity-conducted'>
+                                                    <DropdownMenuItem>
+                                                        Activity Conducted
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </p>
                 </div>
 
                 <Separator />

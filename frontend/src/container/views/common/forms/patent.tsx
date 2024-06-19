@@ -28,7 +28,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
@@ -131,7 +130,7 @@ const formSchema = z
   })
   .refine((data) => new Date(data.grantDate) > new Date(data.filingDate), {
     message: "End date must be greater than start date",
-    path: ["endDate"], // Field to which the error will be attached
+    path: ["grantDate"], // Field to which the error will be attached
   });
 
 const PatentForm = (props: Props) => {
@@ -273,7 +272,7 @@ const PatentForm = (props: Props) => {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter Title"
+                        placeholder="Patent Title"
                         {...field}
                         autoComplete="off"
                       />
@@ -291,7 +290,7 @@ const PatentForm = (props: Props) => {
                     <FormLabel className="text-gray-800">Inventors</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter Inventor Names"
+                        placeholder="Inventor Names"
                         {...field}
                         autoComplete="off"
                       />
@@ -314,7 +313,7 @@ const PatentForm = (props: Props) => {
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter Affiliation Inventor Names"
+                        placeholder="Affiliation Inventor Names"
                         {...field}
                         autoComplete="off"
                       />
@@ -407,7 +406,7 @@ const PatentForm = (props: Props) => {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter Patent Application Number"
+                        placeholder="Patent Application Number"
                         {...field}
                         autoComplete="off"
                       />
