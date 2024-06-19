@@ -72,6 +72,9 @@ const majorminorSchema = new mongoose.Schema({
     supportingDocuments: { type: String, required: true },
 });
 
+// Need Based Schema
+
+
 const researchSchema = new mongoose.Schema({
     name: { type: String, required: true },
     department: { type: String, required: true },

@@ -17,6 +17,7 @@ const {
   addConference,
   addCopyright,
   addBookChapter,
+  addNeedBased,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -30,6 +31,7 @@ const {
   copyrightFileUpload,
   bookChapterUpload,
   majorAndMinorUpload,
+  needBasedUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -211,6 +213,13 @@ router
 /*
 ROUTES NEED BASED
 */
+router
+  .route("/majorminor")
+  .post(
+    facultyAuthenticator,
+    needBasedUpload.single("students"),
+    addNeedBased
+  )
 
 /*
 ROUTES AWARDS & HONORS

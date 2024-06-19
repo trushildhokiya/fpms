@@ -343,6 +343,35 @@ const addMajorMinor = asyncHandler(async (request, response) => {
 /*
 ADD NEED BASED
 */
+const addNeedBased = asyncHandler(async (request, response) => {
+  const data = request.body;
+  const { email } = request.decodedData;
+  
+
+  const user = await Faculty.findOne({
+    email: email,
+  });
+
+  if (!user) {
+    response.status(400);
+    throw new Error("User not found!");
+  } else {
+    
+    for (let i = 0; i < data.students.length; i++) {
+      const data = data.students[i];
+      data.needBasedProof = request.files[i].path;
+      user.needBasedProjects.push(data);
+    }
+
+    await user.save();
+
+    console.log(user.needBasedProjects);
+
+    response.status(200).json({
+      message: "success"
+    });
+  }
+})
 
 /*
 ADD AWARDS & HONORS
@@ -465,6 +494,7 @@ module.exports = {
   addResearchProfile,
   getResearchProfileData,
   addPatents,
+  addNeedBased,
   addBook,
   addJournal,
   addMajorMinor,

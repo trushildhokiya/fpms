@@ -190,6 +190,24 @@ const majorAndMinorUpload = multer({ storage: majorAndMinorStorage });
 /*
 FILE UPLOAD NEED BASED
 */
+const needBasedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "copyright");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "needbased" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const needBasedUpload = multer({ storage: needBasedStorage });
 
 /*
 FILE UPLOAD AWARDS & HONORS
@@ -270,6 +288,7 @@ module.exports = {
   bookFileUpload,
   journalFileUpload,
   awardsHonorsFileUpload,
+  needBasedUpload,
   conferenceFileUpload,
   copyrightFileUpload,
   bookChapterUpload,
