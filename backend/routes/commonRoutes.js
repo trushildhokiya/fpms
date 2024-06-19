@@ -12,6 +12,7 @@ const {
   addPatents,
   addBook,
   addJournal,
+  addAwardsHonor,
   addConference,
   addCopyright,
   addBookChapter,
@@ -23,6 +24,7 @@ const {
   patentFileUpload,
   bookFileUpload,
   journalFileUpload,
+  awardsHonorsFileUpload,
   conferenceFileUpload,
   copyrightFileUpload,
   bookChapterUpload,
@@ -204,6 +206,13 @@ ROUTES NEED BASED
 /*
 ROUTES AWARDS & HONORS
 */
+router
+  .route("/awardshonors")
+  .post(
+    facultyAuthenticator,
+    awardsHonorsFileUpload.single("proof"),
+    addAwardsHonor,
+  )
 
 /*
 ROUTES CONSULTANCY

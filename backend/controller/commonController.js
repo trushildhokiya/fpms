@@ -318,6 +318,40 @@ ADD NEED BASED
 ADD AWARDS & HONORS
 */
 
+const addAwardsHonor = asyncHandler(async (request, response) => {
+  const data = request.body;
+  const { email } = request.decodedData;
+  
+
+  const user = await Faculty.findOne({
+    email: email,
+  });
+
+  if (!user) {
+    response.status(400);
+    throw new Error("User not found!");
+  } else {
+    if (request.file && request.file.path) {
+      data.awardsHonorsProof = request.file.path;
+    }
+    // JSON to array 
+    const awardsData = Array.isArray(data) ? data : [data];
+
+    awardsData.forEach((award) => {
+      console.log(award);
+      user.awardsHonors.push(award);
+    });
+
+    await user.save();
+
+    console.log(user.awardsHonors);
+
+    response.status(200).json({
+      message: "success"
+    });
+  }
+})
+
 /*
 ADD CONSULTANCY
 */
@@ -403,6 +437,7 @@ module.exports = {
   addPatents,
   addBook,
   addJournal,
+  addAwardsHonor,
   addConference,
   addCopyright,
   addBookChapter,

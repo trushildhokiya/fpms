@@ -30,6 +30,9 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { toast } from '@/components/ui/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
 type Props = {}
 
@@ -104,8 +107,29 @@ const AwardsAndHonorsForm = (props: Props) => {
     })
 
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        axios.post("/common/awardshonors", values, {
+            headers: {
+                'Content-Type':'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            if (response.data.message === "success") {
+                toast({
+                    title: "Experience updated successfully",
+                    description: "Your experience data has been added/updated successfully",
+                    action: (
+                      <ToastAction altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset() 
+            } else {
 
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+        })
         console.log(values)
     }
 

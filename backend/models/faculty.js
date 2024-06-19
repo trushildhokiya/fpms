@@ -27,6 +27,14 @@ const experienceSchema = new mongoose.Schema({
     experienceProof: { type: String, required: true } // Assuming you store file paths or GridFS file IDs here
 });
 
+const awardsHonorsSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    awardingBody: { type: String, required: true },
+    year: { type: Date, required: true },
+    description: { type: String, required: true },
+    awardsHonorsProof: { type: String, required: true },
+});
+
 const researchSchema = new mongoose.Schema({
     name: { type: String, required: true },
     department: { type: String, required: true },
@@ -140,7 +148,7 @@ const facultySchema = new mongoose.Schema({
     },
 
     awardsHonors: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'awardHonor' }],
+        type: [awardsHonorsSchema],
         required: false
     },
 
