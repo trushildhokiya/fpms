@@ -80,14 +80,16 @@ const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-
  *  ACHIEVEMENTS FORM IMPORTS
  */
 
-const SttpAttended = lazy(() => import('./container/views/common/forms/sttp-attended'));
-const SttpConducted = lazy(() => import('./container/views/common/forms/sttp-conducted'));
-const CourseCertificate = lazy(() => import('./container/views/common/forms/course-certificate'));
-const AwardRecieved = lazy(() => import('./container/views/common/forms/awards-recieved'));
-const SeminarAttended = lazy(() => import('./container/views/common/forms/seminars-attended'));
-const SeminarConducted = lazy(() => import('./container/views/common/forms/seminar'));
-const ActivityConducted = lazy(() => import('./container/views/common/forms/activity-conducted'));
-const SttpOrganized = lazy(() => import('./container/views/common/forms/sttp-organized'));
+const SttpAttended = lazy(() => import('@/container/views/common/forms/sttp-attended'));
+const SttpConducted = lazy(() => import('@/container/views/common/forms/sttp-conducted'));
+const CourseCertificate = lazy(() => import('@/container/views/common/forms/course-certificate'));
+const AwardRecieved = lazy(() => import('@/container/views/common/forms/awards-recieved'));
+const SeminarAttended = lazy(() => import('@/container/views/common/forms/seminar-attended'));
+const SeminarConducted = lazy(() => import('@/container/views/common/forms/seminar-conducted'));
+const ActivityConducted = lazy(() => import('@/container/views/common/forms/activity-conducted'));
+const SttpOrganized = lazy(() => import('@/container/views/common/forms/sttp-organized'));
+const SeminarOrganized = lazy(()=> import('@/container/views/common/forms/seminar-organized'))
+
 /**
  * COMMON DISPLAY IMPORTS
  */
@@ -146,6 +148,7 @@ function App() {
           <Route path='/common/forms/sttp-organized' element={<CommonProtectedRoute> <SttpOrganized /> </CommonProtectedRoute>} />
           <Route path='/common/forms/seminar-conducted' element={<CommonProtectedRoute> <SeminarConducted /> </CommonProtectedRoute>} />
           <Route path='/common/forms/seminar-attended' element={<CommonProtectedRoute> <SeminarAttended /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminar-organized' element={<CommonProtectedRoute> <SeminarOrganized /> </CommonProtectedRoute>} />
           <Route path='/common/forms/activity-conducted' element={<CommonProtectedRoute> <ActivityConducted /> </CommonProtectedRoute>} />
           <Route path='/common/forms/awards-recieved' element={<CommonProtectedRoute> <AwardRecieved /> </CommonProtectedRoute>} />
           <Route path='/common/forms/course-certification' element={<CommonProtectedRoute> <CourseCertificate /> </CommonProtectedRoute>} />

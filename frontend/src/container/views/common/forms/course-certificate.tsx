@@ -109,7 +109,7 @@ const formSchema = z
     path: ["toDate"], // Field to which the error will be attached
   });
 
-const CourseCertificate = (props: Props) => {
+const CourseCertificateForm = (props: Props) => {
   const user = useSelector((state: any) => state.user);
 
   // command
@@ -483,7 +483,7 @@ const CourseCertificate = (props: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-800">
-                      Certificate
+                      Upload Certificate
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -508,4 +508,4 @@ const CourseCertificate = (props: Props) => {
   );
 };
 
-export default CourseCertificate;
+export default CourseCertificateForm;

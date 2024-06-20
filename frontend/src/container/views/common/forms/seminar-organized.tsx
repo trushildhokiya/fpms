@@ -71,30 +71,6 @@ const formSchema = z.object({
         message: "Type is required!"
     }),
 
-    principalInvestigator: z.string().min(1, {
-        message: "principal Investigator is required!"
-    }).max(100, {
-        message: "principal Investigator must not exceed 100 characters"
-    }),
-
-    coInvestigator: z.string().min(1, {
-        message: "co-investigator is required!"
-    }).max(100, {
-        message: "co-investigator must not exceed 100 characters"
-    }),
-
-    coordinator: z.string().min(1, {
-        message: "coordinator is required!"
-    }).max(100, {
-        message: "coordinator must not exceed 100 characters"
-    }),
-
-    coCoordintor: z.string().min(1, {
-        message: "co-coordinator is required!"
-    }).max(100, {
-        message: "co-coordinator must not exceed 100 characters"
-    }),
-
     organizedBy: z.string().min(1, {
         message: "Organized by is required!"
     }).max(100, {
@@ -120,11 +96,15 @@ const formSchema = z.object({
 
     fromDate: z.date(),
     toDate: z.date(),
-    totalDays: z.coerce.number().nonnegative(),
+
 
     level: z.string().min(1, {
         message: "level is required!"
     }),
+
+    facultiesCount: z.coerce.number().nonnegative(),
+    studentsCount: z.coerce.number().nonnegative(),
+    participants: z.coerce.number().nonnegative(),
 
     fundingRecieved: z.string().min(1, {
         message: "Funded or not is required!"
@@ -153,7 +133,6 @@ const formSchema = z.object({
         message: "Not a valid Url"
     }),
 
-    fundSanctionedLetter: pdfFileSchema,
     utilizationCertificate: pdfFileSchema,
     banner: pdfFileSchema,
     schedule: pdfFileSchema,
@@ -161,13 +140,19 @@ const formSchema = z.object({
     supportingDocuments: pdfFileSchema,
     report: pdfFileSchema,
     photos: pdfFileSchema,
+    fundSanctionedLetter: pdfFileSchema,
+    invitationLetter: pdfFileSchema,
+    speakerCertificate: pdfFileSchema,
+    organizerCertificate: pdfFileSchema,
+    organizerLOA: pdfFileSchema,
+
 
 }).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SttpOrganizedForm = (props: Props) => {
+const SeminarOrganizedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
 
@@ -193,18 +178,16 @@ const SttpOrganizedForm = (props: Props) => {
         defaultValues: {
             title: "",
             type: "",
-            principalInvestigator: "",
-            coInvestigator: "",
-            coordinator: "",
-            coCoordintor: "",
             organizedBy: "",
             associationWith: "",
             venue: "",
             mode: "",
             fromDate: new Date(),
             toDate: new Date(),
-            totalDays: 0,
             level: "",
+            facultiesCount: 0,
+            studentsCount: 0,
+            participants: 0,
             fundingRecieved: "",
             fundingAgency: "",
             fundingAgencyType: "",
@@ -212,14 +195,18 @@ const SttpOrganizedForm = (props: Props) => {
             recievedAmount: 0,
             remarks: "",
             videoUrl: "",
-            fundSanctionedLetter: new File([], ''),
             utilizationCertificate: new File([], ''),
             banner: new File([], ''),
             schedule: new File([], ''),
             certificate: new File([], ''),
             supportingDocuments: new File([], ''),
             report: new File([], ''),
-            photos: new File([], '')
+            photos: new File([], ''),
+            fundSanctionedLetter: new File([], ''),
+            invitationLetter: new File([], ''),
+            speakerCertificate: new File([], ''),
+            organizerCertificate: new File([], ''),
+            organizerLOA: new File([], '')
         },
     });
 
@@ -233,7 +220,7 @@ const SttpOrganizedForm = (props: Props) => {
             <div className="container my-8">
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
                     <span className="border-b-4 border-red-800 break-words ">
-                        STTP/FDP <span className="hidden md:inline-block">Organized</span>
+                        SEMINAR <span className="hidden md:inline-block">Organized</span>
                     </span>
                 </h1>
 
@@ -303,11 +290,11 @@ const SttpOrganizedForm = (props: Props) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-gray-800">
-                                            STTP/FDP Title
+                                            Title
                                         </FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="STTP/FDP Title"
+                                                placeholder="title"
                                                 {...field}
                                                 autoComplete="off"
                                             />
@@ -317,114 +304,34 @@ const SttpOrganizedForm = (props: Props) => {
                                 )}
                             />
 
-                            <FormField
-                                control={form.control}
-                                name="type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-800">
-                                            Type
-                                        </FormLabel>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a category" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="sttp">STTP</SelectItem>
-                                                <SelectItem value="fdp"> FDP </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+
 
                             <div className="grid md:grid-cols-2 gap-6">
 
                                 <FormField
                                     control={form.control}
-                                    name="principalInvestigator"
+                                    name="type"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Principal Investigator
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="principal investigator"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
+                                            <FormLabel className='text-gray-800'>Type</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a type" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="seminar">Seminars</SelectItem>
+                                                    <SelectItem value="webinar">Webinars</SelectItem>
+                                                    <SelectItem value="expertTalk">Expert Talks</SelectItem>
+                                                    <SelectItem value="workshop">Workshops</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="coInvestigator"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Co-Investigator
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="co-investigator"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="coordinator"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Coordinator
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="coordinator"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="coCoordintor"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Co-Coordinator
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="co-coordinator"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
 
 
                                 <FormField
@@ -516,6 +423,36 @@ const SttpOrganizedForm = (props: Props) => {
                                     )}
                                 />
 
+
+                                <FormField
+                                    control={form.control}
+                                    name="level"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Level
+                                            </FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a level" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="international">International</SelectItem>
+                                                    <SelectItem value="national">National</SelectItem>
+                                                    <SelectItem value="state">State</SelectItem>
+                                                    <SelectItem value="regional">Regional</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <FormField
                                     control={form.control}
                                     name="fromDate"
@@ -596,16 +533,16 @@ const SttpOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="totalDays"
+                                    name="participants"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Number of Days
+                                                Number of Participants
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
-                                                    placeholder="venue"
+                                                    placeholder="participants count"
                                                     {...field}
                                                     autoComplete="off"
                                                 />
@@ -615,31 +552,43 @@ const SttpOrganizedForm = (props: Props) => {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
-                                    name="level"
+                                    name="studentsCount"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Level
+                                                Number of Students attended
                                             </FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a level" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="international">International</SelectItem>
-                                                    <SelectItem value="national">National</SelectItem>
-                                                    <SelectItem value="state">State</SelectItem>
-                                                    <SelectItem value="regional">Regional</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="count"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="facultiesCount"
+                                    render={({ field }) => (
+                                        <FormItem className="md:col-span-2">
+                                            <FormLabel className="text-gray-800">
+                                                Number of faculties attended
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="count"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -753,7 +702,7 @@ const SttpOrganizedForm = (props: Props) => {
                                             <FormControl>
                                                 <Input
                                                     type="text"
-                                                    placeholder="funding Agency"
+                                                    placeholder="funding agency"
                                                     {...field}
                                                     autoComplete="off"
                                                 />
@@ -828,25 +777,6 @@ const SttpOrganizedForm = (props: Props) => {
 
                             <div className="grid md:grid-cols-2 gap-6">
 
-                                <FormField
-                                    control={form.control}
-                                    name="fundSanctionedLetter"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Upload Fund Sanctioned Letter
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    accept=".pdf"
-                                                    type="file"
-                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
 
                                 <FormField
                                     control={form.control}
@@ -894,7 +824,7 @@ const SttpOrganizedForm = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Upload Schedule of Organizer
+                                                Upload Schedule
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -990,6 +920,111 @@ const SttpOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
+                                    name="fundSanctionedLetter"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Fund Sanctioned Letter
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
+                                <FormField
+                                    control={form.control}
+                                    name="invitationLetter"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Invitation Letter to Speaker
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
+                                <FormField
+                                    control={form.control}
+                                    name="speakerCertificate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Certificate / LOA to Speaker
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
+                                <FormField
+                                    control={form.control}
+                                    name="organizerCertificate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Certificate of Organizer
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
+                                <FormField
+                                    control={form.control}
+                                    name="organizerLOA"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload LOA of Organizer
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
+                                <FormField
+                                    control={form.control}
                                     name="videoUrl"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
@@ -1022,4 +1057,4 @@ const SttpOrganizedForm = (props: Props) => {
     );
 };
 
-export default SttpOrganizedForm;
+export default SeminarOrganizedForm;

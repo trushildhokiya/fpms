@@ -6,12 +6,11 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -21,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -35,7 +34,6 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 type Props = {}
 
@@ -46,8 +44,7 @@ type Props = {}
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
-const pdfFileSchema = z
-    .instanceof(File)
+const pdfFileSchema = z.instanceof(File)
     .refine((file) => {
         return !file || file.size <= 5 * 1024 * 1024;
     }, `File size must be less than 5MB`)
@@ -57,60 +54,57 @@ const pdfFileSchema = z
     )
 
 const formSchema = z.object({
-    activityTitle: z.string().min(2, {
-        message: "Activity title required!"
+
+    title: z.string().min(1, {
+        message: "Activity title is required!"
     }).max(100, {
         message: "Activity title must not exceed 100 characters"
     }),
 
-    organizedBy: z.string().min(2, {
-        message: "Organization required!"
+    organizedBy: z.string().min(1, {
+        message: "Organized by is required!"
     }).max(100, {
-        message: "Organization must not exceed 100 characters"
+        message: "Organized by must not exceed 100 characters"
     }),
 
-    inAssociation: z.string().min(2, {
-        message: "Field Required!"
+    associationWith: z.string().min(1, {
+        message: "Association with is required!"
     }).max(100, {
-        message: "Field must not exceed 100 characters"
+        message: "Association with must not exceed 100 characters"
     }),
 
-    conductedMode: z.string().min(1, {
-        message: "Activity conducted mode required!"
+    mode: z.string().min(1, {
+        message: "mode is required!"
     }),
 
-    conductedLevel: z.string().min(1, {
-        message: "Activity conducted mode required!"
+    level: z.string().min(1, {
+        message: "level is required!"
     }),
 
     participants: z.coerce.number().nonnegative(),
 
-    startDate: z.date(),
-    endDate: z.date(),
+    fromDate: z.date(),
+    toDate: z.date(),
 
-    venue: z.string().min(1).max(1000),
-    remarks: z.string().min(1).max(1000),
-    
+    venue: z.string().min(1).max(100),
+    remarks: z.string().min(1).max(100),
+
     invitationLetter: pdfFileSchema,
     certificate: pdfFileSchema,
-    banners: pdfFileSchema,
-    reports: pdfFileSchema,
+    banner: pdfFileSchema,
+    report: pdfFileSchema,
     photos: pdfFileSchema,
 
-    videoLink: z.string().url({
-        message: "Invalid video URL format"
-    }).min(1, {
-        message: "Video URL required!"
-    }).max(1000, {
-        message: "Video URL must not exceed 1000 characters"
-    }), // Define video link with URL validation and constraints
+    videoLink: z.string().min(1).url({
+        message: "Invalid url"
+    })
 
-}).refine((data) => new Date(data.endDate) > new Date(data.startDate), {
+}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End Date must be greater than start date",
-    path: ['endDate']
+    path: ['toDate']
 }) // Field to which the error will be attached);
 
-const ActivityConducted = (props: Props) => {
+const ActivityConductedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
@@ -137,28 +131,25 @@ const ActivityConducted = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            activityTitle: "",
+            title: "",
             organizedBy: "",
-            inAssociation: "",
-            conductedMode: "",
-            conductedLevel: "",
+            associationWith: "",
+            mode: "",
+            level: "",
             participants: 0,
-            startDate: new Date(),
-            endDate: new Date(),
+            fromDate: new Date(),
+            toDate: new Date(),
             venue: "",
             remarks: "",
             invitationLetter: new File([], ''),
             certificate: new File([], ''),
-            banners: new File([], ''),
-            reports: new File([], ''),
+            banner: new File([], ''),
+            report: new File([], ''),
             photos: new File([], ''),
             videoLink: "",
         },
     })
 
-
-
-    const { control, handleSubmit, formState: { errors } } = form;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -171,33 +162,35 @@ const ActivityConducted = (props: Props) => {
 
             <div className="container my-8">
 
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
                     <span className="border-b-4 border-red-800 break-words ">
                         ACTIVITY <span className='hidden sm:inline-block'>CONDUCTED</span>
                     </span>
                 </h1>
 
+
+                {/* COMMAND DIALOG  */}
+                <CommandDialog open={open} onOpenChange={setOpen}>
+                    <CommandInput placeholder="Type a command or search..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup heading="Suggestions">
+                            <CommandItem>
+                                <BookUser className="mr-2 h-4 w-4" />
+                                <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
+                            </CommandItem>
+                            <CommandItem>
+                                <FileArchive className="mr-2 h-4 w-4" />
+                                <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandDialog>
+
+                {/* FORM */}
                 <div className="p-2 font-Poppins text-xl">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
-                            {/* COMMAND DIALOG  */}
-                            <CommandDialog open={open} onOpenChange={setOpen}>
-                                <CommandInput placeholder="Type a command or search..." />
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    <CommandGroup heading="Suggestions">
-                                        <CommandItem>
-                                            <BookUser className="mr-2 h-4 w-4" />
-                                            <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
-                                        </CommandItem>
-                                        <CommandItem>
-                                            <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
-                                        </CommandItem>
-                                    </CommandGroup>
-                                </CommandList>
-                            </CommandDialog>
 
                             {/* BASIC DETAILS */}
                             <h2 id='basicDetails' className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
@@ -213,25 +206,31 @@ const ActivityConducted = (props: Props) => {
                             </Alert>
 
                             <div className="">
+
                                 <FormField
                                     control={form.control}
-                                    name="activityTitle"
+                                    name="title"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Activity Title</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Activity Title" {...field} autoComplete='off' />
+                                                <Input placeholder="Activity title" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                                <FormField
+                                
+                            </div>
+
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+
+                            <FormField
                                     control={form.control}
                                     name="organizedBy"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Activity Organized By</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Activity Organized By" {...field} autoComplete='off' />
@@ -241,27 +240,24 @@ const ActivityConducted = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField      
+                                <FormField
                                     control={form.control}
-                                    name="inAssociation"
+                                    name="associationWith"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>In Association with</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="In Association with" {...field} autoComplete='off' />
+                                                <Input placeholder="In Association with.." {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                            </div>
-
-                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
 
 
                                 <FormField
                                     control={form.control}
-                                    name="conductedMode"
+                                    name="mode"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Activity Conducted Mode</FormLabel>
@@ -283,7 +279,7 @@ const ActivityConducted = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="conductedLevel"
+                                    name="level"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Activity Conducted Level</FormLabel>
@@ -308,7 +304,7 @@ const ActivityConducted = (props: Props) => {
                                 <FormField
                                     control={form.control}
 
-                                    name="startDate"
+                                    name="fromDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
                                             <FormLabel className='text-grey-800'>From Date</FormLabel>
@@ -341,10 +337,10 @@ const ActivityConducted = (props: Props) => {
                                 <FormField
                                     control={form.control}
 
-                                    name="endDate"
+                                    name="toDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-grey-800'>End Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>To Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -371,15 +367,12 @@ const ActivityConducted = (props: Props) => {
                                     )}
                                 />
 
-                            </div>
-
-                            <div className="">
 
                                 <FormField
                                     control={form.control}
                                     name="participants"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>No of participants attended</FormLabel>
                                             <FormControl>
                                                 <Input type='number' placeholder="Participants Attended" autoComplete='off' {...field} />
@@ -393,10 +386,10 @@ const ActivityConducted = (props: Props) => {
                                     control={form.control}
                                     name="venue"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Venue </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="venue must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Input placeholder="venue" type="text" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -407,10 +400,10 @@ const ActivityConducted = (props: Props) => {
                                     control={form.control}
                                     name="remarks"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
+                                        <FormItem className='md:col-span-2'>
                                             <FormLabel className='text-gray-800'>Remarks </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="remarks must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Textarea placeholder="remarks( NA if not )" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -442,7 +435,7 @@ const ActivityConducted = (props: Props) => {
                                     name="invitationLetter"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Invitation Letter </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Invitation Letter </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -460,7 +453,7 @@ const ActivityConducted = (props: Props) => {
                                     name="certificate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Completion Certificate / LOA </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Completion Certificate / LOA </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -475,10 +468,10 @@ const ActivityConducted = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="banners"
+                                    name="banner"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Banner </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Banner </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -493,10 +486,10 @@ const ActivityConducted = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="reports"
+                                    name="report"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Report </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Report </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -514,7 +507,7 @@ const ActivityConducted = (props: Props) => {
                                     name="photos"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Photos </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Photos </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -532,7 +525,7 @@ const ActivityConducted = (props: Props) => {
                                     name="videoLink"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Video Link</FormLabel>
+                                            <FormLabel className='text-gray-800'>Video Url</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="url"
@@ -557,4 +550,4 @@ const ActivityConducted = (props: Props) => {
     )
 }
 
-export default ActivityConducted
+export default ActivityConductedForm

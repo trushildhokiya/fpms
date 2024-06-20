@@ -6,12 +6,11 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -21,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -35,7 +34,6 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 type Props = {}
 
@@ -46,8 +44,7 @@ type Props = {}
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
-const pdfFileSchema = z
-    .instanceof(File)
+const pdfFileSchema = z.instanceof(File)
     .refine((file) => {
         return !file || file.size <= 5 * 1024 * 1024;
     }, `File size must be less than 5MB`)
@@ -57,54 +54,57 @@ const pdfFileSchema = z
     )
 
 const formSchema = z.object({
-    seminarTitle: z.string().min(2, {
-        message: "Title required!"
+
+    title: z.string().min(1, {
+        message: "Title is required!"
     }).max(100, {
         message: "Title must not exceed 100 characters"
     }),
 
-    organizedBy: z.string().min(2, {
-        message: "Organization required!"
+    type: z.string().min(1, {
+        message: "Type is required!"
+    }),
+
+    organizedBy: z.string().min(1, {
+        message: "Organized by is required!"
     }).max(100, {
-        message: "Organization must not exceed 100 characters"
+        message: "Organized by must not exceed 100 characters"
     }),
 
-    inAssociation: z.string().min(2, {
-        message: "Field Required!"
+    associationWith: z.string().min(1, {
+        message: "Association with is required!"
     }).max(100, {
-        message: "Field must not exceed 100 characters"
+        message: "Association with must not exceed 100 characters"
     }),
 
-    conductedType: z.string().min(1, {
-        message: "Program conducted type required!"
+
+    venue: z.string().min(1).max(200),
+
+    mode: z.string().min(1, {
+        message: "mode is required!"
     }),
 
-    conductedMode: z.string().min(1, {
-        message: "Program conducted mode required!"
-    }),
+    fromDate: z.date(),
+    toDate: z.date(),
 
-    conductedLevel: z.string().min(1, {
-        message: "Program conducted mode required!"
+    level: z.string().min(1, {
+        message: "Level is required!"
     }),
 
     participants: z.coerce.number().nonnegative(),
 
-    startDate: z.date(),
-    endDate: z.date(),
-
-    venue: z.string().min(1).max(1000),
     remarks: z.string().min(1).max(1000),
-    
+
     invitationLetter: pdfFileSchema,
     certificate: pdfFileSchema,
     photos: pdfFileSchema,
 
-}).refine((data) => new Date(data.endDate) > new Date(data.startDate), {
+}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End Date must be greater than start date",
-    path: ['endDate']
+    path: ['toDate']
 }) // Field to which the error will be attached);
 
-const Seminar = (props: Props) => {
+const SeminarConductedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
 
@@ -131,15 +131,15 @@ const Seminar = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            seminarTitle: "",
+            title: "",
             organizedBy: "",
-            inAssociation: "",
-            conductedType: "",
-            conductedMode: "",
-            conductedLevel: "",
+            associationWith: "",
+            type: "",
+            mode: "",
+            level: "",
             participants: 0,
-            startDate: new Date(),
-            endDate: new Date(),
+            fromDate: new Date(),
+            toDate: new Date(),
             venue: "",
             remarks: "",
             invitationLetter: new File([], ''),
@@ -148,9 +148,6 @@ const Seminar = (props: Props) => {
         },
     })
 
-
-
-    const { control, handleSubmit, formState: { errors } } = form;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -163,33 +160,34 @@ const Seminar = (props: Props) => {
 
             <div className="container my-8">
 
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
                     <span className="border-b-4 border-red-800 break-words ">
                         SEMINARS <span className='hidden sm:inline-block'>CONDUCTED</span>
                     </span>
                 </h1>
 
+                {/* COMMAND DIALOG  */}
+                <CommandDialog open={open} onOpenChange={setOpen}>
+                    <CommandInput placeholder="Type a command or search..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup heading="Suggestions">
+                            <CommandItem>
+                                <BookUser className="mr-2 h-4 w-4" />
+                                <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
+                            </CommandItem>
+                            <CommandItem>
+                                <FileArchive className="mr-2 h-4 w-4" />
+                                <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandDialog>
+
+                {/* FORM */}
                 <div className="p-2 font-Poppins text-xl">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
-                            {/* COMMAND DIALOG  */}
-                            <CommandDialog open={open} onOpenChange={setOpen}>
-                                <CommandInput placeholder="Type a command or search..." />
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    <CommandGroup heading="Suggestions">
-                                        <CommandItem>
-                                            <BookUser className="mr-2 h-4 w-4" />
-                                            <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
-                                        </CommandItem>
-                                        <CommandItem>
-                                            <FileArchive className="mr-2 h-4 w-4" />
-                                            <span><a href='#proofUpload' onClick={() => setOpen(false)}>Proof Upload</a></span>
-                                        </CommandItem>
-                                    </CommandGroup>
-                                </CommandList>
-                            </CommandDialog>
 
                             {/* BASIC DETAILS */}
                             <h2 id='basicDetails' className='my-5 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
@@ -207,7 +205,7 @@ const Seminar = (props: Props) => {
                             <div className="">
                                 <FormField
                                     control={form.control}
-                                    name="seminarTitle"
+                                    name="title"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Title</FormLabel>
@@ -219,7 +217,12 @@ const Seminar = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField
+                            </div>
+
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+
+                                
+                            <FormField
                                     control={form.control}
                                     name="organizedBy"
                                     render={({ field }) => (
@@ -233,26 +236,23 @@ const Seminar = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField      
+                                <FormField
                                     control={form.control}
-                                    name="inAssociation"
+                                    name="associationWith"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>In Association with</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="In Association with" {...field} autoComplete='off' />
+                                                <Input placeholder="In Association with ..." {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                            </div>
-
-                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
 
                                 <FormField
                                     control={form.control}
-                                    name="conductedType"
+                                    name="type"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Program Conducted Type</FormLabel>
@@ -276,7 +276,7 @@ const Seminar = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="conductedMode"
+                                    name="mode"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Program Conducted Mode</FormLabel>
@@ -299,7 +299,7 @@ const Seminar = (props: Props) => {
                                 <FormField
                                     control={form.control}
 
-                                    name="startDate"
+                                    name="fromDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
                                             <FormLabel className='text-grey-800'>From Date</FormLabel>
@@ -332,10 +332,10 @@ const Seminar = (props: Props) => {
                                 <FormField
                                     control={form.control}
 
-                                    name="endDate"
+                                    name="toDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-grey-800'>End Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>To Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -364,7 +364,7 @@ const Seminar = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="conductedLevel"
+                                    name="level"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Program Conducted Level</FormLabel>
@@ -411,7 +411,7 @@ const Seminar = (props: Props) => {
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Venue </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="venue must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Input placeholder="venue" type='text' autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -425,7 +425,7 @@ const Seminar = (props: Props) => {
                                         <FormItem className='my-4'>
                                             <FormLabel className='text-gray-800'>Remarks </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="remarks must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Textarea placeholder="remarks (NA if not)" autoComplete='off' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -457,7 +457,7 @@ const Seminar = (props: Props) => {
                                     name="invitationLetter"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Invitation Letter </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Invitation Letter </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -475,7 +475,7 @@ const Seminar = (props: Props) => {
                                     name="certificate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Completion Certificate / LOA </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Completion Certificate / LOA </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -493,7 +493,7 @@ const Seminar = (props: Props) => {
                                     name="photos"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Photos </FormLabel>
+                                            <FormLabel className='text-gray-800'>Upload Photos </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -517,4 +517,4 @@ const Seminar = (props: Props) => {
     )
 }
 
-export default Seminar
+export default SeminarConductedForm
