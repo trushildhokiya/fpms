@@ -94,13 +94,41 @@ const Faculty = () => {
     }
 
 
-    
+
 
     useEffect(() => {
+        
+        // Function to create and append a link element for the CSS file
+        const addCSS = () => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'https://unpkg.com/primereact/resources/themes/lara-light-cyan/theme.css';
+            link.id = 'dynamic-theme'; // Adding an ID for easy removal later
+            document.head.appendChild(link);
+        };
 
-        getFacultiesList()
+        // Function to remove the link element for the CSS file
+        const removeCSS = () => {
+            const link = document.getElementById('dynamic-theme');
+            if (link) {
+                document.head.removeChild(link);
+            }
+        };
 
-    }, [])
+        // Call the function to add the CSS
+        addCSS();
+
+        // Return a cleanup function to remove the CSS when the component unmounts
+        return () => {
+            removeCSS();
+        };
+    }, []);
+
+    useEffect(() => {
+        getFacultiesList();
+    }, []);
+
 
     const getFacultiesList: Function = () => {
 
