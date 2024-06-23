@@ -131,7 +131,7 @@ const getExperienceData = asyncHandler(async (req, res) => {
 });
 
 const addResearchProfile = asyncHandler(async (req, res) => {
-  
+
   //get required data
   const data = req.body;
   const { email } = req.decodedData;
@@ -170,15 +170,14 @@ const getResearchProfileData = asyncHandler(async (req, res) => {
   res.status(200).json(researchProfileData);
 });
 
-/*
-ADD PATENTS
-*/
+
+
 const addPatents = asyncHandler(async (req, res) => {
+
   //get required data
   const data = req.body;
   const { email } = req.decodedData;
 
-  console.log(data);
   // find user
   const user = await Faculty.findOne({ email: email });
 
@@ -187,19 +186,113 @@ const addPatents = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
 
+  // attach certificate url to data
   const certificateURL = req.file.path;
   data.patentCertificate = certificateURL;
+
+  // create new patent entry
   const patent = await Patent.create(data);
+
+  // attach patents to users
   for (const email of data.facultiesInvolved) {
-    const faculty = await Faculty.findOneAndUpdate(
+
+    await Faculty.findOneAndUpdate(
       { email: email },
       { $push: { patent: patent._id } }
     );
+
   }
 
   res.status(200).json({
     message: "success",
   });
+
+});
+
+
+const getPatentData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate patents array to get full patent data
+  await user.populate('patent')
+
+  // Extract the populated patents data
+  const patentData = user.patent
+
+  // Send the response
+  res.status(200).json(patentData);
+});
+
+
+const addCopyright = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // attach file path to data
+  const certificateURL = req.file.path;
+  data.copyrightCertificate = certificateURL;
+  
+  // create new copyright entry
+  const copyright = await Copyright.create(data);
+
+  // attach copyright to faculties
+  for (const email of data.facultiesInvolved) {
+    
+    await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { copyright: copyright._id } }
+    );
+
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+  
+});
+
+
+const getCopyrightData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate patents array to get full patent data
+  await user.populate('copyright')
+
+  // Extract the populated patents data
+  const copyrightData = user.copyright
+
+  // Send the response
+  res.status(200).json(copyrightData);
+
 });
 
 /*
@@ -275,39 +368,8 @@ const addJournal = asyncHandler(async (req, res) => {
   });
 });
 
-/*
-ADD COPYRIGHTS
-*/
-const addCopyright = asyncHandler(async (req, res) => {
-  //get required data
-  const data = req.body;
-  const { email } = req.decodedData;
 
-  // console.log(data);
-  // find user
-  const user = await Faculty.findOne({ email: email });
 
-  if (!user) {
-    res.status(400);
-    throw new Error("User not found!");
-  }
-
-  //if you have single file input
-  const certificateURL = req.file.path;
-  data.copyrightCertificate = certificateURL;
-  const copyright = await Copyright.create(data);
-
-  for (const email of data.facultiesInvolved) {
-    const faculty = await Faculty.findOneAndUpdate(
-      { email: email },
-      { $push: { copyright: copyright._id } }
-    );
-  }
-
-  res.status(200).json({
-    message: "success",
-  });
-});
 
 /*
 ADD MAJOR/MINOR
@@ -404,9 +466,11 @@ module.exports = {
   addResearchProfile,
   getResearchProfileData,
   addPatents,
+  getPatentData,
+  addCopyright,
+  getCopyrightData,
   addBook,
   addJournal,
   addConference,
-  addCopyright,
   addBookChapter,
 };

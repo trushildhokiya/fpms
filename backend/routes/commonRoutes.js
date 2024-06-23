@@ -15,6 +15,8 @@ const {
   addConference,
   addCopyright,
   addBookChapter,
+  getPatentData,
+  getCopyrightData,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -690,7 +692,519 @@ router.route("/research-profile").post(facultyAuthenticator, addResearchProfile)
  */
 router.route("/research-profile").get(facultyAuthenticator, getResearchProfileData);
 
+/**
+ * @swagger
+ * /common/patent:
+ *   post:
+ *     summary: Add new patent entry
+ *     description: Endpoint to add a new patent entry by authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Novel Invention
+ *               inventors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - John Doe
+ *                   - Jane Smith
+ *               affiliationInventors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - University A
+ *                   - Company B
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Computer Science
+ *                   - Mechanical Engineering
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               nationalInternational:
+ *                 type: string
+ *                 example: National
+ *               country:
+ *                 type: string
+ *                 example: United States
+ *               applicationNumber:
+ *                 type: string
+ *                 example: US20230123456A1
+ *               filingDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2023-06-25"
+ *               grantDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-01-15"
+ *               patentCertificate:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Patent added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 router.route("/patent").post(facultyAuthenticator, patentFileUpload.single("patentCertificate"), addPatents);
+
+/**
+ * @swagger
+ * /common/patent:
+ *   get:
+ *     summary: Get patents associated with the authenticated faculty member
+ *     description: Retrieves the list of patents associated with the authenticated faculty member.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved patents.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 60d3aaba5f957a001f76a176
+ *                   title:
+ *                     type: string
+ *                     example: Novel Invention
+ *                   inventors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example:
+ *                         - John Doe
+ *                         - Jane Smith
+ *                   affiliationInventors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example:
+ *                         - University A
+ *                         - Company B
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example:
+ *                         - Computer Science
+ *                         - Mechanical Engineering
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example:
+ *                         - john.doe@example.com
+ *                         - jane.smith@example.com
+ *                   nationalInternational:
+ *                     type: string
+ *                     example: National
+ *                   country:
+ *                     type: string
+ *                     example: United States
+ *                   applicationNumber:
+ *                     type: string
+ *                     example: US20230123456A1
+ *                   filingDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2023-06-25"
+ *                   grantDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-01-15"
+ *                   patentCertificate:
+ *                     type: string
+ *                     example: /uploads/patents/patentCertificate.pdf
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2022-06-24T12:34:56.789Z"
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2022-06-24T12:34:56.789Z"
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route('/patent').get(facultyAuthenticator, getPatentData)
+
+/**
+ * @swagger
+ * /common/copyright:
+ *   post:
+ *     summary: Add a new copyright entry
+ *     description: Creates a new copyright entry for the authenticated faculty member.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Copyrighted Work
+ *               inventors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - John Doe
+ *                   - Jane Smith
+ *               affiliationInventors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - University A
+ *                   - Company B
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Computer Science
+ *                   - Arts
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               nationalInternational:
+ *                 type: string
+ *                 example: International
+ *               country:
+ *                 type: string
+ *                 example: United States
+ *               applicationNumber:
+ *                 type: string
+ *                 example: US20230123456A1
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2023-06-25"
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-25"
+ *               copyrightCertificate:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Copyright entry added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route("/copyright").post(facultyAuthenticator, copyrightFileUpload.single("copyrightCertificate"), addCopyright);
+
+/**
+ * @swagger
+ * /common/copyright:
+ *   get:
+ *     summary: Get copyright data for authenticated faculty member
+ *     description: Retrieves copyright data associated with the authenticated faculty member.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Copyright data retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 60d1f70c0e3f000015b5f5b1
+ *                   title:
+ *                     type: string
+ *                     example: Copyrighted Work
+ *                   inventors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - John Doe
+ *                       - Jane Smith
+ *                   affiliationInventors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - University A
+ *                       - Company B
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Computer Science
+ *                       - Arts
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - john.doe@example.com
+ *                       - jane.smith@example.com
+ *                   nationalInternational:
+ *                     type: string
+ *                     example: International
+ *                   country:
+ *                     type: string
+ *                     example: United States
+ *                   applicationNumber:
+ *                     type: string
+ *                     example: US20230123456A1
+ *                   startDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2023-06-25"
+ *                   endDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-06-25"
+ *                   copyrightCertificate:
+ *                     type: string
+ *                     example: /uploads/copyright/certificate.pdf
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route('/copyright').get(facultyAuthenticator, getCopyrightData)
 
 router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"), addBook);
 
@@ -701,7 +1215,6 @@ router.route("/journal").post(facultyAuthenticator, journalFileUpload.fields([
   addJournal
 );
 
-router.route("/copyright").post(facultyAuthenticator, copyrightFileUpload.single("copyrightCertificate"), addCopyright);
 
 router.route("/conference").post(facultyAuthenticator, conferenceFileUpload.fields([
   { name: "paper", maxCount: 1 },
