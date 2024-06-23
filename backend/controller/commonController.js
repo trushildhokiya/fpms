@@ -29,6 +29,7 @@ const addProfile = asyncHandler(async (req, res) => {
   });
 });
 
+
 const getProfileData = asyncHandler(async (req, res) => {
   //get required data
   const { email } = req.decodedData;
@@ -45,6 +46,7 @@ const getProfileData = asyncHandler(async (req, res) => {
 
   res.status(200).json(profileData);
 });
+
 
 const addExperience = async (req, res) => {
   //get required data
@@ -129,6 +131,7 @@ const getExperienceData = asyncHandler(async (req, res) => {
 });
 
 const addResearchProfile = asyncHandler(async (req, res) => {
+  
   //get required data
   const data = req.body;
   const { email } = req.decodedData;

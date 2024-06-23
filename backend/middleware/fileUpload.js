@@ -33,12 +33,12 @@ const adminProfileImageStorage = multer.diskStorage({
 const adminProfileImageUpload = multer({ storage: adminProfileImageStorage });
 
 /**
- * HEAD PROFILE IMAGE UPLOAD
+ * Faculty PROFILE IMAGE UPLOAD
  */
 
-const headProfileImageStorage = multer.diskStorage({
+const facultyProfileImageStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    const destinationPath = path.join("uploads", "profileImage", "head");
+    const destinationPath = path.join("uploads", "profileImage", "faculty");
 
     await ensureDirectoryExists(destinationPath);
 
@@ -53,7 +53,7 @@ const headProfileImageStorage = multer.diskStorage({
   },
 });
 
-const headProfileImageUpload = multer({ storage: headProfileImageStorage });
+const facultyProfileImageUpload = multer({ storage: facultyProfileImageStorage });
 
 /**
  * EXPERIENCE FILE UPLOAD
@@ -227,7 +227,7 @@ const bookChapterUpload = multer({ storage: bookChapterFileStorage });
 
 module.exports = {
   adminProfileImageUpload,
-  headProfileImageUpload,
+  facultyProfileImageUpload,
   experienceFileUpload,
   patentFileUpload,
   bookFileUpload,

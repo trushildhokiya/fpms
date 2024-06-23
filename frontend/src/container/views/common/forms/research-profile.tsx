@@ -30,6 +30,7 @@ import { useToast } from '@/components/ui/use-toast'
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { Toaster } from '@/components/ui/toaster'
+import { useNavigate } from 'react-router-dom'
 
 
 type Props = {}
@@ -129,6 +130,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
     const { toast } = useToast()
+    const navigate = useNavigate()
 
     // command
     const [open, setOpen] = useState(false)
@@ -180,7 +182,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                     title: "Research profile updated successfully",
                     description: "Your research profile information has been added/updated successfully",
                     action: (
-                      <ToastAction altText="okay">Okay</ToastAction>
+                      <ToastAction className='bg-emerald-500' onClick={ ()=>{ navigate('/common/display/research-profile')}} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()

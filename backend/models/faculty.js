@@ -23,8 +23,7 @@ const experienceSchema = new mongoose.Schema({
     fromDate: { type: Date, required: true },
     toDate: { type: Date, required: true },
     experienceIndustry: { type: String, required: true },
-    totalExperience: { type: String, required: true },
-    experienceProof: { type: String, required: true } // Assuming you store file paths or GridFS file IDs here
+    experienceProof: { type: String, required: true } 
 });
 
 const researchSchema = new mongoose.Schema({

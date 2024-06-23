@@ -73,76 +73,75 @@ const pdfFileSchema = z
     return ACCEPTED_FILE_TYPES.includes(file.type);
   }, `File Type must be of pdf`);
 
-const formSchema = z
-  .object({
-    title: z
-      .string()
-      .min(1, {
-        message: "research paper title is required!",
-      })
-      .max(100, {
-        message: "research paper title must not exceed 100 characters",
-      }),
-
-    authors: z
-      .string({
-        invalid_type_error: "Authors Name Required!",
-      })
-      .transform((value) => value.split(",").map((name) => name.trim())),
-
-    authorsAffiliation: z
-      .string({
-        invalid_type_error: "Authors affiliation is required!",
-      })
-      .transform((value) => value.split(",").map((name) => name.trim())),
-
-    departmentInvolved: z.array(z.string()).nonempty(),
-
-    facultiesInvolved: z
-      .string({
-        invalid_type_error: "Faculties Somaiya ID is required!",
-      })
-      .transform((value) => value.split(",").map((email) => email.trim()))
-      .refine(
-        (emails) =>
-          emails.every((email) => z.string().email().safeParse(email).success),
-        {
-          message: "Each faculty email must be a valid email address",
-        }
-      ),
-
-    nationalInternational: z.string().min(1, {
-      message: "Conference type is required",
+const formSchema = z.object({
+  title: z
+    .string()
+    .min(1, {
+      message: "research paper title is required!",
+    })
+    .max(100, {
+      message: "research paper title must not exceed 100 characters",
     }),
 
-    conferenceName: z.string().min(1).max(100),
-    venue: z.string().min(1).max(100),
-    organizer: z.string().min(1).max(100),
-    role: z.string().min(1).max(100),
-    fromDate: z.date(),
-    toDate: z.date(),
-    paperStatus: z.string().min(1).max(100),
-    publicationDate: z.date(),
-    issn: z.string().min(1).max(100),
-    impactFactor: z.coerce.number().nonnegative(),
-    pageNo: z.string().min(1).max(100),
-    yearOfPublication: z.coerce.number().min(1900).max(2300),
-    doi: z.string().min(1).max(100),
-    indexing: z.array(z.string()).nonempty(),
-    paperUrl: z
-      .string()
-      .min(1)
-      .regex(new RegExp(/^(ftp|http|https):\/\/[^ "]+$/), {
-        message: "Invalid url",
-      }),
-    citationCount: z.coerce.number().nonnegative(),
-    paper: pdfFileSchema,
-    certificate: pdfFileSchema,
-  })
-  .refine((data) => data.toDate > data.fromDate, {
-    message: "End date must be greater than start date",
-    path: ["endDate"], // Field to which the error will be attached
-  });
+  authors: z
+    .string({
+      invalid_type_error: "Authors Name Required!",
+    })
+    .transform((value) => value.split(",").map((name) => name.trim())),
+
+  authorsAffiliation: z
+    .string({
+      invalid_type_error: "Authors affiliation is required!",
+    })
+    .transform((value) => value.split(",").map((name) => name.trim())),
+
+  departmentInvolved: z.array(z.string()).nonempty(),
+
+  facultiesInvolved: z
+    .string({
+      invalid_type_error: "Faculties Somaiya ID is required!",
+    })
+    .transform((value) => value.split(",").map((email) => email.trim()))
+    .refine(
+      (emails) =>
+        emails.every((email) => z.string().email().safeParse(email).success),
+      {
+        message: "Each faculty email must be a valid email address",
+      }
+    ),
+
+  nationalInternational: z.string().min(1, {
+    message: "Conference type is required",
+  }),
+
+  conferenceName: z.string().min(1).max(100),
+  venue: z.string().min(1).max(100),
+  organizer: z.string().min(1).max(100),
+  role: z.string().min(1).max(100),
+  fromDate: z.date(),
+  toDate: z.date(),
+  paperStatus: z.string().min(1).max(100),
+
+  publicationDate: z.date(),
+  issn: z.union([z.string().min(1).max(100), z.string().optional()]),
+  impactFactor: z.coerce.number().nonnegative(),
+  pageNo: z.union([z.string().min(1).max(100), z.string().optional()]),
+  yearOfPublication: z.coerce.number().min(1900).max(2300),
+  doi: z.string().min(1).max(100),
+  indexing: z.array(z.string()).nonempty(),
+  
+  paperUrl: z.union([z.string().min(1).url({
+    message: "Invalid url"
+  }), z.string().optional()]),
+  
+  citationCount: z.coerce.number().nonnegative(),
+  paper: z.union([z.instanceof(File).optional(), pdfFileSchema]),
+  certificate: z.union([z.instanceof(File).optional(), pdfFileSchema]),
+
+}).refine((data) => data.toDate > data.fromDate, {
+  message: "End date must be greater than start date",
+  path: ["toDate"], // Field to which the error will be attached
+});
 
 const ConferenceForm: React.FC = (props: Props) => {
   const user = useSelector((state: any) => state.user);
@@ -213,28 +212,28 @@ const ConferenceForm: React.FC = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
-    axios
-      .post("/common/conference", values, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        // console.log(res.data);
-        if (res.data.message === "success") {
-          toast({
-            title: "Conference updated successfully",
-            description:
-              "Your Conference information has been added/updated successfully",
-            action: <ToastAction altText="okay">Okay</ToastAction>,
-          });
-          form.reset();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    console.log(values);
+    // axios
+    //   .post("/common/conference", values, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   })
+    //   .then((res) => {
+    //     // console.log(res.data);
+    //     if (res.data.message === "success") {
+    //       toast({
+    //         title: "Conference updated successfully",
+    //         description:
+    //           "Your Conference information has been added/updated successfully",
+    //         action: <ToastAction altText="okay">Okay</ToastAction>,
+    //       });
+    //       form.reset();
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   }
 
   return (
@@ -415,8 +414,8 @@ const ConferenceForm: React.FC = (props: Props) => {
                                 onCheckedChange={() => {
                                   const newValue = field.value?.includes(option)
                                     ? field.value.filter(
-                                        (val) => val !== option
-                                      )
+                                      (val) => val !== option
+                                    )
                                     : [...(field.value || []), option];
                                   field.onChange(newValue);
                                 }}
@@ -607,9 +606,8 @@ const ConferenceForm: React.FC = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -645,9 +643,8 @@ const ConferenceForm: React.FC = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -685,9 +682,8 @@ const ConferenceForm: React.FC = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -845,8 +841,8 @@ const ConferenceForm: React.FC = (props: Props) => {
                                 onCheckedChange={() => {
                                   const newValue = field.value?.includes(option)
                                     ? field.value.filter(
-                                        (val) => val !== option
-                                      )
+                                      (val) => val !== option
+                                    )
                                     : [...(field.value || []), option];
                                   field.onChange(newValue);
                                 }}

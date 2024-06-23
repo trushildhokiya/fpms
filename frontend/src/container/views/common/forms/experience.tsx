@@ -35,9 +35,10 @@ import {
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { toast, useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use-toast'
 import { ToastAction } from '@radix-ui/react-toast'
 import { Toaster } from '@/components/ui/toaster'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {}
 
@@ -96,12 +97,6 @@ const experienceSchema = z.object({
         message: "Experience Industry required!"
     }),
 
-    totalExperience: z.string().min(1,{
-        message:"total experience is required!"
-    }).max(1000,{
-         message:"total experience must not exceed 1000 characters"
-    }),
-
     experienceProof: pdfFileSchema
 
 })
@@ -116,7 +111,7 @@ const ExperienceForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
     const {toast} = useToast()
-
+    const navigate = useNavigate()
     // command
     const [open, setOpen] = useState(false)
 
@@ -163,7 +158,7 @@ const ExperienceForm = (props: Props) => {
                     title: "Experience updated successfully",
                     description: "Your experience data has been added/updated successfully",
                     action: (
-                      <ToastAction altText="okay">Okay</ToastAction>
+                      <ToastAction className='bg-emerald-500' onClick={()=>{ navigate('/common/display/experience')}} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()
@@ -187,7 +182,6 @@ const ExperienceForm = (props: Props) => {
             fromDate: new Date(),
             toDate: new Date(),
             experienceIndustry: '',
-            totalExperience: '',
             experienceProof: new File([], ''),
         });
 
@@ -372,25 +366,12 @@ const ExperienceForm = (props: Props) => {
                     )}
                 />
 
-                <FormField
-                    control={control}
-                    name={`experienceDetails.${index}.totalExperience`}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-grey-800'>Total Experience in years and months</FormLabel>
-                            <FormControl>
-                                <Input placeholder="eg: 5years, 2months" autoComplete='off' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
                 <FormField
                     control={form.control}
                     name={`experienceDetails.${index}.experienceProof`}
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className='md:col-span-2'>
                             <FormLabel className='text-gray-800'>Experience Proof </FormLabel>
                             <FormControl>
                                 <Input
