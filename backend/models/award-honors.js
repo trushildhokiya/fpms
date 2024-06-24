@@ -1,34 +1,34 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // Define Mongoose schema for Journal entry with GridFS file references
-const awardHonorsSchema = new mongoose.Schema({
+const awardHonorsSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
 
     awardingBody: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
 
     year: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
 
     description: {
-        type: String,
-        requred: true
+      type: String,
+      requred: true,
     },
-    
+
     proof: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'fs.files', // Reference to GridFS files collection
-        required: true
-    }
-});
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('awardHonor', awardHonorsSchema);
-
-
+module.exports = mongoose.model("awardHonor", awardHonorsSchema);

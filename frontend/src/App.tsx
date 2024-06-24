@@ -21,6 +21,8 @@ import Loader from './utils/pages/Loader';
  */
 
 const SuperAdminDashboard = lazy(() => import('./container/views/superadmin/container/dashboard/dashboard'));
+const Toggleusers = lazy(() => import('./container/views/superadmin/container/Toggleusers'));
+const Adduser = lazy(() => import('./container/views/superadmin/container/Adduser'));
 
 /**
  * ADMIN IMPORTS
@@ -54,8 +56,10 @@ import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute'
 import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
 import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
 
+
+
 /**
- * FORM ROUTES
+ * RESEARCH AND DEVELOPMENT FORM IMPORTS
  */
 const ConsultancyForm = lazy(() => import('./container/views/common/forms/consultancy'));
 const CopyrightForm = lazy(() => import('./container/views/common/forms/copyright'));
@@ -70,15 +74,31 @@ const ExperienceForm = lazy(() => import('./container/views/common/forms/experie
 const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awards-honors'));
 const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
 const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-based-project'));
-const Seminar = lazy(() => import('./container/views/common/forms/seminar'));
-const ActivityConducted = lazy(() => import('./container/views/common/forms/activity-conducted'));
+
 
 
 /**
- * COMMON DISPLAY ROUTES
+ *  ACHIEVEMENTS FORM IMPORTS
+ */
+
+const SttpAttended = lazy(() => import('@/container/views/common/forms/sttp-attended'));
+const SttpConducted = lazy(() => import('@/container/views/common/forms/sttp-conducted'));
+const CourseCertificate = lazy(() => import('@/container/views/common/forms/course-certificate'));
+const AwardRecieved = lazy(() => import('@/container/views/common/forms/awards-recieved'));
+const SeminarAttended = lazy(() => import('@/container/views/common/forms/seminar-attended'));
+const SeminarConducted = lazy(() => import('@/container/views/common/forms/seminar-conducted'));
+const ActivityConducted = lazy(() => import('@/container/views/common/forms/activity-conducted'));
+const SttpOrganized = lazy(() => import('@/container/views/common/forms/sttp-organized'));
+const SeminarOrganized = lazy(()=> import('@/container/views/common/forms/seminar-organized'))
+
+/**
+ * COMMON DISPLAY IMPORTS
  */
 const ProfileDisplay = lazy(() => import('./container/views/common/display/profile'));
-
+const ExperienceDisplay = lazy(() => import('./container/views/common/display/experience'));
+const ResearchProfileDisplay = lazy(() => import('./container/views/common/display/research-profile'));
+const PatentDisplay = lazy(() => import('./container/views/common/display/patent'));
+const CopyrightDisplay = lazy(() => import('./container/views/common/display/copyright'));
 
 
 function App() {
@@ -96,6 +116,8 @@ function App() {
           <Route path='/auth/register' element={<Register />} />
           <Route path='/about' element={<About />} />
           <Route path='/superadmin' element={<SuperAdminProtectedRoute> <SuperAdminDashboard /> </SuperAdminProtectedRoute>} />
+          <Route path='/superadmin/toggle' element={<SuperAdminProtectedRoute> <Toggleusers /> </SuperAdminProtectedRoute>} />
+          <Route path='/superadmin/add' element={<SuperAdminProtectedRoute> <Adduser /> </SuperAdminProtectedRoute>} />
           <Route path='/admin' element={<AdminProtectedRoute> <Dashboard /> </AdminProtectedRoute>} />
           <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
@@ -120,9 +142,25 @@ function App() {
           <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm /> </CommonProtectedRoute>} />
-          <Route path='/common/forms/seminar' element={<CommonProtectedRoute> <Seminar /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/copyright' element={<CommonProtectedRoute> <CopyrightForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/consultancy' element={<CommonProtectedRoute> <ConsultancyForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/projects' element={<CommonProtectedRoute> <ProjectForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awards-honors' element={<CommonProtectedRoute> <AwardsAndHonorsForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/need-based-projects' element={<CommonProtectedRoute> <NeedProjectsForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/sttp-attended' element={<CommonProtectedRoute> <SttpAttended /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/sttp-conducted' element={<CommonProtectedRoute> <SttpConducted /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/sttp-organized' element={<CommonProtectedRoute> <SttpOrganized /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminar-conducted' element={<CommonProtectedRoute> <SeminarConducted /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminar-attended' element={<CommonProtectedRoute> <SeminarAttended /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/seminar-organized' element={<CommonProtectedRoute> <SeminarOrganized /> </CommonProtectedRoute>} />
           <Route path='/common/forms/activity-conducted' element={<CommonProtectedRoute> <ActivityConducted /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/awards-recieved' element={<CommonProtectedRoute> <AwardRecieved /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/course-certification' element={<CommonProtectedRoute> <CourseCertificate /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/patent' element={<CommonProtectedRoute> <PatentDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/copyright' element={<CommonProtectedRoute> <CopyrightDisplay /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

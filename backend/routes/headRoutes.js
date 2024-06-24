@@ -1,6 +1,6 @@
 const express = require('express')
 const headAuthenticator = require('../middleware/headAuthenticator')
-const { headProfileImageUpload } = require('../middleware/fileUpload')
+const { facultyProfileImageUpload } = require('../middleware/fileUpload')
 const { profileImageUpdate, createNotification, getNotifications, getFacultiesList, toggleFacultyApproval } = require('../controller/headController')
 const router = express.Router()
 
@@ -56,7 +56,7 @@ const router = express.Router()
  *         description: Internal Server Error.
  */
 
-router.route('/profile/image').put(headAuthenticator,headProfileImageUpload.single('profileImage'),profileImageUpdate)
+router.route('/profile/image').put(headAuthenticator,facultyProfileImageUpload.single('profileImage'),profileImageUpdate)
 
 /**
  * @swagger

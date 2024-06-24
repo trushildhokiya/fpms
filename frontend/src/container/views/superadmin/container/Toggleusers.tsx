@@ -1,4 +1,4 @@
-import HeadNavbar from "@/components/navbar/HeadNavbar"
+import SuperAdminNavbar from '@/components/navbar/SuperAdminNavbar'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useEffect, useRef, useState } from "react"
@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -31,7 +32,7 @@ const FormSchema = z.object({
     isCoordinator: z.boolean().default(false).optional(),
 })
 
-const Faculty = () => {
+const Toggleusers = () => {
 
     interface facultyInterface {
 
@@ -62,7 +63,7 @@ const Faculty = () => {
             isCoordinator: data.isCoordinator
         }
 
-        axios.put('/head/faculties', payload, {
+        axios.put('/super/faculties', payload, {
             headers: {
                 'token': localStorage.getItem('token')
             }
@@ -94,45 +95,17 @@ const Faculty = () => {
     }
 
 
-
-
-    useEffect(() => {
-        
-        // Function to create and append a link element for the CSS file
-        const addCSS = () => {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = 'https://unpkg.com/primereact/resources/themes/lara-light-cyan/theme.css';
-            link.id = 'dynamic-theme'; // Adding an ID for easy removal later
-            document.head.appendChild(link);
-        };
-
-        // Function to remove the link element for the CSS file
-        const removeCSS = () => {
-            const link = document.getElementById('dynamic-theme');
-            if (link) {
-                document.head.removeChild(link);
-            }
-        };
-
-        // Call the function to add the CSS
-        addCSS();
-
-        // Return a cleanup function to remove the CSS when the component unmounts
-        return () => {
-            removeCSS();
-        };
-    }, []);
+    
 
     useEffect(() => {
-        getFacultiesList();
-    }, []);
+        console.log("fetching");
+        getFacultiesList()
 
+    }, [])
 
     const getFacultiesList: Function = () => {
 
-        axios.get('/head/faculties', {
+        axios.get('/super/faculties', {
             headers: {
                 'token': localStorage.getItem('token'),
                 'email': email
@@ -140,6 +113,7 @@ const Faculty = () => {
         })
             .then((res) => {
                 setData(res.data)
+                console.log(res)
             })
             .catch((err) => {
 
@@ -255,7 +229,7 @@ const Faculty = () => {
 
     return (
         <div>
-            <HeadNavbar />
+            <SuperAdminNavbar />
             <div className="container">
 
                 <Card className="my-10">
@@ -304,4 +278,4 @@ const Faculty = () => {
     )
 }
 
-export default Faculty
+export default Toggleusers

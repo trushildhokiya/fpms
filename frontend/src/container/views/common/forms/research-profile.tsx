@@ -26,6 +26,11 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
+import { useToast } from '@/components/ui/use-toast'
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { Toaster } from '@/components/ui/toaster'
+import { useNavigate } from 'react-router-dom'
 
 
 type Props = {}
@@ -124,6 +129,8 @@ const formSchema = z.object({
 const FacultyResearchProfile: React.FC = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
+    const { toast } = useToast()
+    const navigate = useNavigate()
 
     // command
     const [open, setOpen] = useState(false)
@@ -165,7 +172,28 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
     })
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+        
+        axios.post('/common/research-profile',values)
+        .then((res)=>{
+            // console.log(res);
+            if(res.data.message==='success'){
+
+                toast({
+                    title: "Research profile updated successfully",
+                    description: "Your research profile information has been added/updated successfully",
+                    action: (
+                      <ToastAction className='bg-emerald-500' onClick={ ()=>{ navigate('/common/display/research-profile')}} altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset()
+                
+            }
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+
+
     }
 
 
@@ -427,7 +455,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                         <FormItem>
                                             <FormLabel>Citation Count Goolge Scholar</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Citation Count Goolge Scholar" {...field} autoComplete='off' />
+                                                <Input type='number' placeholder="Citation Count Goolge Scholar" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -441,7 +469,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                                         <FormItem>
                                             <FormLabel>Citation Count Scopus</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Citation Count Scopus" {...field} autoComplete='off' />
+                                                <Input type='number' placeholder="Citation Count Scopus" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -483,6 +511,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                     </Form>
                 </div>
 
+                <Toaster />
             </div>
         </>
 

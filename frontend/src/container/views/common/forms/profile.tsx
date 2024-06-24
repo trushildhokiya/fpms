@@ -33,6 +33,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {}
 
@@ -107,6 +108,7 @@ const ProfileForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
     const { toast } = useToast()
+    const navigate = useNavigate()
 
     // command
     const [open, setOpen] = useState(false)
@@ -150,7 +152,7 @@ const ProfileForm = (props: Props) => {
                     title: "Profile updated successfully",
                     description: "Your profile information has been added/updated successfully",
                     action: (
-                      <ToastAction altText="okay">Okay</ToastAction>
+                      <ToastAction className='bg-emerald-500' onClick={()=>{ navigate('/common/display/profile')}} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()
