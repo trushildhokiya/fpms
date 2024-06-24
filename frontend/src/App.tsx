@@ -35,6 +35,7 @@ const DisplayUsers = lazy(() => import('./container/views/admin/container/displa
  */
 const HeadDashboard = lazy(() => import('./container/views/head/container/dashboard/Dashboard'));
 const HeadProfile = lazy(() => import('@/container/views/head/container/profile/Profile'));
+const HeadUpload = lazy(() => import('@/container/views/head/container/upload/Upload'));
 const Faculty = lazy(() => import('./container/views/head/container/faculties/Faculty'));
 const Notify = lazy(() => import('./container/views/head/container/notify/Notify'));
 const Notifications = lazy(() => import('./container/views/head/container/notifications/Notifications'));
@@ -99,8 +100,9 @@ function App() {
           <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
           <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
-          <Route path='/hod' element={<HeadProtectedRoute><HeadDashboard /> </HeadProtectedRoute>} />
+          <Route path='/hod' element={<HeadDashboard /> } />
           <Route path='/hod/profile' element={<HeadProtectedRoute> <HeadProfile /> </HeadProtectedRoute>} />
+          <Route path='/hod/upload' element={<HeadProtectedRoute> <HeadUpload /> </HeadProtectedRoute>} /> 
           <Route path='/hod/users/faculty' element={<HeadProtectedRoute> <Faculty /> </HeadProtectedRoute>} />
           <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />

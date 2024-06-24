@@ -178,6 +178,11 @@ const HeadNavbar = () => {
                                             Profile
                                         </DropdownMenuItem>
                                     </Link>
+                                    <Link to='/hod/upload'>
+                                        <DropdownMenuItem>
+                                            Bulk Upload
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
