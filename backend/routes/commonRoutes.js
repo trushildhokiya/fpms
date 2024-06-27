@@ -17,6 +17,8 @@ const {
   addBookChapter,
   getPatentData,
   getCopyrightData,
+  getJournalData,
+  getConferenceData,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -1206,8 +1208,160 @@ router.route("/copyright").post(facultyAuthenticator, copyrightFileUpload.single
  */
 router.route('/copyright').get(facultyAuthenticator, getCopyrightData)
 
-router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"), addBook);
 
+/**
+ * @swagger
+ * /common/journal:
+ *   post:
+ *     summary: Add new journal entry
+ *     description: Endpoint to add a new journal entry by authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: An Innovative Research Paper
+ *               authors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Dr. John Doe
+ *                   - Dr. Jane Smith
+ *               authorsAffiliation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - University A
+ *                   - University B
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Computer Science
+ *                   - Electrical Engineering
+ *               paidUnpaid:
+ *                 type: string
+ *                 example: Paid
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               journalType:
+ *                 type: string
+ *                 example: International
+ *               journalTitle:
+ *                 type: string
+ *                 example: Journal of Advanced Research
+ *               issn:
+ *                 type: string
+ *                 example: 1234-5678
+ *               impactFactor:
+ *                 type: number
+ *                 example: 4.5
+ *               pageFrom:
+ *                 type: number
+ *                 example: 1
+ *               pageTo:
+ *                 type: number
+ *                 example: 15
+ *               year:
+ *                 type: number
+ *                 example: 2024
+ *               digitalObjectIdentifier:
+ *                 type: string
+ *                 example: 10.1234/jar.2024.001
+ *               indexing:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Scopus
+ *                   - Web of Science
+ *               paperUrl:
+ *                 type: string
+ *                 example: https://example.com/paper.pdf
+ *               citationCount:
+ *                 type: number
+ *                 example: 10
+ *               paper:
+ *                 type: string
+ *                 format: binary
+ *               certificate:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Journal entry added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 router.route("/journal").post(facultyAuthenticator, journalFileUpload.fields([
   { name: "paper", maxCount: 1 },
   { name: "certificate", maxCount: 1 },
@@ -1216,12 +1370,502 @@ router.route("/journal").post(facultyAuthenticator, journalFileUpload.fields([
 );
 
 
+/**
+ * @swagger
+ * /common/journal:
+ *   get:
+ *     summary: Get journal entries
+ *     description: Endpoint to retrieve journal entries for authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Journal entries retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 60b8d6f8d3b3c823d8c0e8f1
+ *                   title:
+ *                     type: string
+ *                     example: An Innovative Research Paper
+ *                   authors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Dr. John Doe
+ *                       - Dr. Jane Smith
+ *                   authorsAffiliation:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - University A
+ *                       - University B
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Computer Science
+ *                       - Electrical Engineering
+ *                   paidUnpaid:
+ *                     type: string
+ *                     example: Paid
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - john.doe@example.com
+ *                       - jane.smith@example.com
+ *                   journalType:
+ *                     type: string
+ *                     example: International
+ *                   journalTitle:
+ *                     type: string
+ *                     example: Journal of Advanced Research
+ *                   issn:
+ *                     type: string
+ *                     example: 1234-5678
+ *                   impactFactor:
+ *                     type: number
+ *                     example: 4.5
+ *                   pageFrom:
+ *                     type: number
+ *                     example: 1
+ *                   pageTo:
+ *                     type: number
+ *                     example: 15
+ *                   year:
+ *                     type: number
+ *                     example: 2024
+ *                   digitalObjectIdentifier:
+ *                     type: string
+ *                     example: 10.1234/jar.2024.001
+ *                   indexing:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Scopus
+ *                       - Web of Science
+ *                   paperUrl:
+ *                     type: string
+ *                     example: https://example.com/paper.pdf
+ *                   citationCount:
+ *                     type: number
+ *                     example: 10
+ *                   paper:
+ *                     type: string
+ *                     example: /uploads/papers/60b8d6f8d3b3c823d8c0e8f1.pdf
+ *                   certificate:
+ *                     type: string
+ *                     example: /uploads/certificates/60b8d6f8d3b3c823d8c0e8f1.pdf
+ *       400:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route("/journal").get(facultyAuthenticator, getJournalData)
+
+
+/**
+ * @swagger
+ * /common/conference:
+ *   post:
+ *     summary: Add new conference entry
+ *     description: Endpoint to add a new conference entry by authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Cutting-Edge Research in AI
+ *               authors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Dr. John Doe
+ *                   - Dr. Jane Smith
+ *               authorsAffiliation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - University A
+ *                   - University B
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Computer Science
+ *                   - Mechanical Engineering
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               nationalInternational:
+ *                 type: string
+ *                 example: International
+ *               conferenceName:
+ *                 type: string
+ *                 example: International Conference on AI
+ *               venue:
+ *                 type: string
+ *                 example: New York, USA
+ *               organizer:
+ *                 type: string
+ *                 example: AI Research Society
+ *               role:
+ *                 type: string
+ *                 example: Presenter
+ *               fromDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-25"
+ *               toDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-27"
+ *               paperStatus:
+ *                 type: string
+ *                 example: Accepted
+ *               publicationDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-07-01"
+ *               issn:
+ *                 type: string
+ *                 example: 1234-5678
+ *               impactFactor:
+ *                 type: number
+ *                 example: 3.5
+ *               pageNo:
+ *                 type: string
+ *                 example: 12-19
+ *               yearOfPublication:
+ *                 type: number
+ *                 example: 2024
+ *               doi:
+ *                 type: string
+ *                 example: 10.1234/ai.2024.001
+ *               indexing:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Scopus
+ *                   - Web of Science
+ *               paperUrl:
+ *                 type: string
+ *                 example: https://example.com/paper.pdf
+ *               citationCount:
+ *                 type: number
+ *                 example: 5
+ *               paper:
+ *                 type: string
+ *                 format: binary
+ *               certificate:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Conference entry added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 router.route("/conference").post(facultyAuthenticator, conferenceFileUpload.fields([
   { name: "paper", maxCount: 1 },
   { name: "certificate", maxCount: 1 },
 ]),
   addConference
 );
+
+/**
+ * @swagger
+ * /common/conference:
+ *   get:
+ *     summary: Get conference data
+ *     description: Endpoint to retrieve conference data for an authenticated faculty member.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Conference data retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                     example: Cutting-Edge Research in AI
+ *                   authors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Dr. John Doe
+ *                       - Dr. Jane Smith
+ *                   authorsAffiliation:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - University A
+ *                       - University B
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Computer Science
+ *                       - Mechanical Engineering
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - john.doe@example.com
+ *                       - jane.smith@example.com
+ *                   nationalInternational:
+ *                     type: string
+ *                     example: International
+ *                   conferenceName:
+ *                     type: string
+ *                     example: International Conference on AI
+ *                   venue:
+ *                     type: string
+ *                     example: New York, USA
+ *                   organizer:
+ *                     type: string
+ *                     example: AI Research Society
+ *                   role:
+ *                     type: string
+ *                     example: Presenter
+ *                   fromDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-06-25"
+ *                   toDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-06-27"
+ *                   paperStatus:
+ *                     type: string
+ *                     example: Accepted
+ *                   publicationDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-07-01"
+ *                   issn:
+ *                     type: string
+ *                     example: 1234-5678
+ *                   impactFactor:
+ *                     type: number
+ *                     example: 3.5
+ *                   pageNo:
+ *                     type: string
+ *                     example: 12-19
+ *                   yearOfPublication:
+ *                     type: number
+ *                     example: 2024
+ *                   doi:
+ *                     type: string
+ *                     example: 10.1234/ai.2024.001
+ *                   indexing:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Scopus
+ *                       - Web of Science
+ *                   paperUrl:
+ *                     type: string
+ *                     example: https://example.com/paper.pdf
+ *                   citationCount:
+ *                     type: number
+ *                     example: 5
+ *                   paper:
+ *                     type: string
+ *                   certificate:
+ *                     type: string
+ *       400:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route("/conference").get(facultyAuthenticator, getConferenceData)
+
+
+router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"), addBook);
+
+
 
 router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.single("proof"), addBookChapter);
 

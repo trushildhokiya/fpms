@@ -250,13 +250,13 @@ const addCopyright = asyncHandler(async (req, res) => {
   // attach file path to data
   const certificateURL = req.file.path;
   data.copyrightCertificate = certificateURL;
-  
+
   // create new copyright entry
   const copyright = await Copyright.create(data);
 
   // attach copyright to faculties
   for (const email of data.facultiesInvolved) {
-    
+
     await Faculty.findOneAndUpdate(
       { email: email },
       { $push: { copyright: copyright._id } }
@@ -267,7 +267,7 @@ const addCopyright = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "success",
   });
-  
+
 });
 
 
@@ -284,16 +284,149 @@ const getCopyrightData = asyncHandler(async (req, res) => {
     throw new Error("User not found!")
   }
 
-  // Populate patents array to get full patent data
+  // Populate copyrights array to get full copyright data
   await user.populate('copyright')
 
-  // Extract the populated patents data
+  // Extract the populated copyrights data
   const copyrightData = user.copyright
 
   // Send the response
   res.status(200).json(copyrightData);
 
 });
+
+
+const addJournal = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const paperURL = req.files.paper[0].path;
+  const certificateURL = req.files.certificate[0].path;
+
+  data.paper = paperURL;
+  data.certificate = certificateURL;
+
+  // create entry in journal
+  const journal = await Journal.create(data);
+
+
+  // attach entry to involved faculty
+
+  for (const email of data.facultiesInvolved) {
+    await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { journal: journal._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+  
+});
+
+
+const getJournalData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate journal array to get full journal data
+  await user.populate('journal')
+
+  // Extract the populated journal data
+  const journalData = user.journal
+
+  // Send the response
+  res.status(200).json(journalData);
+
+});
+
+
+const addConference = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  //get file paths
+  const paperURL = req.files.paper[0].path;
+  const certificateURL = req.files.certificate[0].path;
+
+
+  // attach file path in data
+  data.paper = paperURL;
+  data.certificate = certificateURL;
+
+
+  // create conference entry
+  const conference = await Conference.create(data);
+
+  // attach entry to involved faculties
+  for (const email of data.facultiesInvolved) {
+    await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { conference: conference._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+});
+
+
+const getConferenceData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate conference array to get full conference data
+  await user.populate('conference')
+
+  // Extract the populated conference data
+  const conferenceData = user.conference
+
+  // Send the response
+  res.status(200).json(conferenceData);
+
+});
+
 
 /*
 ADD BOOK
@@ -330,99 +463,9 @@ const addBook = asyncHandler(async (req, res) => {
   });
 });
 
-/*
-ADD JOURNAL
-*/
-
-const addJournal = asyncHandler(async (req, res) => {
-  //get required data
-  const data = req.body;
-  const { email } = req.decodedData;
-  // console.log(data);
-  // find user
-  const user = await Faculty.findOne({ email: email });
-
-  if (!user) {
-    res.status(400);
-    throw new Error("User not found!");
-  }
-
-  //if you have multiple file inputs
-  const paperURL = req.files.paper[0].path;
-  const certificateURL = req.files.certificate[0].path;
-
-  data.paper = paperURL;
-  data.certificate = certificateURL;
-  const journal = await Journal.create(data);
-  // console.log(data);
-
-  for (const email of data.facultiesInvolved) {
-    const faculty = await Faculty.findOneAndUpdate(
-      { email: email },
-      { $push: { journal: journal._id } }
-    );
-  }
-
-  res.status(200).json({
-    message: "success",
-  });
-});
 
 
 
-
-/*
-ADD MAJOR/MINOR
-*/
-
-/*
-ADD NEED BASED
-*/
-
-/*
-ADD AWARDS & HONORS
-*/
-
-/*
-ADD CONSULTANCY
-*/
-
-/*
-ADD CONFERENCE
-*/
-const addConference = asyncHandler(async (req, res) => {
-  //get required data
-  const data = req.body;
-  const { email } = req.decodedData;
-  // console.log(data);
-  // find user
-  const user = await Faculty.findOne({ email: email });
-
-  if (!user) {
-    res.status(400);
-    throw new Error("User not found!");
-  }
-
-  //if you have multiple file inputs
-  const paperURL = req.files.paper[0].path;
-  const certificateURL = req.files.certificate[0].path;
-
-  data.paper = paperURL;
-  data.certificate = certificateURL;
-  const conference = await Conference.create(data);
-  // console.log(data);
-
-  for (const email of data.facultiesInvolved) {
-    const faculty = await Faculty.findOneAndUpdate(
-      { email: email },
-      { $push: { conference: conference._id } }
-    );
-  }
-
-  res.status(200).json({
-    message: "success",
-  });
-});
 
 /*
 ADD BOOK CHAPTER
@@ -471,6 +514,8 @@ module.exports = {
   getCopyrightData,
   addBook,
   addJournal,
+  getJournalData,
   addConference,
+  getConferenceData,
   addBookChapter,
 };

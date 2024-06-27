@@ -98,6 +98,8 @@ const ExperienceDisplay = lazy(() => import('./container/views/common/display/ex
 const ResearchProfileDisplay = lazy(() => import('./container/views/common/display/research-profile'));
 const PatentDisplay = lazy(() => import('./container/views/common/display/patent'));
 const CopyrightDisplay = lazy(() => import('./container/views/common/display/copyright'));
+const JournalDisplay = lazy(() => import('./container/views/common/display/journal'));
+const ConferenceDisplay = lazy(() => import('./container/views/common/display/conference'));
 
 
 function App() {
@@ -159,6 +161,8 @@ function App() {
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/patent' element={<CommonProtectedRoute> <PatentDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/copyright' element={<CommonProtectedRoute> <CopyrightDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/journal' element={<CommonProtectedRoute> <JournalDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/conference' element={<CommonProtectedRoute> <ConferenceDisplay /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

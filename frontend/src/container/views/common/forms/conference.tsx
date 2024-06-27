@@ -129,11 +129,11 @@ const formSchema = z.object({
   yearOfPublication: z.coerce.number().min(1900).max(2300),
   doi: z.string().min(1).max(100),
   indexing: z.array(z.string()).nonempty(),
-  
+
   paperUrl: z.union([z.string().min(1).url({
     message: "Invalid url"
   }), z.string().optional()]),
-  
+
   citationCount: z.coerce.number().nonnegative(),
   paper: z.union([z.instanceof(File).optional(), pdfFileSchema]),
   certificate: z.union([z.instanceof(File).optional(), pdfFileSchema]),
@@ -213,27 +213,27 @@ const ConferenceForm: React.FC = (props: Props) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // axios
-    //   .post("/common/conference", values, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   })
-    //   .then((res) => {
-    //     // console.log(res.data);
-    //     if (res.data.message === "success") {
-    //       toast({
-    //         title: "Conference updated successfully",
-    //         description:
-    //           "Your Conference information has been added/updated successfully",
-    //         action: <ToastAction altText="okay">Okay</ToastAction>,
-    //       });
-    //       form.reset();
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    axios
+      .post("/common/conference", values, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        // console.log(res.data);
+        if (res.data.message === "success") {
+          toast({
+            title: "Conference updated successfully",
+            description:
+              "Your Conference information has been added/updated successfully",
+            action: <ToastAction altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -243,7 +243,7 @@ const ConferenceForm: React.FC = (props: Props) => {
       <div className="container my-8">
         <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
           <span className="border-b-4 border-red-800 break-words uppercase ">
-            journal <span className="hidden sm:inline-block">PUBLICATION</span>
+            CONFERENCE <span className="hidden sm:inline-block">PUBLICATION</span>
           </span>
         </h1>
 
@@ -761,7 +761,7 @@ const ConferenceForm: React.FC = (props: Props) => {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
+                          type="text"
                           placeholder="eg: 12-44"
                           autoComplete="off"
                           {...field}
