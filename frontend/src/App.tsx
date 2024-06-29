@@ -102,6 +102,7 @@ const JournalDisplay = lazy(() => import('./container/views/common/display/journ
 const ConferenceDisplay = lazy(() => import('./container/views/common/display/conference'));
 const BookDisplay = lazy(() => import('./container/views/common/display/book'));
 const BookChapterDisplay = lazy(() => import('./container/views/common/display/book-chapter'));
+const NeedBasedProjectDisplay = lazy(() => import('./container/views/common/display/need-based-project'));
 
 
 function App() {
@@ -167,6 +168,7 @@ function App() {
           <Route path='/common/display/conference' element={<CommonProtectedRoute> <ConferenceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/book' element={<CommonProtectedRoute> <BookDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/book-chapter' element={<CommonProtectedRoute> <BookChapterDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/need-based-projects' element={<CommonProtectedRoute> <NeedBasedProjectDisplay /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

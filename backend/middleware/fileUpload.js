@@ -144,7 +144,7 @@ const journalFileStorage = multer.diskStorage({
 const journalFileUpload = multer({ storage: journalFileStorage });
 
 /*
-FILE UPLOAD COPYRIGHTS
+COPYRIGHTS FILE UPLOAD
 */
 const copyrightFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
@@ -165,24 +165,10 @@ const copyrightFileStorage = multer.diskStorage({
 
 const copyrightFileUpload = multer({ storage: copyrightFileStorage });
 
-/*
-FILE UPLOAD MAJOR/MINOR
-*/
+
 
 /*
-FILE UPLOAD NEED BASED
-*/
-
-/*
-FILE UPLOAD AWARDS & HONORS
-*/
-
-/*
-FILE UPLOAD CONSULTANCY
-*/
-
-/*
-FILE UPLOAD CONFERENCE
+ CONFERENCE FILE UPLOAD
 */
 const conferenceFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
@@ -204,7 +190,7 @@ const conferenceFileStorage = multer.diskStorage({
 const conferenceFileUpload = multer({ storage: conferenceFileStorage });
 
 /*
-FILE UPLOAD BOOK CHAPTER
+BOOK CHAPTER FILE UPLOAD 
 */
 const bookChapterFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
@@ -225,6 +211,29 @@ const bookChapterFileStorage = multer.diskStorage({
 
 const bookChapterUpload = multer({ storage: bookChapterFileStorage });
 
+
+/*
+BOOK CHAPTER FILE UPLOAD 
+*/
+const needBasedProjectStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "need-based-projects");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "needBproject-file" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const needBasedProjectFileUpload = multer({ storage: needBasedProjectStorage });
+
 module.exports = {
   adminProfileImageUpload,
   facultyProfileImageUpload,
@@ -235,4 +244,5 @@ module.exports = {
   conferenceFileUpload,
   copyrightFileUpload,
   bookChapterUpload,
+  needBasedProjectFileUpload
 };

@@ -36,6 +36,10 @@ import {
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
+import { Toaster } from '@/components/ui/toaster'
 
 type Props = {}
 
@@ -147,7 +151,7 @@ const formSchema = z.object({
 const NeedBasedProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-
+    const { toast }= useToast()
 
     //constants
 
@@ -301,7 +305,27 @@ const NeedBasedProjectForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        axios.post("/common/need-based-project", values, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then((res) => {
+
+                if (res.data.message === "success") {
+                    toast({
+                        title: "Project updated successfully",
+                        description:
+                            "Your Project information has been added/updated successfully",
+                        action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
     }
 
     return (
@@ -683,7 +707,7 @@ const NeedBasedProjectForm = (props: Props) => {
                                         <FormItem className=''>
                                             <FormLabel className='text-gray-800'>Contact Number</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="faculty Coordinator Contact Number" {...field} autoComplete='off' />
+                                                <Input type='number' placeholder="faculty Coordinator Contact Number" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -831,6 +855,7 @@ const NeedBasedProjectForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

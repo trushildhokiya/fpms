@@ -6,6 +6,7 @@ const Journal = require("../models/journal");
 const Conference = require("../models/conference");
 const Copyright = require("../models/copyright");
 const BookChapter = require("../models/book-chapter");
+const NeedBasedProject = require('../models/need-based-projects')
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -551,6 +552,77 @@ const getBookChapterData = asyncHandler(async (req, res) => {
 });
 
 
+const addNeedBasedProject = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  
+  //get file paths
+  const sanctionedDocumentsURL = req.files.sanctionedDocuments[0].path
+  const projectReportURL = req.files.projectReport[0].path
+  const completionLetterURL = req.files.completionLetter[0].path
+  const visitDocumentsURL = req.files.visitDocuments[0].path
+
+
+  // attach file path in data
+  data.sanctionedDocuments = sanctionedDocumentsURL
+  data.projectReport = projectReportURL
+  data.completionLetter = completionLetterURL
+  data.visitDocuments = visitDocumentsURL
+
+  // create book chapter entry
+  const needBasedProject = await NeedBasedProject.create(data);
+
+  // attach entry to involved faculties
+
+  for (const email of data.facultiesInvolved) {
+    await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { needBasedProjects: needBasedProject._id } }
+    );
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+  
+});
+
+
+const getNeedBasedProjectData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate bookChapter array to get full bookChapter data
+  await user.populate('needBasedProjects')
+
+  // Extract the populated bookChapter data
+  const needBasedProjectData = user.needBasedProjects
+
+  // Send the response
+  res.status(200).json(needBasedProjectData);
+
+});
+
 module.exports = {
   addProfile,
   getProfileData,
@@ -570,4 +642,6 @@ module.exports = {
   getConferenceData,
   addBookChapter,
   getBookChapterData,
+  addNeedBasedProject,
+  getNeedBasedProjectData,
 };

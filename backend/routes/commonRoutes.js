@@ -21,6 +21,8 @@ const {
   getConferenceData,
   getBookData,
   getBookChapterData,
+  addNeedBasedProject,
+  getNeedBasedProjectData,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -32,6 +34,7 @@ const {
   conferenceFileUpload,
   copyrightFileUpload,
   bookChapterUpload,
+  needBasedProjectFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -2452,5 +2455,344 @@ router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.singl
  *                   example: Internal Server Error
  */
 router.route('/book-chapter').get(facultyAuthenticator,getBookChapterData )
+
+/**
+ * @swagger
+ * /common/need-based-project:
+ *   post:
+ *     summary: Add new need-based project entry
+ *     description: Endpoint to add a new need-based project entry by authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               projectTitle:
+ *                 type: string
+ *                 example: Community Development Project
+ *               description:
+ *                 type: string
+ *                 example: A project aimed at improving community health.
+ *               outcomes:
+ *                 type: string
+ *                 example: Improved access to healthcare services.
+ *               institutionAddress:
+ *                 type: string
+ *                 example: 123 Main Street, City, Country
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Public Health
+ *                   - Social Work
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               institutionName:
+ *                 type: string
+ *                 example: ABC Foundation
+ *               facultyCoordinatorName:
+ *                 type: string
+ *                 example: John Doe
+ *               facultyCoordinatorDepartment:
+ *                 type: string
+ *                 example: Public Health
+ *               facultyCoordinatorContact:
+ *                 type: string
+ *                 example: +1234567890
+ *               facultyCoordinatorEmail:
+ *                 type: string
+ *                 format: email
+ *                 example: john.doe@example.com
+ *               students:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: Alice Smith
+ *                     department:
+ *                       type: string
+ *                       example: Nursing
+ *                     contact:
+ *                       type: string
+ *                       example: +9876543210
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       example: alice.smith@example.com
+ *                 example:
+ *                   - name: Alice Smith
+ *                     department: Nursing
+ *                     contact: +9876543210
+ *                     email: alice.smith@example.com
+ *               collaborationType:
+ *                 type: string
+ *                 example: Academic-Community Partnership
+ *               institutionUrl:
+ *                 type: string
+ *                 example: https://abc-foundation.org
+ *               startDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2024-08-01T00:00:00Z
+ *               endDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2024-12-31T23:59:59Z
+ *               sanctionedDocuments:
+ *                 type: string
+ *                 format: binary
+ *               projectReport:
+ *                 type: string
+ *                 format: binary
+ *               completionLetter:
+ *                 type: string
+ *                 format: binary
+ *               visitDocuments:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Need-based project added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route('/need-based-project').post(facultyAuthenticator,needBasedProjectFileUpload.fields([
+  { name: 'sanctionedDocuments' , maxCount:1},
+  { name: 'projectReport' , maxCount:1},
+  { name: 'completionLetter' , maxCount:1},
+  { name: 'visitDocuments' , maxCount:1},
+]), addNeedBasedProject)
+
+/**
+ * @swagger
+ * /common/need-based-project:
+ *   get:
+ *     summary: Get need-based projects associated with authenticated faculty member
+ *     description: Endpoint to retrieve need-based projects associated with the authenticated faculty member.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of need-based projects retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 60fd3213b94ebf001b82041d
+ *                   projectTitle:
+ *                     type: string
+ *                     example: Community Development Project
+ *                   description:
+ *                     type: string
+ *                     example: A project aimed at improving community health.
+ *                   outcomes:
+ *                     type: string
+ *                     example: Improved access to healthcare services.
+ *                   institutionAddress:
+ *                     type: string
+ *                     example: 123 Main Street, City, Country
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Public Health
+ *                       - Social Work
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - john.doe@example.com
+ *                       - jane.smith@example.com
+ *                   institutionName:
+ *                     type: string
+ *                     example: ABC Foundation
+ *                   facultyCoordinatorName:
+ *                     type: string
+ *                     example: John Doe
+ *                   facultyCoordinatorDepartment:
+ *                     type: string
+ *                     example: Public Health
+ *                   facultyCoordinatorContact:
+ *                     type: string
+ *                     example: +1234567890
+ *                   facultyCoordinatorEmail:
+ *                     type: string
+ *                     format: email
+ *                     example: john.doe@example.com
+ *                   students:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: Alice Smith
+ *                         department:
+ *                           type: string
+ *                           example: Nursing
+ *                         contact:
+ *                           type: string
+ *                           example: +9876543210
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           example: alice.smith@example.com
+ *                     example:
+ *                       - name: Alice Smith
+ *                         department: Nursing
+ *                         contact: +9876543210
+ *                         email: alice.smith@example.com
+ *                   collaborationType:
+ *                     type: string
+ *                     example: Academic-Community Partnership
+ *                   institutionUrl:
+ *                     type: string
+ *                     example: https://abc-foundation.org
+ *                   startDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: 2024-08-01T00:00:00Z
+ *                   endDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: 2024-12-31T23:59:59Z
+ *                   sanctionedDocuments:
+ *                     type: string
+ *                     example: /uploads/sanctionedDoc.pdf
+ *                   projectReport:
+ *                     type: string
+ *                     example: /uploads/projectReport.pdf
+ *                   completionLetter:
+ *                     type: string
+ *                     example: /uploads/completionLetter.pdf
+ *                   visitDocuments:
+ *                     type: string
+ *                     example: /uploads/visitDocuments.pdf
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route('/need-based-project').get(facultyAuthenticator , getNeedBasedProjectData)
+
 
 module.exports = router;
