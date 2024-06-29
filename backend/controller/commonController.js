@@ -428,16 +428,12 @@ const getConferenceData = asyncHandler(async (req, res) => {
 });
 
 
-/*
-ADD BOOK
-*/
-
 const addBook = asyncHandler(async (req, res) => {
+  
   //get required data
   const data = req.body;
   const { email } = req.decodedData;
 
-  // console.log(data);
   // find user
   const user = await Faculty.findOne({ email: email });
 
@@ -446,13 +442,17 @@ const addBook = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
 
-  //if you have single file input
-  const certificateURL = req.file.path;
-  data.proof = certificateURL;
+  //get proof file path
+  const proofURL = req.file.path;
+  data.proof = proofURL;
+
+  // create book entry
   const book = await Book.create(data);
 
+  // attach entry to invlolved faculty
+
   for (const email of data.facultiesInvolved) {
-    const faculty = await Faculty.findOneAndUpdate(
+    await Faculty.findOneAndUpdate(
       { email: email },
       { $push: { book: book._id } }
     );
@@ -464,18 +464,37 @@ const addBook = asyncHandler(async (req, res) => {
 });
 
 
+const getBookData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate book array to get full book data
+  await user.populate('book')
+
+  // Extract the populated book data
+  const bookData = user.book
+
+  // Send the response
+  res.status(200).json(bookData);
+
+});
 
 
-
-/*
-ADD BOOK CHAPTER
-*/
 const addBookChapter = asyncHandler(async (req, res) => {
+
   //get required data
   const data = req.body;
   const { email } = req.decodedData;
 
-  console.log(data);
   // find user
   const user = await Faculty.findOne({ email: email });
 
@@ -484,13 +503,17 @@ const addBookChapter = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
 
-  //if you have single file input
+  // get file path and attach to data
   const certificateURL = req.file.path;
   data.proof = certificateURL;
+
+  // create book chapter entry
   const bookChapter = await BookChapter.create(data);
 
+  // attach entry to involved faculties
+
   for (const email of data.facultiesInvolved) {
-    const faculty = await Faculty.findOneAndUpdate(
+    await Faculty.findOneAndUpdate(
       { email: email },
       { $push: { bookChapter: bookChapter._id } }
     );
@@ -499,7 +522,34 @@ const addBookChapter = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "success",
   });
+  
 });
+
+
+const getBookChapterData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate bookChapter array to get full bookChapter data
+  await user.populate('bookChapter')
+
+  // Extract the populated bookChapter data
+  const bookChapterData = user.bookChapter
+
+  // Send the response
+  res.status(200).json(bookChapterData);
+
+});
+
 
 module.exports = {
   addProfile,
@@ -513,9 +563,11 @@ module.exports = {
   addCopyright,
   getCopyrightData,
   addBook,
+  getBookData,
   addJournal,
   getJournalData,
   addConference,
   getConferenceData,
   addBookChapter,
+  getBookChapterData,
 };

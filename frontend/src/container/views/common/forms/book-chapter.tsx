@@ -266,7 +266,7 @@ const BookChapterForm: React.FC = (props: Props) => {
       <div className="container my-8">
         <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
           <span className="border-b-4 border-red-800 break-words ">
-            BOOK <span className="hidden sm:inline-block">PUBLICATIONS</span>
+            BOOK <span className="hidden sm:inline-block">CHAPTER</span>
           </span>
         </h1>
 

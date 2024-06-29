@@ -19,6 +19,8 @@ const {
   getCopyrightData,
   getJournalData,
   getConferenceData,
+  getBookData,
+  getBookChapterData,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -1862,11 +1864,593 @@ router.route("/conference").post(facultyAuthenticator, conferenceFileUpload.fiel
  */
 router.route("/conference").get(facultyAuthenticator, getConferenceData)
 
-
+/**
+ * @swagger
+ * /common/book:
+ *   post:
+ *     summary: Add new book entry
+ *     description: Endpoint to add a new book entry by authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bookTitle:
+ *                 type: string
+ *                 example: Advanced Machine Learning
+ *               authors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - John Doe
+ *                   - Jane Smith
+ *               authorsAffiliation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - University A
+ *                   - University B
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Computer Science
+ *                   - Mathematics
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               publisherName:
+ *                 type: string
+ *                 example: Springer
+ *               nationalInternational:
+ *                 type: string
+ *                 example: International
+ *               issn:
+ *                 type: string
+ *                 example: 1234-5678
+ *               impactFactor:
+ *                 type: number
+ *                 example: 2.5
+ *               yearOfPublication:
+ *                 type: number
+ *                 example: 2024
+ *               doi:
+ *                 type: string
+ *                 example: 10.1234/book.2024.001
+ *               intendedAudience:
+ *                 type: string
+ *                 example: Researchers and Practitioners
+ *               description:
+ *                 type: string
+ *                 example: This book covers advanced topics in machine learning.
+ *               indexing:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Scopus
+ *                   - Web of Science
+ *               bookUrl:
+ *                 type: string
+ *                 example: https://example.com/book.pdf
+ *               citationCount:
+ *                 type: number
+ *                 example: 10
+ *               proof:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Book added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"), addBook);
 
+/**
+ * @swagger
+ * /common/book:
+ *   get:
+ *     summary: Get book data
+ *     description: Endpoint to retrieve book data for an authenticated faculty member.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved book data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   bookTitle:
+ *                     type: string
+ *                     example: Advanced Machine Learning
+ *                   authors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - John Doe
+ *                       - Jane Smith
+ *                   authorsAffiliation:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - University A
+ *                       - University B
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Computer Science
+ *                       - Mathematics
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - john.doe@example.com
+ *                       - jane.smith@example.com
+ *                   publisherName:
+ *                     type: string
+ *                     example: Springer
+ *                   nationalInternational:
+ *                     type: string
+ *                     example: International
+ *                   issn:
+ *                     type: string
+ *                     example: 1234-5678
+ *                   impactFactor:
+ *                     type: number
+ *                     example: 2.5
+ *                   yearOfPublication:
+ *                     type: number
+ *                     example: 2024
+ *                   doi:
+ *                     type: string
+ *                     example: 10.1234/book.2024.001
+ *                   intendedAudience:
+ *                     type: string
+ *                     example: Researchers and Practitioners
+ *                   description:
+ *                     type: string
+ *                     example: This book covers advanced topics in machine learning.
+ *                   indexing:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Scopus
+ *                       - Web of Science
+ *                   bookUrl:
+ *                     type: string
+ *                     example: https://example.com/book.pdf
+ *                   citationCount:
+ *                     type: number
+ *                     example: 10
+ *                   proof:
+ *                     type: string
+ *                     example: /uploads/proof.pdf
+ *       400:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route('/book').get(facultyAuthenticator, getBookData)
 
-
+/**
+ * @swagger
+ * /common/book-chapter:
+ *   post:
+ *     summary: Add new book chapter entry
+ *     description: Endpoint to add a new book chapter entry by authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bookTitle:
+ *                 type: string
+ *                 example: Advanced Topics in Computer Science
+ *               chapterTitle:
+ *                 type: string
+ *                 example: Introduction to Quantum Computing
+ *               authors:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - John Doe
+ *                   - Jane Smith
+ *               authorsAffiliation:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - University A
+ *                   - University B
+ *               departmentInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Computer Science
+ *                   - Physics
+ *               facultiesInvolved:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - john.doe@example.com
+ *                   - jane.smith@example.com
+ *               publisherName:
+ *                 type: string
+ *                 example: Springer
+ *               nationalInternational:
+ *                 type: string
+ *                 example: International
+ *               issn:
+ *                 type: string
+ *                 example: 1234-5678
+ *               impactFactor:
+ *                 type: number
+ *                 example: 3.5
+ *               yearOfPublication:
+ *                 type: number
+ *                 example: 2024
+ *               doi:
+ *                 type: string
+ *                 example: 10.1234/book.2024.001
+ *               indexing:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example:
+ *                   - Scopus
+ *                   - Web of Science
+ *               intendedAudience:
+ *                 type: string
+ *                 example: Researchers and Practitioners
+ *               description:
+ *                 type: string
+ *                 example: This chapter covers the basics of quantum computing.
+ *               bookUrl:
+ *                 type: string
+ *                 example: https://example.com/book-chapter.pdf
+ *               citationCount:
+ *                 type: number
+ *                 example: 10
+ *               proof:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Book chapter added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: success
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.single("proof"), addBookChapter);
+
+/**
+ * @swagger
+ * /common/book-chapter:
+ *   get:
+ *     summary: Retrieve book chapter data
+ *     description: Endpoint to retrieve book chapter data for authenticated faculty members.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved book chapter data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 60dfdbbf086f112154d93bea
+ *                   bookTitle:
+ *                     type: string
+ *                     example: Advanced Topics in Computer Science
+ *                   chapterTitle:
+ *                     type: string
+ *                     example: Introduction to Quantum Computing
+ *                   authors:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - John Doe
+ *                       - Jane Smith
+ *                   authorsAffiliation:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - University A
+ *                       - University B
+ *                   departmentInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Computer Science
+ *                       - Physics
+ *                   facultiesInvolved:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - john.doe@example.com
+ *                       - jane.smith@example.com
+ *                   publisherName:
+ *                     type: string
+ *                     example: Springer
+ *                   nationalInternational:
+ *                     type: string
+ *                     example: International
+ *                   issn:
+ *                     type: string
+ *                     example: 1234-5678
+ *                   impactFactor:
+ *                     type: number
+ *                     example: 3.5
+ *                   yearOfPublication:
+ *                     type: number
+ *                     example: 2024
+ *                   doi:
+ *                     type: string
+ *                     example: 10.1234/book.2024.001
+ *                   indexing:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - Scopus
+ *                       - Web of Science
+ *                   intendedAudience:
+ *                     type: string
+ *                     example: Researchers and Practitioners
+ *                   description:
+ *                     type: string
+ *                     example: This chapter covers the basics of quantum computing.
+ *                   bookUrl:
+ *                     type: string
+ *                     example: https://example.com/book-chapter.pdf
+ *                   citationCount:
+ *                     type: number
+ *                     example: 10
+ *                   proof:
+ *                     type: string
+ *                     example: /uploads/book-chapter/proof123.pdf
+ *       400:
+ *         description: User not found or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found or missing required fields
+ *       401:
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token
+ *       403:
+ *         description: Forbidden. Not a faculty member.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden. Not a faculty member
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.route('/book-chapter').get(facultyAuthenticator,getBookChapterData )
 
 module.exports = router;

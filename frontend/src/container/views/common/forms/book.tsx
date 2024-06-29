@@ -505,7 +505,7 @@ const BookForm: React.FC = (props: Props) => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-800">
-                        Journel Type
+                        Publication Type
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
