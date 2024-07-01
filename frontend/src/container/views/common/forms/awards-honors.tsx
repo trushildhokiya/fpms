@@ -30,7 +30,10 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
-
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { Toaster } from '@/components/ui/toaster'
+import { useToast } from '@/components/ui/use-toast'
 type Props = {}
 
 /**
@@ -73,7 +76,7 @@ const formSchema = z.object({
 const AwardsAndHonorsForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-
+    const { toast } = useToast()
     // command
     const [open, setOpen] = useState(false)
 
@@ -106,7 +109,29 @@ const AwardsAndHonorsForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        // console.log(values)
+        axios
+      .post("/common/award-honors", values, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        // console.log(res.data);
+        if (res.data.message === "success") {
+          toast({
+            title: "Award Honors updated successfully",
+            description:
+              "Your Award Honors information has been added/updated successfully",
+            action: <ToastAction altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     }
 
 
@@ -256,6 +281,7 @@ const AwardsAndHonorsForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

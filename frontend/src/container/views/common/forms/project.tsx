@@ -37,6 +37,10 @@ import {
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useToast } from '@/components/ui/use-toast'
+import { Toaster } from '@/components/ui/toaster'
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
 
 type Props = {}
 
@@ -50,7 +54,7 @@ const transactionSchema = z.object({
     purchaseInvoiceDate: z.date(),
     bankName: z.string().min(1).max(100),
     branchName: z.string().min(1).max(100),
-    amountRecieved: z.coerce.number().nonnegative(),
+    amountReceived: z.coerce.number().nonnegative(),
     remarks: z.string().max(1000, {
         message: "Remarks must not exceed 1000 characters"
     }).optional(),
@@ -117,7 +121,7 @@ const formSchema = z.object({
     startDate: z.date(),
     endDate: z.date(),
 
-    totalGrantRecieved: z.coerce.number().nonnegative(),
+    totalGrantReceived: z.coerce.number().nonnegative(),
     domain: z.string().min(1, {
         message: "Domain is required!"
     }).max(100, {
@@ -141,6 +145,7 @@ const formSchema = z.object({
 const ProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
+    const { toast } = useToast()
 
     //constants
 
@@ -186,7 +191,7 @@ const ProjectForm = (props: Props) => {
             sanctionedAmount: 0,
             startDate: new Date(),
             endDate: new Date(),
-            totalGrantRecieved: 0,
+            totalGrantReceived: 0,
             domain: "",
             areaOfExpertise: "",
             description: "",
@@ -206,7 +211,28 @@ const ProjectForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        // console.log(values)
+        axios.post("/common/projects", values, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+            .then((res) => {
+                // console.log(res.data);
+                if (res.data.message === "success") {
+                    toast({
+                        title: "Project added successfully",
+                        description:
+                            "Your Project information has been added/ successfully",
+                        action: <ToastAction altText="okay">Okay</ToastAction>,
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
     }
 
     const handleTransactionClick = (event: any) => {
@@ -217,7 +243,7 @@ const ProjectForm = (props: Props) => {
             purchaseInvoiceDate: new Date(),
             bankName: '',
             branchName: '',
-            amountRecieved: 0,
+            amountReceived: 0,
             remarks: '',
         });
 
@@ -228,6 +254,7 @@ const ProjectForm = (props: Props) => {
         <div key={index}>
             <Separator className='my-8 bg-red-800' />
             <div className="grid md:grid-cols-2 gap-6">
+
                 <FormField
                     control={control}
                     name={`transactionDetails.${index}.purchaseOrderNumber`}
@@ -241,37 +268,7 @@ const ProjectForm = (props: Props) => {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={control}
-                    name={`transactionDetails.${index}.purchaseOrderDate`}
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value}
-                                        onSelect={field.onChange}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
                 <FormField
                     control={control}
                     name={`transactionDetails.${index}.purchaseInvoiceNumber`}
@@ -285,6 +282,40 @@ const ProjectForm = (props: Props) => {
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseOrderDate`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className=" w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        captionLayout="dropdown-buttons"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        fromYear={1900}
+                                        toYear={2300}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+
                 <FormField
                     control={control}
                     name={`transactionDetails.${index}.purchaseInvoiceDate`}
@@ -293,22 +324,22 @@ const ProjectForm = (props: Props) => {
                             <FormLabel className='text-grey-800'>Purchase Invoice Date</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                                        >
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent align="start" className=" w-auto p-0">
                                     <Calendar
                                         mode="single"
+                                        captionLayout="dropdown-buttons"
                                         selected={field.value}
                                         onSelect={field.onChange}
-                                        initialFocus
+                                        fromYear={1900}
+                                        toYear={2300}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -346,7 +377,7 @@ const ProjectForm = (props: Props) => {
             <div className="">
                 <FormField
                     control={control}
-                    name={`transactionDetails.${index}.amountRecieved`}
+                    name={`transactionDetails.${index}.amountReceived`}
                     render={({ field }) => (
                         <FormItem className='my-4'>
                             <FormLabel className='text-grey-800'>Amount Received</FormLabel>
@@ -614,41 +645,28 @@ const ProjectForm = (props: Props) => {
                                     name="startDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-gray-800'>Start Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>Start Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                    </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
+                                                <PopoverContent align="start" className=" w-auto p-0">
                                                     <Calendar
                                                         mode="single"
+                                                        captionLayout="dropdown-buttons"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
+                                                        fromYear={1900}
+                                                        toYear={2300}
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            <FormDescription>
-                                                Please select the start date.
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -660,38 +678,28 @@ const ProjectForm = (props: Props) => {
                                     name="endDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-gray-800'>End Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>End Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                    </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
+                                                <PopoverContent align="start" className=" w-auto p-0">
                                                     <Calendar
                                                         mode="single"
+                                                        captionLayout="dropdown-buttons"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        initialFocus
+                                                        fromYear={1900}
+                                                        toYear={2300}
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            <FormDescription>
-                                                Please select the end date.
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -699,7 +707,7 @@ const ProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="totalGrantRecieved"
+                                    name="totalGrantReceived"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Total Grant Recieved </FormLabel>
@@ -875,6 +883,7 @@ const ProjectForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

@@ -62,7 +62,7 @@ const ProfileDisplay = (props: Props) => {
                         <CardContent className=''>
                             <div className="mb-5">
                                 {data ?
-                                    <Badge className='bg-red-800'> {data._id} </Badge>
+                                    <Badge className='bg-red-800 font-normal'> {data._id} </Badge>
                                     :
                                     <>
                                         <p className='text-sm text-red-800 '>

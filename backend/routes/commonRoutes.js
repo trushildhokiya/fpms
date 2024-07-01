@@ -23,6 +23,12 @@ const {
   getBookChapterData,
   addNeedBasedProject,
   getNeedBasedProjectData,
+  addAwardHonors,
+  getAwardHonorsData,
+  addConsultancy,
+  getConsultancyData,
+  addProject,
+  getProjectsData,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -35,6 +41,9 @@ const {
   copyrightFileUpload,
   bookChapterUpload,
   needBasedProjectFileUpload,
+  awardHonorsFileUpload,
+  consultancyFileUpload,
+  projectFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -2794,5 +2803,29 @@ router.route('/need-based-project').post(facultyAuthenticator,needBasedProjectFi
  */
 router.route('/need-based-project').get(facultyAuthenticator , getNeedBasedProjectData)
 
+
+router.route('/award-honors').post(facultyAuthenticator, awardHonorsFileUpload.single('proof'), addAwardHonors)
+
+router.route('/award-honors').get(facultyAuthenticator, getAwardHonorsData)
+
+router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
+  { name:'sanctionedOrder' , maxCount:1},
+  { name:'transactionProof' , maxCount:1},
+  { name:'completionCertificate' , maxCount:1},
+  { name:'supportingDocuments' , maxCount:1},
+]), addConsultancy )
+
+
+router.route('/consultancy').get(facultyAuthenticator, getConsultancyData)
+
+router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
+  { name:'sanctionedOrder' , maxCount:1},
+  { name:'transactionProof' , maxCount:1},
+  { name:'completionCertificate' , maxCount:1},
+  { name:'supportingDocuments' , maxCount:1},
+]), addProject )
+
+
+router.route('/projects').get(facultyAuthenticator, getProjectsData)
 
 module.exports = router;

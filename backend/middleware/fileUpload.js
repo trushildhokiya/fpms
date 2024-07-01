@@ -213,7 +213,7 @@ const bookChapterUpload = multer({ storage: bookChapterFileStorage });
 
 
 /*
-BOOK CHAPTER FILE UPLOAD 
+NEED BASED PROJECT FILE UPLOAD 
 */
 const needBasedProjectStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
@@ -234,6 +234,74 @@ const needBasedProjectStorage = multer.diskStorage({
 
 const needBasedProjectFileUpload = multer({ storage: needBasedProjectStorage });
 
+/*
+AWARD HONORS FILE UPLOAD 
+*/
+const awardHonorsFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "award-honors");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "award-honors-proof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const awardHonorsFileUpload = multer({ storage: awardHonorsFileStorage });
+
+/*
+CONSULTANCY FILE UPLOAD 
+*/
+const consultancyFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "consultancy");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "consultancy-proof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const consultancyFileUpload = multer({ storage: consultancyFileStorage });
+
+/*
+PROJECT FILE UPLOAD 
+*/
+const projectFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "project");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      "project-proof" + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const projectFileUpload = multer({ storage: projectFileStorage });
+
+
+
 module.exports = {
   adminProfileImageUpload,
   facultyProfileImageUpload,
@@ -244,5 +312,8 @@ module.exports = {
   conferenceFileUpload,
   copyrightFileUpload,
   bookChapterUpload,
-  needBasedProjectFileUpload
+  needBasedProjectFileUpload,
+  awardHonorsFileUpload,
+  consultancyFileUpload,
+  projectFileUpload
 };

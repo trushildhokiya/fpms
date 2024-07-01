@@ -36,6 +36,10 @@ import {
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import axios from 'axios'
+import { useToast } from '@/components/ui/use-toast'
+import { Toaster } from '@/components/ui/toaster'
+import { ToastAction } from '@/components/ui/toast'
 
 type Props = {}
 
@@ -49,7 +53,7 @@ const transactionSchema = z.object({
     purchaseInvoiceDate: z.date(),
     bankName: z.string().min(1).max(100),
     branchName: z.string().min(1).max(100),
-    amountRecieved: z.coerce.number().nonnegative(),
+    amountReceived: z.coerce.number().nonnegative(),
     remarks: z.string().max(1000, {
         message: "Remarks must not exceed 1000 characters"
     }).optional(),
@@ -110,7 +114,7 @@ const formSchema = z.object({
     startDate: z.date(),
     endDate: z.date(),
 
-    totalGrantRecieved: z.coerce.number().nonnegative(),
+    totalGrantReceived: z.coerce.number().nonnegative(),
     domain: z.string().min(1, {
         message: "Domain is required!"
     }).max(100, {
@@ -134,7 +138,7 @@ const formSchema = z.object({
 const ConsultancyForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-
+    const { toast } = useToast()
     // command
     const [open, setOpen] = useState(false)
 
@@ -177,7 +181,7 @@ const ConsultancyForm = (props: Props) => {
             sanctionedAmount: 0,
             startDate: new Date(),
             endDate: new Date(),
-            totalGrantRecieved: 0,
+            totalGrantReceived: 0,
             domain: "",
             areaOfExpertise: "",
             description: "",
@@ -197,7 +201,29 @@ const ConsultancyForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        // console.log(values)
+        axios
+      .post("/common/consultancy", values, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        // console.log(res.data);
+        if (res.data.message === "success") {
+          toast({
+            title: "Consultancy added successfully",
+            description:
+              "Your Consultancy information has been added successfully",
+            action: <ToastAction altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     }
 
     const handleTransactionClick = (event: any) => {
@@ -208,7 +234,7 @@ const ConsultancyForm = (props: Props) => {
             purchaseInvoiceDate: new Date(),
             bankName: '',
             branchName: '',
-            amountRecieved: 0,
+            amountReceived: 0,
             remarks: '',
         });
 
@@ -340,7 +366,7 @@ const ConsultancyForm = (props: Props) => {
             <div className="">
                 <FormField
                     control={control}
-                    name={`transactionDetails.${index}.amountRecieved`}
+                    name={`transactionDetails.${index}.amountReceived`}
                     render={({ field }) => (
                         <FormItem className='my-4'>
                             <FormLabel className='text-grey-800'>Amount Received</FormLabel>
@@ -657,7 +683,7 @@ const ConsultancyForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="totalGrantRecieved"
+                                    name="totalGrantReceived"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Total Grant Recieved </FormLabel>
@@ -833,6 +859,7 @@ const ConsultancyForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

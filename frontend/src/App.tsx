@@ -103,6 +103,9 @@ const ConferenceDisplay = lazy(() => import('./container/views/common/display/co
 const BookDisplay = lazy(() => import('./container/views/common/display/book'));
 const BookChapterDisplay = lazy(() => import('./container/views/common/display/book-chapter'));
 const NeedBasedProjectDisplay = lazy(() => import('./container/views/common/display/need-based-project'));
+const AwardHonorsDisplay = lazy(() => import('./container/views/common/display/award-honors'));
+const ConsultancyDisplay = lazy(() => import('./container/views/common/display/consultancy'));
+const ProjectsDisplay = lazy(() => import('./container/views/common/display/projects'));
 
 
 function App() {
@@ -169,6 +172,9 @@ function App() {
           <Route path='/common/display/book' element={<CommonProtectedRoute> <BookDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/book-chapter' element={<CommonProtectedRoute> <BookChapterDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/need-based-projects' element={<CommonProtectedRoute> <NeedBasedProjectDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/awards-honors' element={<CommonProtectedRoute> <AwardHonorsDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/consultancy' element={<CommonProtectedRoute> <ConsultancyDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/projects' element={<CommonProtectedRoute> <ProjectsDisplay /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

@@ -7,6 +7,10 @@ const Conference = require("../models/conference");
 const Copyright = require("../models/copyright");
 const BookChapter = require("../models/book-chapter");
 const NeedBasedProject = require('../models/need-based-projects')
+const AwardHonors = require('../models/award-honors')
+const Consultancy = require('../models/consultancy')
+const Transaction = require('../models/transaction')
+const Project = require('../models/projects')
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -334,7 +338,7 @@ const addJournal = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "success",
   });
-  
+
 });
 
 
@@ -430,7 +434,7 @@ const getConferenceData = asyncHandler(async (req, res) => {
 
 
 const addBook = asyncHandler(async (req, res) => {
-  
+
   //get required data
   const data = req.body;
   const { email } = req.decodedData;
@@ -523,7 +527,7 @@ const addBookChapter = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "success",
   });
-  
+
 });
 
 
@@ -566,7 +570,7 @@ const addNeedBasedProject = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
 
-  
+
   //get file paths
   const sanctionedDocumentsURL = req.files.sanctionedDocuments[0].path
   const projectReportURL = req.files.projectReport[0].path
@@ -595,7 +599,7 @@ const addNeedBasedProject = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "success",
   });
-  
+
 });
 
 
@@ -623,6 +627,249 @@ const getNeedBasedProjectData = asyncHandler(async (req, res) => {
 
 });
 
+
+const addAwardHonors = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path and attach to data
+  const certificateURL = req.file.path;
+  data.proof = certificateURL;
+
+  // create book chapter entry
+  const awardHonors = await AwardHonors.create(data);
+
+  // add ref id to faculty 
+  user.awardsHonors.push(awardHonors._id)
+  await user.save()
+
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+
+const getAwardHonorsData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate award honors array to get full award honors data
+  await user.populate('awardsHonors')
+
+  // Extract the populated award honors data
+  const awardHonorsData = user.awardsHonors
+
+  // Send the response
+  res.status(200).json(awardHonorsData);
+
+});
+
+
+const addConsultancy = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const sanctionedOrderURL = req.files.sanctionedOrder[0].path
+  const transactionProofURL = req.files.transactionProof[0].path
+  const completionCertificateURL = req.files.completionCertificate[0].path
+  const supportingDocumentsURL = req.files.supportingDocuments[0].path
+
+  // attach file path to data
+
+  data.sanctionedOrder = sanctionedOrderURL
+  data.transactionProof = transactionProofURL
+  data.completionCertificate = completionCertificateURL
+  data.supportingDocuments = supportingDocumentsURL
+
+
+  // get all transactions
+  const transactions = data.transactionDetails
+  const transaction_ids = []
+
+  for (const entry of transactions) {
+
+    const createdTransaction = await Transaction.create(entry)
+    transaction_ids.push(createdTransaction._id)
+
+  }
+
+  // change transactionDetails parameter of orginal data
+  data.transactionDetails = transaction_ids
+
+  // create consultancy entry
+  const consultancy = await Consultancy.create(data);
+
+  // attach entry to involved faculties
+  for (const email of data.facultiesInvolved) {
+    await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { consultancy: consultancy._id } }
+    );
+  }
+
+
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+
+const getConsultancyData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate({
+    path: 'consultancy',
+    populate: {
+      path: 'transactionDetails',
+      model: 'transaction'
+    }
+  })
+
+
+  // Extract the populated consultancy data
+  const consultancyData = user.consultancy
+
+  // Send the response
+  res.status(200).json(consultancyData);
+
+});
+
+
+const addProject = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const sanctionedOrderURL = req.files.sanctionedOrder[0].path
+  const transactionProofURL = req.files.transactionProof[0].path
+  const completionCertificateURL = req.files.completionCertificate[0].path
+  const supportingDocumentsURL = req.files.supportingDocuments[0].path
+
+  // attach file path to data
+
+  data.sanctionedOrder = sanctionedOrderURL
+  data.transactionProof = transactionProofURL
+  data.completionCertificate = completionCertificateURL
+  data.supportingDocuments = supportingDocumentsURL
+
+
+  // get all transactions
+  const transactions = data.transactionDetails
+  const transaction_ids = []
+
+  for (const entry of transactions) {
+
+    const createdTransaction = await Transaction.create(entry)
+    transaction_ids.push(createdTransaction._id)
+
+  }
+
+  // change transactionDetails parameter of orginal data
+  data.transactionDetails = transaction_ids
+
+  // create project entry
+  const project = await Project.create(data);
+
+  // attach entry to involved faculties
+  for (const email of data.facultiesInvolved) {
+    await Faculty.findOneAndUpdate(
+      { email: email },
+      { $push: { projects: project._id } }
+    );
+  }
+
+
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getProjectsData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate projects array to get full projects data
+  await user.populate({
+    path: 'projects',
+    populate: {
+      path: 'transactionDetails',
+      model: 'transaction'
+    }
+  })
+
+
+  // Extract the populated project data
+  const projectData = user.projects
+
+  // Send the response
+  res.status(200).json(projectData);
+
+});
+
+
 module.exports = {
   addProfile,
   getProfileData,
@@ -644,4 +891,10 @@ module.exports = {
   getBookChapterData,
   addNeedBasedProject,
   getNeedBasedProjectData,
+  addAwardHonors,
+  getAwardHonorsData,
+  addConsultancy,
+  getConsultancyData,
+  addProject,
+  getProjectsData,
 };
