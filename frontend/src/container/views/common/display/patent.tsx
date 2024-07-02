@@ -1,33 +1,199 @@
 import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import axios from 'axios'
-import { useEffect } from 'react'
+import { Calendar } from 'primereact/calendar'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import countryCodes from '@/utils/data/country-codes'
+import { Table } from 'lucide-react'
 
 type Props = {}
+
+interface Patent {
+    _id: string;
+    title: string;
+    inventors: string[];
+    affiliationInventors: string[];
+    departmentInvolved: string[];
+    facultiesInvolved: string[];
+    nationalInternational: string;
+    country: string;
+    applicationNumber: string;
+    filingDate: Date;
+    grantDate: Date;
+    patentCertificate: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
 
 const PatentDisplay = (props: Props) => {
 
     // constants
     const user = useSelector((state: any) => state.user)
+    const [data, setData] = useState<Patent[]>([]);
+    const dt = useRef<any>(null);
 
     // funcions
 
-    useEffect(()=>{
-        axios.get('/common/patent')
-        .then((res)=>{
-            
-            console.log(res);
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
+    // function to convert date strings to Date objects
+    const convertDates = (patents: Patent[]) => {
+        return patents.map(patent => ({
+            ...patent,
+            filingDate: new Date(patent.filingDate),
+            grantDate: new Date(patent.grantDate)
+        }));
+    };
 
-    },[])
+    // useEffect to fetch data
+    useEffect(() => {
+        axios.get('/common/patent')
+            .then((res) => {
+                const convertedData = convertDates(res.data);
+                setData(convertedData);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    }, [])
+
+    useEffect(() => {
+
+        // Function to create and append a link element for the CSS file
+        const addCSS = () => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'https://unpkg.com/primereact/resources/themes/lara-light-cyan/theme.css';
+            link.id = 'dynamic-theme'; // Adding an ID for easy removal later
+            document.head.appendChild(link);
+        };
+
+        // Function to remove the link element for the CSS file
+        const removeCSS = () => {
+            const link = document.getElementById('dynamic-theme');
+            if (link) {
+                document.head.removeChild(link);
+            }
+        };
+
+        // Call the function to add the CSS
+        addCSS();
+
+        // Return a cleanup function to remove the CSS when the component unmounts
+        return () => {
+            removeCSS();
+        };
+    }, []);
+
+
+    // template functions
+    const idBodyTemplate = (rowData: Patent) => {
+        return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
+    };
+
+    const inventorBodyTemplate = (rowData: Patent) => rowData.inventors.join(", ")
+
+    const affiliationBodyTemplate = (rowData: Patent) => rowData.affiliationInventors.join(", ")
+
+    const departmentInvolvedBodyTemplate = (rowData: Patent) => {
+        return rowData.departmentInvolved.map((department: string) => (
+            <Badge key={department} className='bg-green-400 bg-opacity-55 text-green-700'>{department}</Badge>
+        ));
+    };
+    
+    const facultyInvolvedBodyTemplate = (rowData: Patent) => rowData.facultiesInvolved.join(", ")
+
+    const filingDateBodyTemplate = (rowData: Patent) => rowData.filingDate.toLocaleDateString()
+
+    const countryBodyTemplate = (rowData: Patent) => {
+        return (
+            <div className="flex align-items-center gap-2">
+                <img alt="flag" src={`https://flagicons.lipis.dev/flags/4x3/${countryCodes[rowData.country.toLowerCase()]}.svg`} style={{ width: '24px' }} />
+                <span>{rowData.country}</span>
+            </div>
+        )
+    }
+
+    const grantDateBodyTemplate = (rowData: Patent) => rowData.grantDate.toLocaleDateString()
+
+    const certificateBodyTemplate = (rowData: Patent) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.patentCertificate.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
+        )
+    }
+
+    const dateFilterTemplate = (options: any) => {
+        return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
+    };
+
+    // download functions
+    const exportCSV = (selectionOnly:boolean) => {
+        const filename = "my-patents.csv"
+        dt.current.exportCSV({ selectionOnly });
+    };
+
+    const header = (
+        <div className="flex w-full justify-end font-Poppins">
+            <Button className='rounded-full bg-green-600' onClick={() => exportCSV(false)}>
+                <Table className='w-5 h-5 mr-2' /> Download
+            </Button>
+        </div>
+    );
+
 
     return (
         <div>
             {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+
+            <div className="container font-Poppins my-10">
+
+                <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
+                    Patent Details
+                </h1>
+
+                <div className="my-10">
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Patents</CardTitle>
+                            <CardDescription>Patent details of the faculty is shown below</CardDescription>
+                        </CardHeader>
+
+                        <CardContent>
+
+                            <DataTable exportFilename='my-patents' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} showGridlines size='large'>
+                                <Column field="_id"  body={idBodyTemplate} header="ID"></Column>
+                                <Column field="title"  filter filterPlaceholder='Search by title' sortable header="Title"></Column>
+                                <Column field="inventors" filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
+                                <Column field="affiliationInventors" filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
+                                <Column field="departmentInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
+                                <Column field="nationalInternational" filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
+                                <Column field="country" filter filterPlaceholder='Search by Country' body={countryBodyTemplate} sortable header="Country"></Column>
+                                <Column field="applicationNumber" filter filterPlaceholder='Search by Application number' sortable header="Application Number"></Column>
+                                <Column field="filingDate" sortable dataType='date' filter filterPlaceholder='Search by filing date' filterElement={dateFilterTemplate} header="Filing Date" body={filingDateBodyTemplate}></Column>
+                                <Column field="grantDate" sortable dataType='date' header="Grant Date" filter filterPlaceholder='Search by grant date' filterElement={dateFilterTemplate} body={grantDateBodyTemplate}></Column>
+                                <Column field="patentCertificate" header="Patent Certificate" body={certificateBodyTemplate}></Column>
+                            </DataTable>
+
+
+
+                        </CardContent>
+
+                    </Card>
+
+
+                </div>
+            </div>
         </div>
     )
 }

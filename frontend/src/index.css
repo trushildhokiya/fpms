@@ -12,3 +12,12 @@
     src: url('./assets/fonts/AzoSans-Bold.ttf') format("truetype");
   }
 }
+
+
+/* Add this to your global CSS or a CSS module */
+.p-datatable-gridlines .p-datatable-thead > tr > th,
+.p-datatable-gridlines .p-datatable-tbody > tr > td,
+.p-datatable-gridlines .p-datatable-tfoot > tr > td {
+    border-right: 1px solid var(--surface-d);
+    border-bottom: 1px solid var(--surface-d);
+}
