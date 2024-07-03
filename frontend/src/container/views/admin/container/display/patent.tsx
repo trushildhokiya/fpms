@@ -1,5 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
-import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,12 +6,12 @@ import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import countryCodes from '@/utils/data/country-codes'
 import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
+import AdminNavbar from '@/components/navbar/AdminNavbar'
 
 type Props = {}
 
@@ -38,7 +36,6 @@ interface Patent {
 const PatentDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Patent[]>([]);
     const dt = useRef<any>(null);
 
@@ -55,7 +52,7 @@ const PatentDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/patent')
+        axios.get('/admin/data/patent')
             .then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
@@ -139,7 +136,6 @@ const PatentDisplay = (props: Props) => {
 
     // download functions
     const exportCSV = (selectionOnly:boolean) => {
-        const filename = "my-patents.csv"
         dt.current.exportCSV({ selectionOnly });
     };
 
@@ -150,11 +146,6 @@ const PatentDisplay = (props: Props) => {
 
         // Initialize jsPDF instance
         const doc = new jsPDF('landscape','in',[20,20]);
-    
-        // AutoTable options
-        const options = {
-           theme:"grid"
-        };
     
         // Column definitions
         const columns = [
@@ -207,7 +198,8 @@ const PatentDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+
+            <AdminNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -219,8 +211,8 @@ const PatentDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Patents</CardTitle>
-                            <CardDescription>Patent details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institution Patents</CardTitle>
+                            <CardDescription>Patent details of the faculties is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>

@@ -182,7 +182,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
                     title: "Research profile updated successfully",
                     description: "Your research profile information has been added/updated successfully",
                     action: (
-                      <ToastAction className='bg-emerald-500' onClick={ ()=>{ navigate('/common/display/research-profile')}} altText="okay">Okay</ToastAction>
+                      <ToastAction className='' onClick={ ()=>{ navigate('/common/display/research-profile')}} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()

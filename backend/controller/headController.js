@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Faculty = require('../models/faculty')
+const Patent = require('../models/patent')
 const Notification = require('../models/notification')
 const fs = require('fs');
 const nodemailer = require('nodemailer')
@@ -14,43 +15,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/**
- * UPDATE PROFILE IMAGE
- */
-const profileImageUpdate = asyncHandler(async (req, res) => {
-    const { email } = req.headers;
-    const newImagePath = req.file.path;
 
-    try {
-        // Find the head by email
-        const user = await Faculty.findOne({ email });
-
-        // If the admin is not found, return an error
-        if (!user) {
-            return res.status(404).json({ error: 'Admin not found' });
-        }
-
-        const oldImageUrl = 'uploads' + user.profileImage.split('5000')[1];
-
-        const newImageUrl = baseUrl + newImagePath.split('uploads\ '.trim())[1];
-
-        user.profileImage = newImageUrl;
-
-        await user.save();
-
-        if (oldImageUrl && fs.existsSync(oldImageUrl)) {
-            fs.unlinkSync(oldImageUrl);
-        }
-
-        res.status(200).json({
-            status: 'Success'
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
 
 /**
  * CREATE NOTIFICATION 
@@ -227,10 +192,34 @@ const toggleFacultyApproval = asyncHandler( async(req,res)=>{
     })
 })
 
+/**
+ * GET PATENT DATA
+ */
+const getPatentData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental patent data
+    const patentData = await Patent.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+    
+    res.status(200).json(patentData);
+});
+
+
 module.exports = {
-    profileImageUpdate,
     createNotification,
     getNotifications,
     getFacultiesList,
     toggleFacultyApproval,
+    getPatentData
 }

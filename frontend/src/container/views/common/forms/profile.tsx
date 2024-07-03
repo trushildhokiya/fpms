@@ -152,7 +152,7 @@ const ProfileForm = (props: Props) => {
                     title: "Profile updated successfully",
                     description: "Your profile information has been added/updated successfully",
                     action: (
-                      <ToastAction className='bg-emerald-500' onClick={()=>{ navigate('/common/display/profile')}} altText="okay">Okay</ToastAction>
+                      <ToastAction className='' onClick={()=>{ navigate('/common/display/profile')}} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()

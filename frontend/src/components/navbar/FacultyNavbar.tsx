@@ -257,11 +257,28 @@ const FacultyNavbar = () => {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <Link to='/faculty/profile'>
-                                        <DropdownMenuItem>
-                                            Profile
-                                        </DropdownMenuItem>
-                                    </Link>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <Link to="/common/display/profile">
+                                                    <DropdownMenuItem>
+                                                        Basic
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to="/common/display/experience">
+                                                    <DropdownMenuItem>
+                                                        Experience
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to="/common/display/research-profile">
+                                                    <DropdownMenuItem>
+                                                        Research Profile
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>My Details</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
@@ -338,28 +355,7 @@ const FacultyNavbar = () => {
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
-                                    <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
-                                        <DropdownMenuPortal>
-                                            <DropdownMenuSubContent>
-                                                <Link to="/common/display/profile">
-                                                    <DropdownMenuItem>
-                                                        Basic
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <Link to="/common/display/experience">
-                                                    <DropdownMenuItem>
-                                                        Experience
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <Link to="/common/display/research-profile">
-                                                    <DropdownMenuItem>
-                                                        Research Profile
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuPortal>
-                                    </DropdownMenuSub>
+
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
 

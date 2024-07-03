@@ -11,6 +11,51 @@ const AwardHonors = require('../models/award-honors')
 const Consultancy = require('../models/consultancy')
 const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
+const fs = require('fs');
+/**
+ * CONSTANTS
+ */
+const baseUrl = 'http://localhost:5000';
+
+/**
+ * UPDATE PROFILE IMAGE
+ */
+const profileImageUpdate = asyncHandler(async (req, res) => {
+
+  const { email } = req.decodedData;
+  const newImagePath = req.file.path;
+
+  try {
+      // Find the faculty by email
+      const user = await Faculty.findOne({ email });
+
+      // If the faculty is not found, return an error
+      if (!user) {
+          return res.status(404).json({ error: 'Faculty not found' });
+      }
+
+      const oldImageUrl = 'uploads' + user.profileImage.split('5000')[1];
+
+      const newImageUrl = baseUrl + newImagePath.split('uploads\ '.trim())[1];
+
+      user.profileImage = newImageUrl;
+
+      await user.save();
+
+      if (oldImageUrl && fs.existsSync(oldImageUrl)) {
+          fs.unlinkSync(oldImageUrl);
+      }
+
+      res.status(200).json({
+          status: 'success'
+      });
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 const addProfile = asyncHandler(async (req, res) => {
   //get required data
@@ -897,4 +942,5 @@ module.exports = {
   getConsultancyData,
   addProject,
   getProjectsData,
+  profileImageUpdate,
 };

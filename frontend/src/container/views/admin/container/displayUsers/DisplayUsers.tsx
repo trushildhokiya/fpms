@@ -4,7 +4,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar';
-import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -22,6 +21,35 @@ const DisplayUsers = () => {
     useEffect(() => {
         getData();
     }, [location]);
+
+    useEffect(() => {
+
+        // Function to create and append a link element for the CSS file
+        const addCSS = () => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'https://unpkg.com/primereact/resources/themes/lara-light-cyan/theme.css';
+            link.id = 'dynamic-theme'; // Adding an ID for easy removal later
+            document.head.appendChild(link);
+        };
+
+        // Function to remove the link element for the CSS file
+        const removeCSS = () => {
+            const link = document.getElementById('dynamic-theme');
+            if (link) {
+                document.head.removeChild(link);
+            }
+        };
+
+        // Call the function to add the CSS
+        addCSS();
+
+        // Return a cleanup function to remove the CSS when the component unmounts
+        return () => {
+            removeCSS();
+        };
+    }, []);
 
     const getData = () => {
         const recordType = location.pathname.split('/users/')[1];

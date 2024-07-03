@@ -80,7 +80,9 @@ const AdminNavbar = () => {
                                 <DropdownMenuSeparator />
 
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>Patents</DropdownMenuItem>
+                                    <Link to="/admin/display/patent">
+                                        <DropdownMenuItem>Patents</DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Publications</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>

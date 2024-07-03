@@ -29,6 +29,7 @@ const {
   getConsultancyData,
   addProject,
   getProjectsData,
+  profileImageUpdate,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -44,8 +45,66 @@ const {
   awardHonorsFileUpload,
   consultancyFileUpload,
   projectFileUpload,
+  facultyProfileImageUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
+
+
+
+/**
+ * @swagger
+ * /head/profile/image:
+ *   put:
+ *     summary: Update Head Profile Image
+ *     description: Update the profile image for the faculty.
+ *     tags:
+ *       - Faculty
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: token
+ *         required: true
+ *         description: Bearer token for faculty authentication.
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: email
+ *         required: true
+ *         description: Email of the faculty.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profileImage:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Successfully updated faculty profile image.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Indicates the success status.
+ *       403:
+ *         description: Forbidden. Not a Head Of Department.
+ *       404:
+ *         description: Not Found. Head Of Department not found.
+ *       500:
+ *         description: Internal Server Error.
+ */
+
+router.route('/profile/image').put(facultyAuthenticator,facultyProfileImageUpload.single('profileImage'),profileImageUpdate)
+
 
 /**
  * @swagger

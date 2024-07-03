@@ -19,6 +19,7 @@ const headAuthenticator = asyncHandler(async (req, res, next) => {
 
         if (decodedData.role === 'Head Of Department' || decodedData.tags.includes('research coordinator') ) {
 
+            req.decodedData = decodedData
             next();
 
         } 

@@ -1,5 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
-import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,12 +6,12 @@ import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import countryCodes from '@/utils/data/country-codes'
 import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
+import HeadNavbar from '@/components/navbar/HeadNavbar'
 
 type Props = {}
 
@@ -38,7 +36,6 @@ interface Patent {
 const PatentDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Patent[]>([]);
     const dt = useRef<any>(null);
 
@@ -55,7 +52,7 @@ const PatentDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/patent')
+        axios.get('/head/data/patent')
             .then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
@@ -109,7 +106,7 @@ const PatentDisplay = (props: Props) => {
             <Badge key={department} className='bg-green-800 bg-opacity-85 text-green-200'>{department}</Badge>
         ));
     };
-    
+
     const facultyInvolvedBodyTemplate = (rowData: Patent) => rowData.facultiesInvolved.join(", ")
 
     const filingDateBodyTemplate = (rowData: Patent) => rowData.filingDate.toLocaleDateString()
@@ -138,24 +135,18 @@ const PatentDisplay = (props: Props) => {
     };
 
     // download functions
-    const exportCSV = (selectionOnly:boolean) => {
-        const filename = "my-patents.csv"
+    const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
 
-    
+
 
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape','in',[20,20]);
-    
-        // AutoTable options
-        const options = {
-           theme:"grid"
-        };
-    
+        const doc = new jsPDF('landscape', 'in', [20, 20]);
+
         // Column definitions
         const columns = [
             { header: 'ID', dataKey: '_id' },
@@ -176,18 +167,18 @@ const PatentDisplay = (props: Props) => {
         ];
 
         // Add autoTable content to the PDF
-        autoTable(doc,{
+        autoTable(doc, {
             head: [columns.map(col => col.header)],
             body: data.map((row) => Object.values(row)),
-            styles:{
-                overflow:'linebreak',
-                font:'times',
-                cellPadding:0.2,
+            styles: {
+                overflow: 'linebreak',
+                font: 'times',
+                cellPadding: 0.2,
             },
-            horizontalPageBreak:true
+            horizontalPageBreak: true
 
         });
-    
+
         // Save the PDF
         doc.save('patent_data.pdf');
     };
@@ -207,7 +198,8 @@ const PatentDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+
+            <HeadNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -217,27 +209,27 @@ const PatentDisplay = (props: Props) => {
 
                 <div className="my-10">
 
-                    <Card>
+                    <Card className='font-Poppins'>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Patents</CardTitle>
-                            <CardDescription>Patent details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Departmental Patents</CardTitle>
+                            <CardDescription>Patent details of the faculties is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
                             <DataTable exportFilename='my-patents' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} showGridlines size='large'>
-                                <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
-                                <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="inventors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
-                                <Column field="affiliationInventors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
-                                <Column field="departmentInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
-                                <Column field="facultiesInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="nationalInternational" style={{minWidth:'250px'}} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
-                                <Column field="country" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Country' body={countryBodyTemplate} sortable header="Country"></Column>
-                                <Column field="applicationNumber" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Application number' sortable header="Application Number"></Column>
-                                <Column field="filingDate" style={{minWidth:'250px'}} sortable dataType='date' filter filterPlaceholder='Search by filing date' filterElement={dateFilterTemplate} header="Filing Date" body={filingDateBodyTemplate}></Column>
-                                <Column field="grantDate" style={{minWidth:'250px'}} sortable dataType='date' header="Grant Date" filter filterPlaceholder='Search by grant date' filterElement={dateFilterTemplate} body={grantDateBodyTemplate}></Column>
-                                <Column field="patentCertificate" style={{minWidth:'250px'}} header="Patent Certificate" body={certificateBodyTemplate}></Column>
+                                <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
+                                <Column field="inventors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
+                                <Column field="affiliationInventors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
+                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
+                                <Column field="nationalInternational" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
+                                <Column field="country" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Country' body={countryBodyTemplate} sortable header="Country"></Column>
+                                <Column field="applicationNumber" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Application number' sortable header="Application Number"></Column>
+                                <Column field="filingDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by filing date' filterElement={dateFilterTemplate} header="Filing Date" body={filingDateBodyTemplate}></Column>
+                                <Column field="grantDate" style={{ minWidth: '250px' }} sortable dataType='date' header="Grant Date" filter filterPlaceholder='Search by grant date' filterElement={dateFilterTemplate} body={grantDateBodyTemplate}></Column>
+                                <Column field="patentCertificate" style={{ minWidth: '250px' }} header="Patent Certificate" body={certificateBodyTemplate}></Column>
                             </DataTable>
 
 

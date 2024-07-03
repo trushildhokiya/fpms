@@ -5,12 +5,22 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Toaster } from '@/components/ui/toaster'
+import { useToast } from '@/components/ui/use-toast'
 import axios from 'axios'
 import { Mail, Pencil, Phone, PlusCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { ToastAction } from "@/components/ui/toast"
+
 
 // Define interface for profile data
 interface ProfileData {
@@ -26,10 +36,28 @@ interface ProfileData {
 
 type Props = {}
 
+const formSchema = z.object({
+    profileImage: z.instanceof(File, { message: 'Image is required' }).refine(
+        (file) => file.name.trim() !== '',
+        {
+            message: `No file uploaded`,
+        }
+    )
+        .refine(
+            (file) => file.size <= 600 * 1024, // 600KB in bytes
+            {
+                message: 'File size must be 600KB or less',
+            }
+        ),
+})
+
+
+
 const ProfileDisplay = (props: Props) => {
     const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<ProfileData | undefined>(undefined);
     const navigate = useNavigate()
+    const { toast } = useToast()
 
     // Fetch data from API
     useEffect(() => {
@@ -42,6 +70,46 @@ const ProfileDisplay = (props: Props) => {
                 console.log(err);
             })
     }, [])
+
+    // functions
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            profileImage: new File([], "")
+        }
+    })
+
+    function onSubmit(data: z.infer<typeof formSchema>) {
+
+        axios.put('/common/profile/image', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })
+            .then((res) => {
+                if (res.data.status === 'success') {
+                    // taost of success
+                    toast({
+                        title: 'Update Sucessful',
+                        description: " Logout and login again to see the updations.",
+                        variant: 'default',
+                        action: <ToastAction altText="Okay">Okay</ToastAction>,
+                    })
+                }
+            })
+            .catch(() => {
+
+                // toast of error
+                toast({
+                    title: 'Something went wrong!',
+                    description: "There was a error making your request. Try again later !",
+                    variant: 'destructive',
+                    action: <ToastAction altText="Okay">Okay</ToastAction>,
+                })
+
+            })
+
+    }
 
     return (
         <div>
@@ -66,7 +134,7 @@ const ProfileDisplay = (props: Props) => {
                                     :
                                     <>
                                         <p className='text-sm text-red-800 '>
-                                        No data found make sure you have filled your basic details
+                                            No data found make sure you have filled your basic details
                                         </p>
                                         <Skeleton className="h-4 mt-4 block w-1/4" />
                                     </>
@@ -81,10 +149,49 @@ const ProfileDisplay = (props: Props) => {
 
                                                 <div className="bg-slate-50 h-full flex justify-center items-center flex-col rounded-3xl shadow-sm py-3">
 
-                                                    <Avatar className='mx-auto w-32 h-32'>
-                                                        <AvatarImage src={user.profileImage} />
-                                                        <AvatarFallback>TD</AvatarFallback>
-                                                    </Avatar>
+                                                    <Popover>
+                                                        <PopoverTrigger>
+
+                                                            <Avatar className='mx-auto w-32 h-32'>
+                                                                <AvatarImage src={user.profileImage} />
+                                                                <AvatarFallback>TD</AvatarFallback>
+                                                            </Avatar>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent>
+                                                            <Form {...form}>
+                                                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                                                    <FormField
+                                                                        control={form.control}
+                                                                        name="profileImage"
+                                                                        render={({ field }) => (
+                                                                            <FormItem>
+                                                                                <FormLabel>
+                                                                                    Image
+                                                                                </FormLabel>
+                                                                                <FormControl>
+                                                                                    <Input
+                                                                                        accept=".jpg, .jpeg, .png, .svg, .gif, .mp4"
+                                                                                        type="file"
+                                                                                        onChange={(e) =>
+                                                                                            field.onChange(e.target.files ? e.target.files[0] : null)
+                                                                                        }
+                                                                                    />
+                                                                                </FormControl>
+                                                                                <FormMessage />
+                                                                                <FormDescription>
+                                                                                    Maximum upload size: 600KB
+                                                                                </FormDescription>
+                                                                            </FormItem>
+                                                                        )}
+                                                                    />
+                                                                    <Button type="submit" className="bg-red-800">
+                                                                        Save Image
+                                                                    </Button>
+                                                                </form>
+                                                            </Form>
+                                                        </PopoverContent>
+                                                    </Popover>
+
 
                                                     <div className="md:p-5">
 
@@ -165,8 +272,8 @@ const ProfileDisplay = (props: Props) => {
                             </Button>
 
                             <Button size={'lg'} className='bg-teal-600'
-                            disabled={data? true : false}
-                            onClick={()=>navigate('/common/forms/profile')}
+                                disabled={data ? true : false}
+                                onClick={() => navigate('/common/forms/profile')}
                             >
                                 <PlusCircle className='w-4 h-4 mr-2' color='#fff' /> Add basic details
                             </Button>
@@ -176,6 +283,7 @@ const ProfileDisplay = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

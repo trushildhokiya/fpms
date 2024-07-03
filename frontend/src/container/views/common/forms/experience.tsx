@@ -158,7 +158,7 @@ const ExperienceForm = (props: Props) => {
                     title: "Experience updated successfully",
                     description: "Your experience data has been added/updated successfully",
                     action: (
-                      <ToastAction className='bg-emerald-500' onClick={()=>{ navigate('/common/display/experience')}} altText="okay">Okay</ToastAction>
+                      <ToastAction className='' onClick={()=>{ navigate('/common/display/experience')}} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()

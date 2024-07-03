@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Admin = require('../models/admin');
 const Faculty = require('../models/faculty')
+const Patent = require('../models/patent')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
 const nodemailer = require("nodemailer");
@@ -190,6 +191,14 @@ const adminList = asyncHandler(async (req, res) => {
 
 })
 
+/**
+ * GET PATENT DATA
+ */
+const getPatentData = asyncHandler(async(req,res)=>{
+
+    const patentData = await Patent.find()
+    res.status(200).json(patentData)
+})
 
 
 module.exports = {
@@ -198,4 +207,5 @@ module.exports = {
     facultyList,
     headList,
     adminList,
+    getPatentData
 };

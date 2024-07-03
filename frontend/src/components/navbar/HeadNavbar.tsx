@@ -264,11 +264,6 @@ const HeadNavbar = () => {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <Link to='/hod/profile'>
-                                        <DropdownMenuItem>
-                                            Profile
-                                        </DropdownMenuItem>
-                                    </Link>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
@@ -295,11 +290,151 @@ const HeadNavbar = () => {
                                         <DropdownMenuSubTrigger>My Details</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <DropdownMenuItem>Patent</DropdownMenuItem>
-                                                <DropdownMenuItem>Publication</DropdownMenuItem>
-                                                <DropdownMenuItem>Consultancy</DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Projects</DropdownMenuItem>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger> Research </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/common/display/patent'>
+                                                                    <DropdownMenuItem>
+                                                                        Patent
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/copyright'>
+                                                                    <DropdownMenuItem>
+                                                                        Copyright
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/common/display/journal'>
+                                                                    <DropdownMenuItem>
+                                                                        Journal
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/conference'>
+                                                                    <DropdownMenuItem>
+                                                                        Conference
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/book'>
+                                                                    <DropdownMenuItem>
+                                                                        Book
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/book-chapter'>
+                                                                    <DropdownMenuItem>
+                                                                        Book Chapter
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/common/display/projects'>
+                                                                    <DropdownMenuItem>
+                                                                        Major / Minor
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/need-based-project'>
+                                                                    <DropdownMenuItem>
+                                                                        Need Based
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/awards-honors'>
+                                                                    <DropdownMenuItem>
+                                                                        Award/Honors
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <Link to='/common/display/consultancy'>
+                                                                <DropdownMenuItem>
+                                                                    Consultancy
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger> Achievements </DropdownMenuSubTrigger>
+                                                </DropdownMenuSub>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>Department Details</DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger> Research </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/hod/display/patent'>
+                                                                    <DropdownMenuItem>
+                                                                        Patent
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/copyright'>
+                                                                    <DropdownMenuItem>
+                                                                        Copyright
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/hod/display/journal'>
+                                                                    <DropdownMenuItem>
+                                                                        Journal
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/conference'>
+                                                                    <DropdownMenuItem>
+                                                                        Conference
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/book'>
+                                                                    <DropdownMenuItem>
+                                                                        Book
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/book-chapter'>
+                                                                    <DropdownMenuItem>
+                                                                        Book Chapter
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/hod/display/projects'>
+                                                                    <DropdownMenuItem>
+                                                                        Major / Minor
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/need-based-project'>
+                                                                    <DropdownMenuItem>
+                                                                        Need Based
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/awards-honors'>
+                                                                    <DropdownMenuItem>
+                                                                        Award/Honors
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <Link to='/hod/display/consultancy'>
+                                                                <DropdownMenuItem>
+                                                                    Consultancy
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger> Achievements </DropdownMenuSubTrigger>
+                                                </DropdownMenuSub>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
@@ -551,11 +686,6 @@ const HeadNavbar = () => {
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <Link to='/hod/profile'>
-                                    <DropdownMenuItem>
-                                        Profile
-                                    </DropdownMenuItem>
-                                </Link>
                                 <DropdownMenuSub>
                                     <DropdownMenuSubTrigger>Personal Details</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
@@ -582,11 +712,75 @@ const HeadNavbar = () => {
                                     <DropdownMenuSubTrigger>My Details</DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
-                                            <DropdownMenuItem>Patent</DropdownMenuItem>
-                                            <DropdownMenuItem>Publication</DropdownMenuItem>
-                                            <DropdownMenuItem>Consultancy</DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem>Projects</DropdownMenuItem>
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger> Research </DropdownMenuSubTrigger>
+                                                <DropdownMenuPortal>
+                                                    <DropdownMenuSubContent>
+                                                        <DropdownMenuGroup>
+                                                            <Link to='/common/display/patent'>
+                                                                <DropdownMenuItem>
+                                                                    Patent
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/display/copyright'>
+                                                                <DropdownMenuItem>
+                                                                    Copyright
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuGroup>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuGroup>
+                                                            <Link to='/common/display/journal'>
+                                                                <DropdownMenuItem>
+                                                                    Journal
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/display/conference'>
+                                                                <DropdownMenuItem>
+                                                                    Conference
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/display/book'>
+                                                                <DropdownMenuItem>
+                                                                    Book
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/display/book-chapter'>
+                                                                <DropdownMenuItem>
+                                                                    Book Chapter
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuGroup>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuGroup>
+                                                            <Link to='/common/display/projects'>
+                                                                <DropdownMenuItem>
+                                                                    Major / Minor
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/display/need-based-project'>
+                                                                <DropdownMenuItem>
+                                                                    Need Based
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/common/display/awards-honors'>
+                                                                <DropdownMenuItem>
+                                                                    Award/Honors
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuGroup>
+                                                        <DropdownMenuSeparator />
+                                                        <Link to='/common/display/consultancy'>
+                                                            <DropdownMenuItem>
+                                                                Consultancy
+                                                            </DropdownMenuItem>
+                                                        </Link>
+                                                    </DropdownMenuSubContent>
+                                                </DropdownMenuPortal>
+                                            </DropdownMenuSub>
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger> Achievements </DropdownMenuSubTrigger>
+                                            </DropdownMenuSub>
                                         </DropdownMenuSubContent>
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
