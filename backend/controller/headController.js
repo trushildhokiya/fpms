@@ -1,11 +1,9 @@
 const asyncHandler = require('express-async-handler');
 const Faculty = require('../models/faculty')
 const Patent = require('../models/patent')
+const Copyright = require('../models/copyright')
 const Notification = require('../models/notification')
-const fs = require('fs');
 const nodemailer = require('nodemailer')
-
-const baseUrl = 'http://localhost:5000';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -216,10 +214,35 @@ const getPatentData = asyncHandler(async (req, res) => {
 });
 
 
+/**
+ * GET COPYRIGHT DATA
+ */
+const getCopyrightData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental patent data
+    const copyrightData = await Copyright.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+    
+    res.status(200).json(copyrightData);
+});
+
+
 module.exports = {
     createNotification,
     getNotifications,
     getFacultiesList,
     toggleFacultyApproval,
-    getPatentData
+    getPatentData,
+    getCopyrightData
 }

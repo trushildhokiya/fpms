@@ -42,7 +42,7 @@ const countryCodes: { [key: string]: string } = {
     "croatia": "hr",
     "cuba": "cu",
     "cyprus": "cy",
-    "czechia (czech republic)": "cz",
+    "czech republic": "cz",
     "democratic republic of the congo": "cd",
     "denmark": "dk",
     "djibouti": "dj",

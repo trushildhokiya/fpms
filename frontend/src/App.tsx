@@ -32,6 +32,7 @@ const AddUser = lazy(() => import('./container/views/admin/container/addUser/Add
 const Profile = lazy(() => import('./container/views/admin/container/profile/Profile'));
 const DisplayUsers = lazy(() => import('./container/views/admin/container/displayUsers/DisplayUsers'));
 const AdminPatentDisplay = lazy(() => import('./container/views/admin/container/display/patent'));
+const AdminCopyrightDisplay = lazy(() => import('./container/views/admin/container/display/copyright'));
 
 /**
  * HEAD OF DEPARTMENT IMPORTS
@@ -41,11 +42,12 @@ const Faculty = lazy(() => import('./container/views/head/container/faculties/Fa
 const Notify = lazy(() => import('./container/views/head/container/notify/Notify'));
 const Notifications = lazy(() => import('./container/views/head/container/notifications/Notifications'));
 const HeadPatentDisplay = lazy(() => import('./container/views/head/container/display/patent'));
+const HeadCopyrightDisplay = lazy(() => import('./container/views/head/container/display/copyright'));
 
 /**
  * FACULTY IMPORTS
  */
-const FacultyDashboard = lazy(() => import('./container/views/faculty/container/dashboard/Dashboard'));
+const FacultyDashboard = lazy(() => import('./container/views/faculty/container/dashboard/dashboard'));
 
 /**
  * PROTECTED ROUTES
@@ -129,12 +131,14 @@ function App() {
           <Route path='/admin' element={<AdminProtectedRoute> <Dashboard /> </AdminProtectedRoute>} />
           <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
           <Route path='/admin/display/patent' element={<AdminProtectedRoute> <AdminPatentDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/copyright' element={<AdminProtectedRoute> <AdminCopyrightDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
           <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
           <Route path='/hod' element={<HeadProtectedRoute><HeadDashboard /> </HeadProtectedRoute>} />
           <Route path='/hod/users/faculty' element={<HeadProtectedRoute> <Faculty /> </HeadProtectedRoute>} />
           <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
           <Route path='/hod/display/patent' element={<HeadProtectedRoute> <HeadPatentDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/copyright' element={<HeadProtectedRoute> <HeadCopyrightDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />

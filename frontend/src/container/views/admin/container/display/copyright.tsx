@@ -1,4 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,6 +13,7 @@ import countryCodes from '@/utils/data/country-codes'
 import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
+import AdminNavbar from '@/components/navbar/AdminNavbar'
 
 type Props = {}
 
@@ -55,7 +55,7 @@ const CopyrightDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/copyright')
+        axios.get('admin/data/copyright')
             .then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
@@ -203,7 +203,8 @@ const CopyrightDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+
+            <AdminNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -215,8 +216,8 @@ const CopyrightDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Copyright's</CardTitle>
-                            <CardDescription>Copyright details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Departmental Copyrights</CardTitle>
+                            <CardDescription>Copyright details of the faculties is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>

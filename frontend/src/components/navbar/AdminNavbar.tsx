@@ -81,19 +81,40 @@ const AdminNavbar = () => {
 
                                 <DropdownMenuGroup>
                                     <Link to="/admin/display/patent">
-                                        <DropdownMenuItem>Patents</DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            Patent
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link to="/admin/display/copyright">
+                                        <DropdownMenuItem>
+                                            Copyright
+                                        </DropdownMenuItem>
                                     </Link>
                                     <DropdownMenuSub>
                                         <DropdownMenuSubTrigger>Publications</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <DropdownMenuItem>Article</DropdownMenuItem>
-                                                <DropdownMenuItem>Conference</DropdownMenuItem>
+                                                <Link to="/admin/display/journal">
+                                                    <DropdownMenuItem>
+                                                        Journal
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to="/admin/display/conference">
+                                                    <DropdownMenuItem>
+                                                        Conference
+                                                    </DropdownMenuItem>
+                                                </Link>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Book</DropdownMenuItem>
-                                                <DropdownMenuItem>Chapter in Book</DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Others</DropdownMenuItem>
+                                                <Link to="/admin/display/book">
+                                                    <DropdownMenuItem>
+                                                        Book
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to="/admin/display/book-chapter">
+                                                    <DropdownMenuItem>
+                                                        Book Chapter
+                                                    </DropdownMenuItem>
+                                                </Link>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
@@ -101,18 +122,32 @@ const AdminNavbar = () => {
                                         <DropdownMenuSubTrigger>Projects</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent>
-                                                <DropdownMenuItem>Major Research</DropdownMenuItem>
-                                                <DropdownMenuItem>Minor Research</DropdownMenuItem>
-                                                <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                                <Link to="/admin/display/projects">
+                                                    <DropdownMenuItem>
+                                                        Major/Minor
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to="/admin/display/need-based-projects">
+                                                    <DropdownMenuItem>
+                                                        Need based
+                                                    </DropdownMenuItem>
+                                                </Link>
+
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Department</DropdownMenuItem>
-                                                <DropdownMenuItem>Institute</DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Others</DropdownMenuItem>
+                                                <Link to="/admin/display/awards-honors">
+                                                    <DropdownMenuItem>
+                                                        Awards/Honors
+                                                    </DropdownMenuItem>
+                                                </Link>
+
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
-                                    <DropdownMenuItem>Consultancy</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to="/admin/display/consultancy">
+                                            Consultancy
+                                        </Link>
+                                    </DropdownMenuItem>
                                 </DropdownMenuGroup>
 
                             </DropdownMenuContent>

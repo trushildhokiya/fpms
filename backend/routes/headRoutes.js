@@ -1,7 +1,12 @@
 const express = require('express')
 const headAuthenticator = require('../middleware/headAuthenticator')
-const { facultyProfileImageUpload } = require('../middleware/fileUpload')
-const { profileImageUpdate, createNotification, getNotifications, getFacultiesList, toggleFacultyApproval, getPatentData } = require('../controller/headController')
+const { createNotification,
+    getNotifications,
+    getFacultiesList,
+    toggleFacultyApproval,
+    getPatentData,
+    getCopyrightData
+} = require('../controller/headController')
 const router = express.Router()
 
 
@@ -61,7 +66,7 @@ const router = express.Router()
  *         description: Internal Server Error.
  */
 
-router.route('/notify').post(headAuthenticator,createNotification)
+router.route('/notify').post(headAuthenticator, createNotification)
 
 /**
  * @swagger
@@ -118,7 +123,7 @@ router.route('/notify').post(headAuthenticator,createNotification)
  *       500:
  *         description: Internal Server Error.
  */
-router.route('/notifications').get(headAuthenticator,getNotifications)
+router.route('/notifications').get(headAuthenticator, getNotifications)
 
 /**
  * @swagger
@@ -178,7 +183,7 @@ router.route('/notifications').get(headAuthenticator,getNotifications)
  *         description: Internal Server Error.
  */
 
-router.route('/faculties').get(headAuthenticator,getFacultiesList)
+router.route('/faculties').get(headAuthenticator, getFacultiesList)
 
 /**
  * @swagger
@@ -233,6 +238,8 @@ router.route('/faculties').get(headAuthenticator,getFacultiesList)
 router.route('/faculties').put(headAuthenticator, toggleFacultyApproval)
 
 router.route('/data/patent').get(headAuthenticator, getPatentData)
+
+router.route('/data/copyright').get(headAuthenticator, getCopyrightData)
 
 
 module.exports = router

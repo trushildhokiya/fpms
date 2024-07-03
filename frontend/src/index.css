@@ -21,21 +21,3 @@
     border-right: 1px solid var(--surface-d);
     border-bottom: 1px solid var(--surface-d);
 }
-
-
-@keyframes gradientAnimation {
-  0% {
-    fill: url(#gradient1);
-  }
-  50% {
-    fill: url(#gradient2);
-  }
-  100% {
-    fill: url(#gradient1);
-  }
-}
-
-.gradient-fill {
-  animation: gradientAnimation 3s infinite;
-}
-

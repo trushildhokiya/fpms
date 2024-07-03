@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Admin = require('../models/admin');
 const Faculty = require('../models/faculty')
 const Patent = require('../models/patent')
+const Copyright = require('../models/copyright')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
 const nodemailer = require("nodemailer");
@@ -200,6 +201,15 @@ const getPatentData = asyncHandler(async(req,res)=>{
     res.status(200).json(patentData)
 })
 
+/**
+ * GET COPYRIGHT DATA
+ */
+const getCopyrightData = asyncHandler(async(req,res)=>{
+
+    const copyrightData = await Copyright.find()
+    res.status(200).json(copyrightData)
+})
+
 
 module.exports = {
     profileImageUpdate,
@@ -207,5 +217,6 @@ module.exports = {
     facultyList,
     headList,
     adminList,
-    getPatentData
+    getPatentData,
+    getCopyrightData,
 };

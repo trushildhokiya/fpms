@@ -13,12 +13,12 @@ const Dashboard = () => {
 
 
   const user = useSelector((state: any) => state.user)
-  const [terminalData, setTerminalData] = useState('Booting FPMS OS...')
+  const [terminalData, setTerminalData] = useState('Booting FPMS Kernel...')
 
   const handleTerminalQuery = (command: string) => {
 
-    setTerminalData( terminalHandler(command) )
-    
+    setTerminalData(terminalHandler(command))
+
   }
 
   return (
@@ -48,15 +48,31 @@ const Dashboard = () => {
 
                 <div className="">
 
+                  {/* animated stars */}
                   <p className='flex items-center font-Poppins mt-5'>
-                    <Sparkles className='w-8 h-8 stroke-1 fill-[#6441A5] mr-2 drop-shadow-sm' /> Suggestions
+                    <svg width="0" height="0">
+                      <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#6274e7">
+                            <animate attributeName="stop-color" values="#6274e7;#8752a3;#8711c1;#2472fc" dur="5s" repeatCount="indefinite" />
+                          </stop>
+                          <stop offset="100%" stopColor="#2472fc">
+                            <animate attributeName="stop-color" values="#8752a3;#6274e7;#8711c1;#2472fc" dur="5s" repeatCount="indefinite" />
+                          </stop>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <Sparkles className='w-8 h-8 stroke-1 mr-2 drop-shadow-sm' style={{ fill: 'url(#gradient)' }} />
+                    Suggestions
                   </p>
 
+                  {/* Terminal */}
                   <div className="my-4">
                     <Terminal name='My Shell' height='150px' colorMode={ColorMode.Dark} onInput={terminalInput => handleTerminalQuery(terminalInput)}>
                       <TerminalOutput>{terminalData}</TerminalOutput>
                     </Terminal>
                   </div>
+
                 </div>
               </CardContent>
             </Card>
