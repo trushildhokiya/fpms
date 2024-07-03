@@ -101,7 +101,7 @@ app.listen(PORT, async () => {
                 email: 'fpms.tech@somaiya.edu',
                 password: await bcrypt.hash('Admin@123', 10),
                 institute: 'K.J Somaiya Institute Of Technology',
-                profileImage: 'https://w0.peakpx.com/wallpaper/582/516/HD-wallpaper-linux-programmer-pixel-art-linux-computer-hacker-pixel-8-bit.jpg'
+                profileImage: 'https://res.cloudinary.com/upwork-cloud/image/upload/c_scale,w_1000/v1709185333/catalog/1623347763800207360/rxfo7enaxci7tw2pnntx.webp'
             });
 
             console.log('Admin created successfully', createdAdmin);
