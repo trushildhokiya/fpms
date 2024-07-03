@@ -13,7 +13,7 @@ const Dashboard = () => {
 
 
   const user = useSelector((state: any) => state.user)
-  const [terminalData, setTerminalData] = useState('Booting FPMS Kernel...')
+  const [terminalData, setTerminalData] = useState('Booting FPMS Kernel ========> complete')
 
   const handleTerminalQuery = (command: string) => {
 
