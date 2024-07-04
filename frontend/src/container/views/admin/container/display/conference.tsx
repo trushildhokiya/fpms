@@ -2,11 +2,12 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import axios from 'axios'
+import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FileDown, Table, TicketCheck, TicketX } from 'lucide-react'
+import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import { Knob } from 'primereact/knob'
@@ -14,47 +15,64 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 
 type Props = {}
 
-interface Journal {
+interface Conference {
     _id: string;
     title: string;
     authors: string[];
     authorsAffiliation: string[];
     departmentInvolved: string[];
     facultiesInvolved: string[];
-    paidUnpaid: string;
-    journalType: string;
-    journalTitle: string;
+    nationalInternational: string;
+    conferenceName: string;
+    venue: string;
+    organizer: string;
+    role: string;
+    fromDate: Date;
+    toDate: Date;
+    paperStatus: string;
+    publicationDate: Date;
     issn: string;
     impactFactor: number;
-    pageFrom: number;
-    pageTo: number;
-    year: number;
-    digitalObjectIdentifier: string;
+    pageNo: string;
+    yearOfPublication: number;
+    doi: string;
     indexing: string[];
     paperUrl: string;
     citationCount: number;
     paper: string;
     certificate: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
     __v: number;
 }
 
-const JournalDisplay = (props: Props) => {
+
+const ConferenceDisplay = (props: Props) => {
 
     // constants
-    const [data, setData] = useState<Journal[]>([]);
-    const [totalRecords, setTotalRecords] = useState(0);
+    const [data, setData] = useState<Conference[]>([]);
+    const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
 
+    // function to convert date strings to Date objects
+    const convertDates = (conferences: Conference[]) => {
+        return conferences.map(conference => ({
+            ...conference,
+            fromDate: new Date(conference.fromDate),
+            toDate: new Date(conference.toDate),
+            publicationDate: new Date(conference.publicationDate)
+        }));
+    };
+
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/admin/data/journal')
+        axios.get('/admin/data/conference')
             .then((res) => {
-                setData(res.data);
-                setTotalRecords(res.data.length)
+                const convertedData = convertDates(res.data);
+                setData(convertedData);
+                setTotalRecords(convertedData.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -93,43 +111,47 @@ const JournalDisplay = (props: Props) => {
 
     // template functions
     
-    const idBodyTemplate = (rowData: Journal) => {
+    const idBodyTemplate = (rowData: Conference) => {
         return <Badge className='bg-rose-900 bg-opacity-85 font-normal tracking-wide hover:bg-rose-700 text-rose-200'>{rowData._id}</Badge>;
     };
 
-    const authorsBodyTemplate = (rowData: Journal) => rowData.authors.join(", ")
+    const authorsBodyTemplate = (rowData: Conference) => rowData.authors.join(", ")
 
-    const affiliationBodyTemplate = (rowData: Journal) => rowData.authorsAffiliation.join(", ")
+    const affiliationBodyTemplate = (rowData: Conference) => rowData.authorsAffiliation.join(", ")
 
-    const departmentInvolvedBodyTemplate = (rowData: Journal) => {
+    const departmentInvolvedBodyTemplate = (rowData: Conference) => {
         return rowData.departmentInvolved.map((department: string) => (
             <Badge key={department} className='bg-purple-400 hover:bg-purple-300 bg-opacity-85 text-purple-900'>{department}</Badge>
         ));
     };
     
-    const facultyInvolvedBodyTemplate = (rowData: Journal) => rowData.facultiesInvolved.join(", ")
+    const facultyInvolvedBodyTemplate = (rowData: Conference) => rowData.facultiesInvolved.join(", ")
 
-    const paidUnpaidBodyTemplate = (rowData: Journal) => {
-        return rowData.paidUnpaid === 'paid' ? <TicketCheck color="#24a32a" className='h-6 w-6 mx-auto' /> : <TicketX className='w-6 mx-auto h-6' color='#827e81' />
-    };
-    
-    const impactFactorBodyTemplate = (rowData:Journal) =>{
+        
+    const impactFactorBodyTemplate = (rowData:Conference) =>{
         return <Knob value={rowData.impactFactor} min={0} max={1000} size={80} className='flex justify-center' rangeColor='#9c9494' valueColor='#fcba03' readOnly />
     }
 
-    const citationBodyTemplate = (rowData: Journal) => {
-        return(
-            <Button className='rounded-full w-12 h-12 bg-lime-200 text-lime-900 disabled:opacity-100 font-semibold' disabled>{rowData.citationCount}</Button>
-        )
-    };
-
-    const indexingBodyTemplate = (rowData: Journal) => {
+    const indexingBodyTemplate = (rowData: Conference) => {
         return rowData.indexing.map((index: string) => (
             <Badge key={index} className='bg-yellow-950 mr-2 my-1 font-normal hover:bg-yellow-800 bg-opacity-85 text-yellow-200'>{index}</Badge>
         ));
     };
 
-    const URLBodyTemplate = (rowData: Journal) => {
+    const citationBodyTemplate = (rowData: Conference) => {
+        return(
+            <Button className='rounded-full w-12 h-12 bg-lime-200 text-lime-900 disabled:opacity-100 font-semibold' disabled>{rowData.citationCount}</Button>
+        )
+    };
+   
+    const fromDateBodyTemplate = (rowData: Conference) => rowData.fromDate.toLocaleDateString()
+
+    const toDateBodyTemplate = (rowData: Conference) => rowData.toDate.toLocaleDateString()
+
+    const publicationDateBodyTemplate = (rowData: Conference) => rowData.publicationDate.toLocaleDateString()
+
+
+    const URLBodyTemplate = (rowData: Conference) => {
         return (
             <Link target='_blank' referrerPolicy='no-referrer' to={rowData.paperUrl}>
                 <Button variant={'link'} className='text-indigo-800' >Download</Button>
@@ -137,7 +159,7 @@ const JournalDisplay = (props: Props) => {
         )
     }
 
-    const certificateBodyTemplate = (rowData: Journal) => {
+    const certificateBodyTemplate = (rowData: Conference) => {
         return (
             <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800' >Download</Button>
@@ -145,7 +167,7 @@ const JournalDisplay = (props: Props) => {
         )
     }
 
-    const paperBodyTemplate = (rowData: Journal) => {
+    const paperBodyTemplate = (rowData: Conference) => {
         return (
             <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.paper.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800' >Download</Button>
@@ -153,9 +175,10 @@ const JournalDisplay = (props: Props) => {
         )
     }
 
-    const footerTemplate = () => {
-        return "Total Records Matched: " + totalRecords; // Access total records here
+    const dateFilterTemplate = (options: any) => {
+        return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
     };
+
 
 
     // download functions
@@ -163,13 +186,10 @@ const JournalDisplay = (props: Props) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
-
-    
-
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape','in',[20,30]);
+        const doc = new jsPDF('landscape','in',[20,50]);
     
         // Column definitions
         const columns = [
@@ -178,16 +198,21 @@ const JournalDisplay = (props: Props) => {
             { header: 'Authors', dataKey: 'authors' },
             { header: 'Authors Affiliation', dataKey: 'authorsAffiliation' },
             { header: 'Department Involved', dataKey: 'departmentInvolved' },
-            { header: 'Paid/Unpaid', dataKey: 'paidUnpaid' },
             { header: 'Faculties Involved', dataKey: 'facultiesInvolved' },
-            { header: 'Journal Type', dataKey: 'journalType' },
-            { header: 'Journal Title', dataKey: 'journalTitle' },
+            { header: 'National/International', dataKey: 'nationalInternational' },
+            { header: 'Conference Name', dataKey: 'conferenceName' },
+            { header: 'Venue', dataKey: 'venue' },
+            { header: 'Organizer', dataKey: 'organizer' },
+            { header: 'Role', dataKey: 'role' },
+            { header: 'From Date', dataKey: 'fromDate' },
+            { header: 'To Date', dataKey: 'toDate' },
+            { header: 'Paper Status', dataKey: 'paperStatus' },
+            { header: 'Publication Date', dataKey: 'publicationDate' },
             { header: 'ISSN', dataKey: 'issn' },
             { header: 'Impact Factor', dataKey: 'impactFactor' },
-            { header: 'Page From', dataKey: 'pageFrom' },
-            { header: 'Page To', dataKey: 'pageTo' },
-            { header: 'Year', dataKey: 'year' },
-            { header: 'DOI', dataKey: 'digitalObjectIdentifier' },
+            { header: 'Page No', dataKey: 'pageNo' },
+            { header: 'Year of Publication', dataKey: 'yearOfPublication' },
+            { header: 'DOI', dataKey: 'doi' },
             { header: 'Indexing', dataKey: 'indexing' },
             { header: 'Paper URL', dataKey: 'paperUrl' },
             { header: 'Citation Count', dataKey: 'citationCount' },
@@ -198,6 +223,7 @@ const JournalDisplay = (props: Props) => {
             { header: '__v', dataKey: '__v' },
         ];
         
+
         // Add autoTable content to the PDF
         autoTable(doc,{
             head: [columns.map(col => col.header)],
@@ -212,7 +238,7 @@ const JournalDisplay = (props: Props) => {
         });
     
         // Save the PDF
-        doc.save('journal_data.pdf');
+        doc.save('conference_data.pdf');
     };
 
 
@@ -227,6 +253,10 @@ const JournalDisplay = (props: Props) => {
         </div>
     );
 
+    const footerTemplate = () => {
+        return "Total Records Matched: " + totalRecords; // Access total records here
+    };
+
 
     return (
         <div>
@@ -235,43 +265,46 @@ const JournalDisplay = (props: Props) => {
             <div className="container font-Poppins my-10">
 
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                    Journal Details
+                    Conference Details
                 </h1>
 
                 <div className="my-10">
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Instituational Journal's</CardTitle>
-                            <CardDescription>Journal details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institutional Conferences's</CardTitle>
+                            <CardDescription>Conference details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-journals' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords} entries" footer={footerTemplate} rowsPerPageOptions={[5, 10, 25, 50]}  onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='my-conferences' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="authors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by authors' header="Inventors" body={authorsBodyTemplate}></Column>
-                                <Column field="authorsAffiliation" style={{minWidth:'250px'}} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
+                                <Column field="authors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by authors' header="Authors" body={authorsBodyTemplate}></Column>
+                                <Column field="authorsAffiliation" style={{minWidth:'250px'}} filter filterPlaceholder='Search by affiliation' header="Authors Affiliations" body={affiliationBodyTemplate}></Column>
                                 <Column field="departmentInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
                                 <Column field="facultiesInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="paidUnpaid" style={{minWidth:'150px'}} align={'center'} filter filterPlaceholder='Search by paid/unpaid' header="Paid/Unpaid" body={paidUnpaidBodyTemplate}></Column>
-                                <Column field="journalType" style={{minWidth:'250px'}} filter filterPlaceholder='Search by type' header="Journal Type" ></Column>
-                                <Column field="journalTitle" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' header="Journal Title"></Column>
+                                <Column field="nationalInternational" style={{minWidth:'250px'}} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
+                                <Column field="conferenceName" style={{minWidth:'250px'}} filter filterPlaceholder='Search by conference name' sortable header="Conference Name"></Column>
+                                <Column field="venue" style={{minWidth:'250px'}} filter filterPlaceholder='Search by venue' sortable header="Venue"></Column>
+                                <Column field="organizer" style={{minWidth:'250px'}} filter filterPlaceholder='Search by organizer' sortable header="Organizer"></Column>
+                                <Column field="role" style={{minWidth:'250px'}} filter filterPlaceholder='Search by role' sortable header="Role"></Column>
+                                <Column field="fromDate" style={{minWidth:'250px'}} align={'center'}  sortable dataType='date' filter filterPlaceholder='Search by from date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
+                                <Column field="toDate" style={{minWidth:'250px'}} align={'center'} sortable dataType='date' header="To Date" filter filterPlaceholder='Search by to date' filterElement={dateFilterTemplate} body={toDateBodyTemplate}></Column>
+                                <Column field="paperStatus" style={{minWidth:'250px'}} filter filterPlaceholder='Search by status' sortable header="Paper Status"></Column>
+                                <Column field="publicationDate" style={{minWidth:'250px'}} sortable dataType='date' header="Publication Date" filter filterPlaceholder='Search by to date' filterElement={dateFilterTemplate} body={publicationDateBodyTemplate}></Column>
                                 <Column field="issn" style={{minWidth:'250px'}} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
                                 <Column field="impactFactor" style={{minWidth:'250px'}} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
-                                <Column field="pageFrom" style={{minWidth:'150px'}} filter filterPlaceholder='Search by page from' align={'center'} header="Page From"></Column>
-                                <Column field="pageTo" style={{minWidth:'150px'}} filter filterPlaceholder='Search by page to' align={'center'} header="Page To"></Column>
-                                <Column field="year" style={{minWidth:'150px'}} filter dataType='numeric' align={'center'} filterPlaceholder='Search by year' header="Year"></Column>
-                                <Column field="digitalObjectIdentifier" style={{minWidth:'250px'}} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
+                                <Column field="pageNo" style={{minWidth:'250px'}} filter filterPlaceholder='Search by page from' align={'center'} header="Page Number"></Column>
+                                <Column field="yearOfPublication" style={{minWidth:'250px'}} filter dataType='numeric' align={'center'} filterPlaceholder='Search by year' header="Year of Publication"></Column>
+                                <Column field="doi" style={{minWidth:'250px'}} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
                                 <Column field="indexing" style={{minWidth:'250px'}} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
-                                <Column field="citationCount" style={{minWidth:'250px'}} body={citationBodyTemplate} filter filterPlaceholder='Search by count' dataType='numeric' align={'center'} sortable header="Citation Count"></Column>
+                                <Column field="citationCount" style={{minWidth:'250px'}} filter filterPlaceholder='Search by count' dataType='numeric' body={citationBodyTemplate} align={'center'} sortable header="Citation Count"></Column>
                                 <Column field="paperUrl" style={{minWidth:'200px'}} filter filterPlaceholder='Search by url' align={'center'} body={URLBodyTemplate} sortable header="Paper URL"></Column>
                                 <Column field="paper" style={{minWidth:'200px'}}  align={'center'} header="Paper" body={paperBodyTemplate}></Column>
                                 <Column field="certificate" style={{minWidth:'200px'}} align={'center'} header="Certificate" body={certificateBodyTemplate}></Column>
                             </DataTable>
-
-
 
                         </CardContent>
 
@@ -284,4 +317,4 @@ const JournalDisplay = (props: Props) => {
     )
 }
 
-export default JournalDisplay
+export default ConferenceDisplay

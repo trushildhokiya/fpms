@@ -113,7 +113,7 @@ const About = () => {
         </h2>
         <section className="container flex justify-around mt- 4 py-4 gap-4">
           <div className="relative">
-            <div className="border border-[5px] border-red-800 rounded-md bg-red-800 absolute top-[20px] bottom-[-20px] left-[-20px] right-[20px] z-[-1]"></div>
+            <div className="border-[5px] border-red-800 rounded-md bg-red-800 absolute top-[20px] bottom-[-20px] left-[-20px] right-[20px] z-[-1]"></div>
             <img className="rounded-md w-full shadow-lg drop-shadow-sm" src="https://kjsit.somaiya.edu.in/assets/kjsieit/images/about/founder.png" />
           </div>
           <div className="flex flex-col gap-4 w-[60%] justify-center">
@@ -140,7 +140,7 @@ const About = () => {
                   <CardContent className="p-0 m-0">
                     <div className="grid grid-cols-3">
                       <div className="col-span-1">
-                        <img src='https://picsum.photos/1280/720' className="rounded-lg object-cover h-full" alt='random-image' />
+                        <img src={`https://picsum.photos/1280/${720+member.id}`} className="rounded-lg object-cover h-full" alt='random-image' />
                       </div>
                       <div className="col-span-2 mx-4 my-4">
                         <h2 className="font-OpenSans text-lg text-gray-700 font-bold">

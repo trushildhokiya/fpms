@@ -3,6 +3,7 @@ const Faculty = require('../models/faculty')
 const Patent = require('../models/patent')
 const Copyright = require('../models/copyright')
 const Journal = require('../models/journal')
+const Conference = require('../models/conference')
 const Notification = require('../models/notification')
 const nodemailer = require('nodemailer')
 
@@ -262,6 +263,29 @@ const getJournalData = asyncHandler(async (req, res) => {
     res.status(200).json(journalData);
 });
 
+/**
+ * GET CONFERENCE DATA
+ */
+const getConferenceData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental conference data
+    const conferenceData = await Conference.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+    
+    res.status(200).json(conferenceData);
+});
+
 
 module.exports = {
     createNotification,
@@ -270,5 +294,6 @@ module.exports = {
     toggleFacultyApproval,
     getPatentData,
     getCopyrightData,
-    getJournalData
+    getJournalData,
+    getConferenceData
 }

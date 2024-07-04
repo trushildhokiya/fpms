@@ -150,6 +150,12 @@ const JournalDisplay = (props: Props) => {
         )
     }
 
+    const citationBodyTemplate = (rowData: Journal) => {
+        return(
+            <Button className='rounded-full w-12 h-12 bg-lime-200 text-lime-900 disabled:opacity-100 font-semibold' disabled>{rowData.citationCount}</Button>
+        )
+    };
+
     const footerTemplate = () => {
         return "Total Records Matched: " + totalRecords; // Access total records here
     };
@@ -262,7 +268,7 @@ const JournalDisplay = (props: Props) => {
                                 <Column field="year" style={{minWidth:'150px'}} filter dataType='numeric' align={'center'} filterPlaceholder='Search by year' header="Year"></Column>
                                 <Column field="digitalObjectIdentifier" style={{minWidth:'250px'}} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
                                 <Column field="indexing" style={{minWidth:'250px'}} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
-                                <Column field="citationCount" style={{minWidth:'250px'}} filter filterPlaceholder='Search by count' dataType='numeric' align={'center'} sortable header="Citation Count"></Column>
+                                <Column field="citationCount" style={{minWidth:'250px'}} body={citationBodyTemplate} filter filterPlaceholder='Search by count' dataType='numeric' align={'center'} sortable header="Citation Count"></Column>
                                 <Column field="paperUrl" style={{minWidth:'200px'}} filter filterPlaceholder='Search by url' align={'center'} body={URLBodyTemplate} sortable header="Paper URL"></Column>
                                 <Column field="paper" style={{minWidth:'200px'}}  align={'center'} header="Paper" body={paperBodyTemplate}></Column>
                                 <Column field="certificate" style={{minWidth:'200px'}} align={'center'} header="Certificate" body={certificateBodyTemplate}></Column>

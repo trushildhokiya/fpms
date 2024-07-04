@@ -3,6 +3,7 @@ const Admin = require('../models/admin');
 const Faculty = require('../models/faculty')
 const Patent = require('../models/patent')
 const Journal = require('../models/journal')
+const Conference = require('../models/conference')
 const Copyright = require('../models/copyright')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
@@ -221,6 +222,16 @@ const getJournalData = asyncHandler(async(req,res)=>{
 })
 
 
+/**
+ * GET CONFERENCE DATA
+ */
+const getConferenceData = asyncHandler(async(req,res)=>{
+
+    const conferenceData = await Conference.find()
+    res.status(200).json(conferenceData)
+})
+
+
 module.exports = {
     profileImageUpdate,
     registerUsers,
@@ -229,5 +240,6 @@ module.exports = {
     adminList,
     getPatentData,
     getCopyrightData,
-    getJournalData
+    getJournalData,
+    getConferenceData,
 };
