@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Faculty = require('../models/faculty')
 const Patent = require('../models/patent')
 const Copyright = require('../models/copyright')
+const Journal = require('../models/journal')
 const Notification = require('../models/notification')
 const nodemailer = require('nodemailer')
 
@@ -225,7 +226,7 @@ const getCopyrightData = asyncHandler(async (req, res) => {
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
     
-    // get departmental patent data
+    // get departmental copyright data
     const copyrightData = await Copyright.find({
         departmentInvolved: {
             $elemMatch: {
@@ -238,11 +239,36 @@ const getCopyrightData = asyncHandler(async (req, res) => {
 });
 
 
+/**
+ * GET JOURNAL DATA
+ */
+const getJournalData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental journal data
+    const journalData = await Journal.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+    
+    res.status(200).json(journalData);
+});
+
+
 module.exports = {
     createNotification,
     getNotifications,
     getFacultiesList,
     toggleFacultyApproval,
     getPatentData,
-    getCopyrightData
+    getCopyrightData,
+    getJournalData
 }

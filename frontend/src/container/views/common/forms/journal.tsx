@@ -476,8 +476,8 @@ const journalPublication: React.FC = (props: Props) => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Paid">Paid</SelectItem>
-                            <SelectItem value="Unpaid">Unpaid</SelectItem>
+                            <SelectItem value="paid">Paid</SelectItem>
+                            <SelectItem value="unpaid">Unpaid</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

@@ -33,6 +33,7 @@ const Profile = lazy(() => import('./container/views/admin/container/profile/Pro
 const DisplayUsers = lazy(() => import('./container/views/admin/container/displayUsers/DisplayUsers'));
 const AdminPatentDisplay = lazy(() => import('./container/views/admin/container/display/patent'));
 const AdminCopyrightDisplay = lazy(() => import('./container/views/admin/container/display/copyright'));
+const AdminJournalDisplay = lazy(() => import('./container/views/admin/container/display/journal'));
 
 /**
  * HEAD OF DEPARTMENT IMPORTS
@@ -43,6 +44,7 @@ const Notify = lazy(() => import('./container/views/head/container/notify/Notify
 const Notifications = lazy(() => import('./container/views/head/container/notifications/Notifications'));
 const HeadPatentDisplay = lazy(() => import('./container/views/head/container/display/patent'));
 const HeadCopyrightDisplay = lazy(() => import('./container/views/head/container/display/copyright'));
+const HeadJournalDisplay = lazy(() => import('./container/views/head/container/display/journal'));
 
 /**
  * FACULTY IMPORTS
@@ -132,6 +134,7 @@ function App() {
           <Route path='/admin/add-users' element={<AdminProtectedRoute> <AddUser /> </AdminProtectedRoute>} />
           <Route path='/admin/display/patent' element={<AdminProtectedRoute> <AdminPatentDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/display/copyright' element={<AdminProtectedRoute> <AdminCopyrightDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/journal' element={<AdminProtectedRoute> <AdminJournalDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
           <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
           <Route path='/hod' element={<HeadProtectedRoute><HeadDashboard /> </HeadProtectedRoute>} />
@@ -139,6 +142,7 @@ function App() {
           <Route path='/hod/notify' element={<HeadProtectedRoute> <Notify /> </HeadProtectedRoute>} />
           <Route path='/hod/display/patent' element={<HeadProtectedRoute> <HeadPatentDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/copyright' element={<HeadProtectedRoute> <HeadCopyrightDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/journal' element={<HeadProtectedRoute> <HeadJournalDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />

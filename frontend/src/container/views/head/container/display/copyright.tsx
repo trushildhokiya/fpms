@@ -1,4 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -8,7 +7,6 @@ import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import countryCodes from '@/utils/data/country-codes'
 import { FileDown, Table } from 'lucide-react'
@@ -38,8 +36,8 @@ interface Copyright {
 const CopyrightDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Copyright[]>([]);
+    const [totalRecords,setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
@@ -59,6 +57,7 @@ const CopyrightDisplay = (props: Props) => {
             .then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
+                setTotalRecords(convertedData.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -138,14 +137,16 @@ const CopyrightDisplay = (props: Props) => {
     const dateFilterTemplate = (options: any) => {
         return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
     };
+    const footerTemplate = () => {
+        return "Total Records Matched: " + totalRecords; // Access total records here
+    };
 
     // download functions
+    
     const exportCSV = (selectionOnly:boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
-
-    
 
     const exportPdf = () => {
 
@@ -221,7 +222,7 @@ const CopyrightDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-copyrights' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} showGridlines size='large'>
+                            <DataTable exportFilename='my-copyrights' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
                                 <Column field="inventors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>

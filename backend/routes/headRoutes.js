@@ -5,7 +5,8 @@ const { createNotification,
     getFacultiesList,
     toggleFacultyApproval,
     getPatentData,
-    getCopyrightData
+    getCopyrightData,
+    getJournalData
 } = require('../controller/headController')
 const router = express.Router()
 
@@ -240,6 +241,8 @@ router.route('/faculties').put(headAuthenticator, toggleFacultyApproval)
 router.route('/data/patent').get(headAuthenticator, getPatentData)
 
 router.route('/data/copyright').get(headAuthenticator, getCopyrightData)
+
+router.route('/data/journal').get(headAuthenticator, getJournalData)
 
 
 module.exports = router

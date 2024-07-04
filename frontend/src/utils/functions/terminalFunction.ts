@@ -1,7 +1,7 @@
 import { store } from '@/app/store';
 import { logout } from '@/features/user/userSlice';
 
-const suggestion:string[] = [
+const suggestion: string[] = [
     "Have you completed setting up your profile 🤔",
     "👉use re-init command to refresh your profile status.",
     "Have you filled all your data onto software🤔? ",
@@ -11,7 +11,7 @@ const suggestion:string[] = [
 const terminalHandler: Function = (command: string) => {
     switch (command) {
         case 'suggestion':
-            return suggestion[Math.floor(Math.random()*5)]
+            return suggestion[Math.floor(Math.random() * 5)]
 
         case 'open-tab':
             window.open("https://www.google.com", '_blank')?.focus()
@@ -32,6 +32,22 @@ const terminalHandler: Function = (command: string) => {
         case 'my-copyright':
             window.location.href = "/common/display/copyright"
             return "Opening my copyrights..."
+
+        case 'journal':
+            window.location.href = "/common/forms/journal"
+            return "Opening journal tab..."
+
+        case 'my-journal':
+            window.location.href = "/common/display/journal"
+            return "Opening my journals..."
+
+        case 'conference':
+            window.location.href = "/common/forms/conference"
+            return "Opening conference tab..."
+
+        case 'my-conference':
+            window.location.href = "/common/display/conference"
+            return "Opening my conferences..."
 
         case 'logout':
             localStorage.removeItem('token')

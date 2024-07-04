@@ -368,6 +368,7 @@ const addJournal = asyncHandler(async (req, res) => {
   data.certificate = certificateURL;
 
   // create entry in journal
+ 
   const journal = await Journal.create(data);
 
 

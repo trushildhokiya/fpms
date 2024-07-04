@@ -1,5 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
-import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,12 +5,12 @@ import axios from 'axios'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { FileDown, Table, TicketCheck, TicketX } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import { Knob } from 'primereact/knob'
+import AdminNavbar from '@/components/navbar/AdminNavbar'
 
 type Props = {}
 
@@ -45,7 +43,6 @@ interface Journal {
 const JournalDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Journal[]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
     const dt = useRef<any>(null);
@@ -54,7 +51,7 @@ const JournalDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/journal')
+        axios.get('/admin/data/journal')
             .then((res) => {
                 setData(res.data);
                 setTotalRecords(res.data.length)
@@ -227,7 +224,7 @@ const JournalDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+            <AdminNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -239,7 +236,7 @@ const JournalDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Journal's</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Instituational Journal's</CardTitle>
                             <CardDescription>Journal details of the faculty is shown below</CardDescription>
                         </CardHeader>
 

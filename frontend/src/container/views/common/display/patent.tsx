@@ -40,6 +40,7 @@ const PatentDisplay = (props: Props) => {
     // constants
     const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Patent[]>([]);
+    const [totalRecords,setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
@@ -59,6 +60,7 @@ const PatentDisplay = (props: Props) => {
             .then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
+                setTotalRecords(convertedData.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -137,9 +139,12 @@ const PatentDisplay = (props: Props) => {
         return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
     };
 
+    const footerTemplate = () => {
+        return "Total Records Matched: " + totalRecords; // Access total records here
+    };
+
     // download functions
     const exportCSV = (selectionOnly:boolean) => {
-        const filename = "my-patents.csv"
         dt.current.exportCSV({ selectionOnly });
     };
 
@@ -150,11 +155,7 @@ const PatentDisplay = (props: Props) => {
 
         // Initialize jsPDF instance
         const doc = new jsPDF('landscape','in',[20,20]);
-    
-        // AutoTable options
-        const options = {
-           theme:"grid"
-        };
+
     
         // Column definitions
         const columns = [
@@ -225,7 +226,7 @@ const PatentDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-patents' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} showGridlines size='large'>
+                            <DataTable exportFilename='my-patents' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
                                 <Column field="inventors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
