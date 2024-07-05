@@ -49,6 +49,22 @@ const terminalHandler: Function = (command: string) => {
             window.location.href = "/common/display/conference"
             return "Opening my conferences..."
 
+        case 'book':
+            window.location.href = "/common/forms/book"
+            return "Opening book tab..."
+
+        case 'my-book':
+            window.location.href = "/common/display/book"
+            return "Opening my books..."
+
+        case 'book-chapter':
+            window.location.href = "/common/forms/book-chapter"
+            return "Opening book chapter tab..."
+
+        case 'my-book-chapter':
+            window.location.href = "/common/display/book-chapter"
+            return "Opening my book chapters..."
+
         case 'logout':
             localStorage.removeItem('token')
             store.dispatch(logout())

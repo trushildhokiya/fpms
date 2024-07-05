@@ -248,7 +248,7 @@ const JournalDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-journals' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords} entries" footer={footerTemplate} rowsPerPageOptions={[5, 10, 25, 50]}  onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='institution-journals' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords} entries" footer={footerTemplate} rowsPerPageOptions={[5, 10, 25, 50]}  onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
                                 <Column field="authors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by authors' header="Inventors" body={authorsBodyTemplate}></Column>
