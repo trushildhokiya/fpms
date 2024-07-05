@@ -1,5 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
-import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,12 +5,12 @@ import axios from 'axios'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import { ScrollPanel } from 'primereact/scrollpanel'
+import AdminNavbar from '@/components/navbar/AdminNavbar'
 
 type Props = {}
 
@@ -26,15 +24,14 @@ interface Award {
     createdAt: string;
     updatedAt: string;
     __v: number;
-  }
-  
+}
+
 
 const AwardsHonorsDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Award[]>([]);
-    const [totalRecords,setTotalRecords] = useState(0)
+    const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
@@ -42,7 +39,7 @@ const AwardsHonorsDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/award-honors')
+        axios.get('/admin/data/award-honors')
             .then((res) => {
                 setData(res.data);
                 setTotalRecords(res.data.length)
@@ -105,7 +102,7 @@ const AwardsHonorsDisplay = (props: Props) => {
 
     // download functions
 
-    const exportCSV = (selectionOnly:boolean) => {
+    const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
@@ -113,16 +110,16 @@ const AwardsHonorsDisplay = (props: Props) => {
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape','in',[20,20]);
+        const doc = new jsPDF('landscape', 'in', [20, 20]);
 
-    
+
         // Column definitions
         interface Column {
             header: string;
             dataKey: keyof Award;
         }
 
-        const columns:Column[] = [
+        const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
             { header: 'Awarding Body', dataKey: 'awardingBody' },
@@ -133,25 +130,25 @@ const AwardsHonorsDisplay = (props: Props) => {
             { header: 'Updated At', dataKey: 'updatedAt' },
             { header: '__v', dataKey: '__v' },
         ];
-        
+
 
         // Add autoTable content to the PDF
-        autoTable(doc,{
+        autoTable(doc, {
             head: [columns.map(col => col.header)],
-            body: data.map((row) => columns.map(col=>row[col.dataKey])),
-            styles:{
-                overflow:'linebreak',
-                font:'times',
-                cellPadding:0.2,
+            body: data.map((row) => columns.map(col => row[col.dataKey])),
+            styles: {
+                overflow: 'linebreak',
+                font: 'times',
+                cellPadding: 0.2,
             },
             columnStyles: {
                 4: { cellWidth: 5 },
-                5: {cellWidth:2}
+                5: { cellWidth: 2 }
             },
-            horizontalPageBreak:true
+            horizontalPageBreak: true
 
         });
-    
+
         // Save the PDF
         doc.save('award-honors-data.pdf');
     };
@@ -171,7 +168,7 @@ const AwardsHonorsDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+            <AdminNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -183,19 +180,19 @@ const AwardsHonorsDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Awards Honors</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institutional Awards Honors</CardTitle>
                             <CardDescription>Awards Honors details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-awards-honors' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
-                                <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
-                                <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="awardingBody" style={{minWidth:'250px'}} sortable filter filterPlaceholder='Search by awarding body' header="Awarding Body"></Column>
-                                <Column field="year" dataType="numeric" style={{minWidth:'200px'}} filter filterPlaceholder='Search by year' align={'center'} header="Year" sortable ></Column>
-                                <Column field="description" style={{minWidth:'250px'}} sortable header="Description" body={descriptionBodyTemplate}></Column>
-                                <Column field="proof" style={{minWidth:'250px'}} align={'center'} header="Proof" body={proofBodyTemplate}></Column>
+                            <DataTable exportFilename='institution-awards-honors' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                                <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
+                                <Column field="awardingBody" style={{ minWidth: '250px' }} sortable filter filterPlaceholder='Search by awarding body' header="Awarding Body"></Column>
+                                <Column field="year" style={{ minWidth: '200px' }} filter dataType="numeric" filterPlaceholder='Search by year' align={'center'} header="Year" sortable ></Column>
+                                <Column field="description" style={{ minWidth: '250px' }} sortable header="Description" body={descriptionBodyTemplate}></Column>
+                                <Column field="proof" style={{ minWidth: '250px' }} align={'center'} header="Proof" body={proofBodyTemplate}></Column>
                             </DataTable>
 
                         </CardContent>

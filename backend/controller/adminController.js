@@ -5,6 +5,7 @@ const Patent = require('../models/patent')
 const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Copyright = require('../models/copyright')
+const AwardHonors = require('../models/award-honors')
 const NeedBasedProjects = require('../models/need-based-projects')
 const BookChapter = require('../models/book-chapter')
 const Book = require('../models/book')
@@ -263,6 +264,16 @@ const getNeedBasedProjectsData = asyncHandler(async(req,res)=>{
 })
 
 
+/**
+ * GET AWARDS HONORS DATA
+ */
+const getAwardsHonorsData = asyncHandler(async(req,res)=>{
+
+    const awardsHonorsData = await AwardHonors.find()
+    res.status(200).json(awardsHonorsData)
+})
+
+
 module.exports = {
     profileImageUpdate,
     registerUsers,
@@ -276,4 +287,5 @@ module.exports = {
     getBookData,
     getBookChapterData,
     getNeedBasedProjectsData,
+    getAwardsHonorsData
 };

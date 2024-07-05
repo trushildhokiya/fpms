@@ -38,6 +38,7 @@ const AdminConferenceDisplay = lazy(() => import('./container/views/admin/contai
 const AdminBookDisplay = lazy(() => import('./container/views/admin/container/display/book'));
 const AdminBookChapterDisplay = lazy(() => import('./container/views/admin/container/display/book-chapter'));
 const AdminNeedBasedProjectDisplay = lazy(() => import('./container/views/admin/container/display/need-based-project'));
+const AdminAwardsHonorsDisplay = lazy(() => import('./container/views/admin/container/display/award-honors'));
 
 /**
  * HEAD OF DEPARTMENT IMPORTS
@@ -53,6 +54,7 @@ const HeadConferenceDisplay = lazy(() => import('./container/views/head/containe
 const HeadBookDisplay = lazy(() => import('./container/views/head/container/display/book'));
 const HeadBookChapterDisplay = lazy(() => import('./container/views/head/container/display/book-chapter'));
 const HeadNeedBasedProjectDisplay = lazy(() => import('./container/views/head/container/display/need-based-project'));
+const HeadAwardsHonorsDisplay = lazy(() => import('./container/views/head/container/display/award-honors'));
 
 /**
  * FACULTY IMPORTS
@@ -147,6 +149,7 @@ function App() {
           <Route path='/admin/display/book' element={<AdminProtectedRoute> <AdminBookDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/display/book-chapter' element={<AdminProtectedRoute> <AdminBookChapterDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/display/need-based-projects' element={<AdminProtectedRoute> <AdminNeedBasedProjectDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/awards-honors' element={<AdminProtectedRoute> <AdminAwardsHonorsDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
           <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
           <Route path='/hod' element={<HeadProtectedRoute><HeadDashboard /> </HeadProtectedRoute>} />
@@ -159,6 +162,7 @@ function App() {
           <Route path='/hod/display/book' element={<HeadProtectedRoute> <HeadBookDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/book-chapter' element={<HeadProtectedRoute> <HeadBookChapterDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/need-based-projects' element={<HeadProtectedRoute> <HeadNeedBasedProjectDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/awards-honors' element={<HeadProtectedRoute> <HeadAwardsHonorsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />

@@ -5,6 +5,7 @@ const Copyright = require('../models/copyright')
 const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Book = require('../models/book')
+const AwardHonors = require('../models/award-honors')
 const BookChapter = require('../models/book-chapter')
 const NeedBasedProjects = require('../models/need-based-projects')
 const Notification = require('../models/notification')
@@ -359,6 +360,25 @@ const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
     res.status(200).json(needBasedProjectsData);
 });
 
+/**
+ * GET AWARDS HONORS DATA
+ */
+const getAwardsHonorsData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Find all faculty members in the department and populate their awardsHonors
+    const departmentFacultyData = await Faculty.find({ department }).populate('awardsHonors');
+
+    // Extract and flatten the awardsHonors data
+    const awardsHonorsData = departmentFacultyData
+        .map(faculty => faculty.awardsHonors)
+        .flat();
+
+    console.log(awardsHonorsData);
+    
+    res.status(200).json(awardsHonorsData);
+});
 
 module.exports = {
     createNotification,
@@ -372,4 +392,5 @@ module.exports = {
     getBookData,
     getBookChapterData,
     getNeedBasedProjectsData,
+    getAwardsHonorsData,
 }

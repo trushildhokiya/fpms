@@ -1,4 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -7,7 +6,6 @@ import axios from 'axios'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
@@ -32,7 +30,6 @@ interface Award {
 const AwardsHonorsDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Award[]>([]);
     const [totalRecords,setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
@@ -42,7 +39,7 @@ const AwardsHonorsDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/award-honors')
+        axios.get('/head/data/award-honors')
             .then((res) => {
                 setData(res.data);
                 setTotalRecords(res.data.length)
@@ -171,7 +168,7 @@ const AwardsHonorsDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+            <HeadNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -183,17 +180,17 @@ const AwardsHonorsDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Awards Honors</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Departmental Awards Honors</CardTitle>
                             <CardDescription>Awards Honors details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-awards-honors' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='department-awards-honors' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
                                 <Column field="awardingBody" style={{minWidth:'250px'}} sortable filter filterPlaceholder='Search by awarding body' header="Awarding Body"></Column>
-                                <Column field="year" dataType="numeric" style={{minWidth:'200px'}} filter filterPlaceholder='Search by year' align={'center'} header="Year" sortable ></Column>
+                                <Column field="year" style={{minWidth:'200px'}} filter dataType="numeric" filterPlaceholder='Search by year' align={'center'} header="Year" sortable ></Column>
                                 <Column field="description" style={{minWidth:'250px'}} sortable header="Description" body={descriptionBodyTemplate}></Column>
                                 <Column field="proof" style={{minWidth:'250px'}} align={'center'} header="Proof" body={proofBodyTemplate}></Column>
                             </DataTable>
