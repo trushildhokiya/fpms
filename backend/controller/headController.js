@@ -5,6 +5,7 @@ const Copyright = require('../models/copyright')
 const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Book = require('../models/book')
+const BookChapter = require('../models/book-chapter')
 const Notification = require('../models/notification')
 const nodemailer = require('nodemailer')
 
@@ -311,6 +312,30 @@ const getBookData = asyncHandler(async (req, res) => {
 });
 
 
+/**
+ * GET BOOK CHAPTER DATA
+ */
+const getBookChapterData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental book chapter data
+    const bookChapterData = await BookChapter.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+    
+    res.status(200).json(bookChapterData);
+});
+
+
 module.exports = {
     createNotification,
     getNotifications,
@@ -320,5 +345,6 @@ module.exports = {
     getCopyrightData,
     getJournalData,
     getConferenceData,
-    getBookData
+    getBookData,
+    getBookChapterData,
 }

@@ -1,6 +1,6 @@
 const express = require('express')
 const { adminProfileImageUpload } = require('../middleware/fileUpload')
-const { profileImageUpdate, registerUsers, facultyList, headList, adminList, getPatentData, getCopyrightData, getJournalData, getConferenceData, getBookData } = require('../controller/adminController')
+const { profileImageUpdate, registerUsers, facultyList, headList, adminList, getPatentData, getCopyrightData, getJournalData, getConferenceData, getBookData, getBookChapterData } = require('../controller/adminController')
 const adminAuthenticator = require('../middleware/adminAuthenticator')
 const router = express.Router()
 
@@ -232,5 +232,6 @@ router.route('/data/conference').get(adminAuthenticator, getConferenceData)
 
 router.route('/data/book').get(adminAuthenticator, getBookData)
 
+router.route('/data/book-chapter').get(adminAuthenticator, getBookChapterData)
 
 module.exports= router

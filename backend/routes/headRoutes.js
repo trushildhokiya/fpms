@@ -8,7 +8,8 @@ const { createNotification,
     getCopyrightData,
     getJournalData,
     getConferenceData,
-    getBookData
+    getBookData,
+    getBookChapterData
 } = require('../controller/headController')
 const router = express.Router()
 
@@ -249,5 +250,8 @@ router.route('/data/journal').get(headAuthenticator, getJournalData)
 router.route('/data/conference').get(headAuthenticator, getConferenceData)
 
 router.route('/data/book').get(headAuthenticator, getBookData)
+
+router.route('/data/book-chapter').get(headAuthenticator, getBookChapterData)
+
 
 module.exports = router

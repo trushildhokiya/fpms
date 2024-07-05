@@ -1,5 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
-import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,12 +5,12 @@ import axios from 'axios'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { FileDown, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import { Knob } from 'primereact/knob'
+import AdminNavbar from '@/components/navbar/AdminNavbar'
 
 type Props = {}
 
@@ -47,7 +45,6 @@ interface BookChapter {
 const BookChapterDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<BookChapter[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
@@ -57,7 +54,7 @@ const BookChapterDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/book-chapter')
+        axios.get('/admin/data/book-chapter')
             .then((res) => {
                 setData(res.data);
                 setTotalRecords(res.data.length)
@@ -225,7 +222,7 @@ const BookChapterDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+            <AdminNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -237,13 +234,13 @@ const BookChapterDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Book Chapter's</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institution Book Chapter's</CardTitle>
                             <CardDescription>Book Chapter details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-book-chapters' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='institution-book-chapters' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
                                 <Column field="bookTitle" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Book Title"></Column>
                                 <Column field="chapterTitle" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Chapter Title"></Column>

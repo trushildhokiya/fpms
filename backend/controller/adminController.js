@@ -5,6 +5,7 @@ const Patent = require('../models/patent')
 const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Copyright = require('../models/copyright')
+const BookChapter = require('../models/book-chapter')
 const Book = require('../models/book')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
@@ -242,6 +243,15 @@ const getBookData = asyncHandler(async(req,res)=>{
     res.status(200).json(bookData)
 })
 
+/**
+ * GET BOOK CHAPTER DATA
+ */
+const getBookChapterData = asyncHandler(async(req,res)=>{
+
+    const bookChapterData = await BookChapter.find()
+    res.status(200).json(bookChapterData)
+})
+
 
 module.exports = {
     profileImageUpdate,
@@ -254,4 +264,6 @@ module.exports = {
     getJournalData,
     getConferenceData,
     getBookData,
+    getBookChapterData,
+    
 };
