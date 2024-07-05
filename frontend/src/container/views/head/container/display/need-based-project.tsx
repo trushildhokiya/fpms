@@ -1,4 +1,3 @@
-import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -8,7 +7,6 @@ import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable, DataTableExpandedRows, DataTableValueArray } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { FileDown, Info, Table } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
@@ -74,7 +72,6 @@ interface Project {
 const NeedBasedProjectDisplay = (props: Props) => {
 
     // constants
-    const user = useSelector((state: any) => state.user)
     const [data, setData] = useState<Project[]>([]);
     const [studentData, setStudentData] = useState<StudentData[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
@@ -128,7 +125,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/need-based-project')
+        axios.get('/head/data/need-based-project')
             .then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
@@ -390,7 +387,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
 
     return (
         <div>
-            {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
+            <HeadNavbar />
 
             <div className="container font-Poppins my-10">
 
@@ -425,7 +422,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Projects (NB)</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Department Projects (NB)</CardTitle>
                             <CardDescription>Need based projects details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
@@ -434,7 +431,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
                             <DataTable
                                 expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)}
                                 rowExpansionTemplate={rowExpansionTemplate}
-                                exportFilename='my-need-based-projects' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple'
+                                exportFilename='department-need-based-projects' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple'
                                 paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]}
                                 onValueChange={handleChange} showGridlines size='large'>
                                 <Column expander={allowExpansion} style={{ width: '5rem' }} />

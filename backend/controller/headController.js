@@ -6,6 +6,7 @@ const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Book = require('../models/book')
 const BookChapter = require('../models/book-chapter')
+const NeedBasedProjects = require('../models/need-based-projects')
 const Notification = require('../models/notification')
 const nodemailer = require('nodemailer')
 
@@ -335,6 +336,29 @@ const getBookChapterData = asyncHandler(async (req, res) => {
     res.status(200).json(bookChapterData);
 });
 
+/**
+ * GET NEED  BASED PROJECT DATA
+ */
+const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental nbd data
+    const needBasedProjectsData = await NeedBasedProjects.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+    
+    res.status(200).json(needBasedProjectsData);
+});
+
 
 module.exports = {
     createNotification,
@@ -347,4 +371,5 @@ module.exports = {
     getConferenceData,
     getBookData,
     getBookChapterData,
+    getNeedBasedProjectsData,
 }

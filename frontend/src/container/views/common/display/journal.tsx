@@ -175,7 +175,12 @@ const JournalDisplay = (props: Props) => {
         const doc = new jsPDF('landscape','in',[20,30]);
     
         // Column definitions
-        const columns = [
+        interface Column {
+            header: string;
+            dataKey: keyof Journal;
+        }
+
+        const columns:Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
             { header: 'Authors', dataKey: 'authors' },
@@ -204,7 +209,7 @@ const JournalDisplay = (props: Props) => {
         // Add autoTable content to the PDF
         autoTable(doc,{
             head: [columns.map(col => col.header)],
-            body: data.map((row) => Object.values(row)),
+            body: data.map((row) => columns.map(col=>row[col.dataKey])),
             styles:{
                 overflow:'linebreak',
                 font:'times',

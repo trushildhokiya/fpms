@@ -240,8 +240,6 @@ const CopyrightDisplay = (props: Props) => {
                                 <Column field="copyrightCertificate" style={{minWidth:'250px'}} header="Copyright Certificate" body={certificateBodyTemplate}></Column>
                             </DataTable>
 
-
-
                         </CardContent>
 
                     </Card>

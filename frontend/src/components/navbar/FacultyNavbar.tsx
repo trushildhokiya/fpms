@@ -329,7 +329,7 @@ const FacultyNavbar = () => {
                                                                         Major / Minor
                                                                     </DropdownMenuItem>
                                                                 </Link>
-                                                                <Link to='/common/display/need-based-project'>
+                                                                <Link to='/common/display/need-based-projects'>
                                                                     <DropdownMenuItem>
                                                                         Need Based
                                                                     </DropdownMenuItem>
@@ -642,7 +642,7 @@ const FacultyNavbar = () => {
                                                                     Major / Minor
                                                                 </DropdownMenuItem>
                                                             </Link>
-                                                            <Link to='/common/display/need-based-project'>
+                                                            <Link to='/common/display/need-based-projects'>
                                                                 <DropdownMenuItem>
                                                                     Need Based
                                                                 </DropdownMenuItem>

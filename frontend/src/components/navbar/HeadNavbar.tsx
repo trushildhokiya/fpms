@@ -336,7 +336,7 @@ const HeadNavbar = () => {
                                                                         Major / Minor
                                                                     </DropdownMenuItem>
                                                                 </Link>
-                                                                <Link to='/common/display/need-based-project'>
+                                                                <Link to='/common/display/need-based-projects'>
                                                                     <DropdownMenuItem>
                                                                         Need Based
                                                                     </DropdownMenuItem>
@@ -412,7 +412,7 @@ const HeadNavbar = () => {
                                                                         Major / Minor
                                                                     </DropdownMenuItem>
                                                                 </Link>
-                                                                <Link to='/hod/display/need-based-project'>
+                                                                <Link to='/hod/display/need-based-projects'>
                                                                     <DropdownMenuItem>
                                                                         Need Based
                                                                     </DropdownMenuItem>
@@ -758,7 +758,7 @@ const HeadNavbar = () => {
                                                                     Major / Minor
                                                                 </DropdownMenuItem>
                                                             </Link>
-                                                            <Link to='/common/display/need-based-project'>
+                                                            <Link to='/common/display/need-based-projects'>
                                                                 <DropdownMenuItem>
                                                                     Need Based
                                                                 </DropdownMenuItem>
