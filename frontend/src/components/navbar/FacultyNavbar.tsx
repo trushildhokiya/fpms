@@ -379,7 +379,7 @@ const FacultyNavbar = () => {
             <div
                 className={`md:hidden ${open ? 'block' : 'hidden'} p-2 mx-3 shadow-xl font-OpenSans text-gray-600 font-semibold`}
             >
-                <Link to="/hod">
+                <Link to="/faculty">
                     <p className="my-2">Dashboard</p>
                 </Link>
                 <Separator />
