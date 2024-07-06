@@ -11,7 +11,8 @@ const { createNotification,
     getBookData,
     getBookChapterData,
     getNeedBasedProjectsData,
-    getAwardsHonorsData
+    getAwardsHonorsData,
+    getProjectsData
 } = require('../controller/headController')
 const router = express.Router()
 
@@ -258,6 +259,8 @@ router.route('/data/book-chapter').get(headAuthenticator, getBookChapterData)
 router.route('/data/need-based-project').get(headAuthenticator, getNeedBasedProjectsData)
 
 router.route('/data/award-honors').get(headAuthenticator, getAwardsHonorsData)
+
+router.route('/data/projects').get(headAuthenticator, getProjectsData)
 
 
 module.exports = router

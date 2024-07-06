@@ -9,6 +9,7 @@ const AwardHonors = require('../models/award-honors')
 const NeedBasedProjects = require('../models/need-based-projects')
 const BookChapter = require('../models/book-chapter')
 const Book = require('../models/book')
+const Projects = require('../models/projects')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
 const nodemailer = require("nodemailer");
@@ -273,6 +274,16 @@ const getAwardsHonorsData = asyncHandler(async(req,res)=>{
     res.status(200).json(awardsHonorsData)
 })
 
+/**
+ * GET MAJOR MINOR PROJECTS DATA
+ */
+const getProjectsData = asyncHandler(async(req,res)=>{
+
+    const projectsData = await Projects.find().populate('transactionDetails')
+    res.status(200).json(projectsData)
+    
+})
+
 
 module.exports = {
     profileImageUpdate,
@@ -287,5 +298,6 @@ module.exports = {
     getBookData,
     getBookChapterData,
     getNeedBasedProjectsData,
-    getAwardsHonorsData
+    getAwardsHonorsData,
+    getProjectsData,
 };

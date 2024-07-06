@@ -5,7 +5,7 @@ const Copyright = require('../models/copyright')
 const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Book = require('../models/book')
-const AwardHonors = require('../models/award-honors')
+const Projects = require('../models/projects')
 const BookChapter = require('../models/book-chapter')
 const NeedBasedProjects = require('../models/need-based-projects')
 const Notification = require('../models/notification')
@@ -380,6 +380,29 @@ const getAwardsHonorsData = asyncHandler(async (req, res) => {
     res.status(200).json(awardsHonorsData);
 });
 
+/**
+ * GET MAJOR MINOR PROJECTS DATA
+ */
+const getProjectsData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental nbd data
+    const projectsData = await Projects.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    }).populate('transactionDetails');
+    
+    res.status(200).json(projectsData);
+});
+
 module.exports = {
     createNotification,
     getNotifications,
@@ -393,4 +416,5 @@ module.exports = {
     getBookChapterData,
     getNeedBasedProjectsData,
     getAwardsHonorsData,
+    getProjectsData,
 }
