@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hourglass Clockwork - Refraction Test 1
+* source:	https://sketchfab.com/3d-models/hourglass-clockwork-refraction-test-1-0f8f1c7899124dd8bc1cd913f1d8033e
+* author:	3DHaupt (https://sketchfab.com/dennish2010)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hourglass Clockwork - Refraction Test 1" (https://sketchfab.com/3d-models/hourglass-clockwork-refraction-test-1-0f8f1c7899124dd8bc1cd913f1d8033e) by 3DHaupt (https://sketchfab.com/dennish2010) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)

@@ -27,7 +27,7 @@ const Adduser = lazy(() => import('./container/views/superadmin/container/Adduse
 /**
  * ADMIN IMPORTS
  */
-const Dashboard = lazy(() => import('./container/views/admin/container/dashboard/Dashboard'));
+const Dashboard = lazy(() => import('./container/views/admin/container/dashboard/dashboard'));
 const AddUser = lazy(() => import('./container/views/admin/container/addUser/AddUser'));
 const Profile = lazy(() => import('./container/views/admin/container/profile/Profile'));
 const DisplayUsers = lazy(() => import('./container/views/admin/container/displayUsers/DisplayUsers'));
