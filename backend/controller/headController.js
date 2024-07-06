@@ -6,6 +6,7 @@ const Journal = require('../models/journal')
 const Conference = require('../models/conference')
 const Book = require('../models/book')
 const Projects = require('../models/projects')
+const Consultancy = require('../models/consultancy')
 const BookChapter = require('../models/book-chapter')
 const NeedBasedProjects = require('../models/need-based-projects')
 const Notification = require('../models/notification')
@@ -391,7 +392,7 @@ const getProjectsData = asyncHandler(async (req, res) => {
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
     
-    // get departmental nbd data
+    // get departmental projects data
     const projectsData = await Projects.find({
         departmentInvolved: {
             $elemMatch: {
@@ -401,6 +402,29 @@ const getProjectsData = asyncHandler(async (req, res) => {
     }).populate('transactionDetails');
     
     res.status(200).json(projectsData);
+});
+
+/**
+ * GET CONSULTANCY DATA
+ */
+const getConsultancyData = asyncHandler(async (req, res) => {
+
+    // get department
+    const { department } = req.decodedData;
+    
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+    
+    // get departmental consultancy data
+    const consultancyData = await Consultancy.find({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    }).populate('transactionDetails');
+    
+    res.status(200).json(consultancyData);
 });
 
 module.exports = {
@@ -417,4 +441,5 @@ module.exports = {
     getNeedBasedProjectsData,
     getAwardsHonorsData,
     getProjectsData,
+    getConsultancyData,
 }

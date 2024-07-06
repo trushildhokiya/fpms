@@ -10,6 +10,7 @@ const NeedBasedProjects = require('../models/need-based-projects')
 const BookChapter = require('../models/book-chapter')
 const Book = require('../models/book')
 const Projects = require('../models/projects')
+const Consultancy = require('../models/consultancy')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
 const nodemailer = require("nodemailer");
@@ -284,6 +285,15 @@ const getProjectsData = asyncHandler(async(req,res)=>{
     
 })
 
+/**
+ * GET CONSULTANCY DATA
+ */
+const getConsultancyData = asyncHandler(async(req,res)=>{
+
+    const consultancyData = await Consultancy.find().populate('transactionDetails')
+    res.status(200).json(consultancyData)
+    
+})
 
 module.exports = {
     profileImageUpdate,
@@ -300,4 +310,5 @@ module.exports = {
     getNeedBasedProjectsData,
     getAwardsHonorsData,
     getProjectsData,
+    getConsultancyData,
 };

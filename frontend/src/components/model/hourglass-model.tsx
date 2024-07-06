@@ -1,4 +1,3 @@
-// HourglassModel.tsx
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations, Environment, Loader } from '@react-three/drei';
@@ -16,7 +15,7 @@ const Hourglass: React.FC = () => {
                 if (action) {
                     action.setLoop(THREE.LoopRepeat, Infinity); // Repeat the animation indefinitely
                     action.clampWhenFinished = true; // Ensure the animation does not blend back to the start
-                    action.timeScale = 0.5; // Adjust the speed of the animation (0.5 is half speed)
+                    action.timeScale = 0.3; // Adjust the speed of the animation (0.5 is half speed)
                     action.play();
                 }
             });
