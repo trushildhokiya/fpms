@@ -122,15 +122,15 @@ const getFacultiesList = asyncHandler(async (req, res) => {
  * TOGGLE APPROVAL
  */
 
-const toggleFacultyApproval = asyncHandler( async(req,res)=>{
+const toggleFacultyApproval = asyncHandler(async (req, res) => {
 
     const { isCoordinator, email } = req.body
 
-    const user = await Faculty.findOne({email: email})
+    const user = await Faculty.findOne({ email: email })
     let message
 
 
-    if(!user){
+    if (!user) {
         //Error
         res.status(400)
         throw new Error('User not found')
@@ -141,18 +141,18 @@ const toggleFacultyApproval = asyncHandler( async(req,res)=>{
     if (verified) {
         // If user is currently verified, remove 'active' and add 'inactive'
         const index = user.tags.indexOf('active')
-        user.tags.set(index,'inactive')
+        user.tags.set(index, 'inactive')
 
         message = 'Your account has been deactivated by your Department Head. Please contact your department head in case of any queries. We are sad to see you leave. Rest assured your data is safe with us. '
 
     } else {
         // If user is currently not verified, remove 'inactive' and add 'active'
         const index = user.tags.indexOf('inactive')
-        user.tags.set(index,'active')
+        user.tags.set(index, 'active')
 
         message = '<strong> Congratulations ! </strong> You are now approved by your department Head for using the FPMS software. Login with your credentials and get ready for exciting journey ahead.<br /> Best regards <br /> <strong> TEAM FPMS </strong>'
 
-        if(isCoordinator){
+        if (isCoordinator) {
             user.tags.push('research coordinator')
 
             message = '<strong> Congratulations ! </strong> You are now approved by your department Head for using the FPMS software and have been appointed as <strong> Research and Development Coordinator </strong> . Login with your credentials and get ready for exciting journey ahead.<br /> Best regards <br /> <strong> TEAM FPMS </strong>'
@@ -193,7 +193,7 @@ const toggleFacultyApproval = asyncHandler( async(req,res)=>{
 
 
     res.status(200).json({
-        status:'Success',
+        status: 'Success',
     })
 })
 
@@ -204,10 +204,10 @@ const getPatentData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental patent data
     const patentData = await Patent.find({
         departmentInvolved: {
@@ -216,7 +216,7 @@ const getPatentData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(patentData);
 });
 
@@ -228,10 +228,10 @@ const getCopyrightData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental copyright data
     const copyrightData = await Copyright.find({
         departmentInvolved: {
@@ -240,7 +240,7 @@ const getCopyrightData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(copyrightData);
 });
 
@@ -252,10 +252,10 @@ const getJournalData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental journal data
     const journalData = await Journal.find({
         departmentInvolved: {
@@ -264,7 +264,7 @@ const getJournalData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(journalData);
 });
 
@@ -275,10 +275,10 @@ const getConferenceData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental conference data
     const conferenceData = await Conference.find({
         departmentInvolved: {
@@ -287,7 +287,7 @@ const getConferenceData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(conferenceData);
 });
 
@@ -298,10 +298,10 @@ const getBookData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental book data
     const bookData = await Book.find({
         departmentInvolved: {
@@ -310,7 +310,7 @@ const getBookData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(bookData);
 });
 
@@ -322,10 +322,10 @@ const getBookChapterData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental book chapter data
     const bookChapterData = await BookChapter.find({
         departmentInvolved: {
@@ -334,7 +334,7 @@ const getBookChapterData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(bookChapterData);
 });
 
@@ -345,10 +345,10 @@ const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental nbd data
     const needBasedProjectsData = await NeedBasedProjects.find({
         departmentInvolved: {
@@ -357,7 +357,7 @@ const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
             }
         }
     });
-    
+
     res.status(200).json(needBasedProjectsData);
 });
 
@@ -367,7 +367,7 @@ const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
 const getAwardsHonorsData = asyncHandler(async (req, res) => {
     // Get department from the decoded token data
     const { department } = req.decodedData;
-    
+
     // Find all faculty members in the department and populate their awardsHonors
     const departmentFacultyData = await Faculty.find({ department }).populate('awardsHonors');
 
@@ -377,7 +377,7 @@ const getAwardsHonorsData = asyncHandler(async (req, res) => {
         .flat();
 
     console.log(awardsHonorsData);
-    
+
     res.status(200).json(awardsHonorsData);
 });
 
@@ -388,10 +388,10 @@ const getProjectsData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental projects data
     const projectsData = await Projects.find({
         departmentInvolved: {
@@ -400,7 +400,7 @@ const getProjectsData = asyncHandler(async (req, res) => {
             }
         }
     }).populate('transactionDetails');
-    
+
     res.status(200).json(projectsData);
 });
 
@@ -411,10 +411,10 @@ const getConsultancyData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-    
+
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-    
+
     // get departmental consultancy data
     const consultancyData = await Consultancy.find({
         departmentInvolved: {
@@ -423,9 +423,167 @@ const getConsultancyData = asyncHandler(async (req, res) => {
             }
         }
     }).populate('transactionDetails');
-    
+
     res.status(200).json(consultancyData);
 });
+
+
+const getDashboardData = asyncHandler(async (req, res) => {
+    // Get department from decoded data
+    const { department } = req.decodedData;
+
+    // Find all faculties in the department
+    const faculties = await Faculty.find({ department: department }).populate(
+        'patent copyright projects journal conference book bookChapter needBasedProjects consultancy'
+    );
+
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+
+    // Initialize aggregate counts
+    let aggregateCounts = {
+        patent: 0,
+        publication: 0,
+        project: 0,
+        consultancy: 0,
+        copyright: 0,
+    };
+
+    // fill pie data counts
+    aggregateCounts.patent = await Patent.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    })
+
+    aggregateCounts.consultancy = await Consultancy.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    })
+
+    aggregateCounts.copyright = await Copyright.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    })
+
+    const journalCount = await Journal.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+
+    const conferenceCount = await Conference.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+
+    const bookCount = await Book.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+
+    const bookChapterCount = await BookChapter.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+
+    const needBasedProjectCount = await NeedBasedProjects.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+
+    const projectsCount = await Projects.countDocuments({
+        departmentInvolved: {
+            $elemMatch: {
+                $regex: regex
+            }
+        }
+    });
+
+    aggregateCounts.publication = journalCount+conferenceCount+bookCount+bookChapterCount
+    aggregateCounts.project = needBasedProjectCount + projectsCount
+    
+
+    // Prepare pie chart data
+    const pieData = [
+        { id: 'patent', value: aggregateCounts.patent },
+        { id: 'publication', value: aggregateCounts.publication },
+        { id: 'project', value: aggregateCounts.project },
+        { id: 'consultancy', value: aggregateCounts.consultancy },
+        { id: 'copyright', value: aggregateCounts.copyright },
+    ];
+
+    // Prepare past year performance data
+    // const pastYearPerformanceData = [
+    //     { id: 'Publication', data: aggregatePastYearPerformanceData.Publication },
+    //     { id: 'Project', data: aggregatePastYearPerformanceData.Project },
+    //     { id: 'Patent', data: aggregatePastYearPerformanceData.Patent },
+    //     { id: 'Consultancy', data: aggregatePastYearPerformanceData.Consultancy },
+    //     { id: 'Copyright', data: aggregatePastYearPerformanceData.Copyright },
+    // ];
+
+    res.status(200).json({
+        pie: pieData,
+        // pastYearPerformanceData,
+    });
+
+});
+
+// Helper function to calculate yearly counts for each category
+function calculateYearlyCount(user, category, year) {
+    switch (category) {
+        case 'publication':
+            return (
+                user.journal.filter((item) => item.year === year).length +
+                user.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
+                    .length +
+                user.book.filter((item) => item.yearOfPublication === year).length +
+                user.bookChapter.filter((item) => item.yearOfPublication === year).length
+            );
+
+        case 'project':
+            return (
+                user.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
+                    .length +
+                user.projects.filter((item) => new Date(item.startDate).getFullYear() === year).length
+            );
+
+        case 'patent':
+            return user.patent.filter((item) => new Date(item.filingDate).getFullYear() === year).length;
+
+        case 'consultancy':
+            return user.consultancy.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+
+        case 'copyright':
+            return user.copyright.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+
+        default:
+            return 0;
+    }
+}
+
 
 module.exports = {
     createNotification,
@@ -442,4 +600,5 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
+    getDashboardData
 }

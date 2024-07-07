@@ -32,6 +32,7 @@ import { jwtDecode } from 'jwt-decode'
 import { authPayloadInterface } from '@/utils/interface/authPayload'
 import { useDispatch } from 'react-redux'
 import { login } from '@/features/user/userSlice'
+import Footer from '@/components/footer/footer'
 
 const FormSchema = z.object({
     email: z.string().min(2, {
@@ -210,6 +211,7 @@ const Login = () => {
                 </div>
 
             </div>
+            <Footer />
             <Toaster />
         </div>
     )

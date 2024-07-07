@@ -2,13 +2,14 @@ import { Button } from '@/components/ui/button'
 import CommonNavbar from '../../components/navbar/CommonNavbar'
 import HourglassModel from '@/components/model/hourglass-model'
 import { Link } from 'react-router-dom'
+import Footer from '@/components/footer/footer'
 
 const Home = () => {
     return (
         <div>
             <CommonNavbar />
 
-            <div className="grid md:grid-cols-2 h-[720px]">
+            <div className="grid md:grid-cols-2 h-[720px] my-10">
                 <div className="py-10 flex justify-center items-center flex-wrap">
                     <div className="container ">
                         <h1 className='uppercase text-5xl text-red-800 font-AzoSans tracking-wide'> Faculty Profile </h1>
@@ -31,6 +32,8 @@ const Home = () => {
                     <HourglassModel />
                 </div>
             </div>
+
+            <Footer />
 
         </div>
     )

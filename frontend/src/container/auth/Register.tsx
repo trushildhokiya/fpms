@@ -25,6 +25,7 @@ import axios from "axios"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
+import Footer from "@/components/footer/footer"
 
 const FormSchema = z.object({
   email: z.string().min(2, {
@@ -178,6 +179,7 @@ const Register = () => {
         </div>
 
       </div>
+      <Footer />
       <Toaster />
     </div>
   )

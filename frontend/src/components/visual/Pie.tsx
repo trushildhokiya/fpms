@@ -1,6 +1,11 @@
 import { ResponsivePie } from '@nivo/pie'
 
-const Pie = () => {
+type Props = {
+    data?:any
+}
+
+const Pie = (props:Props) => {
+    
     const data = [
         {
             id: "patent",
@@ -19,10 +24,11 @@ const Pie = () => {
             value: 2
         }
     ]
+
     return (
-        <div className='h-72'>
+        <div className='h-72 w-full'>
             <ResponsivePie
-                data={data}
+                data={props.data ? props.data : data}
                 margin={{ top:50, left:50, right:50, bottom:50}}
                 innerRadius={0.6}
                 padAngle={1}
@@ -37,7 +43,7 @@ const Pie = () => {
                         id: 'dots',
                         type: 'patternDots',
                         background: 'inherit',
-                        color: 'rgba(255, 255, 255, 0.3)',
+                        color: 'rgba(252, 186, 3, 0.5)',
                         size: 4,
                         padding: 1,
                         stagger: true
@@ -46,7 +52,7 @@ const Pie = () => {
                         id: 'lines',
                         type: 'patternLines',
                         background: 'inherit',
-                        color: 'rgba(255, 255, 255, 0.3)',
+                        color: 'rgba(230, 98, 16, 0.5)',
                         rotation: -45,
                         lineWidth: 6,
                         spacing: 10

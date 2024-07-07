@@ -4,16 +4,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Line from '@/components/visual/Line'
 import Pie from '@/components/visual/Pie'
 import terminalHandler from '@/utils/functions/terminalFunction'
+import axios from 'axios'
 import { Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Terminal, { ColorMode, TerminalOutput } from 'react-terminal-ui';
+
+interface DashboardData {
+  pie: {
+    id: string;
+    value: number;
+  }[];
+  pastYearPerformanceData: {
+    id: string;
+    data: {
+      x: number;
+      y: number;
+    }[];
+  }[];
+}
+
 
 const Dashboard = () => {
 
 
   const user = useSelector((state: any) => state.user)
   const [terminalData, setTerminalData] = useState('Booting FPMS Kernel ========> complete')
+  const [dashboardData, setDashboardData] = useState<DashboardData>()
+
 
   const handleTerminalQuery = (command: string) => {
 
@@ -21,14 +39,26 @@ const Dashboard = () => {
 
   }
 
+  useEffect(()=>{
+
+    axios.get('/head/dashboard')
+    .then((res)=>{
+      setDashboardData(res.data)
+    })
+    .catch((err)=>{
+      console.error(err);
+    })
+
+  },[])
+
   return (
     <div>
       <HeadNavbar />
 
       <div className="container font-Poppins">
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 my-6 place-content-center">
-          <div className="col-span-3 py-5 ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-6 place-content-center">
+          <div className="col-span-2 py-5 ">
 
             <Card className='h-full'>
               <CardHeader className='font-AzoSans text-2xl text-red-800 uppercase'>
@@ -78,8 +108,8 @@ const Dashboard = () => {
             </Card>
 
           </div>
-          <div className="">
-            <Pie />
+          <div className="flex flex-col justify-center items-center">
+            <Pie data={dashboardData?.pie} />
             <p className='text-xl font-OpenSans text-gray-700 font-bold text-center'>
               Department Stats
             </p>
@@ -92,7 +122,7 @@ const Dashboard = () => {
           <p className="font-OpenSans font-bold text-gray-700 text-xl my-4">
             Department Past Trends
           </p>
-          <Line />
+          <Line data={dashboardData?.pastYearPerformanceData} />
 
         </div>
 

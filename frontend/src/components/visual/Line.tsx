@@ -1,6 +1,9 @@
 import { ResponsiveLine } from '@nivo/line'
 
-const Line = () => {
+type Props= {
+    data?:any
+}
+const Line = (props:Props) => {
 
     
     const data = [
@@ -126,13 +129,13 @@ const Line = () => {
   return (
     <div className=' h-72 md:h-[30rem]'>
         <ResponsiveLine
-            data = {data}
+            data = {props.data ? props.data : data}
             margin={{ top:50, left:50, right:50 , bottom:80}}
             curve='cardinal'
             lineWidth={3}
             enableArea={true}
             areaBlendMode='multiply'
-            colors={{scheme:'set2'}}
+            colors={{scheme:'tableau10'}}
             enablePoints={true}
             pointColor='#f28f61'
             pointSize={8}

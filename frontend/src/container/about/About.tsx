@@ -7,6 +7,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import Footer from "@/components/footer/footer"
 
 
 const About = () => {
@@ -166,6 +167,7 @@ const About = () => {
         </div>
 
       </div>
+      <Footer />
     </div>
   )
 }

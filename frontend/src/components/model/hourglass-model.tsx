@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useAnimations, Environment, Loader } from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, Environment, Loader, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 const Hourglass: React.FC = () => {
@@ -30,7 +30,7 @@ const Hourglass: React.FC = () => {
         <>
             {!modelLoaded && <Loader />} {/* Display loader while model is loading */}
             <primitive object={scene} ref={group} onObject3DReady={() => setModelLoaded(true)} />
-            <Environment backgroundIntensity={1} environmentIntensity={0.5} files={'/scene_hdri.exr'} />
+            <Environment backgroundIntensity={1}  environmentIntensity={0.5} files={'/scene_hdri.exr'} />
         </>
     );
 };
@@ -50,6 +50,32 @@ const CameraControls: React.FC = () => {
     return null;
 };
 
+const CurrentTimeText: React.FC = () => {
+    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date().toLocaleTimeString());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <Text 
+            position={[0, -2, -3]} // Adjust the position as needed
+            fontSize={1} // Adjust the size as needed
+            color="#fcba03" // Adjust the color as needed
+            anchorX="center" 
+            anchorY="middle"
+            receiveShadow
+            castShadow
+        >
+            {currentTime}
+        </Text>
+    );
+};
+
 const HourglassModel: React.FC = () => {
     return (
         <Canvas>
@@ -57,6 +83,7 @@ const HourglassModel: React.FC = () => {
             <directionalLight position={[5, 5, 5]} intensity={1} />
             <pointLight position={[-5, -5, -5]} intensity={0.5} />
             <Hourglass />
+            <CurrentTimeText />
             <CameraControls />
             <OrbitControls />
         </Canvas>

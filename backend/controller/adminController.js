@@ -295,6 +295,56 @@ const getConsultancyData = asyncHandler(async(req,res)=>{
     
 })
 
+const getDashboardData = asyncHandler(async(req,res)=>{
+
+    const faculties = await Faculty.find().populate(
+        'patent copyright projects journal conference book bookChapter needBasedProjects consultancy'
+    );
+
+    const computerFaculties = faculties.filter((faculty) => faculty.department === "Computer");
+    const itFaculties = faculties.filter((faculty) => faculty.department === "Information Technology");
+    const extcFaculties = faculties.filter((faculty) => faculty.department === "Electronics and Telecommunication");
+    const bshFaculties = faculties.filter((faculty) => faculty.department === "Basic Science and Humanities");
+    const aidsFaculties = faculties.filter((faculty) => faculty.department === "Artificial Intelligence and Data Science");
+
+    res.status(200).json(computerFaculties.length)
+
+})
+
+
+// Helper function to calculate yearly counts for each category
+function calculateYearlyCount(user, category, year) {
+    switch (category) {
+        case 'publication':
+            return (
+                user.journal.filter((item) => item.year === year).length +
+                user.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
+                    .length +
+                user.book.filter((item) => item.yearOfPublication === year).length +
+                user.bookChapter.filter((item) => item.yearOfPublication === year).length
+            );
+
+        case 'project':
+            return (
+                user.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
+                    .length +
+                user.projects.filter((item) => new Date(item.startDate).getFullYear() === year).length
+            );
+
+        case 'patent':
+            return user.patent.filter((item) => new Date(item.filingDate).getFullYear() === year).length;
+
+        case 'consultancy':
+            return user.consultancy.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+
+        case 'copyright':
+            return user.copyright.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+
+        default:
+            return 0;
+    }
+}
+
 module.exports = {
     profileImageUpdate,
     registerUsers,
@@ -311,4 +361,5 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
+    getDashboardData
 };
