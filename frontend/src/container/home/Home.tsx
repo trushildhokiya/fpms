@@ -9,7 +9,7 @@ const Home = () => {
         <div>
             <CommonNavbar />
 
-            <div className="grid md:grid-cols-2 h-[720px] my-10">
+            <div className="grid md:grid-cols-2 md:h-[720px] my-10">
                 <div className="py-10 flex justify-center items-center flex-wrap">
                     <div className="container ">
                         <h1 className='uppercase text-5xl text-red-800 font-AzoSans tracking-wide'> Faculty Profile </h1>
@@ -28,7 +28,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-                <div className="">
+                <div className="h-96 md:h-full">
                     <HourglassModel />
                 </div>
             </div>

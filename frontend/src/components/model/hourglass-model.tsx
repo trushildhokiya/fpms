@@ -1,13 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useAnimations, Environment, Loader, Text } from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, Environment, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 const Hourglass: React.FC = () => {
     const group = useRef<THREE.Group>(null);
     const { scene, animations } = useGLTF('/scene.gltf') as any;
     const { actions, mixer } = useAnimations(animations, group);
-    const [modelLoaded, setModelLoaded] = useState(false);
 
     useEffect(() => {
         if (actions) {
@@ -28,9 +27,8 @@ const Hourglass: React.FC = () => {
 
     return (
         <>
-            {!modelLoaded && <Loader />} {/* Display loader while model is loading */}
-            <primitive object={scene} ref={group} onObject3DReady={() => setModelLoaded(true)} />
-            <Environment backgroundIntensity={1}  environmentIntensity={0.5} files={'/scene_hdri.exr'} />
+            <primitive object={scene} ref={group} />
+            <Environment backgroundIntensity={1} environmentIntensity={0.5} files={'/scene_hdri.exr'} />
         </>
     );
 };
