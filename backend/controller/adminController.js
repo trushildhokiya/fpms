@@ -203,7 +203,7 @@ const adminList = asyncHandler(async (req, res) => {
 /**
  * GET PATENT DATA
  */
-const getPatentData = asyncHandler(async(req,res)=>{
+const getPatentData = asyncHandler(async (req, res) => {
 
     const patentData = await Patent.find()
     res.status(200).json(patentData)
@@ -212,7 +212,7 @@ const getPatentData = asyncHandler(async(req,res)=>{
 /**
  * GET COPYRIGHT DATA
  */
-const getCopyrightData = asyncHandler(async(req,res)=>{
+const getCopyrightData = asyncHandler(async (req, res) => {
 
     const copyrightData = await Copyright.find()
     res.status(200).json(copyrightData)
@@ -221,7 +221,7 @@ const getCopyrightData = asyncHandler(async(req,res)=>{
 /**
  * GET JOURNAL DATA
  */
-const getJournalData = asyncHandler(async(req,res)=>{
+const getJournalData = asyncHandler(async (req, res) => {
 
     const journalData = await Journal.find()
     res.status(200).json(journalData)
@@ -231,7 +231,7 @@ const getJournalData = asyncHandler(async(req,res)=>{
 /**
  * GET CONFERENCE DATA
  */
-const getConferenceData = asyncHandler(async(req,res)=>{
+const getConferenceData = asyncHandler(async (req, res) => {
 
     const conferenceData = await Conference.find()
     res.status(200).json(conferenceData)
@@ -241,7 +241,7 @@ const getConferenceData = asyncHandler(async(req,res)=>{
 /**
  * GET BOOK DATA
  */
-const getBookData = asyncHandler(async(req,res)=>{
+const getBookData = asyncHandler(async (req, res) => {
 
     const bookData = await Book.find()
     res.status(200).json(bookData)
@@ -250,7 +250,7 @@ const getBookData = asyncHandler(async(req,res)=>{
 /**
  * GET BOOK CHAPTER DATA
  */
-const getBookChapterData = asyncHandler(async(req,res)=>{
+const getBookChapterData = asyncHandler(async (req, res) => {
 
     const bookChapterData = await BookChapter.find()
     res.status(200).json(bookChapterData)
@@ -259,7 +259,7 @@ const getBookChapterData = asyncHandler(async(req,res)=>{
 /**
  * GET NEED BASED PROJECT DATA
  */
-const getNeedBasedProjectsData = asyncHandler(async(req,res)=>{
+const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
 
     const needBasedProjectsData = await NeedBasedProjects.find()
     res.status(200).json(needBasedProjectsData)
@@ -269,7 +269,7 @@ const getNeedBasedProjectsData = asyncHandler(async(req,res)=>{
 /**
  * GET AWARDS HONORS DATA
  */
-const getAwardsHonorsData = asyncHandler(async(req,res)=>{
+const getAwardsHonorsData = asyncHandler(async (req, res) => {
 
     const awardsHonorsData = await AwardHonors.find()
     res.status(200).json(awardsHonorsData)
@@ -278,72 +278,218 @@ const getAwardsHonorsData = asyncHandler(async(req,res)=>{
 /**
  * GET MAJOR MINOR PROJECTS DATA
  */
-const getProjectsData = asyncHandler(async(req,res)=>{
+const getProjectsData = asyncHandler(async (req, res) => {
 
     const projectsData = await Projects.find().populate('transactionDetails')
     res.status(200).json(projectsData)
-    
+
 })
 
 /**
  * GET CONSULTANCY DATA
  */
-const getConsultancyData = asyncHandler(async(req,res)=>{
+const getConsultancyData = asyncHandler(async (req, res) => {
 
     const consultancyData = await Consultancy.find().populate('transactionDetails')
     res.status(200).json(consultancyData)
-    
-})
-
-const getDashboardData = asyncHandler(async(req,res)=>{
-
-    const faculties = await Faculty.find().populate(
-        'patent copyright projects journal conference book bookChapter needBasedProjects consultancy'
-    );
-
-    const computerFaculties = faculties.filter((faculty) => faculty.department === "Computer");
-    const itFaculties = faculties.filter((faculty) => faculty.department === "Information Technology");
-    const extcFaculties = faculties.filter((faculty) => faculty.department === "Electronics and Telecommunication");
-    const bshFaculties = faculties.filter((faculty) => faculty.department === "Basic Science and Humanities");
-    const aidsFaculties = faculties.filter((faculty) => faculty.department === "Artificial Intelligence and Data Science");
-
-    res.status(200).json(computerFaculties.length)
 
 })
 
+const getDashboardData = asyncHandler(async (req, res) => {
 
-// Helper function to calculate yearly counts for each category
-function calculateYearlyCount(user, category, year) {
+    // get Data
+    const institutePatents = await Patent.find()
+
+    const instituteConsultancys = await Consultancy.find()
+
+    const instituteCopyrights = await Copyright.find()
+
+    const instituteJournals = await Journal.find();
+
+    const instituteConferences = await Conference.find();
+
+    const instituteBooks = await Book.find();
+
+    const instituteBookChapters = await BookChapter.find();
+
+    const instituteNeedBasedProjects = await NeedBasedProjects.find();
+
+    const instituteProjects = await Projects.find();
+
+    let processingData = {
+        patent: institutePatents,
+        copyright: instituteCopyrights,
+        project: instituteProjects,
+        needBasedProjects: instituteNeedBasedProjects,
+        journal: instituteJournals,
+        conference: instituteConferences,
+        bookChapter: instituteBookChapters,
+        book: instituteBooks,
+        consultancy: instituteConsultancys
+    }
+
+
+    // create PieData
+    const computerPie = getPieData(processingData, 'Computer')
+    const informationTechnologyPie = getPieData(processingData, 'Information Technology')
+    const aidsPie = getPieData(processingData, 'Artificial Intelligence and Data Science')
+    const extcPie = getPieData(processingData, 'Electronics and Telecommunication')
+    const basicSciencesPie = getPieData(processingData, 'Basic Science and Humanities')
+
+    // create Past Performance Data
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 5 }, (_, index) => currentYear - index);
+
+    const pastYearPerformanceData = [
+        {
+            id: 'Publication',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'publication', year),
+            })),
+        },
+        {
+            id: 'Project',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'project', year),
+            })),
+        },
+        {
+            id: 'Patent',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'patent', year),
+            })),
+        },
+        {
+            id: 'Consultancy',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'consultancy', year),
+            })),
+        },
+        {
+            id: 'Copyright',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'copyright', year),
+            })),
+        },
+    ];
+
+    const radarData = [
+        {
+            "department": 'Computer',
+            patent: (computerPie.find(item => item.id === 'patent') || {}).value || 0,
+            publication: (computerPie.find(item => item.id === 'publication') || {}).value || 0,
+            project: (computerPie.find(item => item.id === 'project') || {}).value || 0,
+            consultancy: (computerPie.find(item => item.id === 'consultancy') || {}).value || 0,
+            copyright: (computerPie.find(item => item.id === 'copyright') || {}).value || 0
+        },
+        {
+            "department": 'Information Technology',
+            patent: (informationTechnologyPie.find(item => item.id === 'patent') || {}).value || 0,
+            publication: (informationTechnologyPie.find(item => item.id === 'publication') || {}).value || 0,
+            project: (informationTechnologyPie.find(item => item.id === 'project') || {}).value || 0,
+            consultancy: (informationTechnologyPie.find(item => item.id === 'consultancy') || {}).value || 0,
+            copyright: (informationTechnologyPie.find(item => item.id === 'copyright') || {}).value || 0
+        },
+        {
+            "department": 'Artificial Intellligence and Data Science',
+            patent: (aidsPie.find(item => item.id === 'patent') || {}).value || 0,
+            publication: (aidsPie.find(item => item.id === 'publication') || {}).value || 0,
+            project: (aidsPie.find(item => item.id === 'project') || {}).value || 0,
+            consultancy: (aidsPie.find(item => item.id === 'consultancy') || {}).value || 0,
+            copyright: (aidsPie.find(item => item.id === 'copyright') || {}).value || 0
+        },
+        {
+            "department": 'Electronics and Telecommunication',
+            patent: (extcPie.find(item => item.id === 'patent') || {}).value || 0,
+            publication: (extcPie.find(item => item.id === 'publication') || {}).value || 0,
+            project: (extcPie.find(item => item.id === 'project') || {}).value || 0,
+            consultancy: (extcPie.find(item => item.id === 'consultancy') || {}).value || 0,
+            copyright: (extcPie.find(item => item.id === 'copyright') || {}).value || 0
+        },
+        {
+            "department": 'Basic Science and Humanities',
+            patent: (basicSciencesPie.find(item => item.id === 'patent') || {}).value || 0,
+            publication: (basicSciencesPie.find(item => item.id === 'publication') || {}).value || 0,
+            project: (basicSciencesPie.find(item => item.id === 'project') || {}).value || 0,
+            consultancy: (basicSciencesPie.find(item => item.id === 'consultancy') || {}).value || 0,
+            copyright: (basicSciencesPie.find(item => item.id === 'copyright') || {}).value || 0
+        },
+    ]
+
+    res.status(200).json({
+        computer: computerPie,
+        it: informationTechnologyPie,
+        aids: aidsPie,
+        extc: extcPie,
+        bsh: basicSciencesPie,
+        pastYearPerformance: pastYearPerformanceData,
+        radar: radarData
+    })
+
+})
+
+/**
+ * HELPER FUNCTIONS
+ */
+
+const getPieData = (data, department) => {
+
+    try {
+        const pieData = [
+            { id: 'patent', value: data.patent.filter((entry) => entry.departmentInvolved.includes(department)).length },
+            { id: 'publication', value: data.journal.filter((entry) => entry.departmentInvolved.includes(department)).length + data.conference.filter((entry) => entry.departmentInvolved.includes(department)).length + data.book.filter((entry) => entry.departmentInvolved.includes(department)).length + data.bookChapter.filter((entry) => entry.departmentInvolved.includes(department)).length },
+            { id: 'project', value: data.needBasedProjects.filter((entry) => entry.departmentInvolved.includes(department)).length + data.project.filter((entry) => entry.departmentInvolved.includes(department)).length },
+            { id: 'consultancy', value: data.consultancy.filter((entry) => entry.departmentInvolved.includes(department)).length },
+            { id: 'copyright', value: data.copyright.filter((entry) => entry.departmentInvolved.includes(department)).length },
+        ];
+        return pieData
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+
+}
+
+
+function calculateYearlyCount(data, category, year) {
     switch (category) {
         case 'publication':
             return (
-                user.journal.filter((item) => item.year === year).length +
-                user.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
+                data.journal.filter((item) => item.year === year).length +
+                data.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
                     .length +
-                user.book.filter((item) => item.yearOfPublication === year).length +
-                user.bookChapter.filter((item) => item.yearOfPublication === year).length
+                data.book.filter((item) => item.yearOfPublication === year).length +
+                data.bookChapter.filter((item) => item.yearOfPublication === year).length
             );
 
         case 'project':
             return (
-                user.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
+                data.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
                     .length +
-                user.projects.filter((item) => new Date(item.startDate).getFullYear() === year).length
+                data.project.filter((item) => new Date(item.startDate).getFullYear() === year).length
             );
 
         case 'patent':
-            return user.patent.filter((item) => new Date(item.filingDate).getFullYear() === year).length;
+            return data.patent.filter((item) => new Date(item.filingDate).getFullYear() === year).length;
 
         case 'consultancy':
-            return user.consultancy.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+            return data.consultancy.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+
 
         case 'copyright':
-            return user.copyright.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+            return data.copyright.filter((item) => new Date(item.startDate).getFullYear() === year).length;
 
         default:
             return 0;
     }
 }
+
 
 module.exports = {
     profileImageUpdate,

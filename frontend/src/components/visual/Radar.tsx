@@ -1,6 +1,10 @@
 import { ResponsiveRadar } from '@nivo/radar'
 
-const Radar = () => {
+type Props ={
+    data?: any
+}
+
+const Radar = (props:Props) => {
 
     const data = [
         {
@@ -43,8 +47,8 @@ const Radar = () => {
     return (
         <div className='h-[35rem]'>
             <ResponsiveRadar
-                data={data}
-                keys={['patent', 'publication', 'project', 'consultancy']}
+                data={props.data ? props.data : data}
+                keys={['patent', 'publication', 'project', 'consultancy','copyright']}
                 indexBy="department" 
                 blendMode='multiply'
                 margin={{ top:50, left:50, right:50, bottom:50}}
