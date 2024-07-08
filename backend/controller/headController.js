@@ -10,7 +10,8 @@ const Consultancy = require('../models/consultancy')
 const BookChapter = require('../models/book-chapter')
 const NeedBasedProjects = require('../models/need-based-projects')
 const Notification = require('../models/notification')
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
+const consultancy = require('../models/consultancy');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -432,25 +433,12 @@ const getDashboardData = asyncHandler(async (req, res) => {
     // Get department from decoded data
     const { department } = req.decodedData;
 
-    // Find all faculties in the department
-    const faculties = await Faculty.find({ department: department }).populate(
-        'patent copyright projects journal conference book bookChapter needBasedProjects consultancy'
-    );
 
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
 
-    // Initialize aggregate counts
-    let aggregateCounts = {
-        patent: 0,
-        publication: 0,
-        project: 0,
-        consultancy: 0,
-        copyright: 0,
-    };
-
-    // fill pie data counts
-    aggregateCounts.patent = await Patent.countDocuments({
+    // get Data
+    const departmentPatents = await Patent.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -458,7 +446,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     })
 
-    aggregateCounts.consultancy = await Consultancy.countDocuments({
+    const departmentConsultancys = await Consultancy.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -466,7 +454,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     })
 
-    aggregateCounts.copyright = await Copyright.countDocuments({
+    const departmentCopyrights = await Copyright.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -474,7 +462,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     })
 
-    const journalCount = await Journal.countDocuments({
+    const departmentJournals = await Journal.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -482,7 +470,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     });
 
-    const conferenceCount = await Conference.countDocuments({
+    const departmentConferences = await Conference.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -490,7 +478,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     });
 
-    const bookCount = await Book.countDocuments({
+    const departmentBooks = await Book.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -498,7 +486,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     });
 
-    const bookChapterCount = await BookChapter.countDocuments({
+    const departmentBookChapters = await BookChapter.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -506,7 +494,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     });
 
-    const needBasedProjectCount = await NeedBasedProjects.countDocuments({
+    const departmentNeedBasedProjects = await NeedBasedProjects.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -514,7 +502,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     });
 
-    const projectsCount = await Projects.countDocuments({
+    const departmentProjects = await Projects.find({
         departmentInvolved: {
             $elemMatch: {
                 $regex: regex
@@ -522,62 +510,105 @@ const getDashboardData = asyncHandler(async (req, res) => {
         }
     });
 
-    aggregateCounts.publication = journalCount+conferenceCount+bookCount+bookChapterCount
-    aggregateCounts.project = needBasedProjectCount + projectsCount
-    
 
     // Prepare pie chart data
     const pieData = [
-        { id: 'patent', value: aggregateCounts.patent },
-        { id: 'publication', value: aggregateCounts.publication },
-        { id: 'project', value: aggregateCounts.project },
-        { id: 'consultancy', value: aggregateCounts.consultancy },
-        { id: 'copyright', value: aggregateCounts.copyright },
+        { id: 'patent', value: departmentPatents.length },
+        { id: 'publication', value: departmentJournals.length + departmentConferences.length + departmentBooks.length + departmentBookChapters.length },
+        { id: 'project', value: departmentNeedBasedProjects.length + departmentProjects.length },
+        { id: 'consultancy', value: departmentConsultancys.length },
+        { id: 'copyright', value: departmentCopyrights.length },
     ];
 
-    // Prepare past year performance data
-    // const pastYearPerformanceData = [
-    //     { id: 'Publication', data: aggregatePastYearPerformanceData.Publication },
-    //     { id: 'Project', data: aggregatePastYearPerformanceData.Project },
-    //     { id: 'Patent', data: aggregatePastYearPerformanceData.Patent },
-    //     { id: 'Consultancy', data: aggregatePastYearPerformanceData.Consultancy },
-    //     { id: 'Copyright', data: aggregatePastYearPerformanceData.Copyright },
-    // ];
+    // club data to data component
+    let processingData = {
+        patent: departmentPatents,
+        copyright: departmentCopyrights,
+        project: departmentProjects,
+        needBasedProjects: departmentNeedBasedProjects,
+        journal: departmentJournals,
+        conference: departmentConferences,
+        bookChapter: departmentBookChapters,
+        book: departmentBooks,
+        consultancy: departmentConsultancys
+    }
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 5 }, (_, index) => currentYear - index);
+
+    const pastYearPerformanceData = [
+        {
+            id: 'Publication',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'publication', year),
+            })),
+        },
+        {
+            id: 'Project',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'project', year),
+            })),
+        },
+        {
+            id: 'Patent',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'patent', year),
+            })),
+        },
+        {
+            id: 'Consultancy',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'consultancy', year),
+            })),
+        },
+        {
+            id: 'Copyright',
+            data: years.map((year) => ({
+                x: year,
+                y: calculateYearlyCount(processingData, 'copyright', year),
+            })),
+        },
+    ];
 
     res.status(200).json({
         pie: pieData,
-        // pastYearPerformanceData,
+        pastYearPerformanceData: pastYearPerformanceData,
     });
 
 });
 
 // Helper function to calculate yearly counts for each category
-function calculateYearlyCount(user, category, year) {
+function calculateYearlyCount(data, category, year) {
     switch (category) {
         case 'publication':
             return (
-                user.journal.filter((item) => item.year === year).length +
-                user.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
+                data.journal.filter((item) => item.year === year).length +
+                data.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
                     .length +
-                user.book.filter((item) => item.yearOfPublication === year).length +
-                user.bookChapter.filter((item) => item.yearOfPublication === year).length
+                data.book.filter((item) => item.yearOfPublication === year).length +
+                data.bookChapter.filter((item) => item.yearOfPublication === year).length
             );
 
         case 'project':
             return (
-                user.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
+                data.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
                     .length +
-                user.projects.filter((item) => new Date(item.startDate).getFullYear() === year).length
+                data.project.filter((item) => new Date(item.startDate).getFullYear() === year).length
             );
 
         case 'patent':
-            return user.patent.filter((item) => new Date(item.filingDate).getFullYear() === year).length;
+            return data.patent.filter((item) => new Date(item.filingDate).getFullYear() === year).length;
 
         case 'consultancy':
-            return user.consultancy.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+            return data.consultancy.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+
 
         case 'copyright':
-            return user.copyright.filter((item) => new Date(item.startDate).getFullYear() === year).length;
+            return data.copyright.filter((item) => new Date(item.startDate).getFullYear() === year).length;
 
         default:
             return 0;

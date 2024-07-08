@@ -92,7 +92,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
         pie: pieData,
         pastYearPerformanceData: pastYearPerformanceData,
     });
-    
+
 });
 
 // Helper function to calculate yearly counts for each category

@@ -3,6 +3,7 @@ import CommonNavbar from '../../components/navbar/CommonNavbar'
 import HourglassModel from '@/components/model/hourglass-model'
 import { Link } from 'react-router-dom'
 import Footer from '@/components/footer/footer'
+import { DatabaseZap, Sheet, SquareTerminal } from 'lucide-react'
 
 const Home = () => {
     return (
@@ -31,6 +32,46 @@ const Home = () => {
                 <div className="h-96 md:h-full">
                     <HourglassModel />
                 </div>
+            </div>
+
+            <div className="container">
+
+                <div className="my-10 mt-[10rem] py-10 bg-slate-50 rounded-xl">
+                    <h2 className='text-red-800 uppercase font-bold font-AzoSans text-3xl  text-center'>
+                        Manage tons of your data with ease
+                    </h2>
+
+                    <div className="grid md:grid-cols-3 gap-6 my-10 md:mt-[5rem]">
+                        <div className="flex flex-col justify-center items-center">
+                            <DatabaseZap className='w-12 h-12 fill-blue-800' />
+                            <p className='my-3 font-bold font-Poppins break-words'>
+                                Centralized Data Storage
+                            </p>
+                            <p className='mx-auto md:w-[70%] text-center font-Poppins text-sm leading-6 text-gray-600'>
+                                Store all you data and get it at a single click
+                            </p>
+                        </div>
+                        <div className="flex flex-col justify-center items-center">
+                            <SquareTerminal className='w-12 h-12 stroke-violet-800' />
+                            <p className='my-3 font-bold font-Poppins break-words'>
+                                Kernel Navigation
+                            </p>
+                            <p className='mx-auto md:w-[70%] text-center font-Poppins text-sm leading-6 text-gray-600'>
+                                Navigate and function throughout using kernel commands with ease
+                            </p>
+                        </div>
+                        <div className="flex flex-col justify-center items-center">
+                            <Sheet className='w-12 h-12 stroke-green-800' />
+                            <p className='my-3 font-bold font-Poppins break-words'>
+                                Advanced Reportings
+                            </p>
+                            <p className='mx-auto md:w-[70%] text-center font-Poppins text-sm leading-6 text-gray-600'>
+                                Generate reports with advanced filters anytime
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <Footer />
