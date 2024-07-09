@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom'
 import Footer from '@/components/footer/footer'
 import { DatabaseZap, Sheet, SquareTerminal } from 'lucide-react'
 
+import Manual from '@/assets/pdf/manual.pdf'
+
 const Home = () => {
+
+
+
     return (
         <div>
             <CommonNavbar />
@@ -69,6 +74,40 @@ const Home = () => {
                                 Generate reports with advanced filters anytime
                             </p>
                         </div>
+                    </div>
+                </div>
+
+                <div className='grid md:grid-cols-2 gap-6 my-10 mt-[5rem]'>
+                    <div className="">
+                        <iframe
+                            src={Manual}  // Assuming Manual is the URL or source you want to load
+                            className=' w-full md:w-[80%] h-96 md:h-full md:aspect-square rounded-3xl'
+                        />
+                    </div>
+                    <div className="">
+
+                        <h2 className='font-AzoSans font-bold text-3xl text-red-800 uppercase'>
+                            Download Manual
+                        </h2>
+                        <div className="text-sm text-gray-800 font-Poppins leading-7 my-4 space-y-3">
+                            <p>
+                                Our software is designed to be user-friendly and intuitive, allowing you to navigate through features with ease. From managing profiles to generating reports, every function is crafted to enhance your productivity and streamline your workflow.
+                            </p>
+                            <p>
+                                However, if you encounter any difficulties or have any questions, our comprehensive manual is here to help. It provides detailed instructions, step-by-step guides, and troubleshooting tips to ensure you can make the most out of our software.
+
+                            </p>
+                            <p>
+                                Whether you're setting up your profile for the first time or exploring advanced features, the manual covers it all. We recommend keeping it handy for quick reference whenever needed.
+
+                            </p>
+                            <p>
+                                If you need more assistance, please feel free to download and read the manual for detailed instructions and troubleshooting tips.
+
+                            </p>
+                        </div>
+
+
                     </div>
                 </div>
 

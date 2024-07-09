@@ -14,7 +14,7 @@ const Hourglass: React.FC = () => {
                 if (action) {
                     action.setLoop(THREE.LoopRepeat, Infinity); // Repeat the animation indefinitely
                     action.clampWhenFinished = true; // Ensure the animation does not blend back to the start
-                    action.timeScale = 0.3; // Adjust the speed of the animation (0.5 is half speed)
+                    action.timeScale = 0.3; // Adjust the speed of the animation (0.3 is 30% of the speed)
                     action.play();
                 }
             });
@@ -26,10 +26,7 @@ const Hourglass: React.FC = () => {
     });
 
     return (
-        <>
-            <primitive object={scene} ref={group} />
-            <Environment backgroundIntensity={1} environmentIntensity={0.5} files={'/scene_hdri.exr'} />
-        </>
+        <primitive object={scene} ref={group} />
     );
 };
 
@@ -63,9 +60,10 @@ const CurrentTimeText: React.FC = () => {
         <Text 
             position={[0, -2, -3]} // Adjust the position as needed
             fontSize={1} // Adjust the size as needed
-            color="#fcba03" // Adjust the color as needed
+            color="#7d000c" // Adjust the color as needed
             anchorX="center" 
             anchorY="middle"
+            // fontWeight={600}
             receiveShadow
             castShadow
         >
@@ -76,14 +74,18 @@ const CurrentTimeText: React.FC = () => {
 
 const HourglassModel: React.FC = () => {
     return (
-        <Canvas>
-            <ambientLight color={0x1562ab} intensity={10} />
+        <Canvas 
+            gl={{ pixelRatio: Math.min(window.devicePixelRatio, 2),antialias:false, powerPreference: "low-power" }}
+            camera={{ fov: 75, position: [0, 0, 5] }}
+        >
+             <ambientLight color={0x1562ab} intensity={10} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
             <pointLight position={[-5, -5, -5]} intensity={0.5} />
             <Hourglass />
             <CurrentTimeText />
             <CameraControls />
             <OrbitControls />
+            <Environment backgroundIntensity={0.8} environmentIntensity={0.5} files={'/scene_hdri.exr'} />
         </Canvas>
     );
 };
