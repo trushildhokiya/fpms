@@ -35,22 +35,20 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData>()
 
   const handleTerminalQuery = (command: string) => {
-
     setTerminalData(terminalHandler(command))
-
   }
 
-  useEffect(()=>{
-
+  useEffect(() => {
     axios.get('/faculty/dashboard')
-    .then((res)=>{
-      setDashboardData(res.data)
-    })
-    .catch((err)=>{
-      console.error(err);
-    })
+      .then((res) => {
+        setDashboardData(res.data)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }, [])
 
-  },[])
+
 
   return (
     <div>
@@ -111,7 +109,7 @@ const Dashboard = () => {
 
           </div>
           <div className="flex flex-col w-full justify-center items-center">
-            <Pie data={dashboardData?.pie} />
+              <Pie data={dashboardData?.pie} />
             <p className='text-xl font-OpenSans text-gray-700 font-bold text-center'>
               My Stats
             </p>

@@ -75,7 +75,7 @@ const CurrentTimeText: React.FC = () => {
 const HourglassModel: React.FC = () => {
     return (
         <Canvas 
-            gl={{ pixelRatio: Math.min(window.devicePixelRatio, 2),antialias:false, powerPreference: "low-power" }}
+            gl={{ pixelRatio: Math.min(window.devicePixelRatio, 2),antialias:true }}
             camera={{ fov: 75, position: [0, 0, 5] }}
         >
              <ambientLight color={0x1562ab} intensity={10} />
