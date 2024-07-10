@@ -225,7 +225,7 @@ const PatentDisplay = (props: Props) => {
             if (Array.isArray(value)) {
                 return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
             } else if (value instanceof Date) {
-                return value.toISOString();
+                return value.toLocaleDateString();
             } else if (typeof value === 'object') {
                 return JSON.stringify(value);
             } else {
@@ -268,8 +268,8 @@ const PatentDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Patent) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-blue-400 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-400 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
             </>
 
         );
