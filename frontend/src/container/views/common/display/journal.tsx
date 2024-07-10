@@ -355,8 +355,6 @@ const JournalDisplay = (props: Props) => {
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                             </DataTable>
 
-
-
                         </CardContent>
 
                     </Card>
