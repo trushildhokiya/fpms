@@ -30,7 +30,7 @@ interface Journal {
     impactFactor: number;
     pageFrom: number;
     pageTo: number;
-    year: number;
+    dateOfPublication: Date;
     digitalObjectIdentifier: string;
     indexing: string[];
     paperUrl: string;
@@ -51,13 +51,20 @@ const JournalDisplay = (props: Props) => {
     const dt = useRef<any>(null);
 
     // funcions
+    const convertDates = (journals: Journal[]) => {
+        return journals.map(journal => ({
+            ...journal,
+            dateOfPublication: new Date(journal.dateOfPublication),
+        }));
+    };
 
     // useEffect to fetch data
     useEffect(() => {
         axios.get('/common/journal')
             .then((res) => {
-                setData(res.data);
-                setTotalRecords(res.data.length)
+                const convertedData = convertDates(res.data);
+                setData(convertedData);
+                setTotalRecords(convertedData.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -134,6 +141,9 @@ const JournalDisplay = (props: Props) => {
         )
     }
 
+    
+    const dateBodyTemplate = (rowData: Journal) => rowData.dateOfPublication.toLocaleDateString()
+
     const certificateBodyTemplate = (rowData: Journal) => {
         return (
             <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
@@ -194,7 +204,7 @@ const JournalDisplay = (props: Props) => {
             { header: 'Impact Factor', dataKey: 'impactFactor' },
             { header: 'Page From', dataKey: 'pageFrom' },
             { header: 'Page To', dataKey: 'pageTo' },
-            { header: 'Year', dataKey: 'year' },
+            { header: 'Date of Publication', dataKey: 'dateOfPublication' },
             { header: 'DOI', dataKey: 'digitalObjectIdentifier' },
             { header: 'Indexing', dataKey: 'indexing' },
             { header: 'Paper URL', dataKey: 'paperUrl' },
@@ -206,10 +216,22 @@ const JournalDisplay = (props: Props) => {
             { header: '__v', dataKey: '__v' },
         ];
         
+        const formatField = (value: any): string => {
+            if (Array.isArray(value)) {
+                return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
+            } else if (value instanceof Date) {
+                return value.toLocaleDateString();
+            } else if (typeof value === 'object') {
+                return JSON.stringify(value);
+            } else {
+                return value.toString();
+            }
+        };
+
         // Add autoTable content to the PDF
         autoTable(doc,{
             head: [columns.map(col => col.header)],
-            body: data.map((row) => columns.map(col=>row[col.dataKey])),
+            body:  data.map(row => columns.map(col => formatField(row[col.dataKey]))),
             styles:{
                 overflow:'linebreak',
                 font:'times',
@@ -270,7 +292,7 @@ const JournalDisplay = (props: Props) => {
                                 <Column field="impactFactor" style={{minWidth:'250px'}} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
                                 <Column field="pageFrom" style={{minWidth:'150px'}} filter filterPlaceholder='Search by page from' align={'center'} header="Page From"></Column>
                                 <Column field="pageTo" style={{minWidth:'150px'}} filter filterPlaceholder='Search by page to' align={'center'} header="Page To"></Column>
-                                <Column field="year" style={{minWidth:'150px'}} filter dataType='numeric' align={'center'} filterPlaceholder='Search by year' header="Year"></Column>
+                                <Column field="dateOfPublication" style={{minWidth:'250px'}} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
                                 <Column field="digitalObjectIdentifier" style={{minWidth:'250px'}} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
                                 <Column field="indexing" style={{minWidth:'250px'}} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
                                 <Column field="citationCount" style={{minWidth:'250px'}} body={citationBodyTemplate} filter filterPlaceholder='Search by count' dataType='numeric' align={'center'} sortable header="Citation Count"></Column>

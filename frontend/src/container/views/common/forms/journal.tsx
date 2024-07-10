@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, BookUser, FileArchive } from "lucide-react";
+import { AlertCircle, BookUser, CalendarIcon, FileArchive } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   CommandDialog,
@@ -49,6 +49,9 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
 import React, { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type Props = {};
 
@@ -133,15 +136,7 @@ const formSchema = z.object({
   pageFrom: z.coerce.number().nonnegative(),
   pageTo: z.coerce.number().nonnegative(),
 
-  year: z.coerce
-    .number()
-    .nonnegative()
-    .min(1900, {
-      message: "Invalid year!",
-    })
-    .max(3000, {
-      message: "Invalid year!",
-    }),
+  dateOfPublication: z.date(),
 
   digitalObjectIdentifier: z
     .string()
@@ -225,7 +220,7 @@ const journalPublication: React.FC = (props: Props) => {
       impactFactor: 0,
       pageFrom: 0,
       pageTo: 0,
-      year: 0,
+      dateOfPublication: new Date(),
       digitalObjectIdentifier: "",
       indexing: [],
       paperUrl: "",
@@ -579,22 +574,38 @@ const journalPublication: React.FC = (props: Props) => {
                   )}
                 />
 
-                <FormField
+<FormField
                   control={form.control}
-                  name="year"
+                  name="dateOfPublication"
                   render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel className="text-gray-800">
-                        Year of Publication
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="eg:2003"
-                          autoComplete="off"
-                          {...field}
-                        />
-                      </FormControl>
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="text-grey-800">Date of Publication</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className=" w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            captionLayout="dropdown-buttons"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            fromYear={1900}
+                            toYear={2100}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

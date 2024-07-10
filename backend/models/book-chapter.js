@@ -54,8 +54,8 @@ const bookChapterSchema = new Schema(
       required: true,
     },
 
-    yearOfPublication: {
-      type: Number,
+    dateOfPublication: {
+      type: Date,
       required: true,
     },
 

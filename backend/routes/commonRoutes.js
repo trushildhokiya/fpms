@@ -103,7 +103,7 @@ const router = express.Router();
  *         description: Internal Server Error.
  */
 
-router.route('/profile/image').put(facultyAuthenticator,facultyProfileImageUpload.single('profileImage'),profileImageUpdate)
+router.route('/profile/image').put(facultyAuthenticator, facultyProfileImageUpload.single('profileImage'), profileImageUpdate)
 
 
 /**
@@ -1358,9 +1358,10 @@ router.route('/copyright').get(facultyAuthenticator, getCopyrightData)
  *               pageTo:
  *                 type: number
  *                 example: 15
- *               year:
- *                 type: number
- *                 example: 2024
+ *               dateOfPublication:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-27"
  *               digitalObjectIdentifier:
  *                 type: string
  *                 example: 10.1234/jar.2024.001
@@ -1525,9 +1526,10 @@ router.route("/journal").post(facultyAuthenticator, journalFileUpload.fields([
  *                   pageTo:
  *                     type: number
  *                     example: 15
- *                   year:
- *                     type: number
- *                     example: 2024
+ *                   dateOfPublication:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-07-01"
  *                   digitalObjectIdentifier:
  *                     type: string
  *                     example: 10.1234/jar.2024.001
@@ -2002,9 +2004,10 @@ router.route("/conference").get(facultyAuthenticator, getConferenceData)
  *               impactFactor:
  *                 type: number
  *                 example: 2.5
- *               yearOfPublication:
- *                 type: number
- *                 example: 2024
+ *               dateOfPublication:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-27"
  *               doi:
  *                 type: string
  *                 example: 10.1234/book.2024.001
@@ -2154,9 +2157,10 @@ router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"),
  *                   impactFactor:
  *                     type: number
  *                     example: 2.5
- *                   yearOfPublication:
- *                     type: number
- *                     example: 2024
+ *                   dateOfPublication:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-06-27"
  *                   doi:
  *                     type: string
  *                     example: 10.1234/book.2024.001
@@ -2295,9 +2299,10 @@ router.route('/book').get(facultyAuthenticator, getBookData)
  *               impactFactor:
  *                 type: number
  *                 example: 3.5
- *               yearOfPublication:
- *                 type: number
- *                 example: 2024
+ *               dateOfPublication:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-27"
  *               doi:
  *                 type: string
  *                 example: 10.1234/book.2024.001
@@ -2453,9 +2458,10 @@ router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.singl
  *                   impactFactor:
  *                     type: number
  *                     example: 3.5
- *                   yearOfPublication:
- *                     type: number
- *                     example: 2024
+ *                   dateOfPublication:
+ *                    type: string
+ *                    format: date
+ *                    example: "2024-06-27"
  *                   doi:
  *                     type: string
  *                     example: 10.1234/book.2024.001
@@ -2522,7 +2528,7 @@ router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.singl
  *                   type: string
  *                   example: Internal Server Error
  */
-router.route('/book-chapter').get(facultyAuthenticator,getBookChapterData )
+router.route('/book-chapter').get(facultyAuthenticator, getBookChapterData)
 
 /**
  * @swagger
@@ -2691,11 +2697,11 @@ router.route('/book-chapter').get(facultyAuthenticator,getBookChapterData )
  *                   type: string
  *                   example: Internal Server Error
  */
-router.route('/need-based-project').post(facultyAuthenticator,needBasedProjectFileUpload.fields([
-  { name: 'sanctionedDocuments' , maxCount:1},
-  { name: 'projectReport' , maxCount:1},
-  { name: 'completionLetter' , maxCount:1},
-  { name: 'visitDocuments' , maxCount:1},
+router.route('/need-based-project').post(facultyAuthenticator, needBasedProjectFileUpload.fields([
+  { name: 'sanctionedDocuments', maxCount: 1 },
+  { name: 'projectReport', maxCount: 1 },
+  { name: 'completionLetter', maxCount: 1 },
+  { name: 'visitDocuments', maxCount: 1 },
 ]), addNeedBasedProject)
 
 /**
@@ -2860,7 +2866,7 @@ router.route('/need-based-project').post(facultyAuthenticator,needBasedProjectFi
  *                   type: string
  *                   example: Internal Server Error
  */
-router.route('/need-based-project').get(facultyAuthenticator , getNeedBasedProjectData)
+router.route('/need-based-project').get(facultyAuthenticator, getNeedBasedProjectData)
 
 
 router.route('/award-honors').post(facultyAuthenticator, awardHonorsFileUpload.single('proof'), addAwardHonors)
@@ -2868,21 +2874,21 @@ router.route('/award-honors').post(facultyAuthenticator, awardHonorsFileUpload.s
 router.route('/award-honors').get(facultyAuthenticator, getAwardHonorsData)
 
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
-  { name:'sanctionedOrder' , maxCount:1},
-  { name:'transactionProof' , maxCount:1},
-  { name:'completionCertificate' , maxCount:1},
-  { name:'supportingDocuments' , maxCount:1},
-]), addConsultancy )
+  { name: 'sanctionedOrder', maxCount: 1 },
+  { name: 'transactionProof', maxCount: 1 },
+  { name: 'completionCertificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+]), addConsultancy)
 
 
 router.route('/consultancy').get(facultyAuthenticator, getConsultancyData)
 
 router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
-  { name:'sanctionedOrder' , maxCount:1},
-  { name:'transactionProof' , maxCount:1},
-  { name:'completionCertificate' , maxCount:1},
-  { name:'supportingDocuments' , maxCount:1},
-]), addProject )
+  { name: 'sanctionedOrder', maxCount: 1 },
+  { name: 'transactionProof', maxCount: 1 },
+  { name: 'completionCertificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+]), addProject)
 
 
 router.route('/projects').get(facultyAuthenticator, getProjectsData)

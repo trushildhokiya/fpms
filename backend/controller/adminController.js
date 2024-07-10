@@ -461,11 +461,11 @@ function calculateYearlyCount(data, category, year) {
     switch (category) {
         case 'publication':
             return (
-                data.journal.filter((item) => item.year === year).length +
+                data.journal.filter(new Date(item.dateOfPublication).getFullYear() === year).length +
                 data.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
                     .length +
-                data.book.filter((item) => item.yearOfPublication === year).length +
-                data.bookChapter.filter((item) => item.yearOfPublication === year).length
+                data.book.filter((item) => new Date(item.dateOfPublication).getFullYear() === year).length +
+                data.bookChapter.filter((item) => new Date(item.dateOfPublication).getFullYear() === year).length
             );
 
         case 'project':

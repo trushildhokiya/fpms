@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, BookUser, FileArchive, Receipt } from "lucide-react";
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -50,6 +50,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 
 type Props = {};
 
@@ -136,7 +139,7 @@ const formSchema = z.object({
 
   impactFactor: z.coerce.number().nonnegative(),
 
-  yearOfPublication: z.coerce.number().min(1900).max(2300),
+  dateOfPublication: z.date(),
 
   doi: z
     .string()
@@ -223,7 +226,7 @@ const BookChapterForm: React.FC = (props: Props) => {
       nationalInternational: "",
       issn: "",
       impactFactor: 0,
-      yearOfPublication: new Date().getFullYear(),
+      dateOfPublication: new Date(),
       doi: "",
       intendedAudience: "",
       description: "",
@@ -468,8 +471,8 @@ const BookChapterForm: React.FC = (props: Props) => {
                                 onCheckedChange={() => {
                                   const newValue = field.value?.includes(option)
                                     ? field.value.filter(
-                                        (val) => val !== option
-                                      )
+                                      (val) => val !== option
+                                    )
                                     : [...(field.value || []), option];
                                   field.onChange(newValue);
                                 }}
@@ -597,24 +600,41 @@ const BookChapterForm: React.FC = (props: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="yearOfPublication"
+                  name="dateOfPublication"
                   render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel className="text-gray-800">
-                        Year of Publication
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="eg:2003"
-                          autoComplete="off"
-                          {...field}
-                        />
-                      </FormControl>
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="text-grey-800">Date of Publication</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className=" w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            captionLayout="dropdown-buttons"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            fromYear={1900}
+                            toYear={2100}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="doi"
@@ -695,8 +715,8 @@ const BookChapterForm: React.FC = (props: Props) => {
                                 onCheckedChange={() => {
                                   const newValue = field.value?.includes(option)
                                     ? field.value.filter(
-                                        (val) => val !== option
-                                      )
+                                      (val) => val !== option
+                                    )
                                     : [...(field.value || []), option];
                                   field.onChange(newValue);
                                 }}

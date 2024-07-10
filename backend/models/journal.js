@@ -26,7 +26,7 @@ const journalSchema = new mongoose.Schema(
 
     pageTo: { type: Number, required: true },
 
-    year: { type: Number, required: true },
+    dateOfPublication: { type: Date, required: true },
 
     digitalObjectIdentifier: { type: String, required: true },
 

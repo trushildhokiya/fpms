@@ -28,7 +28,7 @@ interface Book {
     nationalInternational: string;
     issn: string;
     impactFactor: number;
-    yearOfPublication: number;
+    dateOfPublication: Date;
     doi: string;
     intendedAudience: string;
     description: string;
@@ -51,14 +51,20 @@ const BookDisplay = (props: Props) => {
     const dt = useRef<any>(null);
 
     // funcions
-
+    const convertDates = (books: Book[]) => {
+        return books.map(book => ({
+            ...book,
+            dateOfPublication: new Date(book.dateOfPublication),
+        }));
+    };
 
     // useEffect to fetch data
     useEffect(() => {
         axios.get('/common/book')
             .then((res) => {
-                setData(res.data);
-                setTotalRecords(res.data.length)
+                const convertedData = convertDates(res.data);
+                setData(convertedData);
+                setTotalRecords(convertedData.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -96,7 +102,7 @@ const BookDisplay = (props: Props) => {
 
 
     // template functions
-    
+
     const idBodyTemplate = (rowData: Book) => {
         return <Badge className='bg-rose-900 bg-opacity-85 font-normal tracking-wide hover:bg-rose-700 text-rose-200'>{rowData._id}</Badge>;
     };
@@ -110,11 +116,12 @@ const BookDisplay = (props: Props) => {
             <Badge key={department} className='bg-purple-400 hover:bg-purple-300 bg-opacity-85 text-purple-900'>{department}</Badge>
         ));
     };
-    
+
     const facultyInvolvedBodyTemplate = (rowData: Book) => rowData.facultiesInvolved.join(", ")
 
-        
-    const impactFactorBodyTemplate = (rowData:Book) =>{
+    const dateBodyTemplate = (rowData: Book) => rowData.dateOfPublication.toLocaleDateString()
+
+    const impactFactorBodyTemplate = (rowData: Book) => {
         return <Knob value={rowData.impactFactor} min={0} max={1000} size={80} className='flex justify-center' rangeColor='#9c9494' valueColor='#fcba03' readOnly />
     }
 
@@ -125,11 +132,11 @@ const BookDisplay = (props: Props) => {
     };
 
     const citationBodyTemplate = (rowData: Book) => {
-        return(
+        return (
             <Button className='rounded-full w-12 h-12 bg-lime-200 text-lime-900 disabled:opacity-100 font-semibold' disabled>{rowData.citationCount}</Button>
         )
     };
-   
+
 
     const URLBodyTemplate = (rowData: Book) => {
         return (
@@ -150,15 +157,15 @@ const BookDisplay = (props: Props) => {
 
 
     // download functions
-    const exportCSV = (selectionOnly:boolean) => {
+    const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape','in',[20,50]);
-    
+        const doc = new jsPDF('landscape', 'in', [20, 50]);
+
         // Column definitions
         const columns = [
             { header: 'ID', dataKey: '_id' },
@@ -171,7 +178,7 @@ const BookDisplay = (props: Props) => {
             { header: 'National/International', dataKey: 'nationalInternational' },
             { header: 'ISSN', dataKey: 'issn' },
             { header: 'Impact Factor', dataKey: 'impactFactor' },
-            { header: 'Year of Publication', dataKey: 'yearOfPublication' },
+            { header: 'Date of Publication', dataKey: 'dateOfPublication' },
             { header: 'DOI', dataKey: 'doi' },
             { header: 'Intended Audience', dataKey: 'intendedAudience' },
             { header: 'Description', dataKey: 'description' },
@@ -183,22 +190,22 @@ const BookDisplay = (props: Props) => {
             { header: 'Updated At', dataKey: 'updatedAt' },
             { header: '__v', dataKey: '__v' },
         ];
-        
+
 
         // Add autoTable content to the PDF
-        autoTable(doc,{
+        autoTable(doc, {
             head: [columns.map(col => col.header)],
             body: data.map((row) => Object.values(row)),
-            styles:{
-                overflow:'linebreak',
-                font:'times',
-                cellPadding:0.2,
-                cellWidth:'wrap'
+            styles: {
+                overflow: 'linebreak',
+                font: 'times',
+                cellPadding: 0.2,
+                cellWidth: 'wrap'
             },
-            horizontalPageBreak:true
+            horizontalPageBreak: true
 
         });
-    
+
         // Save the PDF
         doc.save('book_data.pdf');
     };
@@ -240,25 +247,25 @@ const BookDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-books' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
-                                <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
-                                <Column field="bookTitle" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Book Title"></Column>
-                                <Column field="authors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by authors' header="Authors" body={authorsBodyTemplate}></Column>
-                                <Column field="authorsAffiliation" style={{minWidth:'250px'}} filter filterPlaceholder='Search by affiliation' header="Authors Affiliations" body={affiliationBodyTemplate}></Column>
-                                <Column field="departmentInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
-                                <Column field="facultiesInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="publisherName" style={{minWidth:'250px'}} filter filterPlaceholder='Search by publisher name' sortable header="Publisher Name"></Column>
-                                <Column field="nationalInternational" style={{minWidth:'250px'}} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
-                                <Column field="issn" style={{minWidth:'250px'}} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
-                                <Column field="impactFactor" style={{minWidth:'250px'}} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
-                                <Column field="yearOfPublication" style={{minWidth:'250px'}} filter dataType='numeric' align={'center'} filterPlaceholder='Search by year' header="Year of Publication"></Column>
-                                <Column field="doi" style={{minWidth:'250px'}} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
-                                <Column field="intendedAudience" style={{minWidth:'250px'}} filter filterPlaceholder='Search by audience' sortable header="Intended Audience"></Column>
-                                <Column field="description" style={{minWidth:'250px'}} sortable header="Description"></Column>
-                                <Column field="indexing" style={{minWidth:'250px'}} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
-                                <Column field="citationCount" style={{minWidth:'250px'}} filter filterPlaceholder='Search by count' dataType='numeric' body={citationBodyTemplate} align={'center'} sortable header="Citation Count"></Column>
-                                <Column field="bookUrl" style={{minWidth:'200px'}} filter filterPlaceholder='Search by url' align={'center'} body={URLBodyTemplate} sortable header="Book URL"></Column>
-                                <Column field="proof" style={{minWidth:'200px'}}  align={'center'} header="Proof" body={proofBodyTemplate}></Column>
+                            <DataTable exportFilename='my-books' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                                <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
+                                <Column field="bookTitle" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Book Title"></Column>
+                                <Column field="authors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by authors' header="Authors" body={authorsBodyTemplate}></Column>
+                                <Column field="authorsAffiliation" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by affiliation' header="Authors Affiliations" body={affiliationBodyTemplate}></Column>
+                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
+                                <Column field="publisherName" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by publisher name' sortable header="Publisher Name"></Column>
+                                <Column field="nationalInternational" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
+                                <Column field="issn" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
+                                <Column field="impactFactor" style={{ minWidth: '250px' }} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
+                                <Column field="dateOfPublication" style={{minWidth:'250px'}} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
+                                <Column field="doi" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
+                                <Column field="intendedAudience" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by audience' sortable header="Intended Audience"></Column>
+                                <Column field="description" style={{ minWidth: '250px' }} sortable header="Description"></Column>
+                                <Column field="indexing" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
+                                <Column field="citationCount" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by count' dataType='numeric' body={citationBodyTemplate} align={'center'} sortable header="Citation Count"></Column>
+                                <Column field="bookUrl" style={{ minWidth: '200px' }} filter filterPlaceholder='Search by url' align={'center'} body={URLBodyTemplate} sortable header="Book URL"></Column>
+                                <Column field="proof" style={{ minWidth: '200px' }} align={'center'} header="Proof" body={proofBodyTemplate}></Column>
                             </DataTable>
 
                         </CardContent>
