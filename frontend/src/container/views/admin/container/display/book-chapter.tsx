@@ -225,20 +225,21 @@ const BookChapterDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5;
-            const imgHeight = 5;
-
+            const imgWidth = 5; // Adjust image width as needed
+            const imgHeight = 5; // Adjust image height as needed
+    
             // Calculate center position
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-
-            // Add image with calculated position and size
-            doc.addImage(Logo, 'PNG', centerX, centerY, imgWidth, imgHeight, undefined, "FAST");
+    
+            // Loop through each page and add the image
+            for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+                doc.setPage(i); // Set current page
+                doc.addImage(Logo, 'PNG', centerX, centerY, imgWidth, imgHeight, undefined, "FAST");
+            }
         };
 
-
-        addBackgroundImage()
-
+        
         // Add autoTable content to the PDF
         autoTable(doc, {
             head: [columns.map(col => col.header)],
@@ -252,7 +253,8 @@ const BookChapterDisplay = (props: Props) => {
             horizontalPageBreak: true,
             didDrawPage: addFooter
         });
-
+        
+        addBackgroundImage()
 
         // Save the PDF
         doc.save('book_chapter_data.pdf');
