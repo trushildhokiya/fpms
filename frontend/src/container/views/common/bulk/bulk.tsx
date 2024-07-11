@@ -12,7 +12,8 @@ import { useState } from "react";
 import { Download, Lightbulb } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
-import { FileUploader } from "react-drag-drop-files";
+import { Dropzone, FileMosaic, ExtFile } from "@files-ui/react";
+import jsonFile from 'jsonfile'
 
 type Form = {
     value: string;
@@ -138,12 +139,29 @@ const BulkUpload = () => {
     // Constants
     const user = useSelector((state: any) => state.user);
     const [selectedStatus, setSelectedStatus] = useState<Form | null>(null);
-    const [file, setFile] = useState<File | null>(null);
 
-
-    const handleChange = (file: File) => {
-        setFile(file);
+    const [files, setFiles] = React.useState<ExtFile[]>([]);
+    const updateFiles = (incommingFiles: ExtFile[]) => {
+        //do something with the files
+        setFiles(incommingFiles);
+        //even your own upload implementation
     };
+    const removeFile = (id: string | number | undefined) => {
+        setFiles(files.filter((x: ExtFile) => x.id !== id));
+    };
+
+    const handleUpload = async () => {
+
+        if (files.length == 0) {
+            console.error("No files found")
+        }
+        let data = await files[0].file!.text()
+        data = JSON.parse(data)
+
+
+    };
+
+
 
 
     const handleDownload = () => {
@@ -207,15 +225,28 @@ const BulkUpload = () => {
                     </CardFooter>
                 </Card>
 
-                <div className="my-10 w-full">
-                    <FileUploader
-                        handleChange={handleChange}
-                        name="dataFile"
-                        types={['json']}
-                        label="Upload you edited json file"
-                        maxSize={5}
-                        hoverTitle="Drop you file here"
-                    />
+                <div className="my-10 w-full ">
+                    <Dropzone
+                        onChange={updateFiles}
+                        value={files}
+                        className="font-Poppins text-sm"
+                        color="#910904"
+                        accept="application/json"
+                        maxFileSize={5 * 1024 * 1024} // 5MB
+                        maxFiles={1}
+                        actionButtons={{
+                            position: "after",
+                            cleanButton: { style: { backgroundColor: "#ff8175" } },
+                            uploadButton: { style: { textTransform: "uppercase", backgroundColor: "#32a852" }, onClick: handleUpload, label: "Submit" },
+                        }}
+                        footerConfig={{ customMessage: "Only JSON files upto 5MB are allowed" }}
+                        label={"📃 Drop Files here"}
+                        behaviour="replace"
+                    >
+                        {files.map((file: ExtFile) => (
+                            <FileMosaic key={file.id} {...file} onDelete={removeFile} info preview smartImgFit='orientation' />
+                        ))}
+                    </Dropzone>
                 </div>
 
             </div>
