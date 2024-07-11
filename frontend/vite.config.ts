@@ -2,7 +2,7 @@ import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { VitePWA } from 'vite-plugin-pwa'
-
+import viteCompression from 'vite-plugin-compression'
 
 const manifestForPlugIn = {
   registerType: "prompt" as const,
@@ -46,11 +46,22 @@ const manifestForPlugIn = {
 }
 
 export default defineConfig({
-  plugins: [react(),VitePWA(manifestForPlugIn)],
+  plugins: [react(),VitePWA(manifestForPlugIn), viteCompression({
+    threshold:1025,
+    algorithm:"brotliCompress",
+    ext:'.br'
+  })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps:{
+    include:[
+      "@react-three/drei",
+      "@react-three/fiber",
+      "three"
+    ]
+  }
 })
 

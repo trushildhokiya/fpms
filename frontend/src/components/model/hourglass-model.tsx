@@ -1,18 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations, Environment, Text } from '@react-three/drei';
-import * as THREE from 'three';
+import { LoopRepeat, Group } from 'three';
 
-const Hourglass: React.FC = () => {
-    const group = useRef<THREE.Group>(null);
-    const { scene, animations } = useGLTF('/scene.gltf') as any;
+const Hourglass = () => {
+    const group = useRef<Group>(null);
+    const { scene, animations } = useGLTF('/scene.gltf',true) as any; // Enable Draco compression
     const { actions, mixer } = useAnimations(animations, group);
 
     useEffect(() => {
         if (actions) {
             Object.values(actions).forEach(action => {
                 if (action) {
-                    action.setLoop(THREE.LoopRepeat, Infinity); // Repeat the animation indefinitely
+                    action.setLoop(LoopRepeat, Infinity); // Repeat the animation indefinitely
                     action.clampWhenFinished = true; // Ensure the animation does not blend back to the start
                     action.timeScale = 0.3; // Adjust the speed of the animation (0.3 is 30% of the speed)
                     action.play();
@@ -30,7 +30,7 @@ const Hourglass: React.FC = () => {
     );
 };
 
-const CameraControls: React.FC = () => {
+const CameraControls = () => {
     const { camera, size } = useThree();
 
     // Change camera position
@@ -45,7 +45,7 @@ const CameraControls: React.FC = () => {
     return null;
 };
 
-const CurrentTimeText: React.FC = () => {
+const CurrentTimeText = () => {
     const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
     useEffect(() => {
@@ -57,28 +57,26 @@ const CurrentTimeText: React.FC = () => {
     }, []);
 
     return (
-        <Text 
+        <Text
             position={[0, -2, -3]} // Adjust the position as needed
             fontSize={1} // Adjust the size as needed
             color="#7d000c" // Adjust the color as needed
-            anchorX="center" 
+            anchorX="center"
             anchorY="middle"
-            // fontWeight={600}
-            receiveShadow
-            castShadow
         >
             {currentTime}
         </Text>
     );
 };
 
-const HourglassModel: React.FC = () => {
+const HourglassModel = () => {
     return (
-        <Canvas 
-            gl={{ pixelRatio: Math.min(window.devicePixelRatio, 2),antialias:true }}
+        <Canvas
+            performance={{ min: 0.5 }}
+            gl={{ pixelRatio: Math.min(window.devicePixelRatio, 2), antialias: true }}
             camera={{ fov: 75, position: [0, 0, 5] }}
         >
-             <ambientLight color={0x1562ab} intensity={10} />
+            <ambientLight color={0x1562ab} intensity={10} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
             <pointLight position={[-5, -5, -5]} intensity={0.5} />
             <Hourglass />

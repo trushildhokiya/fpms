@@ -60,6 +60,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.166.1",
     "vaul": "^0.9.1",
+    "vite-plugin-compression": "^0.5.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
