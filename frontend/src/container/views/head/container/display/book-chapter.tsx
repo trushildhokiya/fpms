@@ -29,7 +29,7 @@ interface BookChapter {
     nationalInternational: string;
     issn: string;
     impactFactor: number;
-    yearOfPublication: number;
+    dateOfPublication: Date;
     doi: string;
     indexing: string[];
     intendedAudience: string;
@@ -132,6 +132,8 @@ const BookChapterDisplay = (props: Props) => {
         )
     };
 
+    const dateBodyTemplate = (rowData: BookChapter) => rowData.dateOfPublication.toLocaleDateString()
+
 
     const URLBodyTemplate = (rowData: BookChapter) => {
         return (
@@ -179,7 +181,7 @@ const BookChapterDisplay = (props: Props) => {
             { header: 'National/International', dataKey: 'nationalInternational' },
             { header: 'ISSN', dataKey: 'issn' },
             { header: 'Impact Factor', dataKey: 'impactFactor' },
-            { header: 'Year of Publication', dataKey: 'yearOfPublication' },
+            { header: 'Date of Publication', dataKey: 'dateOfPublication' },
             { header: 'DOI', dataKey: 'doi' },
             { header: 'Intended Audience', dataKey: 'intendedAudience' },
             { header: 'Description', dataKey: 'description' },
@@ -223,6 +225,7 @@ const BookChapterDisplay = (props: Props) => {
             }
         };
 
+        // add background logo
         const addBackgroundImage = () => {
             const imgWidth = 5; // Adjust image width as needed
             const imgHeight = 5; // Adjust image height as needed
@@ -238,11 +241,22 @@ const BookChapterDisplay = (props: Props) => {
             }
         };
 
+        const formatField = (value: any): string => {
+            if (Array.isArray(value)) {
+                return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
+            } else if (value instanceof Date) {
+                return value.toLocaleDateString();
+            } else if (typeof value === 'object') {
+                return JSON.stringify(value);
+            } else {
+                return value.toString();
+            }
+        };
         
         // Add autoTable content to the PDF
         autoTable(doc, {
             head: [columns.map(col => col.header)],
-            body: data.map((row) => columns.map(col => row[col.dataKey])),
+            body:  data.map(row => columns.map(col => formatField(row[col.dataKey]))),
             styles: {
                 overflow: 'linebreak',
                 font: 'times',
@@ -258,7 +272,6 @@ const BookChapterDisplay = (props: Props) => {
         // Save the PDF
         doc.save('book_chapter_data.pdf');
     };
-
 
 
     const header = (
@@ -309,7 +322,7 @@ const BookChapterDisplay = (props: Props) => {
                                 <Column field="nationalInternational" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
                                 <Column field="issn" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
                                 <Column field="impactFactor" style={{ minWidth: '250px' }} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
-                                <Column field="yearOfPublication" style={{ minWidth: '250px' }} filter dataType='numeric' align={'center'} filterPlaceholder='Search by year' header="Year of Publication"></Column>
+                                <Column field="dateOfPublication" style={{minWidth:'250px'}} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
                                 <Column field="doi" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
                                 <Column field="intendedAudience" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by audience' sortable header="Intended Audience"></Column>
                                 <Column field="description" style={{ minWidth: '250px' }} sortable header="Description"></Column>

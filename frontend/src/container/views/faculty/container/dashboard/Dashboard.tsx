@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   const user = useSelector((state: any) => state.user)
   const [terminalData, setTerminalData] = useState('Booting FPMS Kernel ========> complete')
-  const [dashboardData, setDashboardData] = useState<DashboardData>()
+  const [dashboardData, setDashboardData] = useState<DashboardData|null>(null)
 
   const handleTerminalQuery = (command: string) => {
     setTerminalData(terminalHandler(command))
@@ -41,6 +41,7 @@ const Dashboard = () => {
   useEffect(() => {
     axios.get('/faculty/dashboard')
       .then((res) => {
+        console.log(res.data);
         setDashboardData(res.data)
       })
       .catch((err) => {

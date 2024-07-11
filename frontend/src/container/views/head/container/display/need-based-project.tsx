@@ -309,7 +309,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
             if (Array.isArray(value)) {
                 return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
             } else if (value instanceof Date) {
-                return value.toISOString();
+                return value.toLocaleDateString();
             } else if (typeof value === 'object') {
                 return JSON.stringify(value);
             } else {
