@@ -1,0 +1,102 @@
+[
+  {
+    "_id": "66823e368df70d47105d70d5",
+    "projectTitle": "Automatic Power Cut",
+    "principalInvestigator": "Mark Benny",
+    "coInvestigators": [
+      "John Polaris",
+      "Gary Milestone"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "fundingScheme": "Installments",
+    "fundingAgency": "GOI",
+    "nationalInternational": "national",
+    "budgetAmount": 1000000,
+    "sanctionedAmount": 1000000,
+    "startDate": "2021-08-24T18:30:00.000Z",
+    "endDate": "2023-04-14T18:30:00.000Z",
+    "totalGrantReceived": 1000000,
+    "domain": "Electrical Engineering",
+    "areaOfExpertise": "Artificial Intelligence",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "transactionDetails": [
+      {
+        "_id": "66823e368df70d47105d70d3",
+        "purchaseOrderNumber": "PON68426822",
+        "purchaseOrderDate": "2022-07-12T18:30:00.000Z",
+        "purchaseInvoiceNumber": "POI8023409",
+        "purchaseInvoiceDate": "2022-07-12T18:30:00.000Z",
+        "bankName": "SBI",
+        "branchName": "Delhi",
+        "amountReceived": 1000000,
+        "remarks": "NA",
+        "createdAt": "2024-07-01T05:27:18.869Z",
+        "updatedAt": "2024-07-01T05:27:18.869Z",
+        "__v": 0
+      }
+    ],
+    "sanctionedOrder": "uploads\\project\\project-proof-1719811638842-762222821.pdf",
+    "transactionProof": "uploads\\project\\project-proof-1719811638846-234551386.pdf",
+    "completionCertificate": "uploads\\project\\project-proof-1719811638849-76984039.pdf",
+    "supportingDocuments": "uploads\\project\\project-proof-1719811638851-3502987.pdf",
+    "createdAt": "2024-07-01T05:27:18.875Z",
+    "updatedAt": "2024-07-01T05:27:18.875Z",
+    "__v": 0
+  },
+  {
+    "_id": "66890168326cf02b95c4fa99",
+    "projectTitle": "Quartz Solarizer",
+    "principalInvestigator": "Trushil Dhokiya",
+    "coInvestigators": [
+      "Mark Benny"
+    ],
+    "departmentInvolved": [
+      "Computer"
+    ],
+    "facultiesInvolved": [
+      "trushil.d@somaiya.edu",
+      "test1@somaiya.edu"
+    ],
+    "fundingScheme": "Installments",
+    "fundingAgency": "Titan",
+    "nationalInternational": "international",
+    "budgetAmount": 100000,
+    "sanctionedAmount": 100000,
+    "startDate": "2023-02-16T18:30:00.000Z",
+    "endDate": "2023-10-27T18:30:00.000Z",
+    "totalGrantReceived": 100000,
+    "domain": "Applied Physics",
+    "areaOfExpertise": "Artificial Intelligence",
+    "description": "A AI clock",
+    "transactionDetails": [
+      {
+        "_id": "66890168326cf02b95c4fa97",
+        "purchaseOrderNumber": "PON788911515",
+        "purchaseOrderDate": "2023-05-09T18:30:00.000Z",
+        "purchaseInvoiceNumber": "POI44512102",
+        "purchaseInvoiceDate": "2023-05-21T18:30:00.000Z",
+        "bankName": "SBI",
+        "branchName": "Mumbai",
+        "amountReceived": 100000,
+        "remarks": "None",
+        "createdAt": "2024-07-06T08:33:44.623Z",
+        "updatedAt": "2024-07-06T08:33:44.623Z",
+        "__v": 0
+      }
+    ],
+    "sanctionedOrder": "uploads\\project\\project-proof-1720254824598-368058497.pdf",
+    "transactionProof": "uploads\\project\\project-proof-1720254824602-484783638.pdf",
+    "completionCertificate": "uploads\\project\\project-proof-1720254824603-747421457.pdf",
+    "supportingDocuments": "uploads\\project\\project-proof-1720254824607-578496258.pdf",
+    "createdAt": "2024-07-06T08:33:44.638Z",
+    "updatedAt": "2024-07-06T08:33:44.638Z",
+    "__v": 0
+  }
+]

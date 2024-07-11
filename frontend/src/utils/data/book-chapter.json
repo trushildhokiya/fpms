@@ -1,0 +1,112 @@
+[
+  {
+    "_id": "667fcd0489e509f05daada99",
+    "bookTitle": "Multiplexer : A Innovation of Greatest",
+    "chapterTitle": "Weily Computer Organization Fundamentals",
+    "authors": [
+      "Mark Benny",
+      "John Polaris"
+    ],
+    "authorsAffiliation": [
+      "Evan Phill",
+      "Jenna Molle"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "publisherName": "Weily Publications",
+    "nationalInternational": "international",
+    "issn": "ISBN- 0988883",
+    "impactFactor": 2,
+    "doi": "doi-783772",
+    "indexing": [
+      "Web of Science",
+      "UGC CARE-II"
+    ],
+    "intendedAudience": "engineering students",
+    "description": "Book chapter about multiplexers",
+    "bookUrl": "https://people.iitism.ac.in/~sarun/notes/phc504/15_mux_dmux.html",
+    "citationCount": 4,
+    "proof": "uploads\\book-chapter\\bookchapterproof-1719651588770-129993760.pdf",
+    "createdAt": "2024-06-29T08:59:48.785Z",
+    "updatedAt": "2024-06-29T08:59:48.785Z",
+    "__v": 0,
+    "dateOfPublication": "2019-07-17T18:30:00.000Z"
+  },
+  {
+    "_id": "66877f8a2ea6ed7ba17013d0",
+    "bookTitle": "Algorithms in a Nutshell",
+    "chapterTitle": "Divisive Algorithms ",
+    "authors": [
+      "Trushil Dhokiya",
+      "Mark Benny"
+    ],
+    "authorsAffiliation": [
+      "MIT"
+    ],
+    "departmentInvolved": [
+      "Computer"
+    ],
+    "facultiesInvolved": [
+      "trushil.d@somaiya.edu",
+      "test1@somaiya.edu"
+    ],
+    "publisherName": "MIT Publications",
+    "nationalInternational": "international",
+    "issn": "ISBN1515646",
+    "impactFactor": 769,
+    "doi": "doi97646464",
+    "indexing": [
+      "UGC CARE-I"
+    ],
+    "intendedAudience": "engineering students",
+    "description": "A book about algorithms",
+    "bookUrl": "https://www.tableau.com/learn/articles/books-about-data-structures-algorithms",
+    "citationCount": 895,
+    "proof": "uploads\\book-chapter\\bookchapterproof-1720156042255-572472947.pdf",
+    "createdAt": "2024-07-05T05:07:22.267Z",
+    "updatedAt": "2024-07-05T05:07:22.267Z",
+    "__v": 0,
+    "dateOfPublication": "2021-07-17T18:30:00.000Z"
+  },
+  {
+    "_id": "668e2b41c5ecd5140a909040",
+    "bookTitle": "Robotics a new approach to laziness",
+    "chapterTitle": "Robotics ",
+    "authors": [
+      "Mark Benny"
+    ],
+    "authorsAffiliation": [
+      "Oxford University"
+    ],
+    "departmentInvolved": [
+      "Computer"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu"
+    ],
+    "publisherName": "Oxford Publications",
+    "nationalInternational": "international",
+    "issn": "ISBN74613255",
+    "impactFactor": 1000,
+    "dateOfPublication": "2024-04-19T18:30:00.000Z",
+    "doi": "doi8465132",
+    "indexing": [
+      "Scopus",
+      "Web of Science"
+    ],
+    "intendedAudience": "engineering students",
+    "description": "NA",
+    "bookUrl": "https://web.whatsapp.com/",
+    "citationCount": 877,
+    "proof": "uploads\\book-chapter\\bookchapterproof-1720593217518-164459090.pdf",
+    "createdAt": "2024-07-10T06:33:37.526Z",
+    "updatedAt": "2024-07-10T06:33:37.526Z",
+    "__v": 0
+  }
+]

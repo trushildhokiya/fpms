@@ -126,7 +126,7 @@ const NeedBasedProjectDisplay = lazy(() => import('./container/views/common/disp
 const AwardHonorsDisplay = lazy(() => import('./container/views/common/display/award-honors'));
 const ConsultancyDisplay = lazy(() => import('./container/views/common/display/consultancy'));
 const ProjectsDisplay = lazy(() => import('./container/views/common/display/projects'));
-
+const BulkUpload = lazy(()=> import('@/container/views/common/bulk/bulk'))
 
 function App() {
 
@@ -214,6 +214,7 @@ function App() {
           <Route path='/common/display/awards-honors' element={<CommonProtectedRoute> <AwardHonorsDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/consultancy' element={<CommonProtectedRoute> <ConsultancyDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/projects' element={<CommonProtectedRoute> <ProjectsDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/upload/bulk' element={<CommonProtectedRoute> <BulkUpload /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </Suspense>

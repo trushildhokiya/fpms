@@ -355,7 +355,11 @@ const FacultyNavbar = () => {
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
-
+                                    <Link to={'/common/upload/bulk'}>
+                                        <DropdownMenuItem>
+                                            Bulk Upload
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
 
@@ -690,6 +694,11 @@ const FacultyNavbar = () => {
                                         </DropdownMenuSubContent>
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
+                                <Link to={'/common/upload/bulk'}>
+                                    <DropdownMenuItem>
+                                        Bulk Upload
+                                    </DropdownMenuItem>
+                                </Link>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => { logoutFaculty() }}>Log out</DropdownMenuItem>

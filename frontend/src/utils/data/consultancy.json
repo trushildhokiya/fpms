@@ -1,0 +1,114 @@
+[
+  {
+    "_id": "668235e91a2a7f05270e161c",
+    "projectTitle": "HeatWave Prediction using GeoSatellite Imagery",
+    "principalInvestigator": "Mark Benny",
+    "coInvestigators": [
+      "John Polaris",
+      "Yven Miller"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "fundingAgency": "NASA",
+    "nationalInternational": "international",
+    "budgetAmount": 1000000,
+    "sanctionedAmount": 1000000,
+    "startDate": "2023-03-09T18:30:00.000Z",
+    "endDate": "2024-04-03T18:30:00.000Z",
+    "totalGrantReceived": 1000000,
+    "domain": "GEO satellite Imagery",
+    "areaOfExpertise": "Artificial Intelligence",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "transactionDetails": [
+      {
+        "_id": "668235e91a2a7f05270e1618",
+        "purchaseOrderNumber": "PON563499",
+        "purchaseOrderDate": "2023-05-19T18:30:00.000Z",
+        "purchaseInvoiceNumber": "POI8634872",
+        "purchaseInvoiceDate": "2023-05-19T18:30:00.000Z",
+        "bankName": "Swiss International",
+        "branchName": "Swiss BOI",
+        "amountReceived": 500000,
+        "remarks": "NA",
+        "createdAt": "2024-07-01T04:51:53.471Z",
+        "updatedAt": "2024-07-01T04:51:53.471Z",
+        "__v": 0
+      },
+      {
+        "_id": "668235e91a2a7f05270e161a",
+        "purchaseOrderNumber": "PON563498",
+        "purchaseOrderDate": "2024-07-01T04:50:03.079Z",
+        "purchaseInvoiceNumber": "POI8634864",
+        "purchaseInvoiceDate": "2024-07-01T04:50:03.079Z",
+        "bankName": "Swiss International",
+        "branchName": "Swiss BOI",
+        "amountReceived": 500000,
+        "remarks": "NA",
+        "createdAt": "2024-07-01T04:51:53.475Z",
+        "updatedAt": "2024-07-01T04:51:53.475Z",
+        "__v": 0
+      }
+    ],
+    "sanctionedOrder": "uploads\\consultancy\\consultancy-proof-1719809513444-324775381.pdf",
+    "transactionProof": "uploads\\consultancy\\consultancy-proof-1719809513448-155379114.pdf",
+    "completionCertificate": "uploads\\consultancy\\consultancy-proof-1719809513451-377360950.pdf",
+    "supportingDocuments": "uploads\\consultancy\\consultancy-proof-1719809513453-850761845.pdf",
+    "createdAt": "2024-07-01T04:51:53.479Z",
+    "updatedAt": "2024-07-01T04:51:53.479Z",
+    "__v": 0
+  },
+  {
+    "_id": "66890e4d5b13843c524c7bc5",
+    "projectTitle": "Electron Collider",
+    "principalInvestigator": "Trushil Dhokiya",
+    "coInvestigators": [
+      "Mark Benny"
+    ],
+    "departmentInvolved": [
+      "Computer"
+    ],
+    "facultiesInvolved": [
+      "trushil.d@somaiya.edu",
+      "test1@somaiya.edu"
+    ],
+    "fundingAgency": "CERN",
+    "nationalInternational": "international",
+    "budgetAmount": 1000000000,
+    "sanctionedAmount": 1000000000,
+    "startDate": "2020-01-24T18:30:00.000Z",
+    "endDate": "2024-04-17T18:30:00.000Z",
+    "totalGrantReceived": 1000000000,
+    "domain": "Applied Physics",
+    "areaOfExpertise": "Physics",
+    "description": "A hadron collider",
+    "transactionDetails": [
+      {
+        "_id": "66890e4d5b13843c524c7bc3",
+        "purchaseOrderNumber": "PON651535351",
+        "purchaseOrderDate": "2022-01-07T18:30:00.000Z",
+        "purchaseInvoiceNumber": "POI35453313",
+        "purchaseInvoiceDate": "2021-01-18T18:30:00.000Z",
+        "bankName": "SBI",
+        "branchName": "Mumbai",
+        "amountReceived": 999999998,
+        "remarks": "NA",
+        "createdAt": "2024-07-06T09:28:45.716Z",
+        "updatedAt": "2024-07-06T09:28:45.716Z",
+        "__v": 0
+      }
+    ],
+    "sanctionedOrder": "uploads\\consultancy\\consultancy-proof-1720258125694-467048251.pdf",
+    "transactionProof": "uploads\\consultancy\\consultancy-proof-1720258125693-536689752.pdf",
+    "completionCertificate": "uploads\\consultancy\\consultancy-proof-1720258125698-705371176.pdf",
+    "supportingDocuments": "uploads\\consultancy\\consultancy-proof-1720258125701-472874132.pdf",
+    "createdAt": "2024-07-06T09:28:45.723Z",
+    "updatedAt": "2024-07-06T09:28:45.723Z",
+    "__v": 0
+  }
+]

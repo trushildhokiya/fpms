@@ -1,0 +1,41 @@
+[
+  {
+    "_id": "668e26b6c5ecd5140a908feb",
+    "title": " Artifical Intelligence A deep dive",
+    "authors": [
+      "Mark Benny",
+      "John Polaris"
+    ],
+    "authorsAffiliation": [
+      "MIT"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "paidUnpaid": "paid",
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "journalType": "international",
+    "journalTitle": " Arizona Internatinal",
+    "issn": "ISBN8746512",
+    "impactFactor": 78,
+    "pageFrom": 12,
+    "pageTo": 40,
+    "dateOfPublication": "2019-07-17T18:30:00.000Z",
+    "digitalObjectIdentifier": "doi-8645322",
+    "indexing": [
+      "Scopus",
+      "Web of Science"
+    ],
+    "paperUrl": "https://github.com/trushildhokiya/fpms/commits/dev/",
+    "citationCount": 45,
+    "paper": "uploads\\journal\\journalproof-1720592054729-684750780.pdf",
+    "certificate": "uploads\\journal\\journalproof-1720592054731-324603370.pdf",
+    "createdAt": "2024-07-10T06:14:14.742Z",
+    "updatedAt": "2024-07-10T06:14:14.742Z",
+    "__v": 0
+  }
+]

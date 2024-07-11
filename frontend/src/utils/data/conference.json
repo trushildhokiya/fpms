@@ -1,0 +1,94 @@
+[
+  {
+    "_id": "667d2d3cdd244c6baa896b2c",
+    "title": "Geological Survey using Big Data and IOT",
+    "authors": [
+      "Mark Benny",
+      "John POlaris"
+    ],
+    "authorsAffiliation": [
+      "David Fawling",
+      "Peter Inglis"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "nationalInternational": "International",
+    "conferenceName": "Scholaz Petre International",
+    "venue": "Reichstag Building",
+    "organizer": "Council of German Scholars",
+    "role": "speaker",
+    "fromDate": "2023-06-14T18:30:00.000Z",
+    "toDate": "2023-06-16T18:30:00.000Z",
+    "paperStatus": "presented and published",
+    "publicationDate": "2023-06-28T18:30:00.000Z",
+    "issn": "ISBN-567573468",
+    "impactFactor": 2,
+    "pageNo": "78-91",
+    "yearOfPublication": 2023,
+    "doi": "doi-2y82y98bn",
+    "indexing": [
+      "Web of Science",
+      "UGC CARE-II"
+    ],
+    "paperUrl": "https://www.deutschland.de/en",
+    "citationCount": 19,
+    "paper": "uploads\\conference\\conferenceproof-1719479612675-897053560.pdf",
+    "certificate": "uploads\\conference\\conferenceproof-1719479612678-652158712.pdf",
+    "createdAt": "2024-06-27T09:13:32.694Z",
+    "updatedAt": "2024-06-27T09:13:32.694Z",
+    "__v": 0
+  },
+  {
+    "_id": "66868b45a27a430fc8713878",
+    "title": "VR Gaming for education",
+    "authors": [
+      "Trushil Dhokiya",
+      "Mark Benny"
+    ],
+    "authorsAffiliation": [
+      "Nintendo",
+      "Bakugan"
+    ],
+    "departmentInvolved": [
+      "Computer"
+    ],
+    "facultiesInvolved": [
+      "trushil.d@somaiya.edu",
+      "test1@somaiya.edu"
+    ],
+    "nationalInternational": "International",
+    "conferenceName": "Japan International Conference for Games and Education",
+    "venue": "Tokyo",
+    "organizer": "Government of Japan",
+    "role": "presenter",
+    "fromDate": "2021-11-25T18:30:00.000Z",
+    "toDate": "2021-11-27T18:30:00.000Z",
+    "paperStatus": "presented and published",
+    "publicationDate": "2022-07-20T18:30:00.000Z",
+    "issn": "ISBN74203056",
+    "impactFactor": 450,
+    "pageNo": "36-78",
+    "yearOfPublication": 2022,
+    "doi": "doi64216422",
+    "indexing": [
+      "UGC CARE-I",
+      "others",
+      "Web of Science",
+      "Scopus",
+      "UGC CARE-II"
+    ],
+    "paperUrl": "https://www.thepaperlink.com/",
+    "citationCount": 13,
+    "paper": "uploads\\conference\\conferenceproof-1720093509783-750819961.pdf",
+    "certificate": "uploads\\conference\\conferenceproof-1720093509786-667725099.pdf",
+    "createdAt": "2024-07-04T11:45:09.799Z",
+    "updatedAt": "2024-07-04T11:45:09.799Z",
+    "__v": 0
+  }
+]
