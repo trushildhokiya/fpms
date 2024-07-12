@@ -695,6 +695,7 @@ const addBook = asyncHandler(async (req, res) => {
 });
 
 
+
 const getBookData = asyncHandler(async (req, res) => {
 
   // Get required data
@@ -719,6 +720,47 @@ const getBookData = asyncHandler(async (req, res) => {
 
 });
 
+const deleteBook = asyncHandler(async (req, res) => {
+
+  const { book_id } = req.body
+
+  try {
+
+    // Find the book to get the necessary information
+    const book = await Book.findById(book_id);
+
+    if (!book) {
+      throw new Error('Book not found');
+    }
+
+    // Extract the list of faculty emails involved in the book
+    const facultyEmails = book.facultiesInvolved;
+
+    // Remove the book ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { book: book_id } }
+    );
+
+
+    // Delete the associated file
+    if (book.proof && fs.existsSync(book.proof)) {
+      fs.unlinkSync(book.proof);
+    }
+
+    // Delete the book entry from the database
+    await Book.findByIdAndDelete(book_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 const addBookChapter = asyncHandler(async (req, res) => {
 
@@ -781,6 +823,47 @@ const getBookChapterData = asyncHandler(async (req, res) => {
 
 });
 
+const deleteBookChapter = asyncHandler(async (req, res) => {
+
+  const { book_chapter_id } = req.body
+
+  try {
+
+    // Find the book chapter to get the necessary information
+    const bookChapter = await BookChapter.findById(book_chapter_id);
+
+    if (!bookChapter) {
+      throw new Error('Book not found');
+    }
+
+    // Extract the list of faculty emails involved in the book chapter
+    const facultyEmails = bookChapter.facultiesInvolved;
+
+    // Remove the book chapter ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { bookChapter: book_chapter_id } }
+    );
+
+
+    // Delete the associated file
+    if (bookChapter.proof && fs.existsSync(bookChapter.proof)) {
+      fs.unlinkSync(bookChapter.proof);
+    }
+
+    // Delete the book entry from the database
+    await BookChapter.findByIdAndDelete(book_chapter_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 const addNeedBasedProject = asyncHandler(async (req, res) => {
 
@@ -910,6 +993,45 @@ const getAwardHonorsData = asyncHandler(async (req, res) => {
 
 });
 
+const deleteAwardsHonors = asyncHandler(async (req, res) => {
+
+  const { award_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+
+    // Find the awards honors to get the necessary information
+    const awardsHonors = await AwardHonors.findById(award_id);
+
+    if (!awardsHonors) {
+      throw new Error('Book not found');
+    }
+
+    // Remove the awards honors ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { awardsHonors: award_id } }
+    );
+
+
+    // Delete the associated file
+    if (awardsHonors.proof && fs.existsSync(awardsHonors.proof)) {
+      fs.unlinkSync(awardsHonors.proof);
+    }
+
+    // Delete the awards honors entry from the database
+    await AwardHonors.findByIdAndDelete(award_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 const addConsultancy = asyncHandler(async (req, res) => {
 
@@ -1128,5 +1250,8 @@ module.exports = {
   deleteCopyright,
   deleteJournal,
   deleteConference,
+  deleteBook,
+  deleteBookChapter,
+  deleteAwardsHonors,
   
 };

@@ -125,6 +125,7 @@ function StatusList({
                                 )
                                 setOpen(false)
                             }}
+                            disabled={form.value === "projects" || form.value==="need-based-project" || form.value==="consultancy"}
                         >
                             {form.label}
                         </CommandItem>

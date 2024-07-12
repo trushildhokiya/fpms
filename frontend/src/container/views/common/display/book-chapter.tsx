@@ -14,6 +14,7 @@ import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import { Knob } from 'primereact/knob'
 import Logo from '@/assets/image/logo.png'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
@@ -169,7 +170,7 @@ const BookChapterDisplay = (props: Props) => {
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape', 'in', [20, 50]);
+        const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
 
         // define columns
         interface Column {
@@ -235,13 +236,13 @@ const BookChapterDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5; // Adjust image width as needed
-            const imgHeight = 5; // Adjust image height as needed
-    
+            const imgWidth = 3; // Adjust image width as needed
+            const imgHeight = 3; // Adjust image height as needed
+
             // Calculate center position
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-    
+
             // Loop through each page and add the image
             for (let i = 1; i <= doc.getNumberOfPages(); i++) {
                 doc.setPage(i); // Set current page
@@ -260,21 +261,25 @@ const BookChapterDisplay = (props: Props) => {
                 return value.toString();
             }
         };
-        
+
         // Add autoTable content to the PDF
         autoTable(doc, {
             head: [columns.map(col => col.header)],
-            body:  data.map(row => columns.map(col => formatField(row[col.dataKey]))),
+            body: data.map(row => columns.map(col => formatField(row[col.dataKey]))),
             styles: {
                 overflow: 'linebreak',
                 font: 'times',
                 cellPadding: 0.2,
                 cellWidth: 'wrap'
             },
+            columnStyles: columns.reduce((acc: any, _, index) => {
+                acc[index] = { cellWidth: 2 };
+                return acc;
+            }, {}),
             horizontalPageBreak: true,
             didDrawPage: addFooter
         });
-        
+
         addBackgroundImage()
 
         // Save the PDF
@@ -297,15 +302,49 @@ const BookChapterDisplay = (props: Props) => {
         return "Total Records Matched: " + totalRecords; // Access total records here
     };
 
-    const actionBodyTemplate = (rowData:BookChapter) => {
+    const actionBodyTemplate = (rowData: BookChapter) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-blue-400 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-400 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                entry and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
 
         );
     };
+
+    const handleDelete = (rowData: BookChapter) => {
+        axios.delete('/common/book-chapter', {
+            data: {
+                book_chapter_id: rowData._id
+            }
+        })
+            .then((res) => {
+                console.log(res);
+                if (res.data.message === 'success') {
+                    window.location.reload()
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+    }
 
 
 
@@ -341,7 +380,7 @@ const BookChapterDisplay = (props: Props) => {
                                 <Column field="nationalInternational" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
                                 <Column field="issn" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
                                 <Column field="impactFactor" style={{ minWidth: '250px' }} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
-                                <Column field="dateOfPublication" style={{minWidth:'250px'}} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
+                                <Column field="dateOfPublication" style={{ minWidth: '250px' }} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
                                 <Column field="doi" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
                                 <Column field="intendedAudience" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by audience' sortable header="Intended Audience"></Column>
                                 <Column field="description" style={{ minWidth: '250px' }} sortable header="Description"></Column>

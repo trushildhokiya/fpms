@@ -34,6 +34,9 @@ const {
   deleteCopyright,
   deleteJournal,
   deleteConference,
+  deleteBook,
+  deleteBookChapter,
+  deleteAwardsHonors,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2241,6 +2244,8 @@ router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"),
  */
 router.route('/book').get(facultyAuthenticator, getBookData)
 
+router.route('/book').delete(facultyAuthenticator,deleteBook)
+
 /**
  * @swagger
  * /common/book-chapter:
@@ -2541,6 +2546,8 @@ router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.singl
  *                   example: Internal Server Error
  */
 router.route('/book-chapter').get(facultyAuthenticator, getBookChapterData)
+
+router.route('/book-chapter').delete(facultyAuthenticator,deleteBookChapter)
 
 /**
  * @swagger
@@ -2884,6 +2891,8 @@ router.route('/need-based-project').get(facultyAuthenticator, getNeedBasedProjec
 router.route('/award-honors').post(facultyAuthenticator, awardHonorsFileUpload.single('proof'), addAwardHonors)
 
 router.route('/award-honors').get(facultyAuthenticator, getAwardHonorsData)
+
+router.route('/award-honors').delete(facultyAuthenticator,deleteAwardsHonors)
 
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
   { name: 'sanctionedOrder', maxCount: 1 },
