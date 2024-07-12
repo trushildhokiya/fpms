@@ -120,9 +120,9 @@ const AwardsAndHonorsForm = (props: Props) => {
         // console.log(res.data);
         if (res.data.message === "success") {
           toast({
-            title: "Award Honors updated successfully",
+            title: "Award Honors added successfully",
             description:
-              "Your Award Honors information has been added/updated successfully",
+              "Your Award Honors information has been added successfully",
             action: <ToastAction altText="okay">Okay</ToastAction>,
           });
           form.reset();

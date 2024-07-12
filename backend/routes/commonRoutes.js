@@ -30,6 +30,10 @@ const {
   addProject,
   getProjectsData,
   profileImageUpdate,
+  deletePatent,
+  deleteCopyright,
+  deleteJournal,
+  deleteConference,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -1028,6 +1032,8 @@ router.route("/patent").post(facultyAuthenticator, patentFileUpload.single("pate
  */
 router.route('/patent').get(facultyAuthenticator, getPatentData)
 
+router.route('/patent').delete(facultyAuthenticator,deletePatent)
+
 /**
  * @swagger
  * /common/copyright:
@@ -1281,6 +1287,8 @@ router.route("/copyright").post(facultyAuthenticator, copyrightFileUpload.single
  */
 router.route('/copyright').get(facultyAuthenticator, getCopyrightData)
 
+
+router.route('/copyright').delete(facultyAuthenticator,deleteCopyright)
 
 /**
  * @swagger
@@ -1594,6 +1602,8 @@ router.route("/journal").post(facultyAuthenticator, journalFileUpload.fields([
  *                   example: Internal Server Error
  */
 router.route("/journal").get(facultyAuthenticator, getJournalData)
+
+router.route('/journal').delete(facultyAuthenticator,deleteJournal)
 
 
 /**
@@ -1936,6 +1946,8 @@ router.route("/conference").post(facultyAuthenticator, conferenceFileUpload.fiel
  *                   example: Internal Server Error
  */
 router.route("/conference").get(facultyAuthenticator, getConferenceData)
+
+router.route('/conference').delete(facultyAuthenticator,deleteConference)
 
 /**
  * @swagger

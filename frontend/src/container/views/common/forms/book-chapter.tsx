@@ -249,9 +249,9 @@ const BookChapterForm: React.FC = (props: Props) => {
         // console.log(res.data);
         if (res.data.message === "success") {
           toast({
-            title: "Book Chapter updated successfully",
+            title: "Book Chapter added successfully",
             description:
-              "Your Book Chapter information has been added/updated successfully",
+              "Your Book Chapter information has been added successfully",
             action: <ToastAction altText="okay">Okay</ToastAction>,
           });
           form.reset();

@@ -192,9 +192,9 @@ const PatentForm = (props: Props) => {
         // console.log(res.data);
         if (res.data.message === "success") {
           toast({
-            title: "Patent updated successfully",
+            title: "Patent added successfully",
             description:
-              "Your Patent information has been added/updated successfully",
+              "Your Patent information has been added successfully",
             action: <ToastAction altText="okay">Okay</ToastAction>,
           });
           form.reset();

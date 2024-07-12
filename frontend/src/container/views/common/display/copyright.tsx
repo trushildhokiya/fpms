@@ -15,6 +15,7 @@ import { FileDown, Pencil, Table, Trash2Icon } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import Logo from '@/assets/image/logo.png'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 
 type Props = {}
@@ -100,7 +101,7 @@ const CopyrightDisplay = (props: Props) => {
 
 
     // template functions
-    
+
     const idBodyTemplate = (rowData: Copyright) => {
         return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
     };
@@ -114,10 +115,10 @@ const CopyrightDisplay = (props: Props) => {
             <Badge key={department} className='bg-green-800 bg-opacity-85 text-green-200'>{department}</Badge>
         ));
     };
-    
+
     const facultyInvolvedBodyTemplate = (rowData: Copyright) => rowData.facultiesInvolved.join(", ")
 
-    
+
     const countryBodyTemplate = (rowData: Copyright) => {
         return (
             <div className="flex align-items-center gap-2">
@@ -126,7 +127,7 @@ const CopyrightDisplay = (props: Props) => {
             </div>
         )
     }
-   
+
     const startDateBodyTemplate = (rowData: Copyright) => rowData.startDate.toLocaleDateString()
 
     const endDateBodyTemplate = (rowData: Copyright) => rowData.endDate.toLocaleDateString()
@@ -148,18 +149,18 @@ const CopyrightDisplay = (props: Props) => {
     };
 
     // download functions
-    const exportCSV = (selectionOnly:boolean) => {
+    const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
 
-    
+
 
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape','in',[20,20]);
-    
+        const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
+
         // define columns
         interface Column {
             header: string;
@@ -210,12 +211,12 @@ const CopyrightDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5; 
-            const imgHeight = 5;
-    
+            const imgWidth = 3;
+            const imgHeight = 3;
+
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-    
+
             for (let i = 1; i <= doc.getNumberOfPages(); i++) {
                 doc.setPage(i);
                 doc.addImage(Logo, 'PNG', centerX, centerY, imgWidth, imgHeight, undefined, "FAST");
@@ -236,18 +237,22 @@ const CopyrightDisplay = (props: Props) => {
         };
 
         // Add autoTable content to the PDF
-        autoTable(doc,{
+        autoTable(doc, {
             head: [columns.map(col => col.header)],
             body: data.map(row => columns.map(col => formatField(row[col.dataKey]))),
-            styles:{
-                overflow:'linebreak',
-                font:'times',
-                cellPadding:0.2,
+            styles: {
+                overflow: 'linebreak',
+                font: 'times',
+                cellPadding: 0.2,
             },
-            horizontalPageBreak:true,
+            columnStyles: columns.reduce((acc: any, _, index) => {
+                acc[index] = { cellWidth: 2 };
+                return acc;
+            }, {}),
+            horizontalPageBreak: true,
             didDrawPage: addFooter
         });
-    
+
         addBackgroundImage()
         // Save the PDF
         doc.save('copyright_data.pdf');
@@ -268,12 +273,46 @@ const CopyrightDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Copyright) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-blue-400 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-400 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                entry and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
 
         );
     };
+
+    const handleDelete = (rowData: Copyright) => {
+        axios.delete('/common/copyright',{
+            data:{
+                copyright_id:rowData._id
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+                window.location.reload()
+            }
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
+    }
 
 
     return (
@@ -296,19 +335,19 @@ const CopyrightDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-copyrights' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e)=>setTotalRecords(e.length)} showGridlines size='large'>
-                                <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
-                                <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="inventors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
-                                <Column field="affiliationInventors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
-                                <Column field="departmentInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
-                                <Column field="facultiesInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="nationalInternational" style={{minWidth:'250px'}} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
-                                <Column field="country" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Country' body={countryBodyTemplate} sortable header="Country"></Column>
-                                <Column field="applicationNumber" style={{minWidth:'250px'}} filter filterPlaceholder='Search by Application number' sortable header="Application Number"></Column>
-                                <Column field="startDate" style={{minWidth:'250px'}} sortable dataType='date' filter filterPlaceholder='Search by filing date' filterElement={dateFilterTemplate} header="Start Date" body={startDateBodyTemplate}></Column>
-                                <Column field="endDate" style={{minWidth:'250px'}} sortable dataType='date' header="End Date" filter filterPlaceholder='Search by grant date' filterElement={dateFilterTemplate} body={endDateBodyTemplate}></Column>
-                                <Column field="copyrightCertificate" style={{minWidth:'250px'}} header="Copyright Certificate" body={certificateBodyTemplate}></Column>
+                            <DataTable exportFilename='my-copyrights' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                                <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
+                                <Column field="inventors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
+                                <Column field="affiliationInventors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
+                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
+                                <Column field="nationalInternational" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
+                                <Column field="country" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Country' body={countryBodyTemplate} sortable header="Country"></Column>
+                                <Column field="applicationNumber" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Application number' sortable header="Application Number"></Column>
+                                <Column field="startDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by filing date' filterElement={dateFilterTemplate} header="Start Date" body={startDateBodyTemplate}></Column>
+                                <Column field="endDate" style={{ minWidth: '250px' }} sortable dataType='date' header="End Date" filter filterPlaceholder='Search by grant date' filterElement={dateFilterTemplate} body={endDateBodyTemplate}></Column>
+                                <Column field="copyrightCertificate" style={{ minWidth: '250px' }} header="Copyright Certificate" body={certificateBodyTemplate}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                             </DataTable>
 

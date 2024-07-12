@@ -15,6 +15,7 @@ import { FileDown, Pencil, Table, Trash2Icon } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import Logo from '@/assets/image/logo.png'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
@@ -155,11 +156,11 @@ const PatentDisplay = (props: Props) => {
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape', 'in', [20, 20]);
+        const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
 
 
-         // define columns
-         interface Column {
+        // define columns
+        interface Column {
             header: string;
             dataKey: keyof Patent;
         }
@@ -182,8 +183,8 @@ const PatentDisplay = (props: Props) => {
             { header: '__v', dataKey: '__v' },
         ];
 
-         // Function to add footer to each page
-         const addFooter = () => {
+        // Function to add footer to each page
+        const addFooter = () => {
             const pageCount = doc.getNumberOfPages();
 
             for (let i = 1; i <= pageCount; i++) {
@@ -208,12 +209,12 @@ const PatentDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5; 
-            const imgHeight = 5;
-    
+            const imgWidth = 3;
+            const imgHeight = 3;
+
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-    
+
             for (let i = 1; i <= doc.getNumberOfPages(); i++) {
                 doc.setPage(i);
                 doc.addImage(Logo, 'PNG', centerX, centerY, imgWidth, imgHeight, undefined, "FAST");
@@ -242,13 +243,17 @@ const PatentDisplay = (props: Props) => {
                 font: 'times',
                 cellPadding: 0.2,
             },
+            columnStyles: columns.reduce((acc: any, _, index) => {
+                acc[index] = { cellWidth: 2 };
+                return acc;
+            }, {}),
             horizontalPageBreak: true,
             didDrawPage: addFooter
         });
 
-        
+
         addBackgroundImage()
-        
+
         // Save the PDF
         doc.save('patent_data.pdf');
     };
@@ -269,11 +274,45 @@ const PatentDisplay = (props: Props) => {
         return (
             <>
                 <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                entry and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
 
         );
     };
+
+    const handleDelete = (rowData: Patent) => {
+        axios.delete('/common/patent',{
+            data:{
+                patent_id:rowData._id
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+                window.location.reload()
+            }
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
+    }
 
 
     return (

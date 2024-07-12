@@ -193,9 +193,9 @@ const CopyrightForm = (props: Props) => {
         // console.log(res.data);
         if (res.data.message === "success") {
           toast({
-            title: "Copyright updated successfully",
+            title: "Copyright added successfully",
             description:
-              "Your Copyright information has been added/updated successfully",
+              "Your Copyright information has been added successfully",
             action: <ToastAction altText="okay">Okay</ToastAction>,
           });
           form.reset();

@@ -135,8 +135,8 @@ const formSchema = z.object({
   }), z.string().optional()]),
 
   citationCount: z.coerce.number().nonnegative(),
-  paper: z.union([z.instanceof(File).optional(), pdfFileSchema]),
-  certificate: z.union([z.instanceof(File).optional(), pdfFileSchema]),
+  paper: pdfFileSchema,
+  certificate: pdfFileSchema
 
 }).refine((data) => data.toDate > data.fromDate, {
   message: "End date must be greater than start date",
@@ -223,9 +223,9 @@ const ConferenceForm: React.FC = (props: Props) => {
         // console.log(res.data);
         if (res.data.message === "success") {
           toast({
-            title: "Conference updated successfully",
+            title: "Conference added successfully",
             description:
-              "Your Conference information has been added/updated successfully",
+              "Your Conference information has been added successfully",
             action: <ToastAction altText="okay">Okay</ToastAction>,
           });
           form.reset();

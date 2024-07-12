@@ -223,7 +223,7 @@ const ProjectForm = (props: Props) => {
                     toast({
                         title: "Project added successfully",
                         description:
-                            "Your Project information has been added/ successfully",
+                            "Your Project information has been added successfully",
                         action: <ToastAction altText="okay">Okay</ToastAction>,
                     });
                     form.reset();

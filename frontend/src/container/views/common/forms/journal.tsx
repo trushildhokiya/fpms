@@ -242,9 +242,9 @@ const journalPublication: React.FC = (props: Props) => {
         // console.log(res.data);
         if (res.data.message === "success") {
           toast({
-            title: "Journal updated successfully",
+            title: "Journal added successfully",
             description:
-              "Your Journal information has been added/updated successfully",
+              "Your Journal information has been added successfully",
             action: <ToastAction altText="okay">Okay</ToastAction>,
           });
           form.reset();

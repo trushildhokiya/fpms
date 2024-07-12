@@ -26,33 +26,33 @@ const profileImageUpdate = asyncHandler(async (req, res) => {
   const newImagePath = req.file.path;
 
   try {
-      // Find the faculty by email
-      const user = await Faculty.findOne({ email });
+    // Find the faculty by email
+    const user = await Faculty.findOne({ email });
 
-      // If the faculty is not found, return an error
-      if (!user) {
-          return res.status(404).json({ error: 'Faculty not found' });
-      }
+    // If the faculty is not found, return an error
+    if (!user) {
+      return res.status(404).json({ error: 'Faculty not found' });
+    }
 
-      const oldImageUrl = 'uploads' + user.profileImage.split('5000')[1];
+    const oldImageUrl = 'uploads' + user.profileImage.split('5000')[1];
 
-      const newImageUrl = baseUrl + newImagePath.split('uploads\ '.trim())[1];
+    const newImageUrl = baseUrl + newImagePath.split('uploads\ '.trim())[1];
 
-      user.profileImage = newImageUrl;
+    user.profileImage = newImageUrl;
 
-      await user.save();
+    await user.save();
 
-      if (oldImageUrl && fs.existsSync(oldImageUrl)) {
-          fs.unlinkSync(oldImageUrl);
-      }
+    if (oldImageUrl && fs.existsSync(oldImageUrl)) {
+      fs.unlinkSync(oldImageUrl);
+    }
 
-      res.status(200).json({
-          status: 'success'
-      });
+    res.status(200).json({
+      status: 'success'
+    });
 
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -283,6 +283,50 @@ const getPatentData = asyncHandler(async (req, res) => {
 });
 
 
+const deletePatent = asyncHandler(async (req, res) => {
+
+  const { patent_id } = req.body
+
+  try {
+
+    // Find the patent to get the necessary information
+    const patent = await Patent.findById(patent_id);
+
+    if (!patent) {
+      throw new Error('Patent not found');
+    }
+
+    // Extract the list of faculty emails involved in the patent
+    const facultyEmails = patent.facultiesInvolved;
+
+    // Remove the patent ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { patent: patent_id } }
+    );
+
+
+    // Delete the associated file
+    const filePath = patent.patentCertificate
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    // Delete the patent entry from the database
+    await Patent.findByIdAndDelete(patent_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 const addCopyright = asyncHandler(async (req, res) => {
 
   //get required data
@@ -345,6 +389,50 @@ const getCopyrightData = asyncHandler(async (req, res) => {
 
 });
 
+const deleteCopyright = asyncHandler(async (req, res) => {
+
+  const { copyright_id } = req.body
+
+  try {
+
+    // Find the copyright to get the necessary information
+    const copyright = await Copyright.findById(copyright_id);
+
+    if (!copyright) {
+      throw new Error('Copyright not found');
+    }
+
+    // Extract the list of faculty emails involved in the copyright
+    const facultyEmails = copyright.facultiesInvolved;
+
+    // Remove the copyright ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { copyright: copyright_id } }
+    );
+
+
+    // Delete the associated file
+    const filePath = copyright.copyrightCertificate
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    // Delete the copyright entry from the database
+    await Copyright.findByIdAndDelete(copyright_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 
 const addJournal = asyncHandler(async (req, res) => {
 
@@ -368,7 +456,7 @@ const addJournal = asyncHandler(async (req, res) => {
   data.certificate = certificateURL;
 
   // create entry in journal
- 
+
   const journal = await Journal.create(data);
 
 
@@ -411,6 +499,53 @@ const getJournalData = asyncHandler(async (req, res) => {
   res.status(200).json(journalData);
 
 });
+
+
+const deleteJournal = asyncHandler(async (req, res) => {
+
+  const { journal_id } = req.body
+
+  try {
+
+    // Find the journal to get the necessary information
+    const journal = await Journal.findById(journal_id);
+
+    if (!journal) {
+      throw new Error('Journal not found');
+    }
+
+    // Extract the list of faculty emails involved in the journal
+    const facultyEmails = journal.facultiesInvolved;
+
+    // Remove the journal ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { journal: journal_id } }
+    );
+
+
+    // Delete the associated file
+    if (journal.paper && fs.existsSync(journal.paper)) {
+      fs.unlinkSync(journal.paper);
+    }
+
+    if (journal.certificate && fs.existsSync(journal.certificate)) {
+      fs.unlinkSync(journal.certificate);
+    }
+
+    // Delete the journal entry from the database
+    await Journal.findByIdAndDelete(journal_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 
 const addConference = asyncHandler(async (req, res) => {
@@ -478,6 +613,51 @@ const getConferenceData = asyncHandler(async (req, res) => {
 
 });
 
+const deleteConference = asyncHandler(async (req, res) => {
+
+  const { conference_id } = req.body
+
+  try {
+
+    // Find the conference to get the necessary information
+    const conference = await Conference.findById(conference_id);
+
+    if (!conference) {
+      throw new Error('Conference not found');
+    }
+
+    // Extract the list of faculty emails involved in the conference
+    const facultyEmails = conference.facultiesInvolved;
+
+    // Remove the conference ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { conference: conference_id } }
+    );
+
+
+    // Delete the associated file
+    if (conference.paper && fs.existsSync(conference.paper)) {
+      fs.unlinkSync(conference.paper);
+    }
+
+    if (conference.certificate && fs.existsSync(conference.certificate)) {
+      fs.unlinkSync(conference.certificate);
+    }
+
+    // Delete the conference entry from the database
+    await Conference.findByIdAndDelete(conference_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 const addBook = asyncHandler(async (req, res) => {
 
@@ -944,4 +1124,9 @@ module.exports = {
   addProject,
   getProjectsData,
   profileImageUpdate,
+  deletePatent,
+  deleteCopyright,
+  deleteJournal,
+  deleteConference,
+  
 };

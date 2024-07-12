@@ -314,9 +314,9 @@ const NeedBasedProjectForm = (props: Props) => {
 
                 if (res.data.message === "success") {
                     toast({
-                        title: "Project updated successfully",
+                        title: "Project added successfully",
                         description:
-                            "Your Project information has been added/updated successfully",
+                            "Your Project information has been added successfully",
                         action: <ToastAction className='' altText="okay">Okay</ToastAction>,
                     });
                     form.reset();

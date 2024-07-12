@@ -14,6 +14,7 @@ import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
 import { Knob } from 'primereact/knob'
 import Logo from '@/assets/image/logo.png'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
@@ -103,7 +104,7 @@ const JournalDisplay = (props: Props) => {
 
 
     // template functions
-    
+
     const idBodyTemplate = (rowData: Journal) => {
         return <Badge className='bg-rose-900 bg-opacity-85 font-normal tracking-wide hover:bg-rose-700 text-rose-200'>{rowData._id}</Badge>;
     };
@@ -117,14 +118,14 @@ const JournalDisplay = (props: Props) => {
             <Badge key={department} className='bg-purple-400 hover:bg-purple-300 bg-opacity-85 text-purple-900'>{department}</Badge>
         ));
     };
-    
+
     const facultyInvolvedBodyTemplate = (rowData: Journal) => rowData.facultiesInvolved.join(", ")
 
     const paidUnpaidBodyTemplate = (rowData: Journal) => {
         return rowData.paidUnpaid === 'paid' ? <TicketCheck color="#24a32a" className='h-6 w-6 mx-auto' /> : <TicketX className='w-6 mx-auto h-6' color='#827e81' />
     };
-    
-    const impactFactorBodyTemplate = (rowData:Journal) =>{
+
+    const impactFactorBodyTemplate = (rowData: Journal) => {
         return <Knob value={rowData.impactFactor} min={0} max={1000} size={80} className='flex justify-center' rangeColor='#9c9494' valueColor='#fcba03' readOnly />
     }
 
@@ -137,12 +138,12 @@ const JournalDisplay = (props: Props) => {
     const URLBodyTemplate = (rowData: Journal) => {
         return (
             <Link target='_blank' referrerPolicy='no-referrer' to={rowData.paperUrl}>
-                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+                <Button variant={'link'} className='text-indigo-800' >View</Button>
             </Link>
         )
     }
 
-    
+
     const dateBodyTemplate = (rowData: Journal) => rowData.dateOfPublication.toLocaleDateString()
 
     const certificateBodyTemplate = (rowData: Journal) => {
@@ -162,7 +163,7 @@ const JournalDisplay = (props: Props) => {
     }
 
     const citationBodyTemplate = (rowData: Journal) => {
-        return(
+        return (
             <Button className='rounded-full w-12 h-12 bg-lime-200 text-lime-900 disabled:opacity-100 font-semibold' disabled>{rowData.citationCount}</Button>
         )
     };
@@ -173,25 +174,25 @@ const JournalDisplay = (props: Props) => {
 
 
     // download functions
-    const exportCSV = (selectionOnly:boolean) => {
+    const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
 
 
-    
+
 
     const exportPdf = () => {
 
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape','in',[20,30]);
-    
+        const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
+
         // Column definitions
         interface Column {
             header: string;
             dataKey: keyof Journal;
         }
 
-        const columns:Column[] = [
+        const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
             { header: 'Authors', dataKey: 'authors' },
@@ -243,18 +244,18 @@ const JournalDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5; 
-            const imgHeight = 5;
-    
+            const imgWidth = 3;
+            const imgHeight = 3;
+
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-    
+
             for (let i = 1; i <= doc.getNumberOfPages(); i++) {
                 doc.setPage(i);
                 doc.addImage(Logo, 'PNG', centerX, centerY, imgWidth, imgHeight, undefined, "FAST");
             }
         };
-        
+
         const formatField = (value: any): string => {
             if (Array.isArray(value)) {
                 return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
@@ -268,15 +269,19 @@ const JournalDisplay = (props: Props) => {
         };
 
         // Add autoTable content to the PDF
-        autoTable(doc,{
+        autoTable(doc, {
             head: [columns.map(col => col.header)],
-            body:  data.map(row => columns.map(col => formatField(row[col.dataKey]))),
-            styles:{
-                overflow:'linebreak',
-                font:'times',
-                cellPadding:0.2,
+            body: data.map(row => columns.map(col => formatField(row[col.dataKey]))),
+            styles: {
+                overflow: 'linebreak',
+                font: 'times',
+                cellPadding: 0.2,
             },
-            horizontalPageBreak:true,
+            columnStyles: columns.reduce((acc: any, _, index) => {
+                acc[index] = { cellWidth: 2 };
+                return acc;
+            }, {}),
+            horizontalPageBreak: true,
             didDrawPage: addFooter
 
         });
@@ -303,13 +308,45 @@ const JournalDisplay = (props: Props) => {
         return (
             <>
                 <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                entry and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
 
         );
     };
 
-
+    const handleDelete = (rowData: Journal) => {
+        axios.delete('/common/journal',{
+            data:{
+                journal_id:rowData._id
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+                window.location.reload()
+            }
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
+    }
 
     return (
         <div>
@@ -331,27 +368,27 @@ const JournalDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-journals' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords} entries" footer={footerTemplate} rowsPerPageOptions={[5, 10, 25, 50]}  onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
-                                <Column field="_id" style={{minWidth:'250px'}}  body={idBodyTemplate} header="ID"></Column>
-                                <Column field="title" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="authors" style={{minWidth:'250px'}} filter filterPlaceholder='Search by authors' header="Inventors" body={authorsBodyTemplate}></Column>
-                                <Column field="authorsAffiliation" style={{minWidth:'250px'}} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
-                                <Column field="departmentInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
-                                <Column field="facultiesInvolved" style={{minWidth:'250px'}} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="paidUnpaid" style={{minWidth:'150px'}} align={'center'} filter filterPlaceholder='Search by paid/unpaid' header="Paid/Unpaid" body={paidUnpaidBodyTemplate}></Column>
-                                <Column field="journalType" style={{minWidth:'250px'}} filter filterPlaceholder='Search by type' header="Journal Type" ></Column>
-                                <Column field="journalTitle" style={{minWidth:'250px'}} filter filterPlaceholder='Search by title' header="Journal Title"></Column>
-                                <Column field="issn" style={{minWidth:'250px'}} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
-                                <Column field="impactFactor" style={{minWidth:'250px'}} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
-                                <Column field="pageFrom" style={{minWidth:'150px'}} filter filterPlaceholder='Search by page from' align={'center'} header="Page From"></Column>
-                                <Column field="pageTo" style={{minWidth:'150px'}} filter filterPlaceholder='Search by page to' align={'center'} header="Page To"></Column>
-                                <Column field="dateOfPublication" style={{minWidth:'250px'}} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
-                                <Column field="digitalObjectIdentifier" style={{minWidth:'250px'}} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
-                                <Column field="indexing" style={{minWidth:'250px'}} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
-                                <Column field="citationCount" style={{minWidth:'250px'}} body={citationBodyTemplate} filter filterPlaceholder='Search by count' dataType='numeric' align={'center'} sortable header="Citation Count"></Column>
-                                <Column field="paperUrl" style={{minWidth:'200px'}} filter filterPlaceholder='Search by url' align={'center'} body={URLBodyTemplate} sortable header="Paper URL"></Column>
-                                <Column field="paper" style={{minWidth:'200px'}}  align={'center'} header="Paper" body={paperBodyTemplate}></Column>
-                                <Column field="certificate" style={{minWidth:'200px'}} align={'center'} header="Certificate" body={certificateBodyTemplate}></Column>
+                            <DataTable exportFilename='my-journals' ref={dt} header={header} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords} entries" footer={footerTemplate} rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                                <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
+                                <Column field="authors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by authors' header="Inventors" body={authorsBodyTemplate}></Column>
+                                <Column field="authorsAffiliation" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
+                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
+                                <Column field="paidUnpaid" style={{ minWidth: '150px' }} align={'center'} filter filterPlaceholder='Search by paid/unpaid' header="Paid/Unpaid" body={paidUnpaidBodyTemplate}></Column>
+                                <Column field="journalType" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' header="Journal Type" ></Column>
+                                <Column field="journalTitle" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' header="Journal Title"></Column>
+                                <Column field="issn" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by issn' header="ISBN/ISSN"></Column>
+                                <Column field="impactFactor" style={{ minWidth: '250px' }} dataType='numeric' filter filterPlaceholder='Search by imapct' align={'center'} body={impactFactorBodyTemplate} header="Impact Factor"></Column>
+                                <Column field="pageFrom" style={{ minWidth: '150px' }} filter filterPlaceholder='Search by page from' align={'center'} header="Page From"></Column>
+                                <Column field="pageTo" style={{ minWidth: '150px' }} filter filterPlaceholder='Search by page to' align={'center'} header="Page To"></Column>
+                                <Column field="dateOfPublication" style={{ minWidth: '250px' }} filter dataType='date' align={'center'} filterPlaceholder='Search by date' body={dateBodyTemplate} header="Date Of Publication"></Column>
+                                <Column field="digitalObjectIdentifier" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by doi' header="Digital Object Identifier"></Column>
+                                <Column field="indexing" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by indexing' sortable body={indexingBodyTemplate} header="Indexing"></Column>
+                                <Column field="citationCount" style={{ minWidth: '250px' }} body={citationBodyTemplate} filter filterPlaceholder='Search by count' dataType='numeric' align={'center'} sortable header="Citation Count"></Column>
+                                <Column field="paperUrl" style={{ minWidth: '200px' }} filter filterPlaceholder='Search by url' align={'center'} body={URLBodyTemplate} sortable header="Paper URL"></Column>
+                                <Column field="paper" style={{ minWidth: '200px' }} align={'center'} header="Paper" body={paperBodyTemplate}></Column>
+                                <Column field="certificate" style={{ minWidth: '200px' }} align={'center'} header="Certificate" body={certificateBodyTemplate}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                             </DataTable>
 
