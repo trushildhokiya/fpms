@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import Footer from '@/components/footer/footer'
 import { DatabaseZap, Sheet, SquareTerminal } from 'lucide-react'
 import Manual from '@/assets/pdf/manual.pdf'
+import Loader from '@/utils/pages/Loader';
 
 const Home = () => {
 
@@ -35,7 +36,7 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="h-96 md:h-full">
-                    <Suspense fallback={<div>Loading...</div>}>
+                    <Suspense fallback={<Loader />}>
                         <HourglassModel />
                     </Suspense>
                 </div>

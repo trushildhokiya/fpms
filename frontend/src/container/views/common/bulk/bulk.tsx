@@ -7,13 +7,13 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { DrawerTrigger, DrawerContent, Drawer, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
-import { useMediaQuery } from "react-responsive"
+import { useMediaQuery } from "react-responsive";
 import { useState } from "react";
 import { Download, Lightbulb } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { Dropzone, FileMosaic, ExtFile } from "@files-ui/react";
-import jsonFile from 'jsonfile'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 type Form = {
     value: string;
@@ -21,53 +21,21 @@ type Form = {
 }
 
 const forms: Form[] = [
-    {
-        value: "journal",
-        label: "Journal",
-    },
-    {
-        value: "conference",
-        label: "Conference",
-    },
-    {
-        value: "book",
-        label: "Books",
-    },
-    {
-        value: "book-chapter",
-        label: "Book Chapter",
-    },
-    {
-        value: "patent",
-        label: "Patents",
-    },
-    {
-        value: "copyright",
-        label: "Copyrights",
-    },
-    {
-        value: "award-honors",
-        label: "Awards Honors",
-    },
-    {
-        value: "consultancy",
-        label: "Consultancy",
-    },
-    {
-        value: "projects",
-        label: "Project (Major/Minor)",
-    },
-    {
-        value: "need-based-project",
-        label: "Need Based Projects",
-    },
-]
+    { value: "journal", label: "Journal" },
+    { value: "conference", label: "Conference" },
+    { value: "book", label: "Books" },
+    { value: "book-chapter", label: "Book Chapter" },
+    { value: "patent", label: "Patents" },
+    { value: "copyright", label: "Copyrights" },
+    { value: "award-honors", label: "Awards Honors" },
+    { value: "consultancy", label: "Consultancy" },
+    { value: "projects", label: "Project (Major/Minor)" },
+    { value: "need-based-project", label: "Need Based Projects" },
+];
 
 export function ComboBoxResponsive(props: any) {
     const [open, setOpen] = React.useState(false);
-    const isDesktop = useMediaQuery({
-        query: "(min-width: 768px)"
-    });
+    const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
 
     if (isDesktop) {
         return (
@@ -81,7 +49,7 @@ export function ComboBoxResponsive(props: any) {
                     <StatusList setOpen={setOpen} setSelectedStatus={props.setSelectedStatus} />
                 </PopoverContent>
             </Popover>
-        )
+        );
     }
 
     return (
@@ -99,16 +67,10 @@ export function ComboBoxResponsive(props: any) {
                 </div>
             </DrawerContent>
         </Drawer>
-    )
+    );
 }
 
-function StatusList({
-    setOpen,
-    setSelectedStatus,
-}: {
-    setOpen: (open: boolean) => void
-    setSelectedStatus: (status: Form | null) => void
-}) {
+function StatusList({ setOpen, setSelectedStatus }: { setOpen: (open: boolean) => void, setSelectedStatus: (status: Form | null) => void }) {
     return (
         <Command>
             <CommandInput placeholder="Filter forms..." />
@@ -120,12 +82,10 @@ function StatusList({
                             key={form.value}
                             value={form.value}
                             onSelect={(value) => {
-                                setSelectedStatus(
-                                    forms.find((priority) => priority.value === value) || null
-                                )
-                                setOpen(false)
+                                setSelectedStatus(forms.find((priority) => priority.value === value) || null);
+                                setOpen(false);
                             }}
-                            disabled={form.value === "projects" || form.value==="need-based-project" || form.value==="consultancy"}
+                            disabled={form.value === "projects" || form.value === "need-based-project" || form.value === "consultancy"}
                         >
                             {form.label}
                         </CommandItem>
@@ -133,7 +93,7 @@ function StatusList({
                 </CommandGroup>
             </CommandList>
         </Command>
-    )
+    );
 }
 
 const BulkUpload = () => {
@@ -141,10 +101,11 @@ const BulkUpload = () => {
     const user = useSelector((state: any) => state.user);
     const [selectedStatus, setSelectedStatus] = useState<Form | null>(null);
     const [files, setFiles] = React.useState<ExtFile[]>([]);
+    const [showAlertDialog, setShowAlertDialog] = useState(false);
+    const [alertDialogMessage, setAlertDialogMessage] = useState("");
 
-    const updateFiles = (incommingFiles: ExtFile[]) => {
-
-        setFiles(incommingFiles);
+    const updateFiles = (incomingFiles: ExtFile[]) => {
+        setFiles(incomingFiles);
     };
 
     const removeFile = (id: string | number | undefined) => {
@@ -152,60 +113,46 @@ const BulkUpload = () => {
     };
 
     const handleUpload = async () => {
-
-        if (files.length == 0) {
-            console.error("No files found")
-            return
+        if (files.length === 0) {
+            setAlertDialogMessage("No file found. Please upload a valid JSON file.");
+            setShowAlertDialog(true);
+            return;
         }
 
-        if(files[0].type!='application/json'){
-            console.error("Invalid file type found")
-            return
+        if (files[0].type !== 'application/json') {
+            setAlertDialogMessage("Invalid file type uploaded. Please upload valid file type");
+            setShowAlertDialog(true);
+            return;
         }
 
-        if(!selectedStatus){
-            console.error("No form type entered")
-            return
+        if (!selectedStatus) {
+            setAlertDialogMessage("Form type missing. Please select form type from above dropdown");
+            setShowAlertDialog(true);
+            return;
         }
 
-        let data = await files[0].file!.text()
-        data = JSON.parse(data)
+        let data = await files[0].file!.text();
+        data = JSON.parse(data);
         console.log(data);
-        
-
     };
-
-
-
 
     const handleDownload = () => {
         if (selectedStatus) {
-            // Example: Replace with your actual file path in the public folder
             const filePath = `/src/utils/data/${selectedStatus.value}.json`;
-
-            // Create a link element
             const link = document.createElement('a');
             link.href = filePath;
             link.setAttribute('download', `${selectedStatus.value}.json`);
-
-            // Append the link to the body
             document.body.appendChild(link);
-
-            // Trigger the download
             link.click();
-
-            // Clean up: Remove the link from the body
             document.body.removeChild(link);
         } else {
             console.log("No form type selected.");
         }
-
     }
 
     return (
         <div>
             {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
-
             <div className="container font-Poppins my-10">
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
                     Bulk Upload
@@ -222,7 +169,9 @@ const BulkUpload = () => {
                                 <ComboBoxResponsive setSelectedStatus={setSelectedStatus} selectedStatus={selectedStatus} />
                             </div>
                             <div className="flex justify-end w-full">
-                                <Button className=" md:w-[50%] w-full bg-red-800" size={"lg"} onClick={handleDownload}><Download className="mr-2 w-6 h-6" />Download</Button>
+                                <Button className=" md:w-[50%] w-full bg-red-800" size={"lg"} onClick={handleDownload}>
+                                    <Download className="mr-2 w-6 h-6" />Download
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
@@ -232,14 +181,14 @@ const BulkUpload = () => {
                                 <Lightbulb className="h-5 w-5 fill-amber-500 animate-pulse" />
                                 <AlertTitle>Support</AlertTitle>
                                 <AlertDescription className="text-sm leading-6 font-Poppins text-gray-700 my-3">
-                                    To edit the json files you can use any json editor.We suggest using json editor online for ease of editing and provides different views of data and dimple interface.Click here to open json editor online
+                                    To edit the JSON files you can use any JSON editor. We suggest using JSON Editor Online for ease of editing and provides different views of data and a simple interface. Click here to open JSON Editor Online.
                                 </AlertDescription>
                             </Alert>
                         </Link>
                     </CardFooter>
                 </Card>
 
-                <div className="my-10 w-full ">
+                <div className="my-10 w-full">
                     <Dropzone
                         onChange={updateFiles}
                         value={files}
@@ -253,7 +202,7 @@ const BulkUpload = () => {
                             cleanButton: { style: { backgroundColor: "#ff8175" } },
                             uploadButton: { style: { textTransform: "uppercase", backgroundColor: "#32a852" }, onClick: handleUpload, label: "Submit" },
                         }}
-                        footerConfig={{ customMessage: "Only JSON files upto 5MB are allowed" }}
+                        footerConfig={{ customMessage: "Only JSON files up to 5MB are allowed" }}
                         label={"📃 Drop Files here"}
                         behaviour="replace"
                     >
@@ -263,6 +212,19 @@ const BulkUpload = () => {
                     </Dropzone>
                 </div>
 
+                {showAlertDialog && (
+                    <AlertDialog open={showAlertDialog} onOpenChange={setShowAlertDialog}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="text-gray-800">Something Went Wrong</AlertDialogTitle>
+                                <AlertDialogDescription className="text-gray-600">{alertDialogMessage}</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-green-600 text-white capitalize hover:text-white hover:bg-green-700" onClick={() => setShowAlertDialog(false)}>Understood</AlertDialogCancel>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
             </div>
         </div>
     );

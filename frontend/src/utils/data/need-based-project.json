@@ -1,6 +1,5 @@
 [
   {
-    "_id": "667fd659fbd8912692bf0c28",
     "projectTitle": "Air Defene AI",
     "description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
     "outcomes": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
@@ -23,66 +22,22 @@
         "name": "Jack Mickey",
         "department": "Computer",
         "contact": 9988541210,
-        "email": "jack.m@somaiya.edu",
-        "_id": "667fd659fbd8912692bf0c29"
+        "email": "jack.m@somaiya.edu"
       },
       {
         "name": "Juli Omen",
         "department": "Information Technology",
         "contact": 8599741085,
-        "email": "juli.o@somaiya.edu",
-        "_id": "667fd659fbd8912692bf0c2a"
+        "email": "juli.o@somaiya.edu"
       }
     ],
     "collaborationType": "academic",
     "institutionUrl": "https://www.india.gov.in/",
-    "startDate": "2021-06-10T18:30:00.000Z",
-    "endDate": "2022-09-22T18:30:00.000Z",
-    "sanctionedDocuments": "uploads\\need-based-projects\\needBproject-file-1719653977148-499864353.pdf",
-    "projectReport": "uploads\\need-based-projects\\needBproject-file-1719653977150-827579746.pdf",
-    "completionLetter": "uploads\\need-based-projects\\needBproject-file-1719653977153-169490043.pdf",
-    "visitDocuments": "uploads\\need-based-projects\\needBproject-file-1719653977156-548820908.pdf",
-    "createdAt": "2024-06-29T09:39:37.173Z",
-    "updatedAt": "2024-06-29T09:39:37.173Z",
-    "__v": 0
-  },
-  {
-    "_id": "6687ce4326f31dd220f27ebb",
-    "projectTitle": "Ancovience Missile",
-    "description": "A missile that can be fired from underwater , from satellite and travel at speed of 5Mach",
-    "outcomes": "Destruction !!!!",
-    "institutionAddress": " DRDO Bhawan, Rajaji Marg, New Delhi-110011",
-    "departmentInvolved": [
-      "Computer"
-    ],
-    "facultiesInvolved": [
-      "trushil.d@somaiya.edu",
-      "test1@somaiya.edu"
-    ],
-    "institutionName": "DRDO",
-    "facultyCoordinatorName": "Trushil Dhokiya",
-    "facultyCoordinatorDepartment": "Computer",
-    "facultyCoordinatorContact": "9892124325",
-    "facultyCoordinatorEmail": "trushil.d@somaiya.edu",
-    "students": [
-      {
-        "name": "Owen Heinsberg",
-        "department": "Computer",
-        "contact": 7458963210,
-        "email": "owen.hb@somaiya.edu",
-        "_id": "6687ce4326f31dd220f27ebc"
-      }
-    ],
-    "collaborationType": "industrial",
-    "institutionUrl": "https://drdo.gov.in/drdo/",
-    "startDate": "2020-07-15T18:30:00.000Z",
-    "endDate": "2024-03-13T18:30:00.000Z",
-    "sanctionedDocuments": "uploads\\need-based-projects\\needBproject-file-1720176195061-281427379.pdf",
-    "projectReport": "uploads\\need-based-projects\\needBproject-file-1720176195065-299655791.pdf",
-    "completionLetter": "uploads\\need-based-projects\\needBproject-file-1720176195066-656057404.pdf",
-    "visitDocuments": "uploads\\need-based-projects\\needBproject-file-1720176195065-533489054.pdf",
-    "createdAt": "2024-07-05T10:43:15.081Z",
-    "updatedAt": "2024-07-05T10:43:15.081Z",
-    "__v": 0
+    "startDate": "10-06-2021",
+    "endDate": "22-09-2022",
+    "sanctionedDocuments": "link to public access file",
+    "projectReport": "link to public access file",
+    "completionLetter": "link to public access file",
+    "visitDocuments": "link to public access file"
   }
 ]
