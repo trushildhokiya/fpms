@@ -1,13 +1,9 @@
 [
   {
-    "_id": "66822ad799d81ccd863f4d3c",
     "title": "Certificate for best Patent",
     "awardingBody": "USPTO",
     "year": 2021,
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    "proof": "uploads\\award-honors\\award-honors-proof-1719806679367-863765727.pdf",
-    "createdAt": "2024-07-01T04:04:39.379Z",
-    "updatedAt": "2024-07-01T04:04:39.379Z",
-    "__v": 0
+    "description": "short description",
+    "proof": "link to public access document"
   }
 ]

@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button'
 import CommonNavbar from '../../components/navbar/CommonNavbar'
-import HourglassModel from '@/components/model/hourglass-model'
+import { Suspense, lazy } from 'react';
+const HourglassModel = lazy(() => import('@/components/model/hourglass-model'));
 import { Link } from 'react-router-dom'
 import Footer from '@/components/footer/footer'
 import { DatabaseZap, Sheet, SquareTerminal } from 'lucide-react'
-
 import Manual from '@/assets/pdf/manual.pdf'
 
 const Home = () => {
@@ -35,7 +35,9 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="h-96 md:h-full">
-                    <HourglassModel />
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <HourglassModel />
+                    </Suspense>
                 </div>
             </div>
 

@@ -1,11 +1,14 @@
 import { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useAnimations, Environment, Text } from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, Environment, Text, Preload } from '@react-three/drei';
 import { LoopRepeat, Group } from 'three';
+
+// Preload the model
+useGLTF.preload('/scene.gltf', true);
 
 const Hourglass = () => {
     const group = useRef<Group>(null);
-    const { scene, animations } = useGLTF('/scene.gltf',true) as any; // Enable Draco compression
+    const { scene, animations } = useGLTF('/scene.gltf', true) as any; // Enable Draco compression
     const { actions, mixer } = useAnimations(animations, group);
 
     useEffect(() => {
@@ -84,6 +87,7 @@ const HourglassModel = () => {
             <CameraControls />
             <OrbitControls />
             <Environment backgroundIntensity={0.8} environmentIntensity={0.5} files={'/scene_hdri.exr'} />
+            <Preload all />
         </Canvas>
     );
 };

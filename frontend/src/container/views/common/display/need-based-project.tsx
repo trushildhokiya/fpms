@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/drawer"
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import Logo from '@/assets/image/logo.png'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
@@ -270,7 +271,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
 
     const exportPdf = () => {
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape', 'in', [20, 50]);
+        const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
 
         // Column definitions
         interface Column {
@@ -293,7 +294,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
             { header: 'Faculty Coordinator Department', dataKey: 'facultyCoordinatorDepartment' },
             { header: 'Faculty Coordinator Contact', dataKey: 'facultyCoordinatorContact' },
             { header: 'Faculty Coordinator Email', dataKey: 'facultyCoordinatorEmail' },
-            { header: 'Students', dataKey: 'students' },
+            // { header: 'Students', dataKey: 'students' },
             { header: 'Start Date', dataKey: 'startDate' },
             { header: 'End Date', dataKey: 'endDate' },
             { header: 'Sanctioned Documents', dataKey: 'sanctionedDocuments' },
@@ -344,12 +345,12 @@ const NeedBasedProjectDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5; 
-            const imgHeight = 5;
-    
+            const imgWidth = 3;
+            const imgHeight = 3;
+
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
-    
+
             for (let i = 1; i <= doc.getNumberOfPages(); i++) {
                 doc.setPage(i);
                 doc.addImage(Logo, 'PNG', centerX, centerY, imgWidth, imgHeight, undefined, "FAST");
@@ -365,17 +366,16 @@ const NeedBasedProjectDisplay = (props: Props) => {
                 font: 'times',
                 cellPadding: 0.2,
             },
-            columnStyles: {
-                2: { cellWidth: 10 },
-                3: { cellWidth: 10 },
-                14: { cellWidth: 10 },
-            },
+            columnStyles: columns.reduce((acc: any, _, index) => {
+                acc[index] = { cellWidth: 2 };
+                return acc;
+            }, {}),
             horizontalPageBreak: true,
-            didDrawPage:addFooter
+            didDrawPage: addFooter
         });
 
         addBackgroundImage()
-        
+
         // Save the PDF
         doc.save('need-based-projects-data.pdf');
     };
@@ -433,11 +433,45 @@ const NeedBasedProjectDisplay = (props: Props) => {
         return (
             <>
                 <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                entry and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
 
         );
     };
+
+    const handleDelete = (rowData: Project) => {
+        axios.delete('/common/need-based-project',{
+            data:{
+                project_id:rowData._id
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+                window.location.reload()
+            }
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
+    }
 
 
     return (
@@ -469,7 +503,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
                                     <div className="container">
                                         <iframe className='w-full aspect-video rounded-3xl' src="https://www.youtube-nocookie.com/embed/PKZRWOB8Mo8?si=7TSidVH9uFSBGBa6" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                                     </div>
-                                   
+
                                 </DrawerContent>
                             </Drawer>
                         </AlertDescription>
@@ -496,7 +530,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
                                 <Column field="outcomes" style={{ minWidth: '250px' }} body={outcomeBodyTemplate} sortable header="Outcomes"></Column>
                                 <Column field="departmentInvolved" sortable style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
                                 <Column field="facultiesInvolved" sortable style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="institutionName"sortable  style={{ minWidth: '250px' }} filter filterPlaceholder='Search by institution' header="Institution Name"></Column>
+                                <Column field="institutionName" sortable style={{ minWidth: '250px' }} filter filterPlaceholder='Search by institution' header="Institution Name"></Column>
                                 <Column field="institutionAddress" sortable style={{ minWidth: '250px' }} filter filterPlaceholder='Search by address' header="Institution Address"></Column>
                                 <Column field="institutionUrl" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by url' body={urlBodyTemplate} header="Institution URL"></Column>
                                 <Column field="collaborationType" sortable style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' body={collaborationBodyTemplate} header="Collaboration Type"></Column>

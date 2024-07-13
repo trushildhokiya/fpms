@@ -937,6 +937,60 @@ const getNeedBasedProjectData = asyncHandler(async (req, res) => {
 });
 
 
+const deleteNeedBasedProject = asyncHandler(async (req, res) => {
+
+  const { project_id } = req.body
+
+  try {
+
+    // Find the project to get the necessary information
+    const project = await NeedBasedProject.findById(project_id);
+
+    if (!project) {
+      throw new Error('Project not found');
+    }
+
+    // Delete the associated file
+    if (project.sanctionedDocuments && fs.existsSync(project.sanctionedDocuments)) {
+      fs.unlinkSync(project.sanctionedDocuments);
+    }
+
+    if (project.projectReport && fs.existsSync(project.projectReport)) {
+      fs.unlinkSync(project.projectReport);
+    }
+
+    if (project.completionLetter && fs.existsSync(project.completionLetter)) {
+      fs.unlinkSync(project.completionLetter);
+    }
+
+    if (project.visitDocuments && fs.existsSync(project.visitDocuments)) {
+      fs.unlinkSync(project.visitDocuments);
+    }
+
+    // Extract the list of faculty emails involved in the project
+    const facultyEmails = project.facultiesInvolved;
+
+    // Remove the project ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { needBasedProjects: project_id } }
+    );
+
+    // Delete the project entry from the database
+    await NeedBasedProject.findByIdAndDelete(project_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+
 const addAwardHonors = asyncHandler(async (req, res) => {
 
   //get required data
@@ -1125,6 +1179,61 @@ const getConsultancyData = asyncHandler(async (req, res) => {
 
 });
 
+const deleteConsultancy = asyncHandler(async (req, res) => {
+
+  const { consultancy_id } = req.body
+
+  try {
+
+    // Find the consultancy to get the necessary information
+    const consultancy = await Consultancy.findById(consultancy_id);
+
+    if (!consultancy) {
+      throw new Error('Consultancy not found');
+    }
+
+    // Delete the associated file
+    if (consultancy.sanctionedOrder && fs.existsSync(consultancy.sanctionedOrder)) {
+      fs.unlinkSync(consultancy.sanctionedOrder);
+    }
+
+    if (consultancy.transactionProof && fs.existsSync(consultancy.transactionProof)) {
+      fs.unlinkSync(consultancy.transactionProof);
+    }
+
+    if (consultancy.completionCertificate && fs.existsSync(consultancy.completionCertificate)) {
+      fs.unlinkSync(consultancy.completionCertificate);
+    }
+
+    if (consultancy.supportingDocuments && fs.existsSync(consultancy.supportingDocuments)) {
+      fs.unlinkSync(consultancy.supportingDocuments);
+    }
+
+    // Delete associated transactions
+    await Transaction.deleteMany({ _id: { $in: consultancy.transactionDetails } });
+
+    // Extract the list of faculty emails involved in the consultancy
+    const facultyEmails = consultancy.facultiesInvolved;
+
+    // Remove the consultancy ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { consultancy: consultancy_id } }
+    );
+
+    // Delete the consultancy entry from the database
+    await Consultancy.findByIdAndDelete(consultancy_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 const addProject = asyncHandler(async (req, res) => {
 
@@ -1218,6 +1327,62 @@ const getProjectsData = asyncHandler(async (req, res) => {
 });
 
 
+const deleteProject = asyncHandler(async (req, res) => {
+
+  const { project_id } = req.body
+
+  try {
+
+    // Find the project to get the necessary information
+    const project = await Project.findById(project_id);
+
+    if (!project) {
+      throw new Error('Project not found');
+    }
+
+    // Delete the associated file
+    if (project.sanctionedOrder && fs.existsSync(project.sanctionedOrder)) {
+      fs.unlinkSync(project.sanctionedOrder);
+    }
+
+    if (project.transactionProof && fs.existsSync(project.transactionProof)) {
+      fs.unlinkSync(project.transactionProof);
+    }
+
+    if (project.completionCertificate && fs.existsSync(project.completionCertificate)) {
+      fs.unlinkSync(project.completionCertificate);
+    }
+
+    if (project.supportingDocuments && fs.existsSync(project.supportingDocuments)) {
+      fs.unlinkSync(project.supportingDocuments);
+    }
+
+    // Delete associated transactions
+    await Transaction.deleteMany({ _id: { $in: project.transactionDetails } });
+
+    // Extract the list of faculty emails involved in the project
+    const facultyEmails = project.facultiesInvolved;
+
+    // Remove the project ID from all related faculties
+    await Faculty.updateMany(
+      { email: { $in: facultyEmails } },
+      { $pull: { projects: project_id } }
+    );
+
+    // Delete the project entry from the database
+    await Project.findByIdAndDelete(project_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 module.exports = {
   addProfile,
   getProfileData,
@@ -1253,5 +1418,7 @@ module.exports = {
   deleteBook,
   deleteBookChapter,
   deleteAwardsHonors,
-  
+  deleteProject,
+  deleteNeedBasedProject,
+  deleteConsultancy,
 };

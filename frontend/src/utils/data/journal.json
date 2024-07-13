@@ -1,6 +1,5 @@
 [
   {
-    "_id": "668e26b6c5ecd5140a908feb",
     "title": " Artifical Intelligence A deep dive",
     "authors": [
       "Mark Benny",
@@ -24,18 +23,15 @@
     "impactFactor": 78,
     "pageFrom": 12,
     "pageTo": 40,
-    "dateOfPublication": "2019-07-17T18:30:00.000Z",
+    "dateOfPublication": "10-12-2022",
     "digitalObjectIdentifier": "doi-8645322",
     "indexing": [
       "Scopus",
       "Web of Science"
     ],
-    "paperUrl": "https://github.com/trushildhokiya/fpms/commits/dev/",
+    "paperUrl": "link to paper",
     "citationCount": 45,
-    "paper": "uploads\\journal\\journalproof-1720592054729-684750780.pdf",
-    "certificate": "uploads\\journal\\journalproof-1720592054731-324603370.pdf",
-    "createdAt": "2024-07-10T06:14:14.742Z",
-    "updatedAt": "2024-07-10T06:14:14.742Z",
-    "__v": 0
+    "paper": "link to public access document",
+    "certificate": "link to public access document"
   }
 ]

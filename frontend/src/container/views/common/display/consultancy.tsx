@@ -25,6 +25,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { NumericFormat } from 'react-number-format';
 import Logo from '@/assets/image/logo.png'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
@@ -327,7 +328,7 @@ const ConsultancyDisplay = (props: Props) => {
 
     const exportPdf = () => {
         // Initialize jsPDF instance
-        const doc = new jsPDF('landscape', 'in', [20, 50]);
+        const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
 
         // Column definitions
         interface Column {
@@ -348,7 +349,7 @@ const ConsultancyDisplay = (props: Props) => {
             { header: 'Sanctioned Amount', dataKey: 'sanctionedAmount' },
             { header: 'Start Date', dataKey: 'startDate' },
             { header: 'End Date', dataKey: 'endDate' },
-            { header: 'Transaction Details', dataKey: 'transactionDetails' },
+            // { header: 'Transaction Details', dataKey: 'transactionDetails' },
             { header: 'Total Grant Received', dataKey: 'totalGrantReceived' },
             { header: 'Domain', dataKey: 'domain' },
             { header: 'Area of Expertise', dataKey: 'areaOfExpertise' },
@@ -401,8 +402,8 @@ const ConsultancyDisplay = (props: Props) => {
 
         // add background logo
         const addBackgroundImage = () => {
-            const imgWidth = 5;
-            const imgHeight = 5;
+            const imgWidth = 3;
+            const imgHeight = 3;
 
             const centerX = (doc.internal.pageSize.getWidth() - imgWidth) / 2;
             const centerY = (doc.internal.pageSize.getHeight() - imgHeight) / 2;
@@ -422,10 +423,10 @@ const ConsultancyDisplay = (props: Props) => {
                 font: 'times',
                 cellPadding: 0.2,
             },
-            columnStyles: {
-                12: { cellWidth: 10 },
-                16: { cellWidth: 10 },
-            },
+            columnStyles: columns.reduce((acc: any, _, index) => {
+                acc[index] = { cellWidth: 2 };
+                return acc;
+            }, {}),
             horizontalPageBreak: true,
             didDrawPage: addFooter
         });
@@ -473,11 +474,45 @@ const ConsultancyDisplay = (props: Props) => {
         return (
             <>
                 <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
-                <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                entry and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
 
         );
     };
+
+    const handleDelete = (rowData: Consultancy) => {
+        axios.delete('/common/consultancy',{
+            data:{
+                consultancy_id:rowData._id
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            if(res.data.message==='success'){
+                window.location.reload()
+            }
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
+    }
 
 
     return (

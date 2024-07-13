@@ -37,6 +37,9 @@ const {
   deleteBook,
   deleteBookChapter,
   deleteAwardsHonors,
+  deleteProject,
+  deleteConsultancy,
+  deleteNeedBasedProject,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2887,6 +2890,8 @@ router.route('/need-based-project').post(facultyAuthenticator, needBasedProjectF
  */
 router.route('/need-based-project').get(facultyAuthenticator, getNeedBasedProjectData)
 
+router.route('/need-based-project').delete(facultyAuthenticator,deleteNeedBasedProject)
+
 
 router.route('/award-honors').post(facultyAuthenticator, awardHonorsFileUpload.single('proof'), addAwardHonors)
 
@@ -2904,6 +2909,9 @@ router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fi
 
 router.route('/consultancy').get(facultyAuthenticator, getConsultancyData)
 
+router.route('/consultancy').delete(facultyAuthenticator,deleteConsultancy)
+
+
 router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
   { name: 'sanctionedOrder', maxCount: 1 },
   { name: 'transactionProof', maxCount: 1 },
@@ -2913,5 +2921,7 @@ router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
 
 
 router.route('/projects').get(facultyAuthenticator, getProjectsData)
+
+router.route('/projects').delete(facultyAuthenticator,deleteProject)
 
 module.exports = router;

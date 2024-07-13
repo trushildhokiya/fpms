@@ -1,7 +1,6 @@
 [
   {
-    "_id": "667fc80d9c5afecdd47ca018",
-    "bookTitle": "Deep Learning A failed approcah to statistics",
+    "bookTitle": "Deep Learning A approcah to statistics",
     "authors": [
       "Mark Benny",
       "John Polaris"
@@ -24,52 +23,14 @@
     "impactFactor": 3,
     "doi": "doi-86444",
     "intendedAudience": "researchers",
-    "description": "A book describing why deep learning is not useful ",
+    "description": "short description",
     "indexing": [
       "Scopus",
       "Web of Science"
     ],
-    "bookUrl": "https://www.amazon.in/Deep-Learning-Approach-Andrew-Glassner/dp/1718500726",
+    "bookUrl": "link to book",
     "citationCount": 2,
-    "proof": "uploads\\book\\bookproof-1719650317602-773779448.pdf",
-    "createdAt": "2024-06-29T08:38:37.616Z",
-    "updatedAt": "2024-06-29T08:38:37.616Z",
-    "__v": 0,
+    "proof": "link to public access document",
     "dateOfPublication": "2023-07-17T18:30:00.000Z"
-  },
-  {
-    "_id": "668778b60833adf0e81f281b",
-    "bookTitle": "Image Processing using AI",
-    "authors": [
-      "Trushil Dhokiya",
-      "Mark Benny"
-    ],
-    "authorsAffiliation": [
-      "Oracle"
-    ],
-    "departmentInvolved": [
-      "Computer"
-    ],
-    "facultiesInvolved": [
-      "trushil.d@somaiya.edu",
-      "test1@somaiya.edu"
-    ],
-    "publisherName": "Oracle Publications",
-    "nationalInternational": "international",
-    "issn": "ISBN98563230",
-    "impactFactor": 985,
-    "doi": "doi7864531",
-    "intendedAudience": "researchers",
-    "description": "A book about image processing using AI",
-    "indexing": [
-      "Scopus"
-    ],
-    "bookUrl": "https://www.oracle.com/in/java/",
-    "citationCount": 111,
-    "proof": "uploads\\book\\bookproof-1720154294766-322666949.pdf",
-    "createdAt": "2024-07-05T04:38:14.781Z",
-    "updatedAt": "2024-07-05T04:38:14.781Z",
-    "__v": 0,
-    "dateOfPublication": "2024-07-17T18:30:00.000Z"
   }
 ]

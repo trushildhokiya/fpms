@@ -140,13 +140,13 @@ const BulkUpload = () => {
     // Constants
     const user = useSelector((state: any) => state.user);
     const [selectedStatus, setSelectedStatus] = useState<Form | null>(null);
-
     const [files, setFiles] = React.useState<ExtFile[]>([]);
+
     const updateFiles = (incommingFiles: ExtFile[]) => {
-        //do something with the files
+
         setFiles(incommingFiles);
-        //even your own upload implementation
     };
+
     const removeFile = (id: string | number | undefined) => {
         setFiles(files.filter((x: ExtFile) => x.id !== id));
     };
@@ -155,10 +155,23 @@ const BulkUpload = () => {
 
         if (files.length == 0) {
             console.error("No files found")
+            return
         }
+
+        if(files[0].type!='application/json'){
+            console.error("Invalid file type found")
+            return
+        }
+
+        if(!selectedStatus){
+            console.error("No form type entered")
+            return
+        }
+
         let data = await files[0].file!.text()
         data = JSON.parse(data)
-
+        console.log(data);
+        
 
     };
 
