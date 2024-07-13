@@ -13,7 +13,8 @@ import { Download, Lightbulb } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { Dropzone, FileMosaic, ExtFile } from "@files-ui/react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import axios from "axios";
 
 type Form = {
     value: string;
@@ -131,9 +132,21 @@ const BulkUpload = () => {
             return;
         }
 
-        let data = await files[0].file!.text();
-        data = JSON.parse(data);
-        console.log(data);
+        let formData = await files[0].file!.text();
+        formData = JSON.parse(formData);
+        
+        const data={
+            formData:formData,
+            formType:selectedStatus.value
+        }
+
+        axios.post('/common/bulk-upload',data)
+        .then((res)=>{
+            console.log(res);
+        })
+        .catch((err)=>{
+            console.error(err)
+        })
     };
 
     const handleDownload = () => {

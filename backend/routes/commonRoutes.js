@@ -40,6 +40,7 @@ const {
   deleteProject,
   deleteConsultancy,
   deleteNeedBasedProject,
+  bulkUploader,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2923,5 +2924,7 @@ router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
 router.route('/projects').get(facultyAuthenticator, getProjectsData)
 
 router.route('/projects').delete(facultyAuthenticator,deleteProject)
+
+router.route('/bulk-upload').post(facultyAuthenticator,bulkUploader)
 
 module.exports = router;

@@ -12,6 +12,8 @@ const Consultancy = require('../models/consultancy')
 const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
 const fs = require('fs');
+const download = require('download')
+
 /**
  * CONSTANTS
  */
@@ -1383,6 +1385,134 @@ const deleteProject = asyncHandler(async (req, res) => {
 
 })
 
+
+/**
+ * BULK UPLOAD LOGIC
+ */
+
+const bulkUploader = asyncHandler(async (req, res) => {
+
+  const { formData, formType } = req.body
+
+  switch (formType) {
+
+    case "journal":
+      await journalBulkUploader(formData)
+      break;
+
+    case "conference":
+      await conferenceBulkUploader(formData)
+      break;
+
+    case "book":
+      await bookBulkUploader(formData);
+      break;
+
+    case "book-chapter":
+      await bookChapterBulkUploader(formData);
+      break;
+
+    case "patent":
+      await patentBulkUploader(formData);
+      break;
+
+    case "copyright":
+      await copyrightBulkUploader(formData);
+      break;
+
+    case "award-honors":
+      await awardsHonorsBulkUploader(formData);
+      break;
+
+    case "consultancy":
+      await consultancyBulkUploader(formData);
+      break;
+
+    case "projects":
+      await projectBulkUploader(formData);
+      break;
+
+    case "need-based-project":
+      await needBasedProjectBulkUploader(formData);
+      break;
+
+    default:
+      console.error("Unknown form type");
+      res.status(400).json({ message: 'Unknown form type' });
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const patentBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const copyrightBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const journalBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const conferenceBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const bookBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const bookChapterBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const projectBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const needBasedProjectBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const consultancyBulkUploader = async (formData) => {
+  console.log(formData)
+  return
+}
+const awardsHonorsBulkUploader = async (formData) => {
+
+  try {
+    const fileId = extractFileId('https://drive.google.com/file/d/1SXCkm_5AJZnpSPslR6cGlId08HlVsXna/view?usp=sharing');
+    const downloadUrl = generateDownloadLink(fileId);
+    await download(downloadUrl, 'uploads');
+    console.log('Download completed');
+  } catch (err) {
+    console.error('Error downloading the file:', err);
+  }
+  console.log(formData)
+  return
+}
+
+// Function to extract the file ID from the shared Google Drive link
+function extractFileId(url) {
+  const match = url.match(/\/d\/(.*?)\//);
+  if (match && match[1]) {
+    return match[1];
+  } else {
+    throw new Error('Invalid Google Drive URL');
+  }
+}
+
+// Function to generate the direct download link
+function generateDownloadLink(fileId) {
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+}
+
+
 module.exports = {
   addProfile,
   getProfileData,
@@ -1421,4 +1551,5 @@ module.exports = {
   deleteProject,
   deleteNeedBasedProject,
   deleteConsultancy,
+  bulkUploader
 };
