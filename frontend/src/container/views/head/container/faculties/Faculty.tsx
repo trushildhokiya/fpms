@@ -97,7 +97,7 @@ const Faculty = () => {
 
 
     useEffect(() => {
-        
+
         // Function to create and append a link element for the CSS file
         const addCSS = () => {
             const link = document.createElement('link');
@@ -154,13 +154,16 @@ const Faculty = () => {
 
     const dt = useRef<any>(null)
 
-    const profileImageTemplate = (option: any) => {
+    const emailImageBodyTemplate = (option: any) => {
         return (
             <>
-                <Avatar>
-                    <AvatarImage src={option.profileImage} />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
+                <div className="flex flex-row flex-wrap gap-3 items-center">
+                    <Avatar>
+                        <AvatarImage src={option.profileImage} />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    {option.email}
+                </div>
             </>
         )
     }
@@ -184,7 +187,7 @@ const Faculty = () => {
     const verifiedTemplate = (option: any) => {
         return (
             <>
-                {option.verified ? <BadgeCheck color="#00a303" /> : <BadgeX color="#c80404" />}
+                {option.verified ? <BadgeCheck color="#00a303" className="mx-auto" /> : <BadgeX color="#c80404" className="mx-auto" />}
             </>
         )
     }
@@ -273,13 +276,12 @@ const Faculty = () => {
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="my-2">
-                                    <DataTable ref={dt} value={data} size="large" paginator rows={5} filterDisplay="row" >
-                                        <Column field="profileImage" header="Image" body={profileImageTemplate}></Column>
-                                        <Column field="email" header="Email" filter filterPlaceholder="Seach By Email"></Column>
+                                    <DataTable ref={dt} value={data} size="large" showGridlines paginator rows={5} >
+                                        <Column field="email" header="Email" body={emailImageBodyTemplate} filter filterPlaceholder="Seach By Email"></Column>
                                         <Column field="department" header="Department"></Column>
                                         <Column field="tags" header="Tags" body={tagsTemplate} filter filterPlaceholder="Select tags"></Column>
-                                        <Column field="verified" header="Verified" body={verifiedTemplate} filter filterPlaceholder="Filter by verification (T/F)" dataType="boolean"></Column>
-                                        <Column field='approval' header='Toggle Approval' body={approvalTemplate}></Column>
+                                        <Column field="verified" align={"center"} header="Verified" body={verifiedTemplate} filter filterPlaceholder="Filter by verification (T/F)" dataType="boolean"></Column>
+                                        <Column field='approval' align={"center"} header='Toggle Approval' body={approvalTemplate}></Column>
                                     </DataTable>
                                 </CardContent>
 
