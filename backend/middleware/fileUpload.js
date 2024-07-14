@@ -1,6 +1,7 @@
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const uuid = require('uuid')
 
 const ensureDirectoryExists = async (directory) => {
   try {
@@ -22,10 +23,9 @@ const adminProfileImageStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+      file.fieldname + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -45,10 +45,9 @@ const facultyProfileImageStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+      file.fieldname + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -67,10 +66,9 @@ const experienceFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "experienceproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "experience-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -89,10 +87,9 @@ const patentFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "patentproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "patent-proof-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -111,10 +108,9 @@ const bookFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "bookproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "book-proof-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -133,10 +129,9 @@ const journalFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "journalproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "journal-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -155,10 +150,9 @@ const copyrightFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "copyrightproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "copyright-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -179,10 +173,9 @@ const conferenceFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "conferenceproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "conference-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -201,10 +194,9 @@ const bookChapterFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "bookchapterproof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "book-chapter-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -224,10 +216,9 @@ const needBasedProjectStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "needBproject-file" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "need-based-project-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -246,10 +237,9 @@ const awardHonorsFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "award-honors-proof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "award-honors-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -268,10 +258,9 @@ const consultancyFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "consultancy-proof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "consultancy-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
@@ -290,10 +279,9 @@ const projectFileStorage = multer.diskStorage({
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      "project-proof" + "-" + uniqueSuffix + path.extname(file.originalname)
+      "project-proof" + "-" + uuid.v7() + path.extname(file.originalname)
     );
   },
 });
