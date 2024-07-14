@@ -15,6 +15,9 @@ import { Link } from "react-router-dom";
 import { Dropzone, FileMosaic, ExtFile } from "@files-ui/react";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import axios from "axios";
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+import { Toaster } from "@/components/ui/toaster";
 
 type Form = {
     value: string;
@@ -104,6 +107,8 @@ const BulkUpload = () => {
     const [files, setFiles] = React.useState<ExtFile[]>([]);
     const [showAlertDialog, setShowAlertDialog] = useState(false);
     const [alertDialogMessage, setAlertDialogMessage] = useState("");
+    
+    const { toast } = useToast()
 
     const updateFiles = (incomingFiles: ExtFile[]) => {
         setFiles(incomingFiles);
@@ -142,7 +147,16 @@ const BulkUpload = () => {
 
         axios.post('/common/bulk-upload',data)
         .then((res)=>{
-            console.log(res);
+            if(res.data.message==='success'){
+                setFiles([])
+                toast({
+                    title: "Form Data added successfully",
+                    description: "Your form data has been added to our servers",
+                    action: (
+                      <ToastAction altText="Okay">Okay</ToastAction>
+                    ),
+                  })
+            }
         })
         .catch((err)=>{
             console.error(err)
@@ -239,6 +253,7 @@ const BulkUpload = () => {
                     </AlertDialog>
                 )}
             </div>
+            <Toaster />
         </div>
     );
 }

@@ -13,7 +13,9 @@ const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
 const fs = require('fs');
 const download = require('download')
-
+const validator = require('validator')
+const moment = require('moment')
+const path = require('path')
 /**
  * CONSTANTS
  */
@@ -1394,51 +1396,58 @@ const bulkUploader = asyncHandler(async (req, res) => {
 
   const { formData, formType } = req.body
 
-  switch (formType) {
+  try {
+    switch (formType) {
 
-    case "journal":
-      await journalBulkUploader(formData)
-      break;
+      case "journal":
+        await journalBulkUploader(formData)
+        break;
 
-    case "conference":
-      await conferenceBulkUploader(formData)
-      break;
+      case "conference":
+        await conferenceBulkUploader(formData)
+        break;
 
-    case "book":
-      await bookBulkUploader(formData);
-      break;
+      case "book":
+        await bookBulkUploader(formData);
+        break;
 
-    case "book-chapter":
-      await bookChapterBulkUploader(formData);
-      break;
+      case "book-chapter":
+        await bookChapterBulkUploader(formData);
+        break;
 
-    case "patent":
-      await patentBulkUploader(formData);
-      break;
+      case "patent":
+        await patentBulkUploader(formData);
+        break;
 
-    case "copyright":
-      await copyrightBulkUploader(formData);
-      break;
+      case "copyright":
+        await copyrightBulkUploader(formData);
+        break;
 
-    case "award-honors":
-      await awardsHonorsBulkUploader(formData);
-      break;
+      case "award-honors":
+        await awardsHonorsBulkUploader(formData);
+        break;
 
-    case "consultancy":
-      await consultancyBulkUploader(formData);
-      break;
+      case "consultancy":
+        await consultancyBulkUploader(formData);
+        break;
 
-    case "projects":
-      await projectBulkUploader(formData);
-      break;
+      case "projects":
+        await projectBulkUploader(formData);
+        break;
 
-    case "need-based-project":
-      await needBasedProjectBulkUploader(formData);
-      break;
+      case "need-based-project":
+        await needBasedProjectBulkUploader(formData);
+        break;
 
-    default:
-      console.error("Unknown form type");
-      res.status(400).json({ message: 'Unknown form type' });
+      default:
+        console.error("Unknown form type");
+        res.status(400).json({ message: 'Unknown form type' });
+    }
+  }
+  catch (err) {
+    console.log(err.message);
+    res.status(400)
+    throw new Error(`${err.message}`)
   }
 
   res.status(200).json({
@@ -1448,53 +1457,91 @@ const bulkUploader = asyncHandler(async (req, res) => {
 })
 
 const patentBulkUploader = async (formData) => {
-  console.log(formData)
-  return
+
+  for (let form of formData) {
+
+    // Convert date string to JS Date object
+    form.filingDate = moment(form.filingDate, 'DD-MM-YYYY').toDate();
+    form.grantDate = moment(form.grantDate, 'DD-MM-YYYY').toDate();
+
+    // Filename and path for file
+    const filename = `patentproof-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const destination = 'uploads/patent';
+
+    // Download file and set file path in form object
+    form.patentCertificate = await downloadFile(form.patentCertificate, destination, filename);
+
+    // Create new patent entry
+    const patent = await Patent.create(form);
+
+    // Attach patents to users
+    for (const email of form.facultiesInvolved) {
+      await Faculty.findOneAndUpdate(
+        { email },
+        { $push: { patent: patent._id } }
+      );
+    }
+
+  }
+  return;
 }
+
 const copyrightBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const journalBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const conferenceBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const bookBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const bookChapterBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const projectBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const needBasedProjectBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const consultancyBulkUploader = async (formData) => {
   console.log(formData)
   return
 }
+
 const awardsHonorsBulkUploader = async (formData) => {
 
   try {
-    const fileId = extractFileId('https://drive.google.com/file/d/1SXCkm_5AJZnpSPslR6cGlId08HlVsXna/view?usp=sharing');
-    const downloadUrl = generateDownloadLink(fileId);
-    await download(downloadUrl, 'uploads');
-    console.log('Download completed');
+    await downloadFile('https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf', 'uploads', 'paneer')
   } catch (err) {
-    console.error('Error downloading the file:', err);
+    throw err
   }
+
   console.log(formData)
   return
+}
+
+
+// Function to check if the link is a Google Drive link
+function isGoogleDriveLink(url) {
+  return url.includes('drive.google.com');
 }
 
 // Function to extract the file ID from the shared Google Drive link
@@ -1507,11 +1554,46 @@ function extractFileId(url) {
   }
 }
 
-// Function to generate the direct download link
-function generateDownloadLink(fileId) {
+// Function to generate the direct download link for Google Drive
+function generateGoogleDriveDownloadLink(fileId) {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
+// Function to download the file using the appropriate link
+async function downloadFile(link, destination, filename) {
+
+  let completeFileName
+
+  try {
+    let downloadUrl = link;
+
+    if (!validator.isURL(link)) {
+      throw new Error("Invalid URL found");
+    }
+
+    // Check if the link is a Google Drive link
+    if (isGoogleDriveLink(link)) {
+      const fileId = extractFileId(link);
+      downloadUrl = generateGoogleDriveDownloadLink(fileId);
+    }
+
+    // Get the file extension from the URL or set a default extension
+    completeFileName = `${filename}.pdf`;
+
+    // Download the file and save with the specified name and extension
+    await download(downloadUrl, destination, {
+      filename: completeFileName,
+    });
+
+    console.log(`Download completed: ${completeFileName}`);
+
+  } catch (err) {
+    console.error(`Error downloading file: ${err.message}`);
+    throw err;
+  }
+
+  return path.join(destination, completeFileName);
+}
 
 module.exports = {
   addProfile,

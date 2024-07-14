@@ -41,7 +41,6 @@ const Dashboard = () => {
   useEffect(() => {
     axios.get('/faculty/dashboard')
       .then((res) => {
-        console.log(res.data);
         setDashboardData(res.data)
       })
       .catch((err) => {
