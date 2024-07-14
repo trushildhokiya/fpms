@@ -153,8 +153,18 @@ const toggleFacultyApproval = asyncHandler(async (req, res) => {
 
         message = '<strong> Congratulations ! </strong> You are now approved by your department Head for using the FPMS software. Login with your credentials and get ready for exciting journey ahead.<br /> Best regards <br /> <strong> TEAM FPMS </strong>'
 
+        if (!isCoordinator) {
+            const coordinatorIndex = user.tags.indexOf('research coordinator');
+            if (coordinatorIndex !== -1) {
+                user.tags.splice(coordinatorIndex, 1); // Remove 'research coordinator' tag if it exists
+            }
+        }
+
         if (isCoordinator) {
-            user.tags.push('research coordinator')
+
+            if (user.tags.indexOf('research coordinator') === -1) {
+                user.tags.push('research coordinator')
+            }
 
             message = '<strong> Congratulations ! </strong> You are now approved by your department Head for using the FPMS software and have been appointed as <strong> Research and Development Coordinator </strong> . Login with your credentials and get ready for exciting journey ahead.<br /> Best regards <br /> <strong> TEAM FPMS </strong>'
         }
@@ -185,12 +195,12 @@ const toggleFacultyApproval = asyncHandler(async (req, res) => {
     }
 
 
-    transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            res.status(500)
-            throw new Error('Internal Server Error in mailer!')
-        }
-    });
+    // transporter.sendMail(mailOptions, (err, info) => {
+    //     if (err) {
+    //         res.status(500)
+    //         throw new Error('Internal Server Error in mailer!')
+    //     }
+    // });
 
 
     res.status(200).json({
@@ -586,13 +596,11 @@ function calculateYearlyCount(data, category, year) {
     switch (category) {
         case 'publication':
             return (
-                data.journal.filter(new Date(item.dateOfPublication).getFullYear() === year).length +
-                data.conference.filter((item) => new Date(item.fromDate).getFullYear() === year)
-                    .length +
+                data.journal.filter((item) => new Date(item.dateOfPublication).getFullYear() === year).length +
+                data.conference.filter((item) => new Date(item.fromDate).getFullYear() === year).length +
                 data.book.filter((item) => new Date(item.dateOfPublication).getFullYear() === year).length +
                 data.bookChapter.filter((item) => new Date(item.dateOfPublication).getFullYear() === year).length
             );
-
         case 'project':
             return (
                 data.needBasedProjects.filter((item) => new Date(item.startDate).getFullYear() === year)
