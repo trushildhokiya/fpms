@@ -16,6 +16,8 @@ const download = require('download')
 const validator = require('validator')
 const moment = require('moment')
 const path = require('path')
+const uuid = require('uuid')
+
 /**
  * CONSTANTS
  */
@@ -1395,6 +1397,7 @@ const deleteProject = asyncHandler(async (req, res) => {
 const bulkUploader = asyncHandler(async (req, res) => {
 
   const { formData, formType } = req.body
+  const { email } = req.decodedData
 
   try {
     switch (formType) {
@@ -1424,7 +1427,7 @@ const bulkUploader = asyncHandler(async (req, res) => {
         break;
 
       case "award-honors":
-        await awardsHonorsBulkUploader(formData);
+        await awardsHonorsBulkUploader(formData, email);
         break;
 
       case "consultancy":
@@ -1466,7 +1469,7 @@ const patentBulkUploader = async (formData) => {
       form.grantDate = moment(form.grantDate, 'DD-MM-YYYY').toDate();
 
       // Filename and path for file
-      const filename = `patentproof-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const filename = 'patent-proof-' + uuid.v7()
       const destination = 'uploads/patent';
 
       // Download file and set file path in form object
@@ -1493,7 +1496,7 @@ const patentBulkUploader = async (formData) => {
 }
 
 const copyrightBulkUploader = async (formData) => {
-  
+
   try {
     for (let form of formData) {
 
@@ -1502,7 +1505,7 @@ const copyrightBulkUploader = async (formData) => {
       form.endDate = moment(form.endDate, 'DD-MM-YYYY').toDate();
 
       // Filename and path for file
-      const filename = `copyrightproof-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const filename = 'copyright-proof-' + uuid.v7();
       const destination = 'uploads/copyright';
 
       // Download file and set file path in form object
@@ -1514,7 +1517,7 @@ const copyrightBulkUploader = async (formData) => {
       // Attach copyrights to users
       for (const email of form.facultiesInvolved) {
         await Faculty.findOneAndUpdate(
-          { email:email },
+          { email: email },
           { $push: { copyright: copyright._id } }
         );
       }
@@ -1529,22 +1532,142 @@ const copyrightBulkUploader = async (formData) => {
 }
 
 const journalBulkUploader = async (formData) => {
-  console.log(formData)
+
+  try {
+    for (let form of formData) {
+
+      // Convert date string to JS Date object
+      form.dateOfPublication = moment(form.dateOfPublication, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/journal';
+
+      // Download file and set file path in form object
+      form.paper = await downloadFile(form.paper, destination, 'journal-proof-' + uuid.v7());
+      form.certificate = await downloadFile(form.certificate, destination, 'journal-proof-' + uuid.v7());
+
+      // Create new journal entry
+      const journal = await Journal.create(form);
+
+      // Attach jourrnal to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { journal: journal._id } }
+        );
+      }
+
+    }
+  }
+  catch (err) {
+    throw err
+  }
+
   return
 }
 
 const conferenceBulkUploader = async (formData) => {
-  console.log(formData)
+
+  try {
+    for (let form of formData) {
+
+      // Convert date string to JS Date object
+      form.fromDate = moment(form.fromDate, 'DD-MM-YYYY').toDate();
+      form.toDate = moment(form.toDate, 'DD-MM-YYYY').toDate();
+      form.publicationDate = moment(form.publicationDate, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/conference';
+
+      // Download file and set file path in form object
+      form.paper = await downloadFile(form.paper, destination, 'conference-proof-' + uuid.v7());
+      form.certificate = await downloadFile(form.certificate, destination, 'conference-proof-' + uuid.v7());
+
+      // Create new journal entry
+      const conference = await Conference.create(form);
+
+      // Attach jourrnal to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { conference: conference._id } }
+        );
+      }
+
+    }
+  }
+  catch (err) {
+    throw err
+  }
+
   return
 }
 
 const bookBulkUploader = async (formData) => {
-  console.log(formData)
+
+  try {
+    for (let form of formData) {
+
+      // Convert date string to JS Date object
+      form.dateOfPublication = moment(form.dateOfPublication, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/book';
+
+      // Download file and set file path in form object
+      form.proof = await downloadFile(form.proof, destination, 'book-proof-' + uuid.v7());
+
+      // Create new journal entry
+      const book = await Book.create(form);
+
+      // Attach jourrnal to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { book: book._id } }
+        );
+      }
+
+    }
+  }
+  catch (err) {
+    throw err
+  }
+
   return
 }
 
 const bookChapterBulkUploader = async (formData) => {
-  console.log(formData)
+
+  try {
+    for (let form of formData) {
+
+      // Convert date string to JS Date object
+      form.dateOfPublication = moment(form.dateOfPublication, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/book-chapter';
+
+      // Download file and set file path in form object
+      form.proof = await downloadFile(form.proof, destination, 'book-chapter-proof-' + uuid.v7());
+
+      // Create new journal entry
+      const bookChapter = await BookChapter.create(form);
+
+      // Attach jourrnal to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { bookChapter: bookChapter._id } }
+        );
+      }
+
+    }
+  }
+  catch (err) {
+    throw err
+  }
+
   return
 }
 
@@ -1563,15 +1686,34 @@ const consultancyBulkUploader = async (formData) => {
   return
 }
 
-const awardsHonorsBulkUploader = async (formData) => {
+const awardsHonorsBulkUploader = async (formData, email) => {
 
   try {
-    await downloadFile('https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf', 'uploads', 'paneer')
-  } catch (err) {
+
+    const user = await Faculty.findOne({email:email})
+
+    for (let form of formData) {
+
+      // Filename and path for file
+      const destination = 'uploads/award-honors';
+
+      // Download file and set file path in form object
+      form.proof = await downloadFile(form.proof, destination, 'award-honors-' + uuid.v7());
+
+      // create book chapter entry
+      const awardHonors = await AwardHonors.create(form);
+
+      // add ref id to faculty 
+      user.awardsHonors.push(awardHonors._id)
+      
+    }
+
+    await user.save()
+  }
+  catch (err) {
     throw err
   }
-
-  console.log(formData)
+ 
   return
 }
 

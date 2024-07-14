@@ -27,6 +27,7 @@
     "nodemailer": "^6.9.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
+    "uuid": "^10.0.0",
     "validator": "^13.12.0"
   },
   "devDependencies": {

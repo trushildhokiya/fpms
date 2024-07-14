@@ -1,6 +1,6 @@
 [
   {
-    "title": " Artifical Intelligence A deep dive",
+    "title": "Data Mining and Knowledge Discovery",
     "authors": [
       "Mark Benny",
       "John Polaris"
@@ -19,19 +19,54 @@
     ],
     "journalType": "international",
     "journalTitle": " Arizona Internatinal",
-    "issn": "ISBN8746512",
+    "issn": "ISBN87465412",
     "impactFactor": 78,
     "pageFrom": 12,
     "pageTo": 40,
-    "dateOfPublication": "10-12-2022",
-    "digitalObjectIdentifier": "doi-8645322",
+    "dateOfPublication": "10-01-2023",
+    "digitalObjectIdentifier": "doi-8645323",
     "indexing": [
       "Scopus",
       "Web of Science"
     ],
-    "paperUrl": "link to paper",
+    "paperUrl": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
     "citationCount": 45,
-    "paper": "link to public access document",
-    "certificate": "link to public access document"
+    "paper": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "certificate": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf"
+  },
+  {
+    "title": "Godparticles a new discovery",
+    "authors": [
+      "Mark Benny",
+      "John Polaris"
+    ],
+    "authorsAffiliation": [
+      "MIT"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "paidUnpaid": "paid",
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "journalType": "international",
+    "journalTitle": " Arizona Internatinal",
+    "issn": "ISBN8746544",
+    "impactFactor": 998,
+    "pageFrom": 12,
+    "pageTo": 40,
+    "dateOfPublication": "10-01-2024",
+    "digitalObjectIdentifier": "doi-8645323",
+    "indexing": [
+      "Scopus",
+      "Web of Science"
+    ],
+    "paperUrl": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "citationCount": 845,
+    "paper": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "certificate": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf"
   }
 ]

@@ -18,6 +18,7 @@ import axios from "axios";
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 type Form = {
     value: string;
@@ -107,7 +108,8 @@ const BulkUpload = () => {
     const [files, setFiles] = React.useState<ExtFile[]>([]);
     const [showAlertDialog, setShowAlertDialog] = useState(false);
     const [alertDialogMessage, setAlertDialogMessage] = useState("");
-    
+    const [loading, setLoading] = useState(false); // Loader state
+
     const { toast } = useToast()
 
     const updateFiles = (incomingFiles: ExtFile[]) => {
@@ -139,28 +141,32 @@ const BulkUpload = () => {
 
         let formData = await files[0].file!.text();
         formData = JSON.parse(formData);
-        
-        const data={
-            formData:formData,
-            formType:selectedStatus.value
+
+        const data = {
+            formData: formData,
+            formType: selectedStatus.value
         }
 
-        axios.post('/common/bulk-upload',data)
-        .then((res)=>{
-            if(res.data.message==='success'){
-                setFiles([])
-                toast({
-                    title: "Form Data added successfully",
-                    description: "Your form data has been added to our servers",
-                    action: (
-                      <ToastAction altText="Okay">Okay</ToastAction>
-                    ),
-                  })
-            }
-        })
-        .catch((err)=>{
-            console.error(err)
-        })
+        setLoading(true)
+
+        axios.post('/common/bulk-upload', data)
+            .then((res) => {
+                if (res.data.message === 'success') {
+                    setLoading(false)
+                    setFiles([])
+                    toast({
+                        title: "Form Data added successfully",
+                        description: "Your form data has been added to our servers",
+                        action: (
+                            <ToastAction altText="Okay">Okay</ToastAction>
+                        ),
+                    })
+                }
+            })
+            .catch((err) => {
+                setLoading(false)
+                console.error(err)
+            })
     };
 
     const handleDownload = () => {
@@ -252,6 +258,16 @@ const BulkUpload = () => {
                         </AlertDialogContent>
                     </AlertDialog>
                 )}
+
+                {loading && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+                        <div className="text-center">
+                            <ProgressSpinner className='backdrop-blur-lg z-20' />
+                            <h2 className='font-Poppins text-gray-950 my-3 text-lg z-20'>Have patience while we store your data!</h2>
+                        </div>
+                    </div>
+                )}
+
             </div>
             <Toaster />
         </div>

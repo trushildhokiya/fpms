@@ -17,7 +17,7 @@ const Hourglass = () => {
                 if (action) {
                     action.setLoop(LoopRepeat, Infinity); // Repeat the animation indefinitely
                     action.clampWhenFinished = true; // Ensure the animation does not blend back to the start
-                    action.timeScale = 0.3; // Adjust the speed of the animation (0.3 is 30% of the speed)
+                    action.timeScale = 0.1; // Adjust the speed of the animation (0.3 is 30% of the speed)
                     action.play();
                 }
             });

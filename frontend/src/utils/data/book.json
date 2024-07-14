@@ -1,6 +1,6 @@
 [
   {
-    "bookTitle": "Deep Learning A approcah to statistics",
+    "bookTitle": "Deep Learning ",
     "authors": [
       "Mark Benny",
       "John Polaris"
@@ -30,7 +30,41 @@
     ],
     "bookUrl": "link to book",
     "citationCount": 2,
-    "proof": "link to public access document",
-    "dateOfPublication": "2023-07-17T18:30:00.000Z"
+    "proof": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "dateOfPublication": "17-02-2023"
+  },
+  {
+    "bookTitle": "Statistics",
+    "authors": [
+      "Mark Benny",
+      "John Polaris"
+    ],
+    "authorsAffiliation": [
+      "Owen Miller",
+      "Wiely Richards"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "publisherName": "Weily Publications",
+    "nationalInternational": "international",
+    "issn": "ISBN-783039494",
+    "impactFactor": 3,
+    "doi": "doi-86444",
+    "intendedAudience": "researchers",
+    "description": "short description",
+    "indexing": [
+      "Scopus",
+      "Web of Science"
+    ],
+    "bookUrl": "link to book",
+    "citationCount": 2,
+    "proof": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "dateOfPublication": "17-06-2023"
   }
 ]

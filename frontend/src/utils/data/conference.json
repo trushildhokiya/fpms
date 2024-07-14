@@ -1,9 +1,50 @@
 [
   {
-    "title": "Geological Survey using Big Data and IOT",
+    "title": "Viscosity of Fluids",
     "authors": [
       "Mark Benny",
-      "John POlaris"
+      "John Polaris"
+    ],
+    "authorsAffiliation": [
+      "David Fawling",
+      "Peter Inglis"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "nationalInternational": "International",
+    "conferenceName": "Scholaf Petre International",
+    "venue": "Reichstag Building",
+    "organizer": "Council of German Scholars",
+    "role": "speaker",
+    "fromDate": "14-06-2022",
+    "toDate": "16-06-2022",
+    "paperStatus": "presented and published",
+    "publicationDate": "28-06-2022",
+    "issn": "ISBN-5675734628",
+    "impactFactor": 982,
+    "pageNo": "78-91",
+    "yearOfPublication": 2022,
+    "doi": "doi-22y82y98bn",
+    "indexing": [
+      "Web of Science",
+      "UGC CARE-II"
+    ],
+    "paperUrl": "https://www.deutschland.de/en",
+    "citationCount": 98819,
+    "paper": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "certificate": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf"
+  },
+  {
+    "title": "IOT and AI",
+    "authors": [
+      "Mark Benny",
+      "John Polaris"
     ],
     "authorsAffiliation": [
       "David Fawling",
@@ -22,22 +63,22 @@
     "venue": "Reichstag Building",
     "organizer": "Council of German Scholars",
     "role": "speaker",
-    "fromDate": "14-6-2023",
-    "toDate": "16-6-2023",
+    "fromDate": "14-03-2023",
+    "toDate": "16-03-2023",
     "paperStatus": "presented and published",
-    "publicationDate": "28-6-2023",
+    "publicationDate": "28-06-2023",
     "issn": "ISBN-567573468",
-    "impactFactor": 2,
+    "impactFactor": 215,
     "pageNo": "78-91",
     "yearOfPublication": 2023,
-    "doi": "doi-2y82y98bn",
+    "doi": "doi-2y82y98bn3",
     "indexing": [
       "Web of Science",
       "UGC CARE-II"
     ],
     "paperUrl": "https://www.deutschland.de/en",
-    "citationCount": 19,
-    "paper": "link to public access document",
-    "certificate": "link to public access document"
+    "citationCount": 819,
+    "paper": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "certificate": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf"
   }
 ]
