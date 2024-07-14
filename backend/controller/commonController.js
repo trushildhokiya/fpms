@@ -1458,36 +1458,73 @@ const bulkUploader = asyncHandler(async (req, res) => {
 
 const patentBulkUploader = async (formData) => {
 
-  for (let form of formData) {
+  try {
+    for (let form of formData) {
 
-    // Convert date string to JS Date object
-    form.filingDate = moment(form.filingDate, 'DD-MM-YYYY').toDate();
-    form.grantDate = moment(form.grantDate, 'DD-MM-YYYY').toDate();
+      // Convert date string to JS Date object
+      form.filingDate = moment(form.filingDate, 'DD-MM-YYYY').toDate();
+      form.grantDate = moment(form.grantDate, 'DD-MM-YYYY').toDate();
 
-    // Filename and path for file
-    const filename = `patentproof-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const destination = 'uploads/patent';
+      // Filename and path for file
+      const filename = `patentproof-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const destination = 'uploads/patent';
 
-    // Download file and set file path in form object
-    form.patentCertificate = await downloadFile(form.patentCertificate, destination, filename);
+      // Download file and set file path in form object
+      form.patentCertificate = await downloadFile(form.patentCertificate, destination, filename);
 
-    // Create new patent entry
-    const patent = await Patent.create(form);
+      // Create new patent entry
+      const patent = await Patent.create(form);
 
-    // Attach patents to users
-    for (const email of form.facultiesInvolved) {
-      await Faculty.findOneAndUpdate(
-        { email },
-        { $push: { patent: patent._id } }
-      );
+      // Attach patents to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { patent: patent._id } }
+        );
+      }
+
     }
-
   }
+  catch (err) {
+    throw err
+  }
+
   return;
 }
 
 const copyrightBulkUploader = async (formData) => {
-  console.log(formData)
+  
+  try {
+    for (let form of formData) {
+
+      // Convert date string to JS Date object
+      form.startDate = moment(form.startDate, 'DD-MM-YYYY').toDate();
+      form.endDate = moment(form.endDate, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const filename = `copyrightproof-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const destination = 'uploads/copyright';
+
+      // Download file and set file path in form object
+      form.copyrightCertificate = await downloadFile(form.copyrightCertificate, destination, filename);
+
+      // Create new patent entry
+      const copyright = await Copyright.create(form);
+
+      // Attach copyrights to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email:email },
+          { $push: { copyright: copyright._id } }
+        );
+      }
+
+    }
+  }
+  catch (err) {
+    throw err
+  }
+
   return
 }
 
