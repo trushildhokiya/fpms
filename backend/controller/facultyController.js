@@ -128,7 +128,49 @@ function calculateYearlyCount(user, category, year) {
     }
 }
 
+/**
+ * UPDATE TAGS
+ */
+
+const tagUpdater = asyncHandler(async (req, res) => {
+    const { email } = req.decodedData;
+
+    const user = await Faculty.findOne({ email: email });
+
+    if (!user) {
+        res.status(400);
+        throw new Error('Faculty not found');
+    }
+
+    const isProfileComplete = user.profile && user.researchProfile && user.experience.length > 0;
+
+    if (isProfileComplete) {
+        const incompleteIndex = user.tags.indexOf('incomplete profile');
+        if (incompleteIndex !== -1) {
+            user.tags.splice(incompleteIndex, 1); // Remove 'incomplete profile' tag if it exists
+        }
+        if (!user.tags.includes('complete profile')) {
+            user.tags.push('complete profile');
+        }
+    } else {
+        const completeIndex = user.tags.indexOf('complete profile');
+        if (completeIndex !== -1) {
+            user.tags.splice(completeIndex, 1); // Remove 'complete profile' tag if it exists
+        }
+        if (!user.tags.includes('incomplete profile')) {
+            user.tags.push('incomplete profile');
+        }
+    }
+
+    await user.save();
+
+    res.status(200).json({
+        message: 'update success',
+        tags: user.tags
+    });
+});
 
 module.exports = {
-    getDashboardData
+    getDashboardData,
+    tagUpdater
 }

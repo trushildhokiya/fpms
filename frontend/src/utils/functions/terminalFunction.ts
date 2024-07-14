@@ -1,5 +1,6 @@
 import { store } from '@/app/store';
 import { logout } from '@/features/user/userSlice';
+import axios from 'axios';
 
 const suggestion: string[] = [
     "Have you completed setting up your profile 🤔",
@@ -97,6 +98,16 @@ const terminalHandler: Function = (command: string) => {
             window.location.href = "/common/display/consultancy"
             return "Opening my consultancy..."
 
+        case 're-init':
+            axios.put('/faculty/update-tags')
+                .then((res) => {
+                    return res.data.message
+                })
+                .catch((err) => {
+                    return err.message
+                })
+            return "relogin for updates"
+
         case 'logout':
             localStorage.removeItem('token')
             store.dispatch(logout())
@@ -107,5 +118,6 @@ const terminalHandler: Function = (command: string) => {
             return `command ${command} not found :(`
     }
 }
+
 
 export default terminalHandler
