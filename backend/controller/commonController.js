@@ -1677,7 +1677,40 @@ const projectBulkUploader = async (formData) => {
 }
 
 const needBasedProjectBulkUploader = async (formData) => {
-  console.log(formData)
+
+  try {
+    for (let form of formData) {
+
+      // Convert date string to JS Date object
+      form.startDate = moment(form.startDate, 'DD-MM-YYYY').toDate();
+      form.endDate = moment(form.endDate, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/need-based-projects';
+
+      // Download file and set file path in form object
+      form.sanctionedDocuments = await downloadFile(form.sanctionedDocuments, destination, 'need-based-project-proof-' + uuid.v7());
+      form.projectReport = await downloadFile(form.projectReport, destination, 'need-based-project-proof-' + uuid.v7());
+      form.completionLetter = await downloadFile(form.completionLetter, destination, 'need-based-project-proof-' + uuid.v7());
+      form.visitDocuments = await downloadFile(form.visitDocuments, destination, 'need-based-project-proof-' + uuid.v7());
+
+      // Create new journal entry
+      const needBasedProject = await NeedBasedProject.create(form);
+
+      // Attach jourrnal to users
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { needBasedProjects: needBasedProject._id } }
+        );
+      }
+
+    }
+  }
+  catch (err) {
+    throw err
+  }
+
   return
 }
 
@@ -1690,7 +1723,7 @@ const awardsHonorsBulkUploader = async (formData, email) => {
 
   try {
 
-    const user = await Faculty.findOne({email:email})
+    const user = await Faculty.findOne({ email: email })
 
     for (let form of formData) {
 
@@ -1705,7 +1738,7 @@ const awardsHonorsBulkUploader = async (formData, email) => {
 
       // add ref id to faculty 
       user.awardsHonors.push(awardHonors._id)
-      
+
     }
 
     await user.save()
@@ -1713,7 +1746,7 @@ const awardsHonorsBulkUploader = async (formData, email) => {
   catch (err) {
     throw err
   }
- 
+
   return
 }
 

@@ -90,7 +90,7 @@ function StatusList({ setOpen, setSelectedStatus }: { setOpen: (open: boolean) =
                                 setSelectedStatus(forms.find((priority) => priority.value === value) || null);
                                 setOpen(false);
                             }}
-                            disabled={form.value === "projects" || form.value === "need-based-project" || form.value === "consultancy"}
+                            disabled={form.value === "projects"  || form.value === "consultancy"}
                         >
                             {form.label}
                         </CommandItem>
