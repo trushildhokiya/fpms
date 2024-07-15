@@ -230,7 +230,7 @@ const ExperienceDisplay = (props: Props) => {
                                                                                 </AlertDescription>
                                                                             </Alert>
 
-                                                                            <Link target='_blank' to={ axios.defaults.baseURL +'/'+ exp.experienceProof.split('uploads')[1]}>
+                                                                            <Link target='_blank' to={axios.defaults.baseURL + '/' + exp.experienceProof.split('uploads')[1]}>
                                                                                 <Button className='bg-red-800 text-white'>
                                                                                     <FileCheck2 className='h-4 w-4 mr-2' />Proof
                                                                                 </Button>
@@ -258,9 +258,11 @@ const ExperienceDisplay = (props: Props) => {
                         </CardContent>
                         <CardFooter className="flex gap-6 flex-wrap">
 
-                            <Button size={'lg'}>
-                                <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
-                            </Button>
+                            <Link to='/common/edit/experience'>
+                                <Button size={'lg'}>
+                                    <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
+                                </Button>
+                            </Link>
 
                             <Button size={'lg'} className='bg-teal-600'
                                 disabled={data?.experience.length !== 0 ? true : false}

@@ -15,7 +15,7 @@ import axios from 'axios'
 import { Mail, Pencil, Phone, PlusCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -267,9 +267,11 @@ const ProfileDisplay = (props: Props) => {
                         </CardContent>
                         <CardFooter className="flex gap-6 flex-wrap">
 
-                            <Button size={'lg'}>
-                                <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
-                            </Button>
+                            <Link to='/common/edit/profile'>
+                                <Button size={'lg'} disabled={data ? false : true}>
+                                    <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
+                                </Button>
+                            </Link>
 
                             <Button size={'lg'} className='bg-teal-600'
                                 disabled={data ? true : false}

@@ -94,7 +94,12 @@ const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/aw
 const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
 const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-based-project'));
 
-
+/**
+ * EDITABLE FORM IMPORTS
+ */
+const ResearchProfileEditForm = lazy(() => import('./container/views/common/edit/research-profile'));
+const ProfileEditForm = lazy(() => import('./container/views/common/edit/profile'));
+const ExperienceEditForm = lazy(() => import('./container/views/common/edit/experience'));
 
 /**
  *  ACHIEVEMENTS FORM IMPORTS
@@ -201,6 +206,9 @@ function App() {
           <Route path='/common/forms/activity-conducted' element={<CommonProtectedRoute> <ActivityConducted /> </CommonProtectedRoute>} />
           <Route path='/common/forms/awards-recieved' element={<CommonProtectedRoute> <AwardRecieved /> </CommonProtectedRoute>} />
           <Route path='/common/forms/course-certification' element={<CommonProtectedRoute> <CourseCertificate /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/profile' element={<CommonProtectedRoute> <ProfileEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/experience' element={<CommonProtectedRoute> <ExperienceEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/research-profile' element={<CommonProtectedRoute> <ResearchProfileEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />

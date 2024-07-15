@@ -14,8 +14,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { Link, Pencil, Pin, PlusCircle, Tally5 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link as LinkIcon, Pencil, Pin, PlusCircle, Tally5 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 
@@ -61,6 +61,7 @@ const ResearchProfileDisplay = (props: Props) => {
             })
 
     }, [])
+
     return (
         <div>
 
@@ -126,7 +127,7 @@ const ResearchProfileDisplay = (props: Props) => {
                                                     </Alert>
 
                                                     <Alert className='my-3'>
-                                                        <Link className="h-4 w-4" />
+                                                        <LinkIcon className="h-4 w-4" />
                                                         <AlertTitle className='text-red-800'>URL</AlertTitle>
                                                         <AlertDescription>
                                                             <a target='_blank' href={data.googleScholarUrl} className='text-blue-800'>Visit profile</a>
@@ -174,7 +175,7 @@ const ResearchProfileDisplay = (props: Props) => {
                                                     </Alert>
 
                                                     <Alert className='my-3'>
-                                                        <Link className="h-4 w-4" />
+                                                        <LinkIcon className="h-4 w-4" />
                                                         <AlertTitle className='text-red-800'>URL</AlertTitle>
                                                         <AlertDescription>
                                                             <a target='_blank' href={data.scopusUrl} className='text-blue-800'>Visit profile</a>
@@ -216,9 +217,11 @@ const ResearchProfileDisplay = (props: Props) => {
                         </CardContent>
                         <CardFooter className="flex gap-6 flex-wrap">
 
-                            <Button size={'lg'}>
-                                <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
-                            </Button>
+                             <Link to='/common/edit/research-profile'>
+                                <Button size={'lg'} disabled={data ? false : true}>
+                                    <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
+                                </Button>
+                            </Link>
 
                             <Button size={'lg'} className='bg-teal-600'
                                 disabled={data ? true : false}
