@@ -52,6 +52,7 @@ const FacultyNavbar = () => {
                             src={Logo}
                             className="w-28 md:w-44 h-auto"
                             alt="kjsit-logo"
+                            draggable={false}
                         />
                     </Link>
                 </div>

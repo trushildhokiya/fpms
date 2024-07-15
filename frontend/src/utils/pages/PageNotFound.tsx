@@ -6,7 +6,7 @@ const PageNotFound = () => {
     return (
         <div>
             <div className="container flex justify-center">
-                <img src={Illustration} className='w-[80%] lg:w-[50%] h-auto' alt='404- page not found' />
+                <img src={Illustration} draggable={false} className='w-[80%] lg:w-[50%] h-auto' alt='404- page not found' />
             </div>
             <div className='text-sm text-gray-500 font-Poppins text-center my-4'>
                 Oops! Captian looks like you are lost !

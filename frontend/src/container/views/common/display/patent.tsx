@@ -121,7 +121,7 @@ const PatentDisplay = (props: Props) => {
     const countryBodyTemplate = (rowData: Patent) => {
         return (
             <div className="flex align-items-center gap-2">
-                <img alt="flag" src={`https://flagicons.lipis.dev/flags/4x3/${countryCodes[rowData.country.toLowerCase()]}.svg`} style={{ width: '24px' }} />
+                <img draggable={false} alt="flag" src={`https://flagicons.lipis.dev/flags/4x3/${countryCodes[rowData.country.toLowerCase()]}.svg`} style={{ width: '24px' }} />
                 <span>{rowData.country}</span>
             </div>
         )

@@ -206,7 +206,7 @@ const Login = () => {
                 {/* IMAGE */}
                 <div className='p-3 hidden md:block '>
                     <div className='flex justify-center'>
-                        <img src={LoginIllustration} alt='geometric-illustrations' className='w-[80%] drop-shadow-2xl h-auto' />
+                        <img src={LoginIllustration} draggable={false} alt='geometric-illustrations' className='w-[80%] drop-shadow-2xl h-auto' />
                     </div>
                 </div>
 

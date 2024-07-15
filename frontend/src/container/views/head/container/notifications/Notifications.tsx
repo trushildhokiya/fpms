@@ -76,7 +76,7 @@ const Notifications = () => {
                                     return (
                                         <Card className='my-8' key={index}>
                                             <div className="h-[150px] rounded-t overflow-hidden brightness-75 ">
-                                                <img src={post.imageUrl} className=' object-cover w-full h-full' alt="Research Image" />
+                                                <img draggable={false} src={post.imageUrl} className=' object-cover w-full h-full' alt="Research Image" />
                                             </div>
                                             <CardHeader>
                                                 <CardTitle className='text-gray-700 font-OpenSans leading-7'>

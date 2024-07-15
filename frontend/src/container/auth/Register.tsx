@@ -174,7 +174,7 @@ const Register = () => {
         {/* IMAGE */}
         <div className='p-3 hidden md:block '>
           <div className='flex justify-center'>
-            <img src={RegisterIllustration} alt='geometric-illustrations' className='w-[80%] drop-shadow-2xl h-auto' />
+            <img src={RegisterIllustration} draggable={false} alt='geometric-illustrations' className='w-[80%] drop-shadow-2xl h-auto' />
           </div>
         </div>
 

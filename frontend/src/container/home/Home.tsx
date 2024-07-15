@@ -83,6 +83,7 @@ const Home = () => {
                 <div className='grid md:grid-cols-2 gap-6 my-10 mt-[5rem]'>
                     <div className="">
                         <iframe
+                            title='fpms-manual'
                             src={Manual}  // Assuming Manual is the URL or source you want to load
                             className=' w-full md:w-[80%] h-96 md:h-full md:aspect-square rounded-3xl'
                         />

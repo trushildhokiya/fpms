@@ -52,6 +52,7 @@ const HeadNavbar = () => {
                             src={Logo}
                             className="w-28 md:w-44 h-auto"
                             alt="kjsit-logo"
+                            draggable={false}
                         />
                     </Link>
                 </div>
@@ -441,9 +442,9 @@ const HeadNavbar = () => {
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <Link to='/hod/immitate'>
+                                <Link to={'/common/upload/bulk'}>
                                         <DropdownMenuItem>
-                                            Immitate
+                                            Bulk Upload
                                         </DropdownMenuItem>
                                     </Link>
                                     <Link to='/hod/users/faculty'>
@@ -787,11 +788,11 @@ const HeadNavbar = () => {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <Link to='/hod/immitate'>
-                                    <DropdownMenuItem>
-                                        Immitate
-                                    </DropdownMenuItem>
-                                </Link>
+                            <Link to={'/common/upload/bulk'}>
+                                        <DropdownMenuItem>
+                                            Bulk Upload
+                                        </DropdownMenuItem>
+                                    </Link>
                                 <Link to='/hod/users/faculty'>
                                     <DropdownMenuItem>
                                         Faculties

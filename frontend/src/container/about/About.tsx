@@ -86,7 +86,7 @@ const About = () => {
 
         {/* IMAGE  */}
         <div className="flex justify-center my-[5rem]">
-          <img src='https://picsum.photos/800/300' className="rounded-lg" alt='random-image' />
+          <img src='https://picsum.photos/800/300' className="rounded-lg" draggable={false} alt='random-image' />
         </div>
 
         {/* MEET THE DEVELOPERS  */}
