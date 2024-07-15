@@ -20,7 +20,7 @@
     "budgetAmount": 1000000,
     "sanctionedAmount": 1000000,
     "startDate": "24-08-2021",
-    "endDate": "14-04-2023",
+    "endDate": "14-4-2023",
     "totalGrantReceived": 1000000,
     "domain": "Electrical Engineering",
     "areaOfExpertise": "Artificial Intelligence",
@@ -37,9 +37,52 @@
         "remarks": "NA"
       }
     ],
-    "sanctionedOrder": "link to public access document",
-    "transactionProof": "link to public access document",
-    "completionCertificate": "link to public access document",
-    "supportingDocuments": "link to public access document"
+    "sanctionedOrder": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "transactionProof": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "completionCertificate": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "supportingDocuments": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf"
+  },
+  {
+    "projectTitle": "Automatic Power Cut",
+    "principalInvestigator": "Mark Benny",
+    "coInvestigators": [
+      "John Polaris",
+      "Gary Milestone"
+    ],
+    "departmentInvolved": [
+      "Computer",
+      "Information Technology"
+    ],
+    "facultiesInvolved": [
+      "test1@somaiya.edu",
+      "test2@somaiya.edu"
+    ],
+    "fundingScheme": "Installments",
+    "fundingAgency": "GOI",
+    "nationalInternational": "national",
+    "budgetAmount": 1000000,
+    "sanctionedAmount": 1000000,
+    "startDate": "24-08-2021",
+    "endDate": "14-4-2023",
+    "totalGrantReceived": 1000000,
+    "domain": "Electrical Engineering",
+    "areaOfExpertise": "Artificial Intelligence",
+    "description": "short description",
+    "transactionDetails": [
+      {
+        "purchaseOrderNumber": "PON68426822",
+        "purchaseOrderDate": "12-07-2022",
+        "purchaseInvoiceNumber": "POI8023409",
+        "purchaseInvoiceDate": "12-07-2022",
+        "bankName": "SBI",
+        "branchName": "Delhi",
+        "amountReceived": 1000000,
+        "remarks": "NA"
+      }
+    ],
+    "sanctionedOrder": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "transactionProof": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "completionCertificate": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf",
+    "supportingDocuments": "https://kanchiuniv.ac.in/coursematerials/Game%20theory.pdf"
   }
 ]

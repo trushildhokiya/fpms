@@ -1672,8 +1672,52 @@ const bookChapterBulkUploader = async (formData) => {
 }
 
 const projectBulkUploader = async (formData) => {
-  console.log(formData)
-  return
+
+  try {
+    for (let form of formData) {
+
+      // Convert date strings to JS Date objects if needed
+      form.startDate = moment(form.startDate, 'DD-MM-YYYY').toDate();
+      form.endDate = moment(form.endDate, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/project';
+
+      // Download files and set file paths in form object
+      form.sanctionedOrder = await downloadFile(form.sanctionedOrder, destination, 'project-proof-' + uuid.v7());
+      form.transactionProof = await downloadFile(form.transactionProof, destination, 'project-proof-' + uuid.v7());
+      form.completionCertificate = await downloadFile(form.completionCertificate, destination, 'project-proof-' + uuid.v7());
+      form.supportingDocuments = await downloadFile(form.supportingDocuments, destination, 'project-proof-' + uuid.v7());
+
+      // Get all transactions and create them
+      const transactions = form.transactionDetails;
+      const transaction_ids = [];
+
+      for (const entry of transactions) {
+        const createdTransaction = await Transaction.create(entry);
+        transaction_ids.push(createdTransaction._id);
+      }
+
+      // Change transactionDetails parameter of original form data
+      form.transactionDetails = transaction_ids;
+
+      // Create new project entry
+      const project = await Project.create(form);
+
+      // Attach project entry to involved faculties
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { projects: project._id } }
+        );
+      }
+    }
+  } catch (err) {
+    throw err;
+  }
+
+  return;
+
 }
 
 const needBasedProjectBulkUploader = async (formData) => {
@@ -1715,8 +1759,51 @@ const needBasedProjectBulkUploader = async (formData) => {
 }
 
 const consultancyBulkUploader = async (formData) => {
-  console.log(formData)
-  return
+
+  try {
+    for (let form of formData) {
+
+      // Convert date strings to JS Date objects if needed
+      form.startDate = moment(form.startDate, 'DD-MM-YYYY').toDate();
+      form.endDate = moment(form.endDate, 'DD-MM-YYYY').toDate();
+
+      // Filename and path for file
+      const destination = 'uploads/consultancy';
+
+      // Download files and set file paths in form object
+      form.sanctionedOrder = await downloadFile(form.sanctionedOrder, destination, 'consultancy-proof-' + uuid.v7());
+      form.transactionProof = await downloadFile(form.transactionProof, destination, 'consultancy-proof-' + uuid.v7());
+      form.completionCertificate = await downloadFile(form.completionCertificate, destination, 'consultancy-proof-' + uuid.v7());
+      form.supportingDocuments = await downloadFile(form.supportingDocuments, destination, 'consultancy-proof-' + uuid.v7());
+
+      // Get all transactions and create them
+      const transactions = form.transactionDetails;
+      const transaction_ids = [];
+
+      for (const entry of transactions) {
+        const createdTransaction = await Transaction.create(entry);
+        transaction_ids.push(createdTransaction._id);
+      }
+
+      // Change transactionDetails parameter of original form data
+      form.transactionDetails = transaction_ids;
+
+      // Create new consultancy entry
+      const consultancy = await Consultancy.create(form);
+
+      // Attach consultancy entry to involved faculties
+      for (const email of form.facultiesInvolved) {
+        await Faculty.findOneAndUpdate(
+          { email: email },
+          { $push: { consultancy: consultancy._id } }
+        );
+      }
+    }
+  } catch (err) {
+    throw err;
+  }
+
+  return;
 }
 
 const awardsHonorsBulkUploader = async (formData, email) => {
