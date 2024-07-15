@@ -259,7 +259,7 @@ const BulkUpload = () => {
                 )}
 
                 {loading && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-30 z-50">
                         <div className="text-center">
                             <ProgressSpinner className='backdrop-blur-lg z-20' />
                             <h2 className='font-Poppins text-gray-950 my-3 text-lg z-20'>Have patience while we store your data!</h2>
