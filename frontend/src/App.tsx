@@ -90,6 +90,7 @@ const PatentForm = lazy(() => import('./container/views/common/forms/patent'));
 const ResearchProfileForm = lazy(() => import('./container/views/common/forms/research-profile'));
 const ProfileForm = lazy(() => import('./container/views/common/forms/profile'));
 const ExperienceForm = lazy(() => import('./container/views/common/forms/experience'));
+const QualificationForm = lazy(() => import('./container/views/common/forms/qualification'));
 const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awards-honors'));
 const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
 const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-based-project'));
@@ -182,6 +183,7 @@ function App() {
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/experience' element={<CommonProtectedRoute> <ExperienceForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/research-profile' element={<CommonProtectedRoute> <ResearchProfileForm /> </CommonProtectedRoute>} />
+          <Route path='/common/forms/qualification' element={<CommonProtectedRoute> <QualificationForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/journal' element={<CommonProtectedRoute> <JournalForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/conference' element={<CommonProtectedRoute> <ConferenceForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/book' element={<CommonProtectedRoute> <BookForm /> </CommonProtectedRoute>} />

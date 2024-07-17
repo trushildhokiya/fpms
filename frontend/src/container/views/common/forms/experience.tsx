@@ -74,7 +74,7 @@ const experienceSchema = z.object({
     }),
 
     organizationAddress: z.string().min(1,{
-        message:"organization name is required!"
+        message:"organization address is required!"
     }).max(1000,{
          message:"organization address must not exceed 1000 characters"
     }),
