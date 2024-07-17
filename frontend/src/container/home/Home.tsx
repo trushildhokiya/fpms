@@ -1,16 +1,27 @@
 import { Button } from '@/components/ui/button'
 import CommonNavbar from '../../components/navbar/CommonNavbar'
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 const HourglassModel = lazy(() => import('@/components/model/hourglass-model'));
 import { Link } from 'react-router-dom'
 import Footer from '@/components/footer/footer'
 import { DatabaseZap, Sheet, SquareTerminal } from 'lucide-react'
 import Manual from '@/assets/pdf/manual.pdf'
 import Loader from '@/utils/pages/Loader';
+import TextTransition, { presets } from 'react-text-transition';
 
 const Home = () => {
 
+    const TEXTS = ['by', 'department of', 'Computer Engineering'];
 
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const intervalId = setInterval(
+            () => setIndex((index) => index + 1),
+            3000, 
+        );
+        return () => clearTimeout(intervalId);
+    }, []);
 
     return (
         <div>
@@ -19,14 +30,22 @@ const Home = () => {
             <div className="grid md:grid-cols-2 md:h-[720px] my-10">
                 <div className="py-10 flex justify-center items-center flex-wrap">
                     <div className="container ">
-                        <h1 className='uppercase text-5xl text-red-800 font-AzoSans tracking-wide'> Faculty Profile </h1>
+
+                        <h2 className='uppercase text-5xl text-red-800 font-AzoSans tracking-wide'> Faculty Profile </h2>
                         <h2 className='uppercase text-3xl my-2 text-red-800 font-AzoSans tracking-wide'>
                             Management System
                         </h2>
 
-                        <p className='text-sm leading-7 font-Poppins text-gray-700 my-8 mb-10'>
+                        <div className='uppercase text-2xl my-6 text-red-800 font-AzoSans tracking-wide'>
+                            <TextTransition springConfig={presets.wobbly}>{TEXTS[index % TEXTS.length]}</TextTransition>
+                        </div>
+
+
+                        <p className='text-base leading-7 font-Poppins text-gray-700 my-8 mb-10'>
                             Faculty Profile Management System" offers a centralized solution for academic institutions to efficiently manage and update faculty profiles. It enhances organizational efficiency by providing easy access to comprehensive faculty information, facilitating streamlined administrative processes, improved decision-making, and seamless report generation capabilities.
                         </p>
+
+                       
 
                         <div className=" mt-10">
                             <Link to="/auth/register" className='w-full  flex justify-center '>

@@ -79,6 +79,11 @@ const About = () => {
             We're thrilled to introduce you to the Faculty Profile Management System (FPMS), a cutting-edge platform designed to revolutionize the way we manage and showcase the achievements of our esteemed faculty members. 🚀
           </p>
 
+          <p className="my-5">
+            Faculty Profile Management System (FPMS), a revolutionary platform designed to streamline the process of managing and showcasing faculty achievements. Our system provides an intuitive and efficient way for faculty members to maintain and display their professional profiles.
+            The FPMS offers a centralized hub where faculty can easily update their profiles, track their accomplishments, and collaborate with colleagues. With a focus on user-friendliness and comprehensive functionality, FPMS is set to enhance the academic community's ability to share and celebrate their work.
+          </p>
+
           <p className="my-3">
             At FPMS, we believe in fostering innovation, collaboration, and efficiency within our academic community. This system is crafted with precision to meet the unique needs of our faculty, providing a centralized hub for seamless profile management and information sharing.
           </p>
@@ -103,7 +108,7 @@ const About = () => {
                   <CardContent className="p-0 m-0">
                     <div className="grid grid-cols-3">
                       <div className="col-span-1">
-                        <img src={`https://picsum.photos/1280/${720+member.id}`} draggable={false} className="rounded-lg object-cover h-full" alt='random-image' />
+                        <img src={`https://picsum.photos/1280/${720 + member.id}`} draggable={false} className="rounded-lg object-cover h-full" alt='random-image' />
                       </div>
                       <div className="col-span-2 mx-4 my-4">
                         <h2 className="font-OpenSans text-lg text-gray-700 font-bold">
