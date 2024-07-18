@@ -13,7 +13,7 @@ import OjasProfileImage from '@/assets/image/ojas-profile-pic.jpeg'
 import DevamProfileImage from '@/assets/image/devam-profile-pic.jpeg'
 import TavionProfileImage from '@/assets/image/tavion-profile-pic.jpg'
 import HitanshuProfileImage from '@/assets/image/hitanshu-profile-pic.jpg'
-import KushalProfileImage from  '@/assets/image/kushal-profile-pic.jpeg'
+import KushalProfileImage from '@/assets/image/kushal-profile-pic.jpeg'
 
 const About = () => {
 
@@ -30,8 +30,8 @@ const About = () => {
       id: 2,
       name: 'Hitanshu Gandhi',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
-      linkedinURI: '',
-      githubURI: '',
+      linkedinURI: 'https://www.linkedin.com/in/hitanshu-gandhi-92b855244',
+      githubURI: 'https://github.com/Hitanshu-Gandhi',
       profileImage: HitanshuProfileImage
     },
     {
@@ -39,15 +39,15 @@ const About = () => {
       name: 'Tavion Fernandes',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
-      githubURI: '',
+      githubURI: 'https://github.com/Tavion20',
       profileImage: TavionProfileImage
     },
     {
       id: 4,
       name: 'Ojas Golatkar',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
-      linkedinURI: '',
-      githubURI: '',
+      linkedinURI: 'https://www.linkedin.com/in/ojas-golatkar-2b6882226',
+      githubURI: 'https://github.com/jackfr8st',
       profileImage: OjasProfileImage
     },
     {
@@ -55,15 +55,15 @@ const About = () => {
       name: 'Kushal Harsora',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
-      githubURI: '',
+      githubURI: 'https://github.com/KushalHarsora',
       profileImage: KushalProfileImage
     },
     {
       id: 6,
       name: 'Devam Dixit',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
-      linkedinURI: '',
-      githubURI: '',
+      linkedinURI: 'http://www.linkedin.com/in/devamdixit',
+      githubURI: 'https://github.com/Devam45',
       profileImage: DevamProfileImage
     },
   ]
@@ -148,8 +148,8 @@ const About = () => {
                             </div>
                           </a>
                           <a href={member.githubURI} target="_blank">
-                            <div className="bg-red-800 p-2 rounded-full text-white mx-3 my-3">
-                              <Github />
+                            <div className="bg-zinc-100 p-2 rounded-full mx-3 my-3">
+                              <img height="28" width="28" src="https://cdn.simpleicons.org/github/#181717" draggable={false} alt="github-icon" />
                             </div>
                           </a>
                         </div>

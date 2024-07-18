@@ -1517,10 +1517,14 @@ const patentBulkUploader = async (formData) => {
   try {
     for (let form of formData) {
 
-      // Convert date string to JS Date object
-      form.filingDate = moment(form.filingDate, 'DD-MM-YYYY').toDate();
-      form.grantDate = moment(form.grantDate, 'DD-MM-YYYY').toDate();
-
+      // Format to required data. Convert date string to JS Date object
+      form.filingDate = moment(form.filingDate, 'DD/MM/YYYY').toDate();
+      form.grantDate = moment(form.grantDate, 'DD/MM/YYYY').toDate();
+      form.inventors = form. inventors.split(',')
+      form.affiliationInventors = form.affiliationInventors.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.departmentInvolved = form.departmentInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.facultiesInvolved = form.facultiesInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      
       // Filename and path for file
       const filename = 'patent-proof-' + uuid.v7()
       const destination = 'uploads/patent';
@@ -1724,6 +1728,9 @@ const bookChapterBulkUploader = async (formData) => {
   return
 }
 
+/**
+ * @deprecated: Depracted till a new function is wrote
+ */
 const projectBulkUploader = async (formData) => {
 
   try {
@@ -1773,6 +1780,9 @@ const projectBulkUploader = async (formData) => {
 
 }
 
+/**
+ * @deprecated: Depracted till a new function is wrote
+ */
 const needBasedProjectBulkUploader = async (formData) => {
 
   try {
@@ -1811,6 +1821,9 @@ const needBasedProjectBulkUploader = async (formData) => {
   return
 }
 
+/**
+ * @deprecated: Depracted till a new function is wrote
+ */
 const consultancyBulkUploader = async (formData) => {
 
   try {

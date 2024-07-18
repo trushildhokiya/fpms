@@ -19,6 +19,7 @@ import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster";
 import { ProgressSpinner } from "primereact/progressspinner";
+import Papa from 'papaparse';
 
 type Form = {
     value: string;
@@ -90,6 +91,7 @@ function StatusList({ setOpen, setSelectedStatus }: { setOpen: (open: boolean) =
                                 setSelectedStatus(forms.find((priority) => priority.value === value) || null);
                                 setOpen(false);
                             }}
+                            disabled={ form.value==="projects" || form.value==="need-based-project" || form.value==="consultancy"}
                         >
                             {form.label}
                         </CommandItem>
@@ -120,13 +122,15 @@ const BulkUpload = () => {
     };
 
     const handleUpload = async () => {
+
         if (files.length === 0) {
-            setAlertDialogMessage("No file found. Please upload a valid JSON file.");
+            setAlertDialogMessage("No file found. Please upload a valid CSV file.");
             setShowAlertDialog(true);
             return;
         }
 
-        if (files[0].type !== 'application/json') {
+
+        if (files[0].type !== 'text/csv') {
             setAlertDialogMessage("Invalid file type uploaded. Please upload valid file type");
             setShowAlertDialog(true);
             return;
@@ -138,17 +142,26 @@ const BulkUpload = () => {
             return;
         }
 
-        let formData = await files[0].file!.text();
-        formData = JSON.parse(formData);
+        const file = files[0].file;
+        if (!file) {
+            setAlertDialogMessage("File is missing or invalid.");
+            setShowAlertDialog(true);
+            return;
+        }
+
+
+        const text = await file.text();
+        const parsedData = Papa.parse(text, {header:true,skipEmptyLines:true,});
+
 
         const data = {
-            formData: formData,
+            formData: parsedData.data,
             formType: selectedStatus.value
         }
 
         setLoading(true)
 
-        axios.post('/common/bulk-upload', data)
+        axios.post('/common/bulk-upload',data)
             .then((res) => {
                 if (res.data.message === 'success') {
                     setLoading(false)
@@ -170,10 +183,10 @@ const BulkUpload = () => {
 
     const handleDownload = () => {
         if (selectedStatus) {
-            const filePath = `/src/utils/data/${selectedStatus.value}.json`;
+            const filePath = `/src/utils/data/${selectedStatus.value}.csv`;
             const link = document.createElement('a');
             link.href = filePath;
-            link.setAttribute('download', `${selectedStatus.value}.json`);
+            link.setAttribute('download', `${selectedStatus.value}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -192,8 +205,8 @@ const BulkUpload = () => {
 
                 <Card className='my-10'>
                     <CardHeader>
-                        <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Download JSON</CardTitle>
-                        <CardDescription>Download sample JSON for bulk upload, edit, and upload again.</CardDescription>
+                        <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Download CSV</CardTitle>
+                        <CardDescription>Download sample CSV for bulk upload, edit it , and upload again.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -226,7 +239,7 @@ const BulkUpload = () => {
                         value={files}
                         className="font-Poppins text-sm"
                         color="#910904"
-                        accept="application/json"
+                        accept=".csv"
                         maxFileSize={5 * 1024 * 1024} // 5MB
                         maxFiles={1}
                         actionButtons={{
@@ -234,7 +247,7 @@ const BulkUpload = () => {
                             cleanButton: { style: { backgroundColor: "#ff8175" } },
                             uploadButton: { style: { textTransform: "uppercase", backgroundColor: "#32a852" }, onClick: handleUpload, label: "Submit" },
                         }}
-                        footerConfig={{ customMessage: "Only JSON files up to 5MB are allowed" }}
+                        footerConfig={{ customMessage: "Only CSV files up to 5MB are allowed" }}
                         label={"📃 Drop Files here"}
                         behaviour="replace"
                     >
