@@ -29,7 +29,7 @@ const Dashboard = () => {
 
 
   const user = useSelector((state: any) => state.user)
-  const [terminalData, setTerminalData] = useState('Booting FPMS Kernel ========> complete')
+  const [terminalData, setTerminalData] = useState('Booting FPMS Kernel ========> complete\neg command: my-patent')
   const [dashboardData, setDashboardData] = useState<DashboardData>()
 
 

@@ -236,7 +236,7 @@ const ProfileForm = (props: Props) => {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="Computer">Computer</SelectItem>
+                                                    <SelectItem value="Computer">Computer Engineering</SelectItem>
                                                     <SelectItem value="Information Technology">Information Technology</SelectItem>
                                                     <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
                                                     <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
