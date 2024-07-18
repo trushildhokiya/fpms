@@ -277,6 +277,11 @@ const FacultyNavbar = () => {
                                                         Research Profile
                                                     </DropdownMenuItem>
                                                 </Link>
+                                                <Link to="/common/display/qualification">
+                                                    <DropdownMenuItem>
+                                                        Qualification
+                                                    </DropdownMenuItem>
+                                                </Link>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
@@ -690,6 +695,11 @@ const FacultyNavbar = () => {
                                             <Link to="/common/forms/research-profile">
                                                 <DropdownMenuItem>
                                                     Research Profile
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link to="/common/forms/qualification">
+                                                <DropdownMenuItem>
+                                                     Qualification
                                                 </DropdownMenuItem>
                                             </Link>
                                         </DropdownMenuSubContent>

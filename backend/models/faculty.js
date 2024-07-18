@@ -45,6 +45,16 @@ const researchSchema = new mongoose.Schema({
     iTenIndexScopus: { type: String, required: true }
 });
 
+const qualificationSchema = new mongoose.Schema({
+    degree: { type: String, required: true },
+    stream: { type: String, required: true },
+    institute: { type: String, required: true },
+    university: { type: String, required: true },
+    year: { type: Number, required: true },
+    class: { type: String, required: true },
+    status: { type: String, required: true }
+});
+
 
 /**
  * MAIN SCHEMA
@@ -95,6 +105,11 @@ const facultySchema = new mongoose.Schema({
 
     researchProfile: {
         type: researchSchema,
+        required: false,
+    },
+
+    qualification:{
+        type: [qualificationSchema],
         required: false,
     },
 

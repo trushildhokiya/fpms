@@ -8,7 +8,12 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import Footer from "@/components/footer/footer"
-
+import TrushilProfileImage from '@/assets/image/trushil-profile-pic.png'
+import OjasProfileImage from '@/assets/image/ojas-profile-pic.jpeg'
+import DevamProfileImage from '@/assets/image/devam-profile-pic.jpeg'
+import TavionProfileImage from '@/assets/image/tavion-profile-pic.jpg'
+import HitanshuProfileImage from '@/assets/image/hitanshu-profile-pic.jpg'
+import KushalProfileImage from  '@/assets/image/kushal-profile-pic.jpeg'
 
 const About = () => {
 
@@ -19,6 +24,7 @@ const About = () => {
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: 'https://in.linkedin.com/in/trushil-dhokiya',
       githubURI: 'https://www.github.com/trushildhokiya',
+      profileImage: TrushilProfileImage
     },
     {
       id: 2,
@@ -26,6 +32,7 @@ const About = () => {
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
       githubURI: '',
+      profileImage: HitanshuProfileImage
     },
     {
       id: 3,
@@ -33,6 +40,7 @@ const About = () => {
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
       githubURI: '',
+      profileImage: TavionProfileImage
     },
     {
       id: 4,
@@ -40,6 +48,7 @@ const About = () => {
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
       githubURI: '',
+      profileImage: OjasProfileImage
     },
     {
       id: 5,
@@ -47,6 +56,7 @@ const About = () => {
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
       githubURI: '',
+      profileImage: KushalProfileImage
     },
     {
       id: 6,
@@ -54,6 +64,7 @@ const About = () => {
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
       linkedinURI: '',
       githubURI: '',
+      profileImage: DevamProfileImage
     },
   ]
 
@@ -108,7 +119,7 @@ const About = () => {
                   <CardContent className="p-0 m-0">
                     <div className="grid grid-cols-3">
                       <div className="col-span-1">
-                        <img src={`https://picsum.photos/1280/${720 + member.id}`} draggable={false} className="rounded-lg object-cover h-full" alt='random-image' />
+                        <img src={member.profileImage} draggable={false} className="rounded-lg  object-cover h-full" alt={`${member.name}-profile-image`} />
                       </div>
                       <div className="col-span-2 mx-4 my-4">
                         <h2 className="font-OpenSans text-lg text-gray-700 font-bold">

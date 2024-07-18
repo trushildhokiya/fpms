@@ -116,7 +116,7 @@ const addExperience = async (req, res) => {
     throw new Error("User not found!");
   }
 
-  // add xperience json in array
+  // add experience json in array
   for (let i = 0; i < req.body.experienceDetails.length; i++) {
     const data = req.body.experienceDetails[i];
     data.experienceProof = req.files[i].path;
@@ -227,6 +227,59 @@ const getResearchProfileData = asyncHandler(async (req, res) => {
 });
 
 
+const addQualification = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body.qualificationDetails;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // save data
+  try {
+    for (const qualification of data) {
+      user.qualification.push(qualification)
+    }
+
+    await user.save()
+  }
+  catch (err) {
+    console.log(err);
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: "success",
+  });
+
+})
+
+
+const getQualificationData = asyncHandler(async (req, res) => {
+
+  //get required data
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  const qualificationData = user.qualification;
+
+  res.status(200).json(qualificationData);
+
+})
 
 const addPatents = asyncHandler(async (req, res) => {
 
@@ -1901,6 +1954,8 @@ module.exports = {
   getExperienceData,
   addResearchProfile,
   getResearchProfileData,
+  addQualification,
+  getQualificationData,
   addPatents,
   getPatentData,
   addCopyright,

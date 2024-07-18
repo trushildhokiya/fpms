@@ -41,6 +41,8 @@ const {
   deleteConsultancy,
   deleteNeedBasedProject,
   bulkUploader,
+  addQualification,
+  getQualificationData,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -419,6 +421,10 @@ router.route("/profile").get(facultyAuthenticator, getProfileData);
  */
 router.route("/experience").post(facultyAuthenticator, experienceFileUpload.any("experienceProof"), addExperience);
 
+
+router.route('/qualification').post(facultyAuthenticator, addQualification)
+
+router.route('/qualification').get(facultyAuthenticator, getQualificationData)
 /**
  * @swagger
  * /common/experience:

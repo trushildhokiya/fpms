@@ -11,19 +11,15 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AlertCircle, CalendarIcon, Check, ChevronsUpDown, FileArchive, Receipt } from 'lucide-react'
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
+import { AlertCircle, Check, ChevronsUpDown, Receipt } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
@@ -96,7 +92,7 @@ const degrees = [
     { label: "Ph.D.", value: "phd" },
     { label: "Diploma", value: "diploma" },
     { label: "Associate", value: "associate" },
-    { label: "Certificate", value: "certificate" },
+    { label: "High School", value: "hsc" },
     { label: "Other", value: "other" },
 ] as const;
 
@@ -136,7 +132,7 @@ const QualificationForm = (props: Props) => {
         },
     })
 
-    const { control, handleSubmit, formState: { errors } } = form;
+    const { control, formState: { errors } } = form;
     const { fields, append } = useFieldArray({
         control,
         name: "qualificationDetails"
@@ -144,25 +140,25 @@ const QualificationForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        // axios.post('/common/experience', values)
-        // .then((res) => {
-        //     // console.log(res);
-        //     if (res.data.message === 'success') {
+        axios.post('/common/qualification', values)
+        .then((res) => {
+            // console.log(res);
+            if (res.data.message === 'success') {
 
-        //         toast({
-        //             title: "Experience updated successfully",
-        //             description: "Your experience data has been added/updated successfully",
-        //             action: (
-        //                 <ToastAction className='' onClick={() => { navigate('/common/display/experience') }} altText="okay">Okay</ToastAction>
-        //             ),
-        //         })
-        //         form.reset()
+                toast({
+                    title: "Qualification updated successfully",
+                    description: "Your Qualification data has been added/updated successfully",
+                    action: (
+                        <ToastAction className='' onClick={() => { navigate('/common/display/experience') }} altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset()
 
-        //     }
-        // })
-        // .catch((err) => {
-        //     console.log(err);
-        // })
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 
         console.log(values)
     }
@@ -390,7 +386,7 @@ const QualificationForm = (props: Props) => {
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>NOTE</AlertTitle>
                                 <AlertDescription>
-                                    Click the Add qualification button to enter a new experience
+                                    Click the Add qualification button to enter a new qualification
                                 </AlertDescription>
                             </Alert>
 

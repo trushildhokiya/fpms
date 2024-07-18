@@ -122,6 +122,7 @@ const SeminarOrganized = lazy(()=> import('@/container/views/common/forms/semina
 const ProfileDisplay = lazy(() => import('./container/views/common/display/profile'));
 const ExperienceDisplay = lazy(() => import('./container/views/common/display/experience'));
 const ResearchProfileDisplay = lazy(() => import('./container/views/common/display/research-profile'));
+const QualificationDisplay = lazy(() => import('./container/views/common/display/qualification'));
 const PatentDisplay = lazy(() => import('./container/views/common/display/patent'));
 const CopyrightDisplay = lazy(() => import('./container/views/common/display/copyright'));
 const JournalDisplay = lazy(() => import('./container/views/common/display/journal'));
@@ -224,6 +225,7 @@ function App() {
           <Route path='/common/display/awards-honors' element={<CommonProtectedRoute> <AwardHonorsDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/consultancy' element={<CommonProtectedRoute> <ConsultancyDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/projects' element={<CommonProtectedRoute> <ProjectsDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/qualification' element={<CommonProtectedRoute> <QualificationDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/upload/bulk' element={<CommonProtectedRoute> <BulkUpload /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
