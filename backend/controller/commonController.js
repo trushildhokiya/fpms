@@ -1688,7 +1688,14 @@ const bookBulkUploader = async (formData) => {
 
       // Convert date string to JS Date object
       form.dateOfPublication = moment(form.dateOfPublication, 'DD-MM-YYYY').toDate();
-
+      form.authors = form.authors.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.authorsAffiliation = form.authorsAffiliation.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.departmentInvolved = form.departmentInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.facultiesInvolved = form.facultiesInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.indexing = form.indexing.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.impactFactor = Number(form.impactFactor)
+      form.citationCount = Number(form.citationCount)
+      
       // Filename and path for file
       const destination = 'uploads/book';
 
@@ -1722,7 +1729,14 @@ const bookChapterBulkUploader = async (formData) => {
 
       // Convert date string to JS Date object
       form.dateOfPublication = moment(form.dateOfPublication, 'DD-MM-YYYY').toDate();
-
+      form.authors = form.authors.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.authorsAffiliation = form.authorsAffiliation.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.departmentInvolved = form.departmentInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.facultiesInvolved = form.facultiesInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.indexing = form.indexing.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.impactFactor = Number(form.impactFactor)
+      form.citationCount = Number(form.citationCount)
+      
       // Filename and path for file
       const destination = 'uploads/book-chapter';
 

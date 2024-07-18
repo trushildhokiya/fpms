@@ -63,7 +63,11 @@ const bookSchema = new mongoose.Schema(
       required: true,
     },
 
-    description: String,
+    description:{
+      type:String,
+      required:true
+    },
+
     indexing: {
       type: [String],
       required: true,
