@@ -64,7 +64,6 @@ const ProfileDisplay = (props: Props) => {
         axios.get('/common/profile')
             .then((res) => {
                 setData(res.data)
-                console.log(res.data);
             })
             .catch((err) => {
                 console.log(err);

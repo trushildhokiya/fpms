@@ -53,7 +53,6 @@ const ResearchProfileDisplay = (props: Props) => {
 
         axios.get('/common/research-profile')
             .then((res) => {
-                console.log(res.data);
                 setData(res.data)
             })
             .catch((err) => {

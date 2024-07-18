@@ -284,6 +284,11 @@ const HeadNavbar = () => {
                                                         Research Profile
                                                     </DropdownMenuItem>
                                                 </Link>
+                                                <Link to="/common/display/qualification">
+                                                    <DropdownMenuItem>
+                                                        Qualification
+                                                    </DropdownMenuItem>
+                                                </Link>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
@@ -442,7 +447,7 @@ const HeadNavbar = () => {
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                <Link to={'/common/upload/bulk'}>
+                                    <Link to={'/common/upload/bulk'}>
                                         <DropdownMenuItem>
                                             Bulk Upload
                                         </DropdownMenuItem>
@@ -706,6 +711,11 @@ const HeadNavbar = () => {
                                                     Research Profile
                                                 </DropdownMenuItem>
                                             </Link>
+                                            <Link to="/common/display/qualification">
+                                                <DropdownMenuItem>
+                                                    Qualification
+                                                </DropdownMenuItem>
+                                            </Link>
                                         </DropdownMenuSubContent>
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
@@ -788,11 +798,11 @@ const HeadNavbar = () => {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                            <Link to={'/common/upload/bulk'}>
-                                        <DropdownMenuItem>
-                                            Bulk Upload
-                                        </DropdownMenuItem>
-                                    </Link>
+                                <Link to={'/common/upload/bulk'}>
+                                    <DropdownMenuItem>
+                                        Bulk Upload
+                                    </DropdownMenuItem>
+                                </Link>
                                 <Link to='/hod/users/faculty'>
                                     <DropdownMenuItem>
                                         Faculties
