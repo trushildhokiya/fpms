@@ -1520,11 +1520,11 @@ const patentBulkUploader = async (formData) => {
       // Format to required data. Convert date string to JS Date object
       form.filingDate = moment(form.filingDate, 'DD/MM/YYYY').toDate();
       form.grantDate = moment(form.grantDate, 'DD/MM/YYYY').toDate();
-      form.inventors = form. inventors.split(',')
+      form.inventors = form.inventors.split(',')
       form.affiliationInventors = form.affiliationInventors.split(',').map(item => item.trim()).filter(item => item !== '');
       form.departmentInvolved = form.departmentInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
       form.facultiesInvolved = form.facultiesInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
-      
+
       // Filename and path for file
       const filename = 'patent-proof-' + uuid.v7()
       const destination = 'uploads/patent';
@@ -1560,6 +1560,10 @@ const copyrightBulkUploader = async (formData) => {
       // Convert date string to JS Date object
       form.startDate = moment(form.startDate, 'DD-MM-YYYY').toDate();
       form.endDate = moment(form.endDate, 'DD-MM-YYYY').toDate();
+      form.inventors = form.inventors.split(',')
+      form.affiliationInventors = form.affiliationInventors.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.departmentInvolved = form.departmentInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.facultiesInvolved = form.facultiesInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
 
       // Filename and path for file
       const filename = 'copyright-proof-' + uuid.v7();
@@ -1593,8 +1597,17 @@ const journalBulkUploader = async (formData) => {
   try {
     for (let form of formData) {
 
-      // Convert date string to JS Date object
-      form.dateOfPublication = moment(form.dateOfPublication, 'DD-MM-YYYY').toDate();
+      // Convert data tyes and formatting
+      form.dateOfPublication = moment(form.dateOfPublication, 'DD/MM/YYYY').toDate();
+      form.authors = form.authors.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.authorsAffiliation = form.authorsAffiliation.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.departmentInvolved = form.departmentInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.facultiesInvolved = form.facultiesInvolved.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.indexing = form.indexing.split(',').map(item => item.trim()).filter(item => item !== '');
+      form.impactFactor = Number(form.impactFactor)
+      form.pageFrom = Number(form.pageFrom)
+      form.pageTo = Number(form.pageTo)
+      form.citationCount = Number(form.citationCount)
 
       // Filename and path for file
       const destination = 'uploads/journal';
