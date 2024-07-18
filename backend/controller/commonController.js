@@ -1915,6 +1915,8 @@ const awardsHonorsBulkUploader = async (formData, email) => {
 
     for (let form of formData) {
 
+      form.year = Number(form.year)
+
       // Filename and path for file
       const destination = 'uploads/award-honors';
 
