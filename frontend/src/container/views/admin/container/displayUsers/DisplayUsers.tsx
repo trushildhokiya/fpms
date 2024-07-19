@@ -2,24 +2,102 @@ import AdminNavbar from '@/components/navbar/AdminNavbar';
 import { useEffect, useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { Table } from 'lucide-react';
+
+interface Profile {
+    name: string;
+    department: string;
+    designation: string;
+    contact: number;
+    email: string;
+    alternateContact: number;
+    alternateEmail: string;
+}
+
+interface Experience {
+    experienceType: string;
+    organizationName: string;
+    organizationAddress: string;
+    organizationUrl: string;
+    designation: string;
+    fromDate: Date;
+    toDate: Date;
+    experienceIndustry: string;
+    experienceProof: string;
+}
+
+interface Research {
+    name: string;
+    department: string;
+    designation: string;
+    contact: number;
+    email: string;
+    googleScholarId: string;
+    googleScholarUrl: string;
+    scopusId: string;
+    scopusUrl: string;
+    orcidId: string;
+    hIndexGoogleScholar: string;
+    hIndexScopus: string;
+    citationCountGoogleScholar: number;
+    citationCountScopus: number;
+    iTenIndexGoogleScholar: string;
+    iTenIndexScopus: string;
+}
+
+interface Qualification {
+    degree: string;
+    stream: string;
+    institute: string;
+    university: string;
+    year: number;
+    class: string;
+    status: string;
+}
 
 interface UserData {
     email: string;
-    profileImage: string;
-    department: string | null;
-    institute: string;
+    password: string;
+    institute?: string;
+    profileImage?: string;
+    role: string;
+    department: string;
+    tags?: string[];
+    profile?: Profile;
+    experience?: Experience[];
+    researchProfile?: Research;
+    qualification?: Qualification[];
+    journal?: string[];
+    conference?: string[];
+    book?: string[];
+    bookChapter?: string[];
+    patent?: string[];
+    copyright?: string[];
+    consultancy?: string[];
+    projects?: string[];
+    awardsHonors?: string[];
+    needBasedProjects?: string[];
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const DisplayUsers = () => {
+
     const location = useLocation();
+    const [recordType, setRecordType] = useState("")
+    const [totalRecords, setTotalRecords] = useState(0)
+
 
     useEffect(() => {
+
+        setRecordType(location.pathname.split('/users/')[1])
         getData();
+
     }, [location]);
 
     useEffect(() => {
@@ -52,9 +130,10 @@ const DisplayUsers = () => {
     }, []);
 
     const getData = () => {
-        const recordType = location.pathname.split('/users/')[1];
 
-        axios.get(`/admin/data/${recordType}`, {
+        const type = location.pathname.split('/users/')[1]
+
+        axios.get(`/admin/data/${type}`, {
             headers: {
                 'token': localStorage.getItem('token')
             }
@@ -75,38 +154,60 @@ const DisplayUsers = () => {
         dt.current!.exportCSV({ selectionOnly });
     };
 
-    const profileImageTemplate = (user: UserData) => {
+    const nameBodyTemplate = (user: UserData) => {
         return (
-            <Avatar>
-                <AvatarImage src={user.profileImage} />
-                <AvatarFallback>TD</AvatarFallback>
-            </Avatar>
+            <div className="flex items-center flex-wrap">
+                <Avatar>
+                    <AvatarImage src={user.profileImage} />
+                    <AvatarFallback>TD</AvatarFallback>
+                </Avatar>
+                <p className="ml-2  text-gray-700">{user.profile?.name ? user.profile.name : "Incomplete profile"}</p>
+            </div>
         );
     };
 
+    const header = (
+        <div className="flex w-full justify-end gap-6 flex-wrap font-Poppins">
+            <Button className='rounded-full bg-green-600' onClick={() => exportCSV(false)}>
+                <Table className='w-5 h-5 mr-2' /> Download
+            </Button>
+        </div>
+    );
+
+    const footerTemplate = () => {
+        return "Total Records Matched: " + totalRecords; // Access total records here
+    };
+
+
     return (
-        <div>
+        <div className=''>
             <AdminNavbar />
             <div className="container">
-                <div className="my-10">
+                <div className="my-10 font-Poppins">
                     {
                         data.length > 0
                             ? (
                                 <>
                                     <Card>
                                         <CardHeader>
-                                            <div className="flex justify-end">
-                                                <Button className='bg-red-800' onClick={() => exportCSV(false)}>
-                                                    Download
-                                                </Button>
-                                            </div>
+                                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>
+                                                {recordType==="faculty"? "Faculty" : recordType==="admin" ? "Admin" : "Head of Department"} Details
+                                            </CardTitle>
+                                            <CardDescription>Deatils of users are shown below</CardDescription>
                                         </CardHeader>
-                                        <CardContent>
-                                            <DataTable ref={dt} value={data} stripedRows size='large'>
-                                                <Column field="profileImage" header="Image" body={profileImageTemplate}></Column>
-                                                <Column field="email" header="Email" filter filterPlaceholder='search by email'></Column>
-                                                <Column field="institute" header="Institute" filter filterPlaceholder='search by name'></Column>
-                                                <Column field="department" filter filterPlaceholder='Search by department' header="Department"></Column>
+                                        <CardContent className='my-10'>
+                                            <DataTable
+                                             ref={dt} value={data} showHeaders  showGridlines size='large' exportFilename={`${recordType}-data`}
+                                             paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]}
+                                             header={header} removableSort footer={footerTemplate} onValueChange={(e)=>setTotalRecords(e.length)}
+                                             >
+                                                <Column style={{ minWidth: '250px' }} sortable field="profile.name" header="Name" filter filterPlaceholder='search by name' body={nameBodyTemplate}></Column>
+                                                <Column style={{ minWidth: '250px' }} sortable field="email" header="Email Address" filter filterPlaceholder='search by email'></Column>
+                                                <Column style={{ minWidth: '250px' }} sortable field="institute" header="Institute" filter filterPlaceholder='search by name'></Column>
+                                                <Column style={{ minWidth: '250px' }} sortable field="department" filter filterPlaceholder='Search by department' header="Department"></Column>
+                                                <Column style={{ minWidth: '250px' }} sortable field="profile.designation" filter filterPlaceholder='Search by designation' header="Designation"></Column>
+                                                <Column style={{ minWidth: '250px' }} sortable field="profile.contact" filter filterPlaceholder='Search by contact' dataType='numeric' header="Contact"></Column>
+                                            
                                             </DataTable>
                                         </CardContent>
                                     </Card>

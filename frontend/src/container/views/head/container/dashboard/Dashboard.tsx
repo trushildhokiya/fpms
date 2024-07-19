@@ -1,6 +1,6 @@
 import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Line from '@/components/visual/Line'
 import Pie from '@/components/visual/Pie'
 import terminalHandler from '@/utils/functions/terminalFunction'

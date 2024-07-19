@@ -149,12 +149,12 @@ const registerUsers = asyncHandler(async (req, res) => {
         }
 
 
-        transporter.sendMail(mailOptions, (err, info) => {
-            if (err) {
-                res.status(500)
-                throw new Error('Internal Server Error in mailer!')
-            }
-        });
+        // transporter.sendMail(mailOptions, (err, info) => {
+        //     if (err) {
+        //         res.status(500)
+        //         throw new Error('Internal Server Error in mailer!')
+        //     }
+        // });
 
 
         res.status(200).json({
@@ -330,6 +330,14 @@ const getDashboardData = asyncHandler(async (req, res) => {
 
 
     // create PieData
+    const institutionPie = [
+        { id: 'patent', value: institutePatents.length },
+        { id: 'publication', value: instituteJournals.length + instituteConferences.length + instituteBooks.length + instituteBookChapters.length  },
+        { id: 'project', value: instituteProjects.length + instituteNeedBasedProjects.length },
+        { id: 'consultancy', value: instituteConsultancys.length },
+        { id: 'copyright', value: instituteCopyrights.length },
+    ]
+
     const computerPie = getPieData(processingData, 'Computer')
     const informationTechnologyPie = getPieData(processingData, 'Information Technology')
     const aidsPie = getPieData(processingData, 'Artificial Intelligence and Data Science')
@@ -422,6 +430,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
     ]
 
     res.status(200).json({
+        institution: institutionPie,
         computer: computerPie,
         it: informationTechnologyPie,
         aids: aidsPie,

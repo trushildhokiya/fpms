@@ -17,6 +17,7 @@ interface PastYearPerformanceData {
 }
 
 interface DashboardData {
+  institution:DepartmentData[];
   computer: DepartmentData[];
   it: DepartmentData[];
   aids: DepartmentData[];
@@ -43,17 +44,17 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData>()
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
     axios.get('/admin/dashboard')
-    .then((res)=>{
-      setDashboardData(res.data)
-    })
-    .catch((err)=>{
-      console.error(err);
-    })
+      .then((res) => {
+        setDashboardData(res.data)
+      })
+      .catch((err) => {
+        console.error(err);
+      })
 
-  },[])
+  }, [])
 
   return (
     <div>
@@ -66,9 +67,16 @@ const Dashboard = () => {
 
         {/* Donuts  */}
         <p className="font-OpenSans font-bold text-gray-700 text-xl my-4">
-          Department Wise Summary
+          Institute & Department Wise Summary
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-10">
+
+          <div className="">
+            <Pie data={dashboardData?.institution}  />
+            <p className="my-3 font-xl font-semibold text-center text-red-800">
+              Institutional Count
+            </p>
+          </div>
 
           <div className="">
             <Pie data={dashboardData?.computer} />
