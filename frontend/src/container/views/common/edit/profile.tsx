@@ -153,13 +153,13 @@ const ProfileForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: formData?.name,
-            department: "",
-            designation: "",
-            contact: 0,
-            email: "",
-            alternateContact: 0,
-            alternateEmail: "",
+            name: formData?.name || "",
+            department: formData?.department || "",
+            designation: formData?.designation || "",
+            contact: formData?.contact || 0,
+            email: formData?.email || "",
+            alternateContact: formData?.alternateContact || 0,
+            alternateEmail: formData?.alternateEmail || "",
         },
     })
 
