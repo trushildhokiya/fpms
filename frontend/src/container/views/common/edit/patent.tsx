@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import FacultyNavbar from "@/components/navbar/FacultyNavbar";
 import HeadNavbar from "@/components/navbar/HeadNavbar";
 import { useSelector } from "react-redux";
@@ -34,7 +36,7 @@ import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, BookUser, CalendarIcon, FileArchive } from "lucide-react";
-import countries from "./countries";
+import countries from "../forms/countries";
 import {
   CommandDialog,
   CommandEmpty,
@@ -55,8 +57,27 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import { useParams } from "react-router-dom";
 
 type Props = {};
+
+interface Patent {
+  _id: string;
+  title: string;
+  inventors: string[];
+  affiliationInventors: string[];
+  departmentInvolved: string[];
+  facultiesInvolved: string[];
+  nationalInternational: string;
+  country: string;
+  applicationNumber: string;
+  filingDate: Date;
+  grantDate: Date;
+  patentCertificate: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
 /**
  * SCHEMAS
@@ -76,10 +97,10 @@ const formSchema = z
     title: z
       .string()
       .min(2, {
-        message: "Copyright Title required!",
+        message: "Patent Title required!",
       })
       .max(100, {
-        message: "Copyright Title must not exceed 100 characters",
+        message: "Patent Title must not exceed 100 characters",
       }),
 
     inventors: z
@@ -90,7 +111,7 @@ const formSchema = z
 
     affiliationInventors: z
       .string({
-        invalid_type_error: "Inventors Affliliation is required!",
+        invalid_type_error: "Inventors affiliation is required!",
       })
       .transform((value) => value.split(",").map((name) => name.trim())),
 
@@ -118,22 +139,22 @@ const formSchema = z
     applicationNumber: z
       .string()
       .min(2, {
-        message: "Copyright Application Number required!",
+        message: "Patent Application Number required!",
       })
       .max(100, {
-        message: "Copyright Application Number must not exceed 100 characters",
+        message: "Patent Application Number must not exceed 100 characters",
       }),
 
-    startDate: z.date(),
-    endDate: z.date(),
-    copyrightCertificate: pdfFileSchema,
+    filingDate: z.date(),
+    grantDate: z.date(),
+    patentCertificate: z.union([pdfFileSchema, z.any().optional()]),
   })
-  .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
+  .refine((data) => new Date(data.grantDate) > new Date(data.filingDate), {
     message: "End date must be greater than start date",
-    path: ["endDate"], // Field to which the error will be attached
+    path: ["grantDate"], // Field to which the error will be attached
   });
 
-const CopyrightForm = (props: Props) => {
+const PatentForm = (props: Props) => {
   const user = useSelector((state: any) => state.user);
   const { toast } = useToast();
 
@@ -149,6 +170,7 @@ const CopyrightForm = (props: Props) => {
 
   // command
   const [open, setOpen] = useState(false);
+  const { id } = useParams()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -162,6 +184,27 @@ const CopyrightForm = (props: Props) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  useEffect(() => {
+    // Fetch the patent data
+    axios
+      .get(`/common/patent/${id}`)
+      .then((res) => {
+
+        const data: Patent = res.data
+        form.reset({
+          ...data,
+          inventors: data.inventors.join(', '),
+          affiliationInventors: data.affiliationInventors.join(', '),
+          facultiesInvolved: data.facultiesInvolved.join(', '),
+          filingDate: new Date(data.filingDate),
+          grantDate: new Date(data.grantDate),
+        })
+      })
+      .catch((err) => {
+        console.error("Error fetching patent data:", err);
+      });
+  }, []);
+
   // functions
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -169,49 +212,28 @@ const CopyrightForm = (props: Props) => {
       title: "",
       inventors: [""],
       affiliationInventors: [""],
-      facultiesInvolved: [],
       departmentInvolved: [],
+      facultiesInvolved: [],
       nationalInternational: "",
       country: "",
       applicationNumber: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      copyrightCertificate: new File([], ""),
+      filingDate: new Date(),
+      grantDate: new Date(),
+      patentCertificate: new File([], ""),
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
-    axios
-      .post("/common/copyright", values, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        // console.log(res.data);
-        if (res.data.message === "success") {
-          toast({
-            title: "Copyright added successfully",
-            description:
-              "Your Copyright information has been added successfully",
-            action: <ToastAction altText="okay">Okay</ToastAction>,
-          });
-          form.reset();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    console.log(values);
   }
 
   return (
     <>
       {user.role === "Faculty" ? <FacultyNavbar /> : <HeadNavbar />}
       <div className="container my-8">
-        <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
+        <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
           <span className="border-b-4 border-red-800 break-words ">
-            COPYRIGHT <span className="hidden md:inline-block">DETAILS</span>
+            PATENT <span className="hidden md:inline-block">DETAILS</span>
           </span>
         </h1>
 
@@ -268,11 +290,11 @@ const CopyrightForm = (props: Props) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-800">
-                      Copyright Title
+                      Patent Title
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter Title"
+                        placeholder="Patent Title"
                         {...field}
                         autoComplete="off"
                       />
@@ -290,7 +312,7 @@ const CopyrightForm = (props: Props) => {
                     <FormLabel className="text-gray-800">Inventors</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter Inventor Names"
+                        placeholder="Inventor Names"
                         {...field}
                         autoComplete="off"
                       />
@@ -313,7 +335,7 @@ const CopyrightForm = (props: Props) => {
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter Affiliation Inventor Names"
+                        placeholder="Affiliation Inventor Names"
                         {...field}
                         autoComplete="off"
                       />
@@ -396,40 +418,39 @@ const CopyrightForm = (props: Props) => {
                 )}
               />
 
-              <Separator className="my-5 bg-red-800" />
+              <FormField
+                control={form.control}
+                name="applicationNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">
+                      Patent Application Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Patent Application Number"
+                        {...field}
+                        autoComplete="off"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-                <FormField
-                  control={form.control}
-                  name="applicationNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-800">
-                        Copyright Application Number
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter Copyright Application Number"
-                          {...field}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={form.control}
                   name="nationalInternational"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-800">
-                        Copyright Type
+                        Patent Type
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -450,82 +471,6 @@ const CopyrightForm = (props: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="text-grey-800">From Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent align="start" className=" w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            captionLayout="dropdown-buttons"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            fromYear={1900}
-                            toYear={2100}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="text-grey-800">End Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent align="start" className=" w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            captionLayout="dropdown-buttons"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            fromYear={1900}
-                            toYear={2100}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="country"
                   render={({ field }) => (
                     <FormItem>
@@ -533,6 +478,7 @@ const CopyrightForm = (props: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -547,6 +493,84 @@ const CopyrightForm = (props: Props) => {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="filingDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="text-grey-800">
+                        Filing Date
+                      </FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className=" w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            captionLayout="dropdown-buttons"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            fromYear={1900}
+                            toYear={2100}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="grantDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="text-grey-800">
+                        Grant Date
+                      </FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className=" w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            captionLayout="dropdown-buttons"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            fromYear={1900}
+                            toYear={2100}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -566,19 +590,19 @@ const CopyrightForm = (props: Props) => {
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>NOTE</AlertTitle>
                   <AlertDescription>
-                    Copyright Certificate must be in a single pdf file of
-                    maximum size 5MB.
+                    Patent Certificate must be in a single pdf file of maximum
+                    size 5MB.
                   </AlertDescription>
                 </Alert>
               </div>
 
               <FormField
                 control={form.control}
-                name="copyrightCertificate"
+                name="patentCertificate"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-800">
-                      Copyright Certificate
+                      Patent Certificate
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -604,4 +628,4 @@ const CopyrightForm = (props: Props) => {
   );
 };
 
-export default CopyrightForm;
+export default PatentForm;

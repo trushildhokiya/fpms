@@ -273,7 +273,7 @@ const PatentDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Patent) => {
         return (
             <>
-                <Link to={`/common/edit/patent`}>
+                <Link to={`/common/edit/patent/${rowData._id}`}>
                     <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
                 </Link>
                 <AlertDialog>

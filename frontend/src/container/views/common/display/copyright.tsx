@@ -273,7 +273,9 @@ const CopyrightDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Copyright) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <Link to={`/common/edit/copyright/${rowData._id}`}>
+                    <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                </Link>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
@@ -298,20 +300,20 @@ const CopyrightDisplay = (props: Props) => {
     };
 
     const handleDelete = (rowData: Copyright) => {
-        axios.delete('/common/copyright',{
-            data:{
-                copyright_id:rowData._id
+        axios.delete('/common/copyright', {
+            data: {
+                copyright_id: rowData._id
             }
         })
-        .then((res)=>{
-            console.log(res);
-            if(res.data.message==='success'){
-                window.location.reload()
-            }
-        })
-        .catch((err)=>{
-            console.error(err)
-        })
+            .then((res) => {
+                console.log(res);
+                if (res.data.message === 'success') {
+                    window.location.reload()
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
     }
 
 

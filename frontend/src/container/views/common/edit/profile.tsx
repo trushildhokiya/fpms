@@ -165,25 +165,6 @@ const ProfileForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        // axios.post('/common/profile',values)
-        // .then((res)=>{
-        //     console.log(res);
-        //     if(res.data.message==='success'){
-
-        //         toast({
-        //             title: "Profile updated successfully",
-        //             description: "Your profile information has been added/updated successfully",
-        //             action: (
-        //               <ToastAction className='' onClick={()=>{ navigate('/common/display/profile')}} altText="okay">Okay</ToastAction>
-        //             ),
-        //         })
-        //         form.reset()
-                
-        //     }
-        // })
-        // .catch((err)=>{
-        //     console.log(err);
-        // })
         console.log(values);
         
 

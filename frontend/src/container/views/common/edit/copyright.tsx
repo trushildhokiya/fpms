@@ -1,3 +1,4 @@
+//@ts-nocheck
 import FacultyNavbar from "@/components/navbar/FacultyNavbar";
 import HeadNavbar from "@/components/navbar/HeadNavbar";
 import { useSelector } from "react-redux";
@@ -34,7 +35,7 @@ import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, BookUser, CalendarIcon, FileArchive } from "lucide-react";
-import countries from "./countries";
+import countries from "../forms/countries";
 import {
   CommandDialog,
   CommandEmpty,
@@ -55,8 +56,26 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import { useParams } from "react-router-dom";
 
 type Props = {};
+interface Copyright {
+  _id: string;
+  title: string;
+  inventors: string[];
+  affiliationInventors: string[];
+  departmentInvolved: string[];
+  facultiesInvolved: string[];
+  nationalInternational: string;
+  country: string;
+  applicationNumber: string;
+  startDate: Date;
+  endDate: Date;
+  copyrightCertificate: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
 /**
  * SCHEMAS
@@ -126,7 +145,7 @@ const formSchema = z
 
     startDate: z.date(),
     endDate: z.date(),
-    copyrightCertificate: pdfFileSchema,
+    copyrightCertificate: z.union([pdfFileSchema, z.any().optional()]),
   })
   .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     message: "End date must be greater than start date",
@@ -149,6 +168,7 @@ const CopyrightForm = (props: Props) => {
 
   // command
   const [open, setOpen] = useState(false);
+  const { id } = useParams()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -161,6 +181,29 @@ const CopyrightForm = (props: Props) => {
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
+  useEffect(() => {
+    // Fetch the patent data
+    axios
+      .get(`/common/copyright/${id}`)
+      .then((res) => {
+
+        const data: Copyright = res.data
+
+        form.reset({
+          ...data,
+          inventors: data.inventors.join(', '),
+          affiliationInventors: data.affiliationInventors.join(', '),
+          facultiesInvolved: data.facultiesInvolved.join(', '),
+          startDate: new Date(data.startDate),
+          endDate: new Date(data.endDate),
+        })
+      })
+      .catch((err) => {
+        console.error("Error fetching copyright data:", err);
+      });
+  }, []);
+
 
   // functions
   const form = useForm<z.infer<typeof formSchema>>({
@@ -181,28 +224,7 @@ const CopyrightForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
-    axios
-      .post("/common/copyright", values, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        // console.log(res.data);
-        if (res.data.message === "success") {
-          toast({
-            title: "Copyright added successfully",
-            description:
-              "Your Copyright information has been added successfully",
-            action: <ToastAction altText="okay">Okay</ToastAction>,
-          });
-          form.reset();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    console.log(values);
   }
 
   return (
@@ -430,6 +452,7 @@ const CopyrightForm = (props: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -533,6 +556,7 @@ const CopyrightForm = (props: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>

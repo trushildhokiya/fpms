@@ -186,31 +186,6 @@ const ExperienceForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-
-        // axios.post('/common/experience',values,{
-        //     headers:{
-        //         'Content-Type':'multipart/form-data'
-        //     }
-        // })
-        // .then((res)=>{
-        //     // console.log(res);
-        //     if(res.data.message==='success'){
-
-        //         toast({
-        //             title: "Experience updated successfully",
-        //             description: "Your experience data has been added/updated successfully",
-        //             action: (
-        //               <ToastAction className='' onClick={()=>{ navigate('/common/display/experience')}} altText="okay">Okay</ToastAction>
-        //             ),
-        //         })
-        //         form.reset()
-                
-        //     }
-        // })
-        // .catch((err)=>{
-        //     console.log(err);  
-        // })
-
         console.log(values)
     }
 

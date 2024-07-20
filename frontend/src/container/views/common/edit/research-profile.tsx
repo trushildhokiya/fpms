@@ -207,29 +207,7 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         
-        // axios.post('/common/research-profile',values)
-        // .then((res)=>{
-        //     // console.log(res);
-        //     if(res.data.message==='success'){
-
-        //         toast({
-        //             title: "Research profile updated successfully",
-        //             description: "Your research profile information has been added/updated successfully",
-        //             action: (
-        //               <ToastAction className='' onClick={ ()=>{ navigate('/common/display/research-profile')}} altText="okay">Okay</ToastAction>
-        //             ),
-        //         })
-        //         form.reset()
-                
-        //     }
-        // })
-        // .catch((err)=>{
-        //     console.log(err);
-        // })
-
         console.log(values);
-        
-
 
     }
 
