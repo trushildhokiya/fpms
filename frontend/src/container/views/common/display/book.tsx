@@ -290,7 +290,9 @@ const BookDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Book) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <Link to={`/common/edit/book/${rowData._id}`}>
+                    <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                </Link>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>

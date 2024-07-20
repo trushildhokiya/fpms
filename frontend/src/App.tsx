@@ -78,7 +78,7 @@ import SuperAdminProtectedRoute from './components/protected/SuperAdminProtected
 
 
 /**
- * RESEARCH AND DEVELOPMENT FORM IMPORTS
+ * RESEARCH AND PROFILE FORM IMPORTS
  */
 const ConsultancyForm = lazy(() => import('./container/views/common/forms/consultancy'));
 const CopyrightForm = lazy(() => import('./container/views/common/forms/copyright'));
@@ -96,7 +96,7 @@ const ConferenceForm = lazy(() => import('./container/views/common/forms/confere
 const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-based-project'));
 
 /**
- * EDITABLE FORM IMPORTS
+ * EDITABLE RESEARCH AND PROFILE FORM IMPORTS
  */
 const ResearchProfileEditForm = lazy(() => import('./container/views/common/edit/research-profile'));
 const ProfileEditForm = lazy(() => import('./container/views/common/edit/profile'));
@@ -104,6 +104,10 @@ const ExperienceEditForm = lazy(() => import('./container/views/common/edit/expe
 const QualificationEditForm = lazy(() => import('./container/views/common/edit/qualification'));
 const PatentEditForm = lazy(() => import('./container/views/common/edit/patent'));
 const CopyrightEditForm = lazy(() => import('./container/views/common/edit/copyright'));
+const JournalEditForm = lazy(() => import('./container/views/common/edit/journal'));
+const ConferenceEditForm = lazy(() => import('./container/views/common/edit/conference'));
+const BookEditForm = lazy(() => import('./container/views/common/edit/book'));
+const BookChapterEditForm = lazy(() => import('./container/views/common/edit/book-chapter'));
 
 /**
  *  ACHIEVEMENTS FORM IMPORTS
@@ -218,6 +222,10 @@ function App() {
           <Route path='/common/edit/qualification' element={<CommonProtectedRoute> <QualificationEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/patent/:id' element={<CommonProtectedRoute> <PatentEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/copyright/:id' element={<CommonProtectedRoute> <CopyrightEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/journal/:id' element={<CommonProtectedRoute> <JournalEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/conference/:id' element={<CommonProtectedRoute> <ConferenceEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/book/:id' element={<CommonProtectedRoute> <BookEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/book-chapter/:id' element={<CommonProtectedRoute> <BookChapterEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />

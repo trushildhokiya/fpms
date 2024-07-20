@@ -307,7 +307,9 @@ const JournalDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Journal) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <Link to={`/common/edit/journal/${rowData._id}`}>
+                    <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                </Link>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
@@ -332,20 +334,20 @@ const JournalDisplay = (props: Props) => {
     };
 
     const handleDelete = (rowData: Journal) => {
-        axios.delete('/common/journal',{
-            data:{
-                journal_id:rowData._id
+        axios.delete('/common/journal', {
+            data: {
+                journal_id: rowData._id
             }
         })
-        .then((res)=>{
-            console.log(res);
-            if(res.data.message==='success'){
-                window.location.reload()
-            }
-        })
-        .catch((err)=>{
-            console.error(err)
-        })
+            .then((res) => {
+                console.log(res);
+                if (res.data.message === 'success') {
+                    window.location.reload()
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
     }
 
     return (

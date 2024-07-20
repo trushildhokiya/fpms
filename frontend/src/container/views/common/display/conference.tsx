@@ -327,7 +327,9 @@ const ConferenceDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Conference) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <Link to={`/common/edit/conference/${rowData._id}`}>
+                    <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                </Link>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>
@@ -352,20 +354,20 @@ const ConferenceDisplay = (props: Props) => {
     };
 
     const handleDelete = (rowData: Conference) => {
-        axios.delete('/common/conference',{
-            data:{
-                conference_id:rowData._id
+        axios.delete('/common/conference', {
+            data: {
+                conference_id: rowData._id
             }
         })
-        .then((res)=>{
-            console.log(res);
-            if(res.data.message==='success'){
-                window.location.reload()
-            }
-        })
-        .catch((err)=>{
-            console.error(err)
-        })
+            .then((res) => {
+                console.log(res);
+                if (res.data.message === 'success') {
+                    window.location.reload()
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
     }
 
 
