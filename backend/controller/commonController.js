@@ -342,6 +342,28 @@ const getPatentData = asyncHandler(async (req, res) => {
 });
 
 
+const getPatentById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const patentData = await Patent.findById(id)
+
+  // Send the response
+  res.status(200).json(patentData);
+
+})
+
 const deletePatent = asyncHandler(async (req, res) => {
 
   const { patent_id } = req.body
@@ -447,6 +469,29 @@ const getCopyrightData = asyncHandler(async (req, res) => {
   res.status(200).json(copyrightData);
 
 });
+
+const getCopyrightById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const copyrightData = await Copyright.findById(id)
+
+  // Send the response
+  res.status(200).json(copyrightData);
+
+})
+
 
 const deleteCopyright = asyncHandler(async (req, res) => {
 
@@ -558,6 +603,29 @@ const getJournalData = asyncHandler(async (req, res) => {
   res.status(200).json(journalData);
 
 });
+
+
+const getJournalById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const journalData = await Journal.findById(id)
+
+  // Send the response
+  res.status(200).json(journalData);
+
+})
 
 
 const deleteJournal = asyncHandler(async (req, res) => {
@@ -672,6 +740,30 @@ const getConferenceData = asyncHandler(async (req, res) => {
 
 });
 
+
+const getConferenceById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const conferenceData = await Conference.findById(id)
+
+  // Send the response
+  res.status(200).json(conferenceData);
+
+})
+
+
 const deleteConference = asyncHandler(async (req, res) => {
 
   const { conference_id } = req.body
@@ -779,6 +871,28 @@ const getBookData = asyncHandler(async (req, res) => {
 
 });
 
+const getBookById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const bookData = await Book.findById(id)
+
+  // Send the response
+  res.status(200).json(bookData);
+
+})
+
 const deleteBook = asyncHandler(async (req, res) => {
 
   const { book_id } = req.body
@@ -882,6 +996,30 @@ const getBookChapterData = asyncHandler(async (req, res) => {
 
 });
 
+
+const getBookChapterById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const bookChapterData = await BookChapter.findById(id)
+
+  // Send the response
+  res.status(200).json(bookChapterData);
+
+})
+
+
 const deleteBookChapter = asyncHandler(async (req, res) => {
 
   const { book_chapter_id } = req.body
@@ -969,6 +1107,28 @@ const addNeedBasedProject = asyncHandler(async (req, res) => {
   });
 
 });
+
+const getNeedBasedProjectById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const needBasedProjectData = await NeedBasedProject.findById(id)
+
+  // Send the response
+  res.status(200).json(needBasedProjectData);
+
+})
 
 
 const getNeedBasedProjectData = asyncHandler(async (req, res) => {
@@ -1081,6 +1241,27 @@ const addAwardHonors = asyncHandler(async (req, res) => {
 
 });
 
+const getAwardHonorsById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const awardHonorsData = await AwardHonors.findById(id)
+
+  // Send the response
+  res.status(200).json(awardHonorsData);
+
+})
 
 const getAwardHonorsData = asyncHandler(async (req, res) => {
 
@@ -1205,6 +1386,28 @@ const addConsultancy = asyncHandler(async (req, res) => {
   });
 
 });
+
+const getConsultancyById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const consultancyData = await Consultancy.findById(id).populate('transactionDetails')
+
+  // Send the response
+  res.status(200).json(consultancyData);
+
+})
 
 
 const getConsultancyData = asyncHandler(async (req, res) => {
@@ -1384,6 +1587,30 @@ const getProjectsData = asyncHandler(async (req, res) => {
   res.status(200).json(projectData);
 
 });
+
+
+const getProjectById = asyncHandler(async(req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+ const { id } = req.params
+  
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const projectData = await Project.findById(id).populate('transactionDetails')
+
+  // Send the response
+  res.status(200).json(projectData);
+
+})
+
 
 
 const deleteProject = asyncHandler(async (req, res) => {
@@ -1695,7 +1922,7 @@ const bookBulkUploader = async (formData) => {
       form.indexing = form.indexing.split(',').map(item => item.trim()).filter(item => item !== '');
       form.impactFactor = Number(form.impactFactor)
       form.citationCount = Number(form.citationCount)
-      
+
       // Filename and path for file
       const destination = 'uploads/book';
 
@@ -1736,7 +1963,7 @@ const bookChapterBulkUploader = async (formData) => {
       form.indexing = form.indexing.split(',').map(item => item.trim()).filter(item => item !== '');
       form.impactFactor = Number(form.impactFactor)
       form.citationCount = Number(form.citationCount)
-      
+
       // Filename and path for file
       const destination = 'uploads/book-chapter';
 
@@ -2037,5 +2264,15 @@ module.exports = {
   deleteProject,
   deleteNeedBasedProject,
   deleteConsultancy,
-  bulkUploader
+  bulkUploader,
+  getPatentById,
+  getCopyrightById,
+  getJournalById,
+  getConferenceById,
+  getBookById,
+  getBookChapterById,
+  getAwardHonorsById,
+  getNeedBasedProjectById,
+  getProjectById,
+  getConsultancyById,
 };

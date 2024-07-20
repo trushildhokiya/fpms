@@ -43,6 +43,16 @@ const {
   bulkUploader,
   addQualification,
   getQualificationData,
+  getPatentById,
+  getCopyrightById,
+  getJournalById,
+  getConferenceById,
+  getBookById,
+  getBookChapterById,
+  getProjectById,
+  getNeedBasedProjectById,
+  getConsultancyById,
+  getAwardHonorsById,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2932,5 +2942,26 @@ router.route('/projects').get(facultyAuthenticator, getProjectsData)
 router.route('/projects').delete(facultyAuthenticator,deleteProject)
 
 router.route('/bulk-upload').post(facultyAuthenticator,bulkUploader)
+
+router.route('/patent/:id').get(facultyAuthenticator,getPatentById)
+
+router.route('/copyright/:id').get(facultyAuthenticator,getCopyrightById)
+
+router.route('/journal/:id').get(facultyAuthenticator,getJournalById)
+
+router.route('/conference/:id').get(facultyAuthenticator,getConferenceById)
+
+router.route('/book/:id').get(facultyAuthenticator,getBookById)
+
+router.route('/book-chapter/:id').get(facultyAuthenticator,getBookChapterById)
+
+router.route('/projects/:id').get(facultyAuthenticator,getProjectById)
+
+router.route('/need-based-project/:id').get(facultyAuthenticator,getNeedBasedProjectById)
+
+router.route('/consultancy/:id').get(facultyAuthenticator,getConsultancyById)
+
+router.route('/award-honors/:id').get(facultyAuthenticator,getAwardHonorsById)
+
 
 module.exports = router;
