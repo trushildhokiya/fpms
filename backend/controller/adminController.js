@@ -442,6 +442,26 @@ const getDashboardData = asyncHandler(async (req, res) => {
 
 })
 
+
+const toggleRole = asyncHandler( async(req,res)=>{
+
+    const {id} = req.body
+
+    const user = await Faculty.findById(id)
+
+    if(user.role==="Faculty"){
+        user.role='Head Of Department'
+    }else{
+        user.role='Faculty'
+    }
+
+    await user.save()
+
+    res.status(200).json({
+        message:'success'
+    })
+})
+
 /**
  * HELPER FUNCTIONS
  */
@@ -515,5 +535,6 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
-    getDashboardData
+    getDashboardData,
+    toggleRole
 };

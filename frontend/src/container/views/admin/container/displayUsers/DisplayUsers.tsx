@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Table } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface Profile {
     name: string;
@@ -61,6 +63,7 @@ interface Qualification {
 }
 
 interface UserData {
+    _id: string;
     email: string;
     password: string;
     institute?: string;
@@ -140,6 +143,7 @@ const DisplayUsers = () => {
         })
             .then((res) => {
                 setData(res.data);
+                setTotalRecords(res.data.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -178,6 +182,47 @@ const DisplayUsers = () => {
         return "Total Records Matched: " + totalRecords; // Access total records here
     };
 
+    const actionBodyTemplate = (rowData: UserData) => {
+        return (
+            <>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Switch className='bg-red-800' />
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently change your
+                                entry data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleRoleToggle(rowData)} className='bg-red-800 text-white' >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </>
+        );
+    };
+
+
+    const handleRoleToggle = (data: UserData) => {
+
+        axios.put('/admin/toggle-role', { id: data._id })
+            .then((res) => {
+                if (res.data.message === "success") {
+                    window.location.reload()
+                }
+
+            })
+            .catch((err) => {
+                console.log(err);
+
+            })
+
+    }
 
     return (
         <div className=''>
@@ -191,23 +236,29 @@ const DisplayUsers = () => {
                                     <Card>
                                         <CardHeader>
                                             <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>
-                                                {recordType==="faculty"? "Faculty" : recordType==="admin" ? "Admin" : "Head of Department"} Details
+                                                {recordType === "faculty" ? "Faculty" : recordType === "admin" ? "Admin" : "Head of Department"} Details
                                             </CardTitle>
                                             <CardDescription>Deatils of users are shown below</CardDescription>
                                         </CardHeader>
                                         <CardContent className='my-10'>
                                             <DataTable
-                                             ref={dt} value={data} showHeaders  showGridlines size='large' exportFilename={`${recordType}-data`}
-                                             paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]}
-                                             header={header} removableSort footer={footerTemplate} onValueChange={(e)=>setTotalRecords(e.length)}
-                                             >
+                                                ref={dt} value={data} showHeaders showGridlines size='large' exportFilename={`${recordType}-data`}
+                                                paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]}
+                                                header={header} removableSort footer={footerTemplate} onValueChange={(e) => setTotalRecords(e.length)}
+                                            >
                                                 <Column style={{ minWidth: '250px' }} sortable field="profile.name" header="Name" filter filterPlaceholder='search by name' body={nameBodyTemplate}></Column>
                                                 <Column style={{ minWidth: '250px' }} sortable field="email" header="Email Address" filter filterPlaceholder='search by email'></Column>
                                                 <Column style={{ minWidth: '250px' }} sortable field="institute" header="Institute" filter filterPlaceholder='search by name'></Column>
                                                 <Column style={{ minWidth: '250px' }} sortable field="department" filter filterPlaceholder='Search by department' header="Department"></Column>
                                                 <Column style={{ minWidth: '250px' }} sortable field="profile.designation" filter filterPlaceholder='Search by designation' header="Designation"></Column>
                                                 <Column style={{ minWidth: '250px' }} sortable field="profile.contact" filter filterPlaceholder='Search by contact' dataType='numeric' header="Contact"></Column>
-                                            
+                                                {
+                                                    recordType !== 'admin'
+                                                        ?
+                                                        <Column body={actionBodyTemplate} align={'center'} header='Toggle Role' exportable={false} style={{ minWidth: '12rem' }}></Column>
+                                                        :
+                                                        null
+                                                }
                                             </DataTable>
                                         </CardContent>
                                     </Card>
