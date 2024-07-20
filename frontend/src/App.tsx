@@ -108,6 +108,10 @@ const JournalEditForm = lazy(() => import('./container/views/common/edit/journal
 const ConferenceEditForm = lazy(() => import('./container/views/common/edit/conference'));
 const BookEditForm = lazy(() => import('./container/views/common/edit/book'));
 const BookChapterEditForm = lazy(() => import('./container/views/common/edit/book-chapter'));
+const AwardsHonorsEditForm = lazy(() => import('./container/views/common/edit/awards-honors'));
+const NeedBasedProjectEditForm = lazy(() => import('./container/views/common/edit/need-based-project'));
+const ProjectEditForm = lazy(() => import('./container/views/common/edit/project'));
+const ConsultancyEditForm = lazy(() => import('./container/views/common/edit/consultancy'));
 
 /**
  *  ACHIEVEMENTS FORM IMPORTS
@@ -226,6 +230,10 @@ function App() {
           <Route path='/common/edit/conference/:id' element={<CommonProtectedRoute> <ConferenceEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/book/:id' element={<CommonProtectedRoute> <BookEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/book-chapter/:id' element={<CommonProtectedRoute> <BookChapterEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/projects/:id' element={<CommonProtectedRoute> <ProjectEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/need-based-project/:id' element={<CommonProtectedRoute> <NeedBasedProjectEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/awards-honors/:id' element={<CommonProtectedRoute> <AwardsHonorsEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/consultancy/:id' element={<CommonProtectedRoute> <ConsultancyEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />

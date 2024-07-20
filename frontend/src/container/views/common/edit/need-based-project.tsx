@@ -1,3 +1,4 @@
+//@ts-nocheck
 /**
  * IMPORTS
  */
@@ -40,8 +41,45 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
+import { useParams } from 'react-router-dom'
 
 type Props = {}
+
+interface Student {
+    _id: string;
+    name: string;
+    department: string;
+    contact: number;
+    email: string;
+}
+
+interface Project {
+    _id: string;
+    projectTitle: string;
+    description: string;
+    outcomes: string;
+    departmentInvolved: string[];
+    facultiesInvolved: string[];
+    institutionName: string;
+    institutionAddress: string;
+    institutionUrl: string;
+    collaborationType: string;
+    facultyCoordinatorName: string;
+    facultyCoordinatorDepartment: string;
+    facultyCoordinatorContact: string;
+    facultyCoordinatorEmail: string;
+    students: Student[];
+    startDate: Date;
+    endDate: Date;
+    sanctionedDocuments: string;
+    projectReport: string;
+    completionLetter: string;
+    visitDocuments: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+
 /**
  * SCHEMAS 
  */
@@ -137,10 +175,10 @@ const formSchema = z.object({
     endDate: z.date(),
 
 
-    sanctionedDocuments: pdfFileSchema,
-    projectReport: pdfFileSchema,
-    completionLetter: pdfFileSchema,
-    visitDocuments: pdfFileSchema,
+    sanctionedDocuments: z.union([pdfFileSchema, z.any().optional()]),
+    projectReport: z.union([pdfFileSchema, z.any().optional()]),
+    completionLetter: z.union([pdfFileSchema, z.any().optional()]),
+    visitDocuments: z.union([pdfFileSchema, z.any().optional()]),
 
 }).refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     message: "End date must be greater than start date",
@@ -150,7 +188,7 @@ const formSchema = z.object({
 const NeedBasedProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-    const { toast }= useToast()
+    const { toast } = useToast()
 
     //constants
 
@@ -164,6 +202,7 @@ const NeedBasedProjectForm = (props: Props) => {
 
     // command
     const [open, setOpen] = useState(false)
+    const { id } = useParams()
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -177,7 +216,26 @@ const NeedBasedProjectForm = (props: Props) => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
+    useEffect(() => {
+        // Fetch the project data
+        axios
+            .get(`/common/need-based-project/${id}`)
+            .then((res) => {
 
+                const data: Project = res.data
+
+                form.reset({
+                    ...data,
+                    facultiesInvolved: data.facultiesInvolved.join(', '),
+                    startDate: new Date(data.startDate),
+                    endDate: new Date(data.endDate),
+                    students: data.students.map(student => student)
+                })
+            })
+            .catch((err) => {
+                console.error("Error fetching project honors data:", err);
+            });
+    }, []);
     // functions
 
 
@@ -304,26 +362,7 @@ const NeedBasedProjectForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        axios.post("/common/need-based-project", values, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-            .then((res) => {
-
-                if (res.data.message === "success") {
-                    toast({
-                        title: "Project added successfully",
-                        description:
-                            "Your Project information has been added successfully",
-                        action: <ToastAction className='' altText="okay">Okay</ToastAction>,
-                    });
-                    form.reset();
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        console.log(values);
 
     }
 
@@ -491,7 +530,11 @@ const NeedBasedProjectForm = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Collaboration Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                value={field.value}
+                                            >
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a category" />

@@ -476,7 +476,9 @@ const ProjectsDisplay = (props: Props) => {
     const actionBodyTemplate = (rowData: Project) => {
         return (
             <>
-                <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                <Link to={`/common/edit/projects/${rowData._id}`}>
+                    <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
+                </Link>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button size={'icon'} className='rounded-full bg-red-500 mx-2'><Trash2Icon className='w-5 h-5' color='#fff' /></Button>

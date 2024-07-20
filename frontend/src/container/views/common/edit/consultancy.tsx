@@ -1,3 +1,4 @@
+//@ts-nocheck
 /**
  * IMPORTS
  */
@@ -21,7 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Users, UserCheck, GraduationCap } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -37,28 +38,78 @@ import {
 import { useState, useEffect } from 'react'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import axios from 'axios'
-import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
+import { ToastAction } from '@/components/ui/toast'
+import { useParams } from 'react-router-dom'
 
 type Props = {}
+
+interface Consultancy {
+    _id: string;
+    projectTitle: string;
+    principalInvestigator: string;
+    coInvestigators: string[];
+    departmentInvolved: string[];
+    facultiesInvolved: string[];
+    fundingAgency: string;
+    nationalInternational: string;
+    budgetAmount: number;
+    sanctionedAmount: number;
+    startDate: Date;
+    endDate: Date;
+    totalGrantReceived: number;
+    domain: string;
+    areaOfExpertise: string;
+    description: string;
+    transactionDetails: TransactionDetail[];
+    sanctionedOrder: string;
+    transactionProof: string;
+    completionCertificate: string;
+    supportingDocuments: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+
+interface TransactionDetail {
+    _id: string;
+    purchaseOrderNumber: string;
+    purchaseOrderDate: Date;
+    purchaseInvoiceNumber: string;
+    purchaseInvoiceDate: Date;
+    bankName: string;
+    branchName: string;
+    amountReceived: number;
+    remarks: string;
+    createdAt: Date;
+    updatedAt: Date;
+    __v: number;
+}
+
+
+
 /**
  * SCHEMAS 
  */
-
-const studentSchema = z.object({
-    name: z.string().min(1).max(100),
-    department: z.string().min(1),
-    contact: z.coerce.number().min(1000000000).max(9999999999),
-    email: z.string().min(1).email()
+const transactionSchema = z.object({
+    purchaseOrderNumber: z.string().min(1).max(100),
+    purchaseOrderDate: z.date(),
+    purchaseInvoiceNumber: z.string().min(1).max(100),
+    purchaseInvoiceDate: z.date(),
+    bankName: z.string().min(1).max(100),
+    branchName: z.string().min(1).max(100),
+    amountReceived: z.coerce.number().nonnegative(),
+    remarks: z.string().max(1000, {
+        message: "Remarks must not exceed 1000 characters"
+    }).optional(),
 })
-
 
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
 ];
-
-const pdfFileSchema = z.instanceof(File)
+const pdfFileSchema = z
+    .instanceof(File)
     .refine((file) => {
         return !file || file.size <= 5 * 1024 * 1024;
     }, `File size must be less than 5MB`)
@@ -68,17 +119,21 @@ const pdfFileSchema = z.instanceof(File)
     )
 
 const formSchema = z.object({
-
-    projectTitle: z.string().min(1, {
+    projectTitle: z.string().min(2, {
         message: "Project Title required!"
     }).max(100, {
         message: "Project Title must not exceed 100 characters"
     }),
 
-    description: z.string().min(1).max(1000),
-    outcomes: z.string().min(1).max(1000),
+    principalInvestigator: z.string().min(2, {
+        message: "Principal Investigator is required!"
+    }).max(100, {
+        message: "Principal Investigator must not exceed 100 characters"
+    }),
 
-    institutionAddress: z.string().min(1).max(1000),
+    coInvestigators: z.string({
+        invalid_type_error: "Required fields must be filled !"
+    }).transform((value) => value.split(',').map((name) => name.trim())),
 
     departmentInvolved: z.array(z.string()).nonempty(),
 
@@ -89,68 +144,50 @@ const formSchema = z.object({
             message: "Each faculty email must be a valid email address",
         }),
 
-    institutionName: z.string().min(1, {
-        message: "Institution/Organisation Name required!"
+    fundingAgency: z.string().min(2, {
+        message: "Funding Agency required !"
     }).max(100, {
-        message: "Institution/Organisation Name must not exceed 100 characters"
+        message: "Funding agency must be less than 100 characters"
     }),
 
-    facultyCoordinatorName: z.string().min(1, {
-        message: "Faculty Coordinator Name required!"
-    }).max(100, {
-        message: "Faculty Coordinator Name must not exceed 100 characters"
+    nationalInternational: z.string().min(1, {
+        message: "Funding Agency type required!"
     }),
 
-    facultyCoordinatorDepartment: z.string().min(2, {
-        message: "Faculty Coordinator Department required!"
-    }).max(100, {
-        message: "Faculty Coordinator Department must not exceed 100 characters"
-    }),
-
-    facultyCoordinatorContact: z.string().regex(/^[0-9]{10}$/, {
-        message: "Contact number must be 10 digits"
-    }),
-
-    facultyCoordinatorEmail: z.string().email({
-        message: "Invalid email address format"
-    }).min(5, {
-        message: "Email required!"
-    }).max(100, {
-        message: "Email must not exceed 100 characters"
-    }),
-
-    students: z.array(studentSchema),
-
-    collaborationType: z.string().min(1, {
-        message: "Collaboration Type required!"
-    }),
-
-    institutionUrl: z.string().url({
-        message: "Invalid website URL format"
-    }).min(1, {
-        message: "Website URL required!"
-    }).max(1000, {
-        message: "Website URL must not exceed 1000 characters"
-    }),
+    budgetAmount: z.coerce.number().nonnegative(),
+    sanctionedAmount: z.coerce.number().nonnegative(),
 
     startDate: z.date(),
     endDate: z.date(),
 
+    totalGrantReceived: z.coerce.number().nonnegative(),
+    domain: z.string().min(1, {
+        message: "Domain is required!"
+    }).max(100, {
+        message: "Domain must not exceed maximum of 100 characters"
+    }),
 
-    sanctionedDocuments: pdfFileSchema,
-    projectReport: pdfFileSchema,
-    completionLetter: pdfFileSchema,
-    visitDocuments: pdfFileSchema,
+    areaOfExpertise: z.string().min(1).max(100),
+    description: z.string().min(1).max(1000),
+    transactionDetails: z.array(transactionSchema).nonempty(),
+
+    sanctionedOrder: z.union([pdfFileSchema, z.any().optional()]),
+    transactionProof: z.union([pdfFileSchema, z.any().optional()]),
+    completionCertificate: z.union([pdfFileSchema, z.any().optional()]),
+    supportingDocuments: z.union([pdfFileSchema, z.any().optional()]),
 
 }).refine((data) => new Date(data.endDate) > new Date(data.startDate), {
-    message: "End date must be greater than start date",
-    path: ["endDate"], // Field to which the error will be attached
-});
+    message: "End Date must be greater than start date",
+    path: ['endDate']
+}) // Field to which the error will be attached);
 
-const NeedBasedProjectForm = (props: Props) => {
+const ConsultancyForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-    const { toast }= useToast()
+    const { toast } = useToast()
+    // command
+    const [open, setOpen] = useState(false)
+    const { id } = useParams()
 
     //constants
 
@@ -161,9 +198,6 @@ const NeedBasedProjectForm = (props: Props) => {
         "Electronics and Telecommunication",
         "Basic Science and Humanities"
     ];
-
-    // command
-    const [open, setOpen] = useState(false)
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -177,66 +211,97 @@ const NeedBasedProjectForm = (props: Props) => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
+    useEffect(() => {
+        // Fetch the consultancy data
+        axios.get(`/common/consultancy/${id}`)
+            .then((res) => {
+
+                const data: Consultancy = res.data
+
+                form.reset({
+                    ...data,
+                    facultiesInvolved: data.facultiesInvolved.join(', '),
+                    coInvestigators: data.coInvestigators.join(', '),
+                    startDate: new Date(data.startDate),
+                    endDate: new Date(data.endDate),
+                    transactionDetails:data.transactionDetails.map( transaction => ({
+                        ...transaction,
+                        purchaseInvoiceDate: new Date(transaction.purchaseInvoiceDate),
+                        purchaseOrderDate: new Date(transaction.purchaseOrderDate)
+                    }))
+                })
+            })
+            .catch((err) => {
+                console.error("Error fetching consultancy honors data:", err);
+            });
+    }, []);
+
 
     // functions
-
-
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             projectTitle: "",
-            institutionName: "",
-            collaborationType: "",
-            facultiesInvolved: [],
+            principalInvestigator: "",
+            coInvestigators: [''],
             departmentInvolved: [],
+            facultiesInvolved: [],
+            fundingAgency: "",
+            nationalInternational: "",
+            budgetAmount: 0,
+            sanctionedAmount: 0,
             startDate: new Date(),
             endDate: new Date(),
-            institutionAddress: "",
-            institutionUrl: "",
-            facultyCoordinatorName: "",
-            facultyCoordinatorDepartment: "",
-            facultyCoordinatorContact: "",
-            facultyCoordinatorEmail: "",
-            students: [],
+            totalGrantReceived: 0,
+            domain: "",
+            areaOfExpertise: "",
             description: "",
-            outcomes: "",
-            sanctionedDocuments: new File([], ''),
-            projectReport: new File([], ''),
-            completionLetter: new File([], ''),
-            visitDocuments: new File([], ''),
+            transactionDetails: [],
+            sanctionedOrder: new File([], ''),
+            transactionProof: new File([], ''),
+            completionCertificate: new File([], ''),
+            supportingDocuments: new File([], ''),
         },
     })
 
     const { control, handleSubmit, formState: { errors } } = form;
     const { fields, append } = useFieldArray({
         control,
-        name: "students"
+        name: "transactionDetails"
     });
 
-    const handleStudentClick = (event: any) => {
+    function onSubmit(values: z.infer<typeof formSchema>) {  
+        console.log(values);
+    }
+
+    const handleTransactionClick = (event: any) => {
         append({
-            name: '',
-            contact: 0,
-            department: '',
-            email: '',
+            purchaseOrderNumber: '',
+            purchaseOrderDate: new Date(),
+            purchaseInvoiceNumber: '',
+            purchaseInvoiceDate: new Date(),
+            bankName: '',
+            branchName: '',
+            amountReceived: 0,
+            remarks: '',
         });
 
         event.preventDefault()
     };
 
-    const renderStudentBlock = (index: number) => (
+    const renderTransactionBlock = (index: number) => (
         <div key={index}>
             <Separator className='my-8 bg-red-800' />
             <div className="grid md:grid-cols-2 gap-6">
                 <FormField
                     control={control}
-                    name={`students.${index}.name`}
+                    name={`transactionDetails.${index}.purchaseOrderNumber`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-grey-800'>Student Name</FormLabel>
+                            <FormLabel className='text-grey-800'>Purchase Order Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="name" autoComplete='off' {...field} />
+                                <Input placeholder="Purchase Order Number" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -245,38 +310,89 @@ const NeedBasedProjectForm = (props: Props) => {
 
                 <FormField
                     control={control}
-                    name={`students.${index}.department`}
+                    name={`transactionDetails.${index}.purchaseInvoiceNumber`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Department</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select  Department" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="Computer">Computer Engineering</SelectItem>
-                                    <SelectItem value="Information Technology">Information Technology</SelectItem>
-                                    <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
-                                    <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
-                                    <SelectItem value="Basic Science and Humanities">Basic Science and Humanities</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <FormLabel className='text-grey-800'>Purchase Invoice Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Purchase Invoice number" autoComplete='off' {...field} />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
 
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.purchaseOrderDate`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel className='text-grey-800'>Purchase Order Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className=" w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        captionLayout="dropdown-buttons"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        fromYear={1900}
+                                        toYear={2100}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <FormField
                     control={control}
-                    name={`students.${index}.email`}
+                    name={`transactionDetails.${index}.purchaseInvoiceDate`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel className='text-grey-800'>Purchase Invoice Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className=" w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        captionLayout="dropdown-buttons"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        fromYear={1900}
+                                        toYear={2100}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.bankName`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-grey-800'>Email Address</FormLabel>
+                            <FormLabel className='text-grey-800'>Bank Name</FormLabel>
                             <FormControl>
-                                <Input type="email" placeholder="Email Address" autoComplete='off' {...field} />
+                                <Input placeholder="Bank Name" autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -284,12 +400,40 @@ const NeedBasedProjectForm = (props: Props) => {
                 />
                 <FormField
                     control={control}
-                    name={`students.${index}.contact`}
+                    name={`transactionDetails.${index}.branchName`}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-grey-800'>Student Contact Number</FormLabel>
+                            <FormLabel className='text-grey-800'>Branch Name</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Contact Number" autoComplete='off' {...field} />
+                                <Input placeholder="Branch Name" autoComplete='off' {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <div className="">
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.amountReceived`}
+                    render={({ field }) => (
+                        <FormItem className='my-4'>
+                            <FormLabel className='text-grey-800'>Amount Received</FormLabel>
+                            <FormControl>
+                                <Input type='number' placeholder="0" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={control}
+                    name={`transactionDetails.${index}.remarks`}
+                    render={({ field }) => (
+                        <FormItem className='my-4'>
+                            <FormLabel className='text-grey-800'>Remarks</FormLabel>
+                            <FormControl>
+                                <Textarea placeholder="Remarks ( if any ) " autoComplete='off' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -301,41 +445,15 @@ const NeedBasedProjectForm = (props: Props) => {
     );
 
 
-
-    function onSubmit(values: z.infer<typeof formSchema>) {
-
-        axios.post("/common/need-based-project", values, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-            .then((res) => {
-
-                if (res.data.message === "success") {
-                    toast({
-                        title: "Project added successfully",
-                        description:
-                            "Your Project information has been added successfully",
-                        action: <ToastAction className='' altText="okay">Okay</ToastAction>,
-                    });
-                    form.reset();
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-    }
-
     return (
         <div>
             {user.role === 'Faculty' ? <FacultyNavbar /> : <HeadNavbar />}
 
             <div className="container my-8">
 
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 ">
                     <span className="border-b-4 border-red-800 break-words ">
-                        <span className='hidden sm:inline-block'> NEED BASED</span> Projects
+                        CONSULTANCY <span className='hidden sm:inline-block'>PROJECTS</span>
                     </span>
                 </h1>
 
@@ -354,16 +472,8 @@ const NeedBasedProjectForm = (props: Props) => {
                                             <span><a href='#basicDetails' onClick={() => setOpen(false)}>Basic Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
-                                            <Users className="mr-2 h-4 w-4" />
-                                            <span><a href='#partnerInstitutionDetails' onClick={() => setOpen(false)}>Partner Institution Details</a></span>
-                                        </CommandItem>
-                                        <CommandItem>
-                                            <UserCheck className="mr-2 h-4 w-4" />
-                                            <span><a href='#facultyCoordinator' onClick={() => setOpen(false)}>Faculty Coordinator Details</a></span>
-                                        </CommandItem>
-                                        <CommandItem>
-                                            <GraduationCap className="mr-2 h-4 w-4" />
-                                            <span><a href='#studentDetails' onClick={() => setOpen(false)}>Student Details</a></span>
+                                            <Receipt className="mr-2 h-4 w-4" />
+                                            <span><a href='#transactionDetails' onClick={() => setOpen(false)}>Transaction Details</a></span>
                                         </CommandItem>
                                         <CommandItem>
                                             <FileArchive className="mr-2 h-4 w-4" />
@@ -392,7 +502,7 @@ const NeedBasedProjectForm = (props: Props) => {
                                     name="projectTitle"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Project/Research Title</FormLabel>
+                                            <FormLabel className='text-gray-800'>Project Title</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="project Title" {...field} autoComplete='off' />
                                             </FormControl>
@@ -403,12 +513,12 @@ const NeedBasedProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="description"
+                                    name="principalInvestigator"
                                     render={({ field }) => (
                                         <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Description </FormLabel>
+                                            <FormLabel className='text-gray-800'>Principal Investigator</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Input placeholder="principal Investigator" {...field} autoComplete='off' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -417,13 +527,16 @@ const NeedBasedProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="outcomes"
+                                    name="coInvestigators"
                                     render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Outcome </FormLabel>
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Co-Investigators</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="outcome must not exceed 1000 characters" autoComplete='off' {...field} />
+                                                <Textarea placeholder="eg: John Smith, David Fawling" {...field} autoComplete='off' />
                                             </FormControl>
+                                            <FormDescription>
+                                                Write mutiple names seperated by commas(,)
+                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -484,22 +597,38 @@ const NeedBasedProjectForm = (props: Props) => {
                                     )}
                                 />
 
+                            </div>
+
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="fundingAgency"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Funding Agency</FormLabel>
+                                            <FormControl>
+                                                <Input type='text' placeholder="funding Agency " {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
                                 <FormField
                                     control={form.control}
-                                    name="collaborationType"
+                                    name="nationalInternational"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Collaboration Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormLabel className='text-gray-800'>Funding Agency Type</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a category" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="academic">Academic</SelectItem>
-                                                    <SelectItem value="industrial">Industrial</SelectItem>
+                                                    <SelectItem value="national">National</SelectItem>
+                                                    <SelectItem value="international">International</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -507,10 +636,33 @@ const NeedBasedProjectForm = (props: Props) => {
                                     )}
                                 />
 
+                                <FormField
+                                    control={form.control}
+                                    name="budgetAmount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Budget Amount</FormLabel>
+                                            <FormControl>
+                                                <Input type='number' placeholder="Budget Amount" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            </div>
-
-                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="sanctionedAmount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Grant Sanctioned Amount</FormLabel>
+                                            <FormControl>
+                                                <Input type='number' placeholder="Sanctioned Amount" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
                                 <FormField
                                     control={form.control}
@@ -518,7 +670,7 @@ const NeedBasedProjectForm = (props: Props) => {
                                     name="startDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className='text-grey-800'>Start Date</FormLabel>
+                                            <FormLabel className='text-grey-800'>From Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -578,191 +730,93 @@ const NeedBasedProjectForm = (props: Props) => {
                                     )}
                                 />
 
+                                <FormField
+                                    control={form.control}
+                                    name="totalGrantReceived"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Total Grant Recieved </FormLabel>
+                                            <FormControl>
+                                                <Input type='number' placeholder="Total Grant Recieved" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="domain"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Domain </FormLabel>
+                                            <FormControl>
+                                                <Input type='text' placeholder="eg: Neuro Science" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                             </div>
 
+                            <div className="">
+
+                                <FormField
+                                    control={form.control}
+                                    name="areaOfExpertise"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Area of Expertise </FormLabel>
+                                            <FormControl>
+                                                <Input type='text' autoComplete='off' placeholder="eg: Human Psychology" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-gray-800'>Description </FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="description must not exceed 1000 characters" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
 
                             <Separator className='my-5 bg-red-800' />
 
-                            {/* Partner Institution/Organisation Details */}
-                            <h2 id='partnerInstitutionDetails' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
-                                Partner Institution/Organisation Details
+                            {/* Transaction DETAILS */}
+                            <h2 className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500' id='transactionDetails'>
+                                Transaction Details
                             </h2>
 
-                            <Alert className='bg-teal-500'>
+                            <Alert className='bg-green-500'>
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>NOTE</AlertTitle>
                                 <AlertDescription>
-                                    Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
+                                    Click the Add Transaction button to enter a new transaction . Please take care that the enetered amount is not greater than the amount you have been sanctioned. The proofs for all the transaction must be attached at the end of this form.
                                 </AlertDescription>
                             </Alert>
 
-                            <div className="">
-                                <FormField
-                                    control={form.control}
-                                    name="institutionName"
-                                    render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Institution Name</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="institution/organisation Name" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            <Button size={'lg'} onClick={handleTransactionClick} className='text-black hover:bg-emerald-600 bg-emerald-500'> Add Transaction </Button>
 
-                                <FormField
-                                    control={form.control}
-                                    name="institutionAddress"
-                                    render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Institution Address </FormLabel>
-                                            <FormControl>
-                                                <Textarea placeholder="instituion/organisation Name must not exceed 1000 characters" autoComplete='off' {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="institutionUrl"
-                                    render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Institution website URL</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="institution/organisation Website Link" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-
-                            <Separator className='my-5 bg-red-800' />
-
-                            {/* Faculty Coordinator */}
-
-                            <h2 id='facultyCoordinator' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
-                                Faculty Coordinator Details
-                            </h2>
-
-                            <div>
-                                <Alert className='bg-cyan-500'>
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertTitle>NOTE</AlertTitle>
-                                    <AlertDescription>
-                                        Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
-                                    </AlertDescription>
-                                </Alert>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <FormField
-                                    control={form.control}
-                                    name="facultyCoordinatorName"
-                                    render={({ field }) => (
-                                        <FormItem className=''>
-                                            <FormLabel className='text-gray-800'>Name</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="faculty Coordinator Name" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="facultyCoordinatorDepartment"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Department</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select  Department" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Computer">Computer Engineering</SelectItem>
-                                                    <SelectItem value="Information Technology">Information Technology</SelectItem>
-                                                    <SelectItem value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</SelectItem>
-                                                    <SelectItem value="Electronics and Telecommunication">Electronics and Telecommunication</SelectItem>
-                                                    <SelectItem value="Basic Science and Humanities">Basic Science and Humanities</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="facultyCoordinatorContact"
-                                    render={({ field }) => (
-                                        <FormItem className=''>
-                                            <FormLabel className='text-gray-800'>Contact Number</FormLabel>
-                                            <FormControl>
-                                                <Input type='number' placeholder="faculty Coordinator Contact Number" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="facultyCoordinatorEmail"
-                                    render={({ field }) => (
-                                        <FormItem className=''>
-                                            <FormLabel className='text-gray-800'>Email Address</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Faculty Coordinator Email" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                            </div>
-
-                            <Separator className='my-5 bg-red-800' />
-
-                            {/* Student Details */}
-
-                            <h2 id='studentDetails' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
-                                Student Details
-                            </h2>
-
-                            <div>
-                                <Alert className='bg-lime-400'>
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertTitle>NOTE</AlertTitle>
-                                    <AlertDescription>
-                                        Please fill all the details correctly as per your knowledege.Click the add button to enter students details
-                                    </AlertDescription>
-                                </Alert>
-                            </div>
-
-                            <div className="">
-
-                                <Button size={'lg'} onClick={handleStudentClick} className='text-black hover:bg-lime-600 bg-lime-500'> Add Student </Button>
-
-                                {fields.map((field, index) => (
-                                    renderStudentBlock(index)
-                                ))}
-
-                            </div>
+                            {fields.map((field, index) => (
+                                renderTransactionBlock(index)
+                            ))}
 
                             {/* Proof Upload */}
-
                             <h2 id='proofUpload' className='my-6 text-2xl font-AzoSans font-bold uppercase text-gray-500'>
                                 Proof Uploads
                             </h2>
-
                             <div>
                                 <Alert variant="default" className='bg-amber-500'>
                                     <AlertCircle className="h-4 w-4" />
@@ -777,10 +831,10 @@ const NeedBasedProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="sanctionedDocuments"
+                                    name="sanctionedOrder"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Sanctioned Documents </FormLabel>
+                                            <FormLabel className='text-gray-800'>Sanctioned Order </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -795,10 +849,10 @@ const NeedBasedProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="projectReport"
+                                    name="transactionProof"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Project Report </FormLabel>
+                                            <FormLabel className='text-gray-800'>Transaction Proof </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -813,10 +867,10 @@ const NeedBasedProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="completionLetter"
+                                    name="completionCertificate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Completion Letter </FormLabel>
+                                            <FormLabel className='text-gray-800'>Completion Certificate </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -831,10 +885,10 @@ const NeedBasedProjectForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="visitDocuments"
+                                    name="supportingDocuments"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Visit Documents and Photos </FormLabel>
+                                            <FormLabel className='text-gray-800'>Supporting Documents </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     accept=".pdf"
@@ -859,4 +913,4 @@ const NeedBasedProjectForm = (props: Props) => {
     )
 }
 
-export default NeedBasedProjectForm
+export default ConsultancyForm
