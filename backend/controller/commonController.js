@@ -104,6 +104,29 @@ const getProfileData = asyncHandler(async (req, res) => {
 });
 
 
+const updateProfile = asyncHandler(async (req, res) => {
+
+  //get required data
+  const { email } = req.decodedData;
+  const data  = req.body
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  user.profile = data
+  await user.save()
+
+  res.status(200).json({
+    message:"success"
+  });
+
+})
+
+
 const addExperience = async (req, res) => {
   //get required data
   const { email } = req.decodedData;
@@ -227,6 +250,29 @@ const getResearchProfileData = asyncHandler(async (req, res) => {
 });
 
 
+const updateResearchProfile = asyncHandler(async (req, res) => {
+
+  //get required data
+  const { email } = req.decodedData;
+  const  data  = req.body
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  user.researchProfile = data
+  await user.save()
+
+  res.status(200).json({
+    message:"success"
+  });
+
+})
+
+
 const addQualification = asyncHandler(async (req, res) => {
 
   //get required data
@@ -280,6 +326,47 @@ const getQualificationData = asyncHandler(async (req, res) => {
   res.status(200).json(qualificationData);
 
 })
+
+const updateQualification = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const  data  = req.body.qualificationDetails;
+  const { email } = req.decodedData;
+
+  // Find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+      res.status(400);
+      throw new Error("User not found!");
+  }
+
+  // Update or add qualifications
+  try {
+      data.forEach((qualification) => {
+          if (qualification._id) {
+              // Update existing qualification
+              const existingQualificationIndex = user.qualification.findIndex(q => q._id.toString() === qualification._id);
+              if (existingQualificationIndex > -1) {
+                  user.qualification[existingQualificationIndex] = qualification;
+              }
+          } else {
+              // Add new qualification
+              user.qualification.push(qualification);
+          }
+      });
+
+      await user.save();
+
+      res.status(200).json({
+          message: "success",
+      });
+  } catch (err) {
+      console.log(err);
+      res.status(400);
+      throw new Error(err);
+  }
+});
 
 const addPatents = asyncHandler(async (req, res) => {
 
@@ -342,11 +429,11 @@ const getPatentData = asyncHandler(async (req, res) => {
 });
 
 
-const getPatentById = asyncHandler(async(req, res) => {
+const getPatentById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
+  const { id } = req.params
 
   // Find user
   const user = await Faculty.findOne({ email: email })
@@ -470,12 +557,12 @@ const getCopyrightData = asyncHandler(async (req, res) => {
 
 });
 
-const getCopyrightById = asyncHandler(async(req, res) => {
+const getCopyrightById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -605,12 +692,12 @@ const getJournalData = asyncHandler(async (req, res) => {
 });
 
 
-const getJournalById = asyncHandler(async(req, res) => {
+const getJournalById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -741,12 +828,12 @@ const getConferenceData = asyncHandler(async (req, res) => {
 });
 
 
-const getConferenceById = asyncHandler(async(req, res) => {
+const getConferenceById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -871,12 +958,12 @@ const getBookData = asyncHandler(async (req, res) => {
 
 });
 
-const getBookById = asyncHandler(async(req, res) => {
+const getBookById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -997,12 +1084,12 @@ const getBookChapterData = asyncHandler(async (req, res) => {
 });
 
 
-const getBookChapterById = asyncHandler(async(req, res) => {
+const getBookChapterById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -1108,12 +1195,12 @@ const addNeedBasedProject = asyncHandler(async (req, res) => {
 
 });
 
-const getNeedBasedProjectById = asyncHandler(async(req, res) => {
+const getNeedBasedProjectById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -1241,12 +1328,12 @@ const addAwardHonors = asyncHandler(async (req, res) => {
 
 });
 
-const getAwardHonorsById = asyncHandler(async(req, res) => {
+const getAwardHonorsById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -1387,12 +1474,12 @@ const addConsultancy = asyncHandler(async (req, res) => {
 
 });
 
-const getConsultancyById = asyncHandler(async(req, res) => {
+const getConsultancyById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -1589,12 +1676,12 @@ const getProjectsData = asyncHandler(async (req, res) => {
 });
 
 
-const getProjectById = asyncHandler(async(req, res) => {
+const getProjectById = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
- const { id } = req.params
-  
+  const { id } = req.params
+
   // Find user
   const user = await Faculty.findOne({ email: email })
 
@@ -2227,12 +2314,15 @@ async function downloadFile(link, destination, filename) {
 module.exports = {
   addProfile,
   getProfileData,
+  updateProfile,
   addExperience,
   getExperienceData,
   addResearchProfile,
   getResearchProfileData,
+  updateResearchProfile,
   addQualification,
   getQualificationData,
+  updateQualification,
   addPatents,
   getPatentData,
   addCopyright,

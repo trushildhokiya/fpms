@@ -53,6 +53,9 @@ const {
   getNeedBasedProjectById,
   getConsultancyById,
   getAwardHonorsById,
+  updateProfile,
+  updateResearchProfile,
+  updateQualification,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2962,6 +2965,13 @@ router.route('/need-based-project/:id').get(facultyAuthenticator,getNeedBasedPro
 router.route('/consultancy/:id').get(facultyAuthenticator,getConsultancyById)
 
 router.route('/award-honors/:id').get(facultyAuthenticator,getAwardHonorsById)
+
+router.route('/profile').put(facultyAuthenticator,updateProfile)
+
+router.route('/research-profile').put(facultyAuthenticator,updateResearchProfile)
+
+router.route('/qualification').put(facultyAuthenticator,updateQualification)
+
 
 
 module.exports = router;

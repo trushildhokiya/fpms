@@ -59,6 +59,8 @@ interface Qualification {
 
 const qualificationSchema = z.object({
 
+    _id: z.string().optional(),
+
     degree: z.string().min(1, {
         message: "degree type is required!"
     }),
@@ -120,7 +122,6 @@ const QualificationForm = (props: Props) => {
     const navigate = useNavigate()
     // command
     const [open, setOpen] = useState(false)
-    const [formData, setFormData] = useState<Qualification>()
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -134,11 +135,10 @@ const QualificationForm = (props: Props) => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
-    
+
     useEffect(() => {
         axios.get('/common/qualification')
             .then((res) => {
-                setFormData(res.data)
                 form.reset({
                     qualificationDetails: res.data.map((qual: Qualification) => ({
                         ...qual
@@ -168,11 +168,30 @@ const QualificationForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        axios.put('/common/qualification',values)
+        .then((res)=>{
+            if(res.data.message==='success'){
+
+                toast({
+                    title: "Qualification updated successfully",
+                    description: "Your qualification information has been updated successfully",
+                    action: (
+                      <ToastAction className='' onClick={()=>{ navigate('/common/display/qualification')}} altText="okay">Okay</ToastAction>
+                    ),
+                })
+                form.reset()
+                
+            }
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+        
     }
 
     const handleExperienceClick = (event: any) => {
         append({
+            _id:undefined,
             degree: "",
             institute: "",
             university: "",
@@ -191,6 +210,20 @@ const QualificationForm = (props: Props) => {
             <div className="">
 
                 <div className="grid md:grid-cols-2 gap-6 my-4">
+
+                    <FormField
+                        control={control}
+                        name={`qualificationDetails.${index}._id`}
+                        render={({ field }) => (
+                            <FormItem className='hidden'>
+                                <FormLabel className='text-grey-800'>ID</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="ID" autoComplete='off' {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
                     <FormField
                         control={form.control}
