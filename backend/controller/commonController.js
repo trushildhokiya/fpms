@@ -108,7 +108,7 @@ const updateProfile = asyncHandler(async (req, res) => {
 
   //get required data
   const { email } = req.decodedData;
-  const data  = req.body
+  const data = req.body
   // find user
   const user = await Faculty.findOne({ email: email });
 
@@ -121,7 +121,7 @@ const updateProfile = asyncHandler(async (req, res) => {
   await user.save()
 
   res.status(200).json({
-    message:"success"
+    message: "success"
   });
 
 })
@@ -209,6 +209,91 @@ const getExperienceData = asyncHandler(async (req, res) => {
   });
 });
 
+
+/**
+ * @tutorial: gets data converts req.files to map and matches data by index if match replace existing value of file path
+ * else keep it same , new entry create a new entry and push to data
+ */
+const updateExperience = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const data = req.body.experienceDetails;
+  const { email } = req.decodedData;
+
+  // Find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // Convert files array into a map for easier access
+  const files = req.files || [];
+
+  const filesMap = files.reduce((acc, file) => {
+    const index = parseInt(file.fieldname.match(/\d+/)[0], 10);
+    acc[index] = file.path;
+    return acc;
+  }, {});
+
+  // Update or add experience entries
+  try {
+
+    data.forEach((experience, index) => {
+
+      const existingExperience = user.experience.id(experience._id);
+
+      if (existingExperience) {
+
+        // Update existing experience
+        existingExperience.experienceType = experience.experienceType;
+        existingExperience.organizationName = experience.organizationName;
+        existingExperience.organizationAddress = experience.organizationAddress;
+        existingExperience.organizationUrl = experience.organizationUrl;
+        existingExperience.designation = experience.designation;
+        existingExperience.fromDate = experience.fromDate;
+        existingExperience.toDate = experience.toDate;
+        existingExperience.experienceIndustry = experience.experienceIndustry;
+
+        // Check if a new file is uploaded for this entry
+        if (filesMap[index]) {
+
+          if (existingExperience.experienceProof && fs.existsSync(existingExperience.experienceProof)) {
+            fs.unlinkSync(existingExperience.experienceProof);
+          }
+          existingExperience.experienceProof = filesMap[index];
+
+        } else {
+
+          // Keep existing file path if no new file is uploaded
+          existingExperience.experienceProof = existingExperience.experienceProof;
+        }
+      } else {
+
+        // Add new experience if it doesn't exist
+        user.experience.push({
+          ...experience,
+          experienceProof: filesMap[index] || experience.experienceProof || ''
+        });
+      }
+    });
+
+    // Save updated user
+    await user.save();
+
+    res.status(200).json({
+      message: "success",
+      data: user.experience
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(400);
+    throw new Error(err);
+  }
+});
+
 const addResearchProfile = asyncHandler(async (req, res) => {
 
   //get required data
@@ -254,7 +339,7 @@ const updateResearchProfile = asyncHandler(async (req, res) => {
 
   //get required data
   const { email } = req.decodedData;
-  const  data  = req.body
+  const data = req.body
   // find user
   const user = await Faculty.findOne({ email: email });
 
@@ -267,7 +352,7 @@ const updateResearchProfile = asyncHandler(async (req, res) => {
   await user.save()
 
   res.status(200).json({
-    message:"success"
+    message: "success"
   });
 
 })
@@ -276,7 +361,6 @@ const updateResearchProfile = asyncHandler(async (req, res) => {
 const addQualification = asyncHandler(async (req, res) => {
 
   //get required data
-  const data = req.body.qualificationDetails;
   const { email } = req.decodedData;
 
   // find user
@@ -289,11 +373,17 @@ const addQualification = asyncHandler(async (req, res) => {
 
   // save data
   try {
-    for (const qualification of data) {
-      user.qualification.push(qualification)
+
+    for (let i = 0; i < req.body.qualificationDetails.length; i++) {
+
+      const data = req.body.qualificationDetails[i]
+      data.proof = req.files[i].path
+      user.qualification.push(data)
+
     }
 
     await user.save()
+
   }
   catch (err) {
     console.log(err);
@@ -327,46 +417,87 @@ const getQualificationData = asyncHandler(async (req, res) => {
 
 })
 
+/**
+ * @tutorial: gets data converts req.files to map and matches data by index if match replace existing value of file path
+ * else keep it same , new entry create a new entry and push to data
+ */
 const updateQualification = asyncHandler(async (req, res) => {
 
   // Get required data
-  const  data  = req.body.qualificationDetails;
+  const data = req.body.qualificationDetails;
   const { email } = req.decodedData;
 
   // Find user
   const user = await Faculty.findOne({ email: email });
 
   if (!user) {
-      res.status(400);
-      throw new Error("User not found!");
+    res.status(400);
+    throw new Error("User not found!");
   }
+
+  // Convert files array into a map for easier access
+  const files = req.files || [];
+  const filesMap = files.reduce((acc, file) => {
+    const index = parseInt(file.fieldname.match(/\d+/)[0], 10);
+    acc[index] = file.path;
+    return acc;
+  }, {});
 
   // Update or add qualifications
   try {
-      data.forEach((qualification) => {
-          if (qualification._id) {
-              // Update existing qualification
-              const existingQualificationIndex = user.qualification.findIndex(q => q._id.toString() === qualification._id);
-              if (existingQualificationIndex > -1) {
-                  user.qualification[existingQualificationIndex] = qualification;
-              }
-          } else {
-              // Add new qualification
-              user.qualification.push(qualification);
+    data.forEach((qualification, index) => {
+
+      const existingQualification = user.qualification.id(qualification._id);
+
+      if (existingQualification) {
+        // Update existing qualification
+        existingQualification.degree = qualification.degree;
+        existingQualification.stream = qualification.stream;
+        existingQualification.institute = qualification.institute;
+        existingQualification.university = qualification.university;
+        existingQualification.year = qualification.year;
+        existingQualification.class = qualification.class;
+        existingQualification.status = qualification.status;
+
+        // Check if a new file is uploaded for this entry
+        if (filesMap[index]) {
+
+          if (existingQualification.proof && fs.existsSync(existingQualification.proof)) {
+            fs.unlinkSync(existingQualification.proof);
           }
-      });
+          existingQualification.proof = filesMap[index];
 
-      await user.save();
+        } else {
 
-      res.status(200).json({
-          message: "success",
-      });
+          // Keep existing file path if no new file is uploaded
+          existingQualification.proof = existingQualification.proof;
+        }
+      } else {
+
+        // Add new qualification if it doesn't exist
+        user.qualification.push({
+          ...qualification,
+          proof: filesMap[index] || qualification.proof || ""
+        });
+
+      }
+    });
+
+    // Save updated user
+    await user.save();
+
+    res.status(200).json({
+      message: "success",
+    });
+
   } catch (err) {
-      console.log(err);
-      res.status(400);
-      throw new Error(err);
+    console.log(err);
+    res.status(400);
+    throw new Error(err);
   }
 });
+
+
 
 const addPatents = asyncHandler(async (req, res) => {
 
@@ -2317,6 +2448,7 @@ module.exports = {
   updateProfile,
   addExperience,
   getExperienceData,
+  updateExperience,
   addResearchProfile,
   getResearchProfileData,
   updateResearchProfile,

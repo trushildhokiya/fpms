@@ -44,6 +44,19 @@ type Props = {}
 /**
  * SCHEMAS 
  */
+const ACCEPTED_FILE_TYPES = [
+    'application/pdf'
+];
+
+const pdfFileSchema = z
+    .instanceof(File)
+    .refine((file) => {
+        return !file || file.size <= 5 * 1024 * 1024;
+    }, `File size must be less than 5MB`)
+    .refine((file) => {
+        return ACCEPTED_FILE_TYPES.includes(file.type);
+    }, 'File must be a pdf'
+    )
 
 
 const qualificationSchema = z.object({
@@ -83,6 +96,8 @@ const qualificationSchema = z.object({
     }).max(100, {
         message: "status must not exceed 100 characters"
     }),
+
+    proof: pdfFileSchema
 
 })
 
@@ -140,27 +155,31 @@ const QualificationForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        axios.post('/common/qualification', values)
-        .then((res) => {
-            // console.log(res);
-            if (res.data.message === 'success') {
-
-                toast({
-                    title: "Qualification updated successfully",
-                    description: "Your Qualification data has been added/updated successfully",
-                    action: (
-                        <ToastAction className='' onClick={() => { navigate('/common/display/qualification') }} altText="okay">Okay</ToastAction>
-                    ),
-                })
-                form.reset()
-
+        axios.post('/common/qualification', values,{
+            headers:{
+                "Content-Type": "multipart/form-data",
             }
         })
-        .catch((err) => {
-            console.log(err);
-        })
+            .then((res) => {
+                // console.log(res);
+                if (res.data.message === 'success') {
 
-        console.log(values)
+                    toast({
+                        title: "Qualification updated successfully",
+                        description: "Your Qualification data has been added/updated successfully",
+                        action: (
+                            <ToastAction className='' onClick={() => { navigate('/common/display/qualification') }} altText="okay">Okay</ToastAction>
+                        ),
+                    })
+                    form.reset()
+
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+
+        // console.log(values)
     }
 
     const handleExperienceClick = (event: any) => {
@@ -171,7 +190,8 @@ const QualificationForm = (props: Props) => {
             stream: "",
             class: "",
             year: new Date().getFullYear(),
-            status: ""
+            status: "",
+            proof: new File([], '')
         });
 
         event.preventDefault()
@@ -322,7 +342,7 @@ const QualificationForm = (props: Props) => {
                         control={form.control}
                         name={`qualificationDetails.${index}.status`}
                         render={({ field }) => (
-                            <FormItem className='md:col-span-2'>
+                            <FormItem className=''>
                                 <FormLabel className='text-gray-800'>Experience Type</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
@@ -335,6 +355,24 @@ const QualificationForm = (props: Props) => {
                                         <SelectItem value="pursuing">Pursuing</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name={`qualificationDetails.${index}.proof`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className='text-gray-800'>Upload proof</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        accept=".pdf"
+                                        type="file"
+                                        onChange={(e) => field.onChange(e.target.files?.[0])}
+                                    />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}

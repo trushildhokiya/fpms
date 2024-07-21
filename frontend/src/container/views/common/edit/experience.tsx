@@ -85,33 +85,35 @@ const pdfFileSchema = z
 
 
 const experienceSchema = z.object({
-    
-    experienceType: z.string().min(1,{
-        message:"experience type is required!"
+
+    _id: z.string().optional(),
+
+    experienceType: z.string().min(1, {
+        message: "experience type is required!"
     }),
 
-    organizationName: z.string().min(1,{
-        message:"organization name is required!"
-    }).max(100,{
-        message:"organization name must not exceed 100 characters"
+    organizationName: z.string().min(1, {
+        message: "organization name is required!"
+    }).max(100, {
+        message: "organization name must not exceed 100 characters"
     }),
 
-    organizationAddress: z.string().min(1,{
-        message:"organization name is required!"
-    }).max(1000,{
-         message:"organization address must not exceed 1000 characters"
+    organizationAddress: z.string().min(1, {
+        message: "organization name is required!"
+    }).max(1000, {
+        message: "organization address must not exceed 1000 characters"
     }),
 
-    organizationUrl: z.string().min(1,{
-         message:"organization website url is required!"
-    }).regex( new RegExp(/^(ftp|http|https):\/\/[^ "]+$/),{
-        message:"Invalid url"
+    organizationUrl: z.string().min(1, {
+        message: "organization website url is required!"
+    }).regex(new RegExp(/^(ftp|http|https):\/\/[^ "]+$/), {
+        message: "Invalid url"
     }),
 
-    designation: z.string().min(1,{
-        message:"designation is required!"
-    }).max(1000,{
-         message:"designation must not exceed 1000 characters"
+    designation: z.string().min(1, {
+        message: "designation is required!"
+    }).max(1000, {
+        message: "designation must not exceed 1000 characters"
     }),
 
     fromDate: z.date(),
@@ -133,7 +135,7 @@ const formSchema = z.object({
 const ExperienceForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-    const {toast} = useToast()
+    const { toast } = useToast()
     const navigate = useNavigate()
     // command
     const [open, setOpen] = useState(false)
@@ -168,7 +170,7 @@ const ExperienceForm = (props: Props) => {
                 console.log(err);
             })
     }, [])
-    
+
 
     // functions
 
@@ -186,11 +188,35 @@ const ExperienceForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+
+        axios.put('/common/experience', values, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then((res) => {
+                if (res.data.message === 'success') {
+
+                    toast({
+                        title: "Experience updated successfully",
+                        description: "Your experience information has been updated successfully",
+                        action: (
+                            <ToastAction className='' onClick={() => { navigate('/common/display/experience') }} altText="okay">Okay</ToastAction>
+                        ),
+                    })
+                    form.reset()
+
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        
     }
 
     const handleExperienceClick = (event: any) => {
         append({
+            _id:undefined,
             experienceType: '',
             organizationName: '',
             organizationAddress: '',
@@ -211,6 +237,21 @@ const ExperienceForm = (props: Props) => {
             <div className="">
 
                 <div className="grid md:grid-cols-2 gap-6 my-4">
+
+                <FormField
+                        control={control}
+                        name={`experienceDetails.${index}._id`}
+                        render={({ field }) => (
+                            <FormItem className='hidden'>
+                                <FormLabel className='text-grey-800'>ID</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="ID" autoComplete='off' {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
 
                     <FormField
                         control={form.control}

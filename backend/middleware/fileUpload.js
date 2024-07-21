@@ -289,6 +289,52 @@ const projectFileStorage = multer.diskStorage({
 const projectFileUpload = multer({ storage: projectFileStorage });
 
 
+/*
+QUALIFICATION FILE UPLOAD 
+*/
+
+const qualificationFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    
+    const destinationPath = path.join("uploads", "qualification");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "qualification-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const qualificationFileUpload = multer({ storage: qualificationFileStorage });
+
+/*
+DEBUGGING FILE UPLOAD 
+*/
+
+const debugFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "debug");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "debug-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const debugFileUpload = multer({ storage: debugFileStorage });
+
+
 
 module.exports = {
   adminProfileImageUpload,
@@ -303,5 +349,7 @@ module.exports = {
   needBasedProjectFileUpload,
   awardHonorsFileUpload,
   consultancyFileUpload,
-  projectFileUpload
+  projectFileUpload,
+  qualificationFileUpload,
+  debugFileUpload
 };

@@ -52,7 +52,8 @@ const qualificationSchema = new mongoose.Schema({
     university: { type: String, required: true },
     year: { type: Number, required: true },
     class: { type: String, required: true },
-    status: { type: String, required: true }
+    status: { type: String, required: true },
+    proof: { type: String, required: true },
 });
 
 

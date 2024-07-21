@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import axios from 'axios'
-import { Pencil, PlusCircle, School } from 'lucide-react'
+import { File, Pencil, PlusCircle, School } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
@@ -15,6 +15,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 // Define interface for profile data
 interface QualificationData {
+    proof: string,
     degree: string;
     stream: string;
     institute: string;
@@ -69,7 +70,7 @@ const QualificationDisplay = (props: Props) => {
                         <CardContent className=''>
 
                             {
-                                !data || data.length===0?
+                                !data || data.length === 0 ?
                                     <>
                                         <Skeleton className='w-full h-96' />
                                     </>
@@ -136,7 +137,11 @@ const QualificationDisplay = (props: Props) => {
                                                                                 </AlertDescription>
                                                                             </Alert>
 
-
+                                                                            <Button className='bg-lime-300 bg-opacity-45 text-lime-800 font-semibold hover:bg-lime-400 '>
+                                                                                <Link to={axios.defaults.baseURL + qualification.proof.split('uploads')[1]} className='flex items-center'>
+                                                                                    <File className='w-4 h-4 mr-2' /> Proof
+                                                                                </Link>
+                                                                            </Button>
 
                                                                         </div>
                                                                     </div>

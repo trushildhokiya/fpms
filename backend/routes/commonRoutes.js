@@ -56,6 +56,7 @@ const {
   updateProfile,
   updateResearchProfile,
   updateQualification,
+  updateExperience,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -72,6 +73,8 @@ const {
   consultancyFileUpload,
   projectFileUpload,
   facultyProfileImageUpload,
+  qualificationFileUpload,
+  debugFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -435,7 +438,7 @@ router.route("/profile").get(facultyAuthenticator, getProfileData);
 router.route("/experience").post(facultyAuthenticator, experienceFileUpload.any("experienceProof"), addExperience);
 
 
-router.route('/qualification').post(facultyAuthenticator, addQualification)
+router.route('/qualification').post(facultyAuthenticator,qualificationFileUpload.any('proof'), addQualification)
 
 router.route('/qualification').get(facultyAuthenticator, getQualificationData)
 /**
@@ -2970,7 +2973,9 @@ router.route('/profile').put(facultyAuthenticator,updateProfile)
 
 router.route('/research-profile').put(facultyAuthenticator,updateResearchProfile)
 
-router.route('/qualification').put(facultyAuthenticator,updateQualification)
+router.route('/qualification').put(facultyAuthenticator,qualificationFileUpload.any('proof'),updateQualification)
+
+router.route('/experience').put(facultyAuthenticator,experienceFileUpload.any('experienceProof'),updateExperience)
 
 
 
