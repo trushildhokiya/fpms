@@ -149,7 +149,7 @@ const QualificationForm = (props: Props) => {
                     title: "Qualification updated successfully",
                     description: "Your Qualification data has been added/updated successfully",
                     action: (
-                        <ToastAction className='' onClick={() => { navigate('/common/display/experience') }} altText="okay">Okay</ToastAction>
+                        <ToastAction className='' onClick={() => { navigate('/common/display/qualification') }} altText="okay">Okay</ToastAction>
                     ),
                 })
                 form.reset()

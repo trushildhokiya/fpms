@@ -266,11 +266,12 @@ const ProfileDisplay = (props: Props) => {
                         </CardContent>
                         <CardFooter className="flex gap-6 flex-wrap">
 
-                            <Link to='/common/edit/profile'>
-                                <Button size={'lg'} disabled={data ? false : true}>
-                                    <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
-                                </Button>
-                            </Link>
+                            <Button
+                                onClick={() => navigate('/common/edit/profile')}
+                                size={'lg'} disabled={data ? false : true}
+                            >
+                                <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
+                            </Button>
 
                             <Button size={'lg'} className='bg-teal-600'
                                 disabled={data ? true : false}

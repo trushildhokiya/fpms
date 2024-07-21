@@ -69,14 +69,14 @@ const QualificationDisplay = (props: Props) => {
                         <CardContent className=''>
 
                             {
-                                !data ?
+                                !data || data.length===0?
                                     <>
                                         <Skeleton className='w-full h-96' />
                                     </>
                                     :
                                     <>
                                         {
-                                            data.map((qualification) => {
+                                            data!.map((qualification) => {
                                                 return (
                                                     <Collapsible key={qualification._id}>
                                                         <CollapsibleTrigger className={`bg-lime-500  p-2 w-full my-4 rounded-lg capitalize`}>
@@ -112,7 +112,7 @@ const QualificationDisplay = (props: Props) => {
                                                                                 </AlertDescription>
                                                                             </Alert>
 
-                                                                             <Alert className='my-3 border-green-400'>
+                                                                            <Alert className='my-3 border-green-400'>
                                                                                 <School className="h-4 w-4" />
                                                                                 <AlertTitle className='text-gray-600 font-semibold'>University</AlertTitle>
                                                                                 <AlertDescription>
@@ -120,7 +120,7 @@ const QualificationDisplay = (props: Props) => {
                                                                                 </AlertDescription>
                                                                             </Alert>
 
-                                                                             <Alert className='my-3 border-emerald-400'>
+                                                                            <Alert className='my-3 border-emerald-400'>
                                                                                 <School className="h-4 w-4" />
                                                                                 <AlertTitle className='text-gray-600 font-semibold'>Class</AlertTitle>
                                                                                 <AlertDescription>
@@ -128,7 +128,7 @@ const QualificationDisplay = (props: Props) => {
                                                                                 </AlertDescription>
                                                                             </Alert>
 
-                                                                             <Alert className='my-3 border-teal-400'>
+                                                                            <Alert className='my-3 border-teal-400'>
                                                                                 <School className="h-4 w-4" />
                                                                                 <AlertTitle className='text-gray-600 font-semibold'>Year of Completion</AlertTitle>
                                                                                 <AlertDescription>
@@ -152,14 +152,15 @@ const QualificationDisplay = (props: Props) => {
                         </CardContent>
                         <CardFooter className="flex gap-6 flex-wrap">
 
-                            <Link to='/common/edit/qualification'>
-                                <Button size={'lg'} disabled={data ? false : true}>
-                                    <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
-                                </Button>
-                            </Link>
+                            <Button
+                                disabled={data?.length !== 0 ? false : true}
+                                onClick={() => navigate('/common/edit/qualification')}
+                                size={'lg'}>
+                                <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
+                            </Button>
 
                             <Button size={'lg'} className='bg-teal-600'
-                                disabled={data ? true : false}
+                                disabled={data?.length !== 0 ? true : false}
                                 onClick={() => navigate('/common/forms/qualification')}
                             >
                                 <PlusCircle className='w-4 h-4 mr-2' color='#fff' /> Add qualification details

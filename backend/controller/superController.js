@@ -213,12 +213,12 @@ const toggleFacultyApproval = asyncHandler( async(req,res)=>{
     }
 
 
-    transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            res.status(500)
-            throw new Error('Internal Server Error in mailer!')
-        }
-    });
+    // transporter.sendMail(mailOptions, (err, info) => {
+    //     if (err) {
+    //         res.status(500)
+    //         throw new Error('Internal Server Error in mailer!')
+    //     }
+    // });
 
 
     res.status(200).json({

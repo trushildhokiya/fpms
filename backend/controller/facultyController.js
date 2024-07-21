@@ -142,7 +142,7 @@ const tagUpdater = asyncHandler(async (req, res) => {
         throw new Error('Faculty not found');
     }
 
-    const isProfileComplete = user.profile && user.researchProfile && user.experience.length > 0;
+    const isProfileComplete = user.profile && user.researchProfile && user.experience.length > 0 && user.qualification.length >0;
 
     if (isProfileComplete) {
         const incompleteIndex = user.tags.indexOf('incomplete profile');

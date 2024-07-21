@@ -257,11 +257,12 @@ const ExperienceDisplay = (props: Props) => {
                         </CardContent>
                         <CardFooter className="flex gap-6 flex-wrap">
 
-                            <Link to='/common/edit/experience'>
-                                <Button size={'lg'}>
-                                    <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
-                                </Button>
-                            </Link>
+                            <Button
+                                disabled={data?.experience.length !== 0 ? false : true}
+                                onClick={() => navigate('/common/edit/experience')}
+                                size={'lg'}>
+                                <Pencil className='w-4 h-4 mr-2' color='#fff' /> Edit
+                            </Button>
 
                             <Button size={'lg'} className='bg-teal-600'
                                 disabled={data?.experience.length !== 0 ? true : false}
