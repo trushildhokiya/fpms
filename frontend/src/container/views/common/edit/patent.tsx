@@ -1,5 +1,5 @@
-//@ts-nocheck
 
+//@ts-nocheck
 import FacultyNavbar from "@/components/navbar/FacultyNavbar";
 import HeadNavbar from "@/components/navbar/HeadNavbar";
 import { useSelector } from "react-redux";
@@ -57,7 +57,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 
@@ -94,6 +94,8 @@ const pdfFileSchema = z
 
 const formSchema = z
   .object({
+    _id: z.string().optional(),
+
     title: z
       .string()
       .min(2, {
@@ -171,6 +173,7 @@ const PatentForm = (props: Props) => {
   // command
   const [open, setOpen] = useState(false);
   const { id } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -209,6 +212,7 @@ const PatentForm = (props: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id: '',
       title: "",
       inventors: [""],
       affiliationInventors: [""],
@@ -224,7 +228,30 @@ const PatentForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+
+    axios.put('/common/patent', values, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((res) => {
+        if (res.data.message === 'success') {
+
+          toast({
+            title: "patent updated successfully",
+            description: "Your patent information has been updated successfully",
+            action: (
+              <ToastAction className='' onClick={() => { navigate('/common/display/patent') }} altText="okay">Okay</ToastAction>
+            ),
+          })
+          form.reset()
+
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+
   }
 
   return (
@@ -283,6 +310,21 @@ const PatentForm = (props: Props) => {
                   form
                 </AlertDescription>
               </Alert>
+
+              {/* ID HIDDEN */}
+              <FormField
+                control={form.control}
+                name={`_id`}
+                render={({ field }) => (
+                  <FormItem className='hidden'>
+                    <FormLabel className='text-grey-800'>ID</FormLabel>
+                    <FormControl>
+                      <Input placeholder="ID" autoComplete='off' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

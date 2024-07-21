@@ -56,7 +56,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 interface Copyright {
@@ -92,6 +92,8 @@ const pdfFileSchema = z
 
 const formSchema = z
   .object({
+
+    _id: z.string().optional(),
     title: z
       .string()
       .min(2, {
@@ -169,6 +171,7 @@ const CopyrightForm = (props: Props) => {
   // command
   const [open, setOpen] = useState(false);
   const { id } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -209,6 +212,7 @@ const CopyrightForm = (props: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id:"",
       title: "",
       inventors: [""],
       affiliationInventors: [""],
@@ -224,7 +228,32 @@ const CopyrightForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+
+
+    axios.put('/common/copyright', values, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((res) => {
+        if (res.data.message === 'success') {
+
+          toast({
+            title: "copyright updated successfully",
+            description: "Your copyright information has been updated successfully",
+            action: (
+              <ToastAction className='' onClick={() => { navigate('/common/display/copyright') }} altText="okay">Okay</ToastAction>
+            ),
+          })
+          form.reset()
+
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+
+
   }
 
   return (
@@ -283,6 +312,22 @@ const CopyrightForm = (props: Props) => {
                   form
                 </AlertDescription>
               </Alert>
+
+
+              {/* ID HIDDEN */}
+              <FormField
+                control={form.control}
+                name={`_id`}
+                render={({ field }) => (
+                  <FormItem className='hidden'>
+                    <FormLabel className='text-grey-800'>ID</FormLabel>
+                    <FormControl>
+                      <Input placeholder="ID" autoComplete='off' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -481,9 +526,8 @@ const CopyrightForm = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -519,9 +563,8 @@ const CopyrightForm = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (

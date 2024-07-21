@@ -57,6 +57,8 @@ const {
   updateResearchProfile,
   updateQualification,
   updateExperience,
+  updatePatent,
+  updateCopyright,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2977,6 +2979,8 @@ router.route('/qualification').put(facultyAuthenticator,qualificationFileUpload.
 
 router.route('/experience').put(facultyAuthenticator,experienceFileUpload.any('experienceProof'),updateExperience)
 
+router.route('/patent').put(facultyAuthenticator, patentFileUpload.single('patentCertificate'), updatePatent)
 
+router.route('/copyright').put(facultyAuthenticator, copyrightFileUpload.single('copyrightCertificate'), updateCopyright)
 
 module.exports = router;

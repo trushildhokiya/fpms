@@ -582,6 +582,43 @@ const getPatentById = asyncHandler(async (req, res) => {
 
 })
 
+
+const updatePatent = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const patent = await Patent.findById(req.body._id)
+
+    if (!patent) {
+      throw new Error("no patent found")
+    }
+
+    if (req.file) {
+
+      if (patent.patentCertificate && fs.existsSync(patent.patentCertificate)) {
+        fs.unlinkSync(patent.patentCertificate);
+      }
+
+      data.patentCertificate = req.file.path
+
+    }
+
+    await patent.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 const deletePatent = asyncHandler(async (req, res) => {
 
   const { patent_id } = req.body
@@ -707,6 +744,43 @@ const getCopyrightById = asyncHandler(async (req, res) => {
 
   // Send the response
   res.status(200).json(copyrightData);
+
+})
+
+
+const updateCopyright = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const copyright = await Copyright.findById(req.body._id)
+
+    if (!copyright) {
+      throw new Error("no copyright found")
+    }
+
+    if (req.file) {
+
+      if (copyright.copyrightCertificate && fs.existsSync(copyright.copyrightCertificate)) {
+        fs.unlinkSync(copyright.copyrightCertificate);
+      }
+
+      data.copyrightCertificate = req.file.path
+
+    }
+
+    await copyright.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
 
 })
 
@@ -2497,4 +2571,6 @@ module.exports = {
   getNeedBasedProjectById,
   getProjectById,
   getConsultancyById,
+  updatePatent,
+  updateCopyright
 };
