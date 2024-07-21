@@ -59,6 +59,11 @@ const {
   updateExperience,
   updatePatent,
   updateCopyright,
+  updateJournal,
+  updateConference,
+  updateBook,
+  updateBookChapter,
+  updateAwardsHonors,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -2982,5 +2987,25 @@ router.route('/experience').put(facultyAuthenticator,experienceFileUpload.any('e
 router.route('/patent').put(facultyAuthenticator, patentFileUpload.single('patentCertificate'), updatePatent)
 
 router.route('/copyright').put(facultyAuthenticator, copyrightFileUpload.single('copyrightCertificate'), updateCopyright)
+
+router.route('/journal').put(facultyAuthenticator, journalFileUpload.fields([
+  { name: "paper", maxCount: 1 },
+  { name: "certificate", maxCount: 1 },
+]), updateJournal)
+
+
+
+router.route("/conference").put(facultyAuthenticator, conferenceFileUpload.fields([
+  { name: "paper", maxCount: 1 },
+  { name: "certificate", maxCount: 1 },
+]),
+  updateConference
+);
+
+router.route("/book").put(facultyAuthenticator, bookFileUpload.single("proof"), updateBook);
+
+router.route("/book-chapter").put(facultyAuthenticator, bookChapterUpload.single("proof"), updateBookChapter);
+
+router.route('/award-honors').put(facultyAuthenticator, awardHonorsFileUpload.single('proof'), updateAwardsHonors)
 
 module.exports = router;

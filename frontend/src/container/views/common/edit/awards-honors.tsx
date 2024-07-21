@@ -34,7 +34,7 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { Toaster } from '@/components/ui/toaster'
 import { useToast } from '@/components/ui/use-toast'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 
 type Props = {}
@@ -69,6 +69,9 @@ const pdfFileSchema = z
     )
 
 const formSchema = z.object({
+    
+    _id:z.string().optional(),
+
     title: z.string().min(2, {
         message: "Title required!"
     }).max(100, {
@@ -95,7 +98,8 @@ const AwardsAndHonorsForm = (props: Props) => {
     // command
     const [open, setOpen] = useState(false)
     const { id } = useParams()
-
+    const navigate = useNavigate()
+    
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === "d" && (e.metaKey || e.ctrlKey)) {
@@ -129,6 +133,7 @@ const AwardsAndHonorsForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id:'',
             title: "",
             awardingBody: "",
             year: new Date().getFullYear(),
@@ -140,7 +145,29 @@ const AwardsAndHonorsForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
 
-        console.log(values)
+        axios.put('/common/award-honors', values, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then((res) => {
+                if (res.data.message === 'success') {
+
+                    toast({
+                        title: "awards honors updated successfully",
+                        description: "Your awards honors information has been updated successfully",
+                        action: (
+                            <ToastAction className='' onClick={() => { navigate('/common/display/awards-honors') }} altText="okay">Okay</ToastAction>
+                        ),
+                    })
+                    form.reset()
+
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+
 
     }
 
@@ -193,6 +220,23 @@ const AwardsAndHonorsForm = (props: Props) => {
                             </Alert>
 
                             <div className="">
+
+                                {/* ID HIDDEN */}
+                                <FormField
+                                    control={form.control}
+                                    name={`_id`}
+                                    render={({ field }) => (
+                                        <FormItem className='hidden'>
+                                            <FormLabel className='text-grey-800'>ID</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="ID" autoComplete='off' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
                                 <FormField
                                     control={form.control}
                                     name="title"

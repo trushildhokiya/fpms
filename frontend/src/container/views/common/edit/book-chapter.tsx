@@ -55,7 +55,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 
@@ -101,6 +101,9 @@ const pdfFileSchema = z
   }, `File Type must be of pdf`);
 
 const formSchema = z.object({
+
+  _id:z.string().optional(),
+
   bookTitle: z
     .string()
     .min(1, {
@@ -229,6 +232,7 @@ const BookChapterForm: React.FC = (props: Props) => {
   // command
   const [open, setOpen] = useState(false);
   const { id } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -268,6 +272,7 @@ const BookChapterForm: React.FC = (props: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id:"",
       bookTitle: "",
       authors: [""],
       authorsAffiliation: [""],
@@ -290,7 +295,30 @@ const BookChapterForm: React.FC = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    
+    axios.put('/common/book-chapter', values, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((res) => {
+        if (res.data.message === 'success') {
+
+          toast({
+            title: "book chapter updated successfully",
+            description: "Your book chapter information has been updated successfully",
+            action: (
+              <ToastAction className='' onClick={() => { navigate('/common/display/book-chapter') }} altText="okay">Okay</ToastAction>
+            ),
+          })
+          form.reset()
+
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+
   }
 
   return (
@@ -363,6 +391,23 @@ const BookChapterForm: React.FC = (props: Props) => {
               </Alert>
 
               <div>
+
+                {/* ID HIDDEN */}
+                <FormField
+                  control={form.control}
+                  name={`_id`}
+                  render={({ field }) => (
+                    <FormItem className='hidden'>
+                      <FormLabel className='text-grey-800'>ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ID" autoComplete='off' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+
                 <FormField
                   control={form.control}
                   name="bookTitle"

@@ -53,7 +53,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 
@@ -100,6 +100,8 @@ const pdfFileSchema = z
   }, `File Type must be of pdf`);
 
 const formSchema = z.object({
+
+  _id: z.string().optional(),
   title: z
     .string()
     .min(1, {
@@ -193,8 +195,8 @@ const formSchema = z.object({
 
   citationCount: z.coerce.number().nonnegative(),
 
-  paper: z.union([pdfFileSchema , z.any().optional() ]),
-  certificate: z.union([pdfFileSchema , z.any().optional() ]),
+  paper: z.union([pdfFileSchema, z.any().optional()]),
+  certificate: z.union([pdfFileSchema, z.any().optional()]),
 });
 
 const journalPublication: React.FC = (props: Props) => {
@@ -222,6 +224,7 @@ const journalPublication: React.FC = (props: Props) => {
   // command
   const [open, setOpen] = useState(false);
   const { id } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -262,6 +265,7 @@ const journalPublication: React.FC = (props: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id: "",
       title: "",
       authors: [""],
       authorsAffiliation: [""],
@@ -285,7 +289,30 @@ const journalPublication: React.FC = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+
+
+    axios.put('/common/journal', values, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then((res) => {
+        if (res.data.message === 'success') {
+
+          toast({
+            title: "journal updated successfully",
+            description: "Your journal information has been updated successfully",
+            action: (
+              <ToastAction className='' onClick={() => { navigate('/common/display/journal') }} altText="okay">Okay</ToastAction>
+            ),
+          })
+          form.reset()
+
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
   }
 
   return (
@@ -347,6 +374,23 @@ const journalPublication: React.FC = (props: Props) => {
               </Alert>
 
               <div>
+
+                {/* ID HIDDEN */}
+                <FormField
+                  control={form.control}
+                  name={`_id`}
+                  render={({ field }) => (
+                    <FormItem className='hidden'>
+                      <FormLabel className='text-grey-800'>ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ID" autoComplete='off' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+
                 <FormField
                   control={form.control}
                   name="title"
@@ -469,8 +513,8 @@ const journalPublication: React.FC = (props: Props) => {
                                       option
                                     )
                                       ? field.value.filter(
-                                          (val) => val !== option
-                                        )
+                                        (val) => val !== option
+                                      )
                                       : [...(field.value || []), option];
                                     field.onChange(newValue);
                                   }}
@@ -609,7 +653,7 @@ const journalPublication: React.FC = (props: Props) => {
                   )}
                 />
 
-<FormField
+                <FormField
                   control={form.control}
                   name="dateOfPublication"
                   render={({ field }) => (
@@ -734,8 +778,8 @@ const journalPublication: React.FC = (props: Props) => {
                                 onCheckedChange={() => {
                                   const newValue = field.value?.includes(option)
                                     ? field.value.filter(
-                                        (val) => val !== option
-                                      )
+                                      (val) => val !== option
+                                    )
                                     : [...(field.value || []), option];
                                   field.onChange(newValue);
                                 }}

@@ -920,6 +920,52 @@ const getJournalById = asyncHandler(async (req, res) => {
 })
 
 
+const updateJournal = asyncHandler(async(req,res)=>{
+
+  const data = req.body
+
+  try {
+
+    const journal = await Journal.findById(req.body._id)
+
+    if (!journal) {
+      throw new Error("no journal found")
+    }
+
+    if (req.files.paper) {
+
+      if (journal.paper && fs.existsSync(journal.paper)) {
+        fs.unlinkSync(journal.paper);
+      }
+
+      data.paper = req.files.paper[0].path
+
+    }
+
+    if (req.files.certificate) {
+
+      if (journal.certificate && fs.existsSync(journal.certificate)) {
+        fs.unlinkSync(journal.certificate);
+      }
+
+      data.certificate = req.files.certificate[0].path
+
+    }
+
+    await journal.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 const deleteJournal = asyncHandler(async (req, res) => {
 
   const { journal_id } = req.body
@@ -1056,6 +1102,53 @@ const getConferenceById = asyncHandler(async (req, res) => {
 })
 
 
+const updateConference = asyncHandler(async(req,res)=>{
+
+  const data = req.body
+
+  try {
+
+    const conference = await Conference.findById(req.body._id)
+
+    if (!conference) {
+      throw new Error("no conference found")
+    }
+
+    if (req.files.paper) {
+
+      if (conference.paper && fs.existsSync(conference.paper)) {
+        fs.unlinkSync(conference.paper);
+      }
+
+      data.paper = req.files.paper[0].path
+
+    }
+
+    if (req.files.certificate) {
+
+      if (conference.certificate && fs.existsSync(conference.certificate)) {
+        fs.unlinkSync(conference.certificate);
+      }
+
+      data.certificate = req.files.certificate[0].path
+
+    }
+
+    await conference.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+
 const deleteConference = asyncHandler(async (req, res) => {
 
   const { conference_id } = req.body
@@ -1185,6 +1278,44 @@ const getBookById = asyncHandler(async (req, res) => {
 
 })
 
+
+const updateBook = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const book = await Book.findById(req.body._id)
+
+    if (!book) {
+      throw new Error("no book found")
+    }
+
+    if (req.file) {
+
+      if (book.proof && fs.existsSync(book.proof)) {
+        fs.unlinkSync(book.proof);
+      }
+
+      data.proof = req.file.path
+
+    }
+
+    await book.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+
 const deleteBook = asyncHandler(async (req, res) => {
 
   const { book_id } = req.body
@@ -1308,6 +1439,43 @@ const getBookChapterById = asyncHandler(async (req, res) => {
 
   // Send the response
   res.status(200).json(bookChapterData);
+
+})
+
+
+const updateBookChapter = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const bookChapter = await BookChapter.findById(req.body._id)
+
+    if (!bookChapter) {
+      throw new Error("no bookChapter found")
+    }
+
+    if (req.file) {
+
+      if (bookChapter.proof && fs.existsSync(bookChapter.proof)) {
+        fs.unlinkSync(bookChapter.proof);
+      }
+
+      data.proof = req.file.path
+
+    }
+
+    await bookChapter.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
 
 })
 
@@ -1578,6 +1746,43 @@ const getAwardHonorsData = asyncHandler(async (req, res) => {
   res.status(200).json(awardHonorsData);
 
 });
+
+
+const updateAwardsHonors = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const awardHonors = await AwardHonors.findById(req.body._id)
+
+    if (!awardHonors) {
+      throw new Error("no award Honors found")
+    }
+
+    if (req.file) {
+
+      if (awardHonors.proof && fs.existsSync(awardHonors.proof)) {
+        fs.unlinkSync(awardHonors.proof);
+      }
+
+      data.proof = req.file.path
+
+    }
+
+    await awardHonors.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
 
 const deleteAwardsHonors = asyncHandler(async (req, res) => {
 
@@ -2572,5 +2777,10 @@ module.exports = {
   getProjectById,
   getConsultancyById,
   updatePatent,
-  updateCopyright
+  updateCopyright,
+  updateJournal,
+  updateConference,
+  updateBook,
+  updateBookChapter,
+  updateAwardsHonors,
 };
