@@ -193,8 +193,13 @@ const Login = () => {
 
                             <div>
                                 <Link to='/auth/register'>
-                                    <p className='text-sm text-red-700 my-5 p-2'>
+                                    <p className='text-sm text-red-700 mt-5 mb-2 p-2'>
                                         Don't have an account? Dont worry Register now!
+                                    </p>
+                                </Link>
+                                <Link to='/auth/forgot-password'>
+                                    <p className='text-sm text-red-700 my-2 p-2'>
+                                        Forgot Password ?
                                     </p>
                                 </Link>
                             </div>

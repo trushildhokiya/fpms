@@ -1,27 +1,14 @@
 import { Button } from '@/components/ui/button'
 import CommonNavbar from '../../components/navbar/CommonNavbar'
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy } from 'react';
 const HourglassModel = lazy(() => import('@/components/model/hourglass-model'));
 import { Link } from 'react-router-dom'
 import Footer from '@/components/footer/footer'
 import { DatabaseZap, Sheet, SquareTerminal } from 'lucide-react'
 import Manual from '@/assets/pdf/manual.pdf'
 import Loader from '@/utils/pages/Loader';
-import TextTransition, { presets } from 'react-text-transition';
 
 const Home = () => {
-
-    const TEXTS = ['by', 'department of', 'Computer Engineering'];
-
-    const [index, setIndex] = useState(0);
-
-    useEffect(() => {
-        const intervalId = setInterval(
-            () => setIndex((index) => index + 1),
-            3000, 
-        );
-        return () => clearTimeout(intervalId);
-    }, []);
 
     return (
         <div>
@@ -36,8 +23,9 @@ const Home = () => {
                             Management System
                         </h2>
 
-                        <div className='uppercase text-2xl my-6 text-red-800 font-AzoSans tracking-wide'>
-                            <TextTransition springConfig={presets.wobbly}>{TEXTS[index % TEXTS.length]}</TextTransition>
+                        <div className='uppercase text-xl my-6 text-red-800 font-AzoSans tracking-wide'>
+                            <p>By</p>
+                            <p>Department of Computer Engineering</p>
                         </div>
 
 

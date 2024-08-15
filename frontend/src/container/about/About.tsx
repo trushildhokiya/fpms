@@ -21,7 +21,7 @@ const About = () => {
     {
       id: 1,
       name: 'Trushil Dhokiya',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
+      description: "Turning ideas into code and creativity into innovation.",
       linkedinURI: 'https://in.linkedin.com/in/trushil-dhokiya',
       githubURI: 'https://www.github.com/trushildhokiya',
       profileImage: TrushilProfileImage

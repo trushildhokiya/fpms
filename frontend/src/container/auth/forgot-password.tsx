@@ -1,5 +1,5 @@
 import CommonNavbar from '@/components/navbar/CommonNavbar'
-import ForgotIllustration from '../../assets/videos/forgot-pass.gif'
+import ForgotIllustration from '../../assets/svg/forgot-pass.svg'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
