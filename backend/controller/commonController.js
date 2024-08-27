@@ -11,6 +11,9 @@ const AwardHonors = require('../models/award-honors')
 const Consultancy = require('../models/consultancy')
 const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
+const sttpAttended = require('../models/sttp-attended')
+const SttpConducted = require('../models/sttp-conducted')
+const sttpOrganized = require('../models/sttp-organized')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -2167,6 +2170,507 @@ const deleteProject = asyncHandler(async (req, res) => {
 })
 
 
+// ACHIEVEMENTS FORMS
+
+const addSttpConducted = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const certUploadURL = req.files.certificate[0].path
+  const invitationUploadURL = req.files.invitationLetter[0].path
+  const photoUploadURL = req.files.photos[0].path
+
+  // attach file path to data
+
+  data.certUpload = certUploadURL
+  data.invitationUpload = invitationUploadURL
+  data.photoUpload = photoUploadURL
+
+  // create consultancy entry
+  const sttpCond = await SttpConducted.create(data);
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { sttpConducted: sttpCond._id } }
+  );
+
+  console.log('sttp added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSttpConductedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const sttpConductedData = await SttpConducted.findById(id)
+
+  // Send the response
+  res.status(200).json(sttpConductedData);
+
+})
+
+
+const getSttpConductedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate('sttpConducted')
+
+  // Extract the populated consultancy data
+  const sttpConductedData = user.sttpConducted
+
+  // Send the response
+  res.status(200).json(sttpConductedData);
+
+});
+
+const deleteSttpConducted = asyncHandler(async (req, res) => {
+
+  const { sttpCond_id } = req.body
+
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const sttpCond = await SttpConducted.findById(sttpCond_id);
+
+    if (!sttpCond) {
+      throw new Error('STTP/FDP not found');
+    }
+
+    // Delete the associated file
+    if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
+      fs.unlinkSync(sttpCond.certUpload);
+    }
+
+    if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
+      fs.unlinkSync(sttpCond.invitationUpload);
+    }
+
+    if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
+      fs.unlinkSync(sttpCond.photoUpload);
+    }
+
+    // Delete the STTP/FDP entry from the database
+    await SttpConducted.findByIdAndDelete(sttpCond_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSttpConducted = asyncHandler(async (req, res) => {
+  const data = req.body
+
+  try {
+
+    const sttpCond = await SttpConducted.findById(req.body._id)
+
+    if (!sttpCond) {
+      throw new Error("no sttpCond found")
+    }
+
+    if (req.file) {
+
+      if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
+        fs.unlinkSync(sttpCond.certUpload);
+      }
+  
+      if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
+        fs.unlinkSync(sttpCond.invitationUpload);
+      }
+  
+      if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
+        fs.unlinkSync(sttpCond.photoUpload);
+      }
+
+      data.certUpload = certUploadURL
+      data.invitationUpload = invitationUploadURL
+      data.photoUpload = photoUploadURL
+
+    }
+
+    await sttpCond.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+
+const addSttpAttended = asyncHandler(async (req, res) => {
+  console.log('adding......')
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const certUploadURL = req.files.certUpload[0].path
+
+  // attach file path to data
+
+  data.certUpload = certUploadURL
+
+  // create consultancy entry
+  const sttpAtt = await sttpAttended.create(data);
+
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { sttpAtt: sttpAtt._id } }
+  );
+
+  console.log('sttp added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSttpAttendedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const sttpAttendedData = await sttpAttended.findById(id)
+
+  // Send the response
+  res.status(200).json(sttpAttendedData);
+
+})
+
+
+const getSttpAttendedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate sttp array to get full sttp data
+  await user.populate('sttpAttended')
+
+
+  // Extract the populated sttp data
+  const sttpAttendedData = user.sttpAttended
+
+  // Send the response
+  res.status(200).json(sttpAttendedData);
+
+});
+
+const deleteSttpAttended = asyncHandler(async (req, res) => {
+
+  const { sttpAtt_id } = req.body
+
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const sttpAtt = await sttpConducted.findById(sttpAtt_id);
+
+    if (!sttpAtt) {
+      throw new Error('STTP/FDP not found');
+    }
+
+    // Delete the associated file
+    if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
+      fs.unlinkSync(sttpAtt.certUpload);
+    }
+
+    // Delete the STTP/FDP entry from the database
+    await sttpAttended.findByIdAndDelete(sttpAtt_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSttpAttended = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const sttpAtt = await sttpAttended.findById(req.body._id)
+
+    if (!sttpAtt) {
+      throw new Error("no sttpCond found")
+    }
+
+    if (req.file) {
+
+      if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
+        fs.unlinkSync(sttpAtt.certUpload);
+      }
+
+      data.certUpload = req.file.path
+
+    }
+
+    await sttpAtt.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const addSttpOrganized = asyncHandler(async (req, res) => {
+  console.log('adding......')
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const uploadFundSanctionedLetterURL = req.files.uploadFundSanctionedLetter[0].path
+  const uploadUtilizationCertificateURL = req.files.uploadUtilizationCertificate[0].path
+  const uploadBannerURL = req.files.uploadBanner[0].path
+  const uploadScheduleOfOrganizerURL = req.files.uploadScheduleOfOrganizer[0].path
+  const uploadCertificateLOAURL = req.files.uploadCertificateLOA[0].path
+  const uploadSupportingDocumentsURL = req.files.uploadSupportingDocuments[0].path
+  const uploadReportURL = req.files.uploadReport[0].path
+  const uploadPhotosURL = req.files.uploadPhotos[0].path
+
+  // attach file path to data
+
+  data.uploadFundSanctionedLetter = uploadFundSanctionedLetterURL
+  data.uploadUtilizationCertificate = uploadUtilizationCertificateURL
+  data.uploadBanner = uploadBannerURL
+  data.uploadScheduleOfOrganizer = uploadScheduleOfOrganizerURL
+  data.uploadCertificateLOA = uploadCertificateLOAURL
+  data.uploadSupportingDocuments = uploadSupportingDocumentsURL
+  data.uploadReport = uploadReportURL
+  data.uploadPhotos = uploadPhotosURL
+
+  // create consultancy entry
+  const sttpCond = await sttpConducted.create(data);
+
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { sttpCond: sttpCond._id } }
+  );
+
+  console.log('sttp added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSttpOrganizedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const sttpConductedData = await sttpConducted.findById(id)
+
+  // Send the response
+  res.status(200).json(sttpConductedData);
+
+})
+
+
+const getSttpOrganizedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate('sttpConducted')
+
+
+  // Extract the populated consultancy data
+  const sttpConductedData = user.sttpConducted
+
+  // Send the response
+  res.status(200).json(sttpConductedData);
+
+});
+
+const deleteSttpOrganized = asyncHandler(async (req, res) => {
+
+  const { sttpCond_id } = req.body
+
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const sttpCond = await sttpConducted.findById(sttpCond_id);
+
+    if (!sttpCond) {
+      throw new Error('STTP/FDP not found');
+    }
+
+    // Delete the associated file
+    if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
+      fs.unlinkSync(sttpCond.certUpload);
+    }
+
+    if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
+      fs.unlinkSync(sttpCond.invitationUpload);
+    }
+
+    if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
+      fs.unlinkSync(sttpCond.photoUpload);
+    }
+
+    // Delete the STTP/FDP entry from the database
+    await sttpConducted.findByIdAndDelete(sttpCond_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSttpOrganized = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const sttpCond = await sttpConducted.findById(req.body._id)
+
+    if (!sttpCond) {
+      throw new Error("no sttpCond found")
+    }
+
+    if (req.file) {
+
+      if (sttpCond.proof && fs.existsSync(sttpCond.proof)) {
+        fs.unlinkSync(sttpCond.proof);
+      }
+
+      data.proof = req.file.path
+
+    }
+
+    await sttpCond.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 /**
  * BULK UPLOAD LOGIC
  */
@@ -2783,4 +3287,19 @@ module.exports = {
   updateBook,
   updateBookChapter,
   updateAwardsHonors,
+  addSttpConducted,
+  getSttpConductedById,
+  getSttpConductedData,
+  deleteSttpConducted,
+  updateSttpConducted,
+  addSttpAttended,
+  getSttpAttendedById,
+  getSttpAttendedData,
+  deleteSttpAttended,
+  updateSttpAttended,
+  addSttpOrganized,
+  getSttpOrganizedById,
+  getSttpOrganizedData,
+  deleteSttpOrganized,
+  updateSttpOrganized,
 };

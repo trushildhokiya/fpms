@@ -162,8 +162,12 @@ const facultySchema = new mongoose.Schema({
     needBasedProjects: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'needBasedProject' }],
         required: false
-    }
+    },
 
+    sttpConducted: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sttpConducted' }],
+        required: false
+    },
 
 }, { timestamps: true }
 )

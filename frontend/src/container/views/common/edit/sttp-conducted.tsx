@@ -44,9 +44,29 @@ import { Toaster } from "@/components/ui/toaster";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 
+interface STTPConducted {
+    _id: string;
+    title: string;
+    sessionTitle: string;
+    organizedBy: string;
+    associationWith: string;
+    type: string;
+    mode: string;
+    level: string;
+    venue: string;
+    fromDate: Date;
+    toDate: Date;
+    totalDays: number;
+    remarks: string;
+    certUpload: string;
+    invitationUpload: string;
+    photoUpload: string;
+    __v: number;
+  }
 /**
  * SCHEMAS
  */
@@ -62,6 +82,7 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
+    _id:z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
@@ -125,7 +146,26 @@ const formSchema = z.object({
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SttpConductedForm = (props: Props) => {
+const SttpConductedEdit = (props: Props) => {
+    const { id } = useParams()
+
+    useEffect(() => {
+        // Fetch the patent data
+        axios
+          .get(`/common/sttp-conducted/${id}`)
+          .then((res) => {
+    
+            const data: STTPConducted = res.data
+            form.reset({
+              ...data,
+              fromDate: new Date(data.fromDate),
+              toDate: new Date(data.toDate),
+            })
+          })
+          .catch((err) => {
+            console.error("Error fetching patent data:", err);
+          });
+      }, []);
 
     const user = useSelector((state: any) => state.user);
     const { toast }= useToast()
@@ -149,6 +189,7 @@ const SttpConductedForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id:"",
             title: "",
             sessionTitle: '',
             type: "",
@@ -169,7 +210,7 @@ const SttpConductedForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        axios.post("/common/sttp-conducted", values, {
+        axios.put("/common/sttp-conducted", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -252,6 +293,21 @@ const SttpConductedForm = (props: Props) => {
                                     form
                                 </AlertDescription>
                             </Alert>
+                            
+                            {/* ID HIDDEN */}
+                            <FormField
+                                control={form.control}
+                                name={`_id`}
+                                render={({ field }) => (
+                                    <FormItem className='hidden'>
+                                    <FormLabel className='text-grey-800'>ID</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="ID" autoComplete='off' {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <FormField
                                 control={form.control}
@@ -654,4 +710,4 @@ const SttpConductedForm = (props: Props) => {
     );
 };
 
-export default SttpConductedForm;
+export default SttpConductedEdit;

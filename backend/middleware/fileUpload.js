@@ -334,6 +334,61 @@ const debugFileStorage = multer.diskStorage({
 
 const debugFileUpload = multer({ storage: debugFileStorage });
 
+// STTP File Uploads
+
+const sttpConductedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpConductedUpload = multer({ storage: sttpConductedStorage });
+
+const sttpAttendedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-attended");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-attended-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpAttendedUpload = multer({ storage: sttpAttendedStorage });
+
+const sttpOrganizedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-organized");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-organized-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpOrganizedUpload = multer({ storage: sttpOrganizedStorage });
 
 
 module.exports = {
@@ -351,5 +406,8 @@ module.exports = {
   consultancyFileUpload,
   projectFileUpload,
   qualificationFileUpload,
-  debugFileUpload
+  debugFileUpload,
+  sttpConductedUpload,
+  sttpAttendedUpload,
+  sttpOrganizedUpload
 };
