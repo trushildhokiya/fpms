@@ -6,11 +6,12 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -20,7 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Users, UserCheck, GraduationCap } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -34,6 +35,11 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
+import { Toaster } from '@/components/ui/toaster'
 
 type Props = {}
 
@@ -60,6 +66,15 @@ const formSchema = z.object({
     }).max(100, {
         message: "Activity title must not exceed 100 characters"
     }),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    }).transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
+    
+    departmentInvolved: z.array(z.string()).nonempty(),
 
     organizedBy: z.string().min(1, {
         message: "Organized by is required!"
@@ -125,6 +140,14 @@ const ActivityConductedForm = (props: Props) => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
+
 
     // functions
 
@@ -132,6 +155,8 @@ const ActivityConductedForm = (props: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
+            facultiesInvolved: [],
+            departmentInvolved: [],
             organizedBy: "",
             associationWith: "",
             mode: "",
@@ -215,6 +240,61 @@ const ActivityConductedForm = (props: Props) => {
                                             <FormLabel className='text-gray-800'>Activity Title</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Activity title" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="facultiesInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full overflow-hidden'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
