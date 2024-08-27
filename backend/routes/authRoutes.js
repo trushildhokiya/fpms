@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const asyncHandler = require('express-async-handler')
-const { registerUsers, loginUsers, validateUser, forgotPassword } = require('../controller/authController')
+const { registerUsers, loginUsers, validateUser, forgotPassword, resetPassword } = require('../controller/authController')
 
 /**
  * @swagger
@@ -123,5 +123,7 @@ router.route('/login').post(loginUsers)
 router.route('/validate').get(validateUser)
 
 router.route('/forgot-password').post(forgotPassword)
+
+router.route('/reset-password').post(resetPassword)
 
 module.exports = router

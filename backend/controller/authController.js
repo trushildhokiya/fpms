@@ -201,12 +201,10 @@ const forgotPassword = asyncHandler(async (req, res) => {
             throw new Error("Faculty not found")
         }
 
-        const secret = process.env.JWT_SECRET + faculty.email + faculty.createdAt
-
         const token = jwt.sign({
             email: email,
             department: faculty.department
-        }, secret, { expiresIn: '5m' })
+        }, process.env.JWT_SECRET, { expiresIn: '5m' })
 
         const url = `http://localhost:5173/auth/reset-password/${token}`
 
@@ -263,6 +261,37 @@ const forgotPassword = asyncHandler(async (req, res) => {
 })
 
 
+const resetPassword = asyncHandler(async (req, res) => {
+
+    const { password, email, accessToken } = req.body;
+  
+    // Verify the access token
+    try {
+      jwt.verify(accessToken, process.env.JWT_SECRET); // Verify the token
+    } catch (error) {
+      res.status(401); // Unauthorized
+      throw new Error('Invalid or expired access token');
+    }
+  
+    // Find the faculty by email
+    const faculty = await Faculty.findOne({ email });
+  
+    if (!faculty) {
+      res.status(400);
+      throw new Error('Faculty not found');
+    }
+  
+    // Hash the new password
+    faculty.password = await bcrypt.hash(password, 10);
+  
+    // Save the updated faculty document
+    await faculty.save();
+  
+    res.status(200).json({
+      message: 'success'
+    });
+  });
+
 const validateUser = asyncHandler(async (req, res) => {
 
     const { token } = req.headers
@@ -287,5 +316,6 @@ module.exports = {
     registerUsers,
     loginUsers,
     validateUser,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 }

@@ -10,13 +10,16 @@ const CommonNavbar = () => {
     const [open, setOpen] = useState(false)
 
     return (
-        <div>
+        <div className='sticky top-0 bg-white z-10'>
             <div className='flex p-2 items-center justify-between'>
                 {/* LOGO */}
-                <div>
+                <div className='flex items-center gap-x-6'>
                     <Link to='/'>
                         <img src={Logo} className='w-28 md:w-44 h-auto' alt='kjsit-logo' draggable={false} />
                     </Link>
+                    <p className='text-xl font-bold font-OpenSans text-red-800'>
+                        Faculty Profile Management System
+                    </p>
                 </div>
 
                 {/* LINKS  */}

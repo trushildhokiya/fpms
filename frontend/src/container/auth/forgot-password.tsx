@@ -75,7 +75,7 @@ const ForgotPassword = () => {
 
                     <div className='bg-white shadow-xl w-[90%] mx-auto  p-5'>
                         <h1 className='text-center text-3xl font-AzoSans text-gray-500 tracking-wider '>
-                            LOGIN
+                            REQUEST ACCESS
                         </h1>
 
                         <div className='md:w-[90%] px-2 mx-auto my-10 font-Poppins text-xl'>
