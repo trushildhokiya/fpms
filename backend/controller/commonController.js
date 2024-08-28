@@ -12,6 +12,7 @@ const Consultancy = require('../models/consultancy')
 const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
 const AwardRecieved = require('../models/awards-recieved')
+const ActivityConducted = require('../models/activity-conducted')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -2210,7 +2211,6 @@ const addAwardRecieved = asyncHandler(async (req, res) => {
 const getAwardRecievedData = asyncHandler(async (req, res) => {
   // Get required data
   const { email } = req.decodedData
-  console.log("get awards controller")
 
   // Find user
   const user = await Faculty.findOne({ email: email })
@@ -2220,14 +2220,12 @@ const getAwardRecievedData = asyncHandler(async (req, res) => {
     throw new Error("User not found!")
   }
 
-  console.log("first")
   // Populate Award Received array to get full awards_recieved data
   await user.populate('awardRecieved')
-  console.log("seocnd")
 
   // Extract the populated Award Received data
   const awardRecievedData = user.awardRecieved
-  console.log(awardRecievedData)
+
   // Send the response
   res.status(200).json(awardRecievedData);
 });
@@ -2353,6 +2351,229 @@ const deleteAwardRecieved = asyncHandler(async (req, res) => {
 
 /**
  * AWARDS RECEIVED END
+*/ 
+
+
+/**
+ * ACTIVITY CONDUCTED
+*/ 
+
+const addActivityConducted = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const invitationLetterURL = req.files.invitationLetter[0].path;
+  const certificateURL = req.files.certificate[0].path;
+  const bannerURL = req.files.banner[0].path;
+  const reportURL = req.files.report[0].path;
+  const photosURL = req.files.photos[0].path;
+
+  data.invitationLetter = invitationLetterURL;
+  data.certificate = certificateURL;
+  data.banner = bannerURL;
+  data.report = reportURL;
+  data.photos = photosURL;
+
+  // create new Award Received entry
+  const activityConducted = await ActivityConducted.create(data);
+
+  // add ref id to faculty 
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { activityConducted: activityConducted._id } }
+  );
+
+  res.status(200).json({  
+    message: "success",
+  });
+
+});
+
+
+const getActivityConductedData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate Award Received array to get full awards_recieved data
+  await user.populate('activityConducted')
+
+  // Extract the populated Award Received data
+  const activityConductedData = user.activityConducted
+ 
+  // Send the response
+  res.status(200).json(activityConductedData);
+});
+
+
+const getActivityConductedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Find by id
+  const activityConductedData = await ActivityConducted.findById(id)
+
+  // Send the response
+  res.status(200).json(activityConductedData);
+
+})
+
+
+const updateActivityConducted = asyncHandler(async (req, res) => {
+  // Get required data
+  const data = req.body
+  console.log(data)
+  try {
+    // Find the Activity Conducted to get the necessary information
+    const activityConducted = await ActivityConducted.findById(req.body._id)
+
+    if (!activityConducted) {
+      throw new Error("Activity Conducted not found")
+    }
+
+    // Update the Activity Conducted
+    // Update the invitation letter in Activity Conducted
+    if (req.files.invitationLetter) {
+      if (activityConducted.invitationLetter && fs.existsSync(activityConducted.invitationLetter)) {
+        fs.unlinkSync(activityConducted.invitationLetter);
+      }
+      data.invitationLetter = req.files.invitationLetter[0].path
+    }
+
+    // Update the certificate in Activity Conducted
+    if (req.files.certificate) {
+      if (activityConducted.certificate && fs.existsSync(activityConducted.certificate)) {
+        fs.unlinkSync(activityConducted.certificate);
+      }
+      data.certificate = req.files.certificate[0].path
+    }
+    
+    // Update the banner in Activity Conducted
+    if (req.files.banner) {
+      if (activityConducted.banner && fs.existsSync(activityConducted.banner)) {
+        fs.unlinkSync(activityConducted.banner);
+      }
+      data.banner = req.files.banner[0].path
+    }
+
+    // Update the report in Activity Conducted
+    if (req.files.report) {
+      if (activityConducted.report && fs.existsSync(activityConducted.report)) {
+        fs.unlinkSync(activityConducted.report);
+      }
+      data.report = req.files.report[0].path
+    }
+
+    // Update the photos in Activity Conducted
+    if (req.files.photos) {
+      if (activityConducted.photos && fs.existsSync(activityConducted.photos)) {
+        fs.unlinkSync(activityConducted.photos);
+      }
+      data.photos = req.files.photos[0].path
+    }
+    await activityConducted.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const deleteActivityConducted = asyncHandler(async (req, res) => {
+  const { activity_conducted_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+    // Find the Award Received to get the necessary information
+    const activityConducted = await ActivityConducted.findById(activity_conducted_id);
+
+    if (!activityConducted) {
+      throw new Error('Activity Conducted not found');
+    }
+
+    // Delete the associated file
+    // Delete the invitationLetter
+    if (activityConducted.invitationLetter && fs.existsSync(activityConducted.invitationLetter)) {
+      fs.unlinkSync(activityConducted.invitationLetter);
+    }
+
+    // Delete the certificate
+    if (activityConducted.certificate && fs.existsSync(activityConducted.certificate)) {
+      fs.unlinkSync(activityConducted.certificate);
+    }
+
+    // Delete the banner
+    if (activityConducted.banner && fs.existsSync(activityConducted.banner)) {
+      fs.unlinkSync(activityConducted.banner);
+    }
+
+    // Delete the report
+    if (activityConducted.report && fs.existsSync(activityConducted.report)) {
+      fs.unlinkSync(activityConducted.report);
+    }
+
+    // Delete the photos
+    if (activityConducted.photos && fs.existsSync(activityConducted.photos)) {
+      fs.unlinkSync(activityConducted.photos);
+    }
+
+    
+    // Remove the Award Received ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { activityConducted: activity_conducted_id } }
+    );
+    
+    // Delete the Award Received entry from the database
+    await ActivityConducted.findByIdAndDelete(activity_conducted_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/**
+ * ACTIVITY CONDUCTED END
 */ 
 
 
@@ -2978,4 +3199,9 @@ module.exports = {
   getAwardRecievedById,
   updateAwardRecieved,
   deleteAwardRecieved,
+  addActivityConducted,
+  getActivityConductedData,
+  getActivityConductedById,
+  updateActivityConducted,
+  deleteActivityConducted,
 };

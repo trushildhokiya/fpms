@@ -239,8 +239,8 @@ const journalPublication: React.FC = (props: Props) => {
   }, []);
 
 
+  // Fetch the patent data
   useEffect(() => {
-    // Fetch the patent data
     axios
       .get(`/common/journal/${id}`)
       .then((res) => {
@@ -255,7 +255,7 @@ const journalPublication: React.FC = (props: Props) => {
         })
       })
       .catch((err) => {
-        console.error("Error fetching journal data:", err);
+        console.error("Error fetching Journal data:", err);
       });
   }, []);
 
@@ -289,8 +289,6 @@ const journalPublication: React.FC = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-
-
     axios.put('/common/journal', values, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -298,16 +296,14 @@ const journalPublication: React.FC = (props: Props) => {
     })
       .then((res) => {
         if (res.data.message === 'success') {
-
           toast({
-            title: "journal updated successfully",
+            title: "Journal updated successfully",
             description: "Your journal information has been updated successfully",
             action: (
               <ToastAction className='' onClick={() => { navigate('/common/display/journal') }} altText="okay">Okay</ToastAction>
             ),
           })
           form.reset()
-
         }
       })
       .catch((err) => {

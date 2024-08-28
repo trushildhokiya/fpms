@@ -163,10 +163,8 @@ const AwardRecievedEditForm = (props: Props) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // functions
-
+  // Fetch the Award Recieved data
   useEffect(() => {
-    // Fetch the Award Recieved data
     axios
         .get(`/common/awards-recieved/${id}`)
         .then((res) => {
@@ -196,7 +194,6 @@ const AwardRecievedEditForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
     axios.put('/common/awards-recieved', values, {
       headers: {
           'Content-Type': 'multipart/form-data'

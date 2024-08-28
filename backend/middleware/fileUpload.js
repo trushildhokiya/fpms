@@ -268,6 +268,27 @@ const awardsReceivedFileStorage = multer.diskStorage({
 const awardsReceivedFileUpload = multer({ storage: awardsReceivedFileStorage });
 
 /*
+ACTIVITY CONDUCTED FILE UPLOAD 
+*/
+const activityConductedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "activity-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "activity-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const activityConductedFileUpload = multer({ storage: activityConductedFileStorage });
+
+/*
 CONSULTANCY FILE UPLOAD 
 */
 const consultancyFileStorage = multer.diskStorage({
@@ -370,6 +391,7 @@ module.exports = {
   needBasedProjectFileUpload,
   awardHonorsFileUpload,
   awardsReceivedFileUpload,
+  activityConductedFileUpload,
   consultancyFileUpload,
   projectFileUpload,
   qualificationFileUpload,

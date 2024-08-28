@@ -34,6 +34,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
@@ -44,6 +45,29 @@ type Props = {}
 /**
  * SCHEMAS 
  */
+
+interface ActivityConducted {
+  _id: string;
+  title: string;
+  organizedBy: string;
+  associationWith: string;
+  mode: string;
+  level: string;
+  participants: number;
+  fromDate: Date;
+  toDate: Date;
+  venue: string;
+  remarks: string;
+  invitationLetter: string;
+  certificate: string;
+  banner: string;
+  report: string;
+  photos: string;
+  videoLink: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
 const ACCEPTED_FILE_TYPES = [
     'application/pdf'
@@ -58,7 +82,7 @@ const pdfFileSchema = z.instanceof(File)
     )
 
 const formSchema = z.object({
-
+    _id: z.string().optional(),
     title: z.string().min(1, {
         message: "Activity title is required!"
     }).max(100, {
@@ -93,11 +117,11 @@ const formSchema = z.object({
     venue: z.string().min(1).max(100),
     remarks: z.string().min(1).max(100),
 
-    invitationLetter: pdfFileSchema,
-    certificate: pdfFileSchema,
-    banner: pdfFileSchema,
-    report: pdfFileSchema,
-    photos: pdfFileSchema,
+    invitationLetter: z.union([pdfFileSchema, z.any().optional()]),
+    certificate: z.union([pdfFileSchema, z.any().optional()]),
+    banner: z.union([pdfFileSchema, z.any().optional()]),
+    report: z.union([pdfFileSchema, z.any().optional()]),
+    photos: z.union([pdfFileSchema, z.any().optional()]),
 
     videoLink: z.string().min(1).url({
         message: "Invalid url"
@@ -108,10 +132,12 @@ const formSchema = z.object({
     path: ['toDate']
 }) // Field to which the error will be attached);
 
-const ActivityConducted = (props: Props) => {
+const ActivityConductedEdit = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
     const [open, setOpen] = useState(false)
+    const { id } = useParams()
+    const navigate = useNavigate()
     const { toast }= useToast()
     
     //functions
@@ -129,10 +155,29 @@ const ActivityConducted = (props: Props) => {
     }, [])
 
 
+    // Fetch the project data
+    useEffect(() => {
+      axios
+          .get(`/common/activity-conducted/${id}`)
+          .then((res) => {
+              const data: ActivityConducted = res.data
+              form.reset({
+                  ...data,
+                  fromDate: new Date(data.fromDate),
+                  toDate: new Date(data.toDate),
+              })
+          })
+          .catch((err) => {
+              console.error("Error fetching Activity Conducted data:", err);
+          });
+  }, []);
+
+
     // form schema
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id: "",
             title: "",
             organizedBy: "",
             associationWith: "",
@@ -152,10 +197,9 @@ const ActivityConducted = (props: Props) => {
         },
     })
 
-
+    //Posting the updates 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // console.log(values)
-        axios.post("/common/activity-conducted", values, {
+        axios.put("/common/activity-conducted", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -163,10 +207,12 @@ const ActivityConducted = (props: Props) => {
         .then((res) => {
             if (res.data.message === "success") {
                 toast({
-                    title: "Activities Conducted added successfully",
+                    title: "Activities Conducted updated successfully",
                     description:
-                        "Your conducted activities information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                        "Your conducted activities information has been updated successfully",
+                    action: (
+                      <ToastAction className='' onClick={() => { navigate('/common/display/activity-conducted') }} altText="okay">Okay</ToastAction>
+                    ),
                 });
                 form.reset();
             }
@@ -226,7 +272,21 @@ const ActivityConducted = (props: Props) => {
                                 </AlertDescription>
                             </Alert>
 
-                            <div className="">
+                              {/* ID HIDDEN */}
+                              <FormField 
+                                control={form.control} 
+                                name={`_id`} 
+                                render={({ field }) => (
+                                  <FormItem className='hidden'>
+                                    <FormLabel className='text-grey-800'>ID</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="ID" autoComplete='off' {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            <div>
 
                                 <FormField
                                     control={form.control}
@@ -282,7 +342,11 @@ const ActivityConducted = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Activity Conducted Mode</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select 
+                                              onValueChange={field.onChange} 
+                                              defaultValue={field.value}
+                                              value={field.value}
+                                            >
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a mode" />
@@ -304,7 +368,7 @@ const ActivityConducted = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Activity Conducted Level</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a level" />
@@ -571,4 +635,4 @@ const ActivityConducted = (props: Props) => {
     )
 }
 
-export default ActivityConducted
+export default ActivityConductedEdit

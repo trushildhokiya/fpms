@@ -69,6 +69,11 @@ const {
   addAwardRecieved,
   getAwardRecievedData,
   deleteAwardRecieved,
+  addActivityConducted,
+  getActivityConductedData,
+  getActivityConductedById,
+  deleteActivityConducted,
+  updateActivityConducted,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -88,6 +93,7 @@ const {
   qualificationFileUpload,
   debugFileUpload,
   awardsReceivedFileUpload,
+  activityConductedFileUpload
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -2966,6 +2972,46 @@ updateAwardRecieved
 
 /**
  * AWARDS RECEIVED END
+*/ 
+
+
+/**
+ * ACTIVITY CONDUCTED
+*/ 
+
+// route ACTIVITY CONDUCTED for add req
+router.route("/activity-conducted").post(facultyAuthenticator, activityConductedFileUpload.fields([
+  { name: "invitationLetter", maxCount: 1 },
+  { name: "certificate", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+  { name: "report", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+  addActivityConducted
+);
+
+// route ACTIVITY CONDUCTED for get req
+router.route('/activity-conducted').get(facultyAuthenticator, getActivityConductedData)
+
+// route ACTIVITY CONDUCTED for get by ID req
+router.route('/activity-conducted/:id').get(facultyAuthenticator,getActivityConductedById)
+
+// route ACTIVITY CONDUCTED for delete req
+router.route('/activity-conducted').delete(facultyAuthenticator,deleteActivityConducted)
+
+// route ACTIVITY CONDUCTED for update req
+router.route("/activity-conducted").put(facultyAuthenticator, activityConductedFileUpload.fields([
+  { name: "invitationLetter", maxCount: 1 },
+  { name: "certificate", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+  { name: "report", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+updateActivityConducted
+);
+
+/**
+ * ACTIVITY CONDUCTED END
 */ 
 
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
