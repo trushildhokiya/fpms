@@ -79,7 +79,7 @@ const formSchema = z.object({
     .min(1, {
       message: "research paper title is required!",
     })
-    .max(100, {
+    .max(300, {
       message: "research paper title must not exceed 100 characters",
     }),
 
@@ -465,7 +465,7 @@ const ConferenceForm: React.FC = (props: Props) => {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select journal type" />
+                            <SelectValue placeholder="Select conference type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

@@ -76,7 +76,7 @@ const formSchema = z.object({
     .min(1, {
       message: "Book Title is required!",
     })
-    .max(100, {
+    .max(300, {
       message: "Book Title must not exceed 100 characters",
     }),
 
@@ -85,7 +85,7 @@ const formSchema = z.object({
     .min(1, {
       message: "Book Chapter Title Required",
     })
-    .max(100, {
+    .max(300, {
       message: "Book chapter title must not exceed 100 characters",
     }),
 

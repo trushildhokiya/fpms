@@ -62,8 +62,8 @@ const formSchema = z
 
     title: z.string().min(2, {
       message: "Title is required!",
-    }).max(100, {
-      message: "Title must not exceed 100 characters",
+    }).max(300, {
+      message: "Title must not exceed 300 characters",
     }),
 
     organizedBy: z.string().min(2, {

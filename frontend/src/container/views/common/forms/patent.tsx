@@ -78,8 +78,8 @@ const formSchema = z
       .min(2, {
         message: "Patent Title required!",
       })
-      .max(100, {
-        message: "Patent Title must not exceed 100 characters",
+      .max(300, {
+        message: "Patent Title must not exceed 300 characters",
       }),
 
     inventors: z

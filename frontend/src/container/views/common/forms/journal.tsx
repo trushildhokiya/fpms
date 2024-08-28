@@ -75,8 +75,8 @@ const formSchema = z.object({
     .min(1, {
       message: "research paper title is required!",
     })
-    .max(100, {
-      message: "research paper title must not exceed 100 characters",
+    .max(300, {
+      message: "research paper title must not exceed 300 characters",
     }),
 
   authors: z

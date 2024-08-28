@@ -78,7 +78,7 @@ const formSchema = z
       .min(2, {
         message: "Copyright Title required!",
       })
-      .max(100, {
+      .max(300, {
         message: "Copyright Title must not exceed 100 characters",
       }),
 

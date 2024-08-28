@@ -2,11 +2,12 @@
 import FacultyNavbar from '@/components/navbar/FacultyNavbar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from '@/components/ui/command'
 import Line from '@/components/visual/Line'
 import Pie from '@/components/visual/Pie'
 import terminalHandler from '@/utils/functions/terminalFunction'
 import axios from 'axios'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, TerminalIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Terminal, { ColorMode, TerminalOutput } from 'react-terminal-ui'
@@ -32,11 +33,25 @@ const Dashboard = () => {
 
   const user = useSelector((state: any) => state.user)
   const [terminalData, setTerminalData] = useState('Booting FPMS Kernel ========> complete\neg command: my-patent')
-  const [dashboardData, setDashboardData] = useState<DashboardData|null>(null)
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
 
   const handleTerminalQuery = (command: string) => {
     setTerminalData(terminalHandler(command))
   }
+
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "s" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
 
   useEffect(() => {
     axios.get('/faculty/dashboard')
@@ -55,6 +70,89 @@ const Dashboard = () => {
       <FacultyNavbar />
 
       <div className="container font-Poppins">
+
+        {/* ACCESSIBILTY  */}
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Research">
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Patents</span>
+                <CommandShortcut>my-patents | patent</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Copyright</span>
+                <CommandShortcut>my-copyright | copyright</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Publications">
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Journal</span>
+                <CommandShortcut>my-journal | journal</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Conference</span>
+                <CommandShortcut>my-conference | conference</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Book</span>
+                <CommandShortcut>my-book | book</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Book Chapter</span>
+                <CommandShortcut>my-book-chapter | book-chapter</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Projects">
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Major/Minor Projects</span>
+                <CommandShortcut>my-projects | projects</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Need based Project</span>
+                <CommandShortcut>my-nbp | nbp</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Awards & Honors</span>
+                <CommandShortcut>my-awards-honors | awards-honors</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Consultancy</span>
+                <CommandShortcut>my-consultancy | consultancy</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+            <CommandGroup heading="Others">
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Synchronize</span>
+                <CommandShortcut>re-init</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+                <CommandShortcut>logout</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <TerminalIcon className="mr-2 h-4 w-4" />
+                <span>Suggestions</span>
+                <CommandShortcut>suggestion</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-6 place-content-center">
           <div className="col-span-2 ">
@@ -109,7 +207,7 @@ const Dashboard = () => {
 
           </div>
           <div className="flex flex-col w-full justify-center items-center">
-              <Pie data={dashboardData?.pie} />
+            <Pie data={dashboardData?.pie} />
             <p className='text-xl font-OpenSans text-gray-700 font-bold text-center'>
               My Stats
             </p>
