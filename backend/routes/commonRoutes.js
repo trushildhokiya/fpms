@@ -64,6 +64,11 @@ const {
   updateBook,
   updateBookChapter,
   updateAwardsHonors,
+  updateAwardRecieved,
+  getAwardRecievedById,
+  addAwardRecieved,
+  getAwardRecievedData,
+  deleteAwardRecieved,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -82,6 +87,7 @@ const {
   facultyProfileImageUpload,
   qualificationFileUpload,
   debugFileUpload,
+  awardsReceivedFileUpload,
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -2929,6 +2935,39 @@ router.route('/award-honors').get(facultyAuthenticator, getAwardHonorsData)
 
 router.route('/award-honors').delete(facultyAuthenticator,deleteAwardsHonors)
 
+/**
+ * AWARDS RECEIVED
+*/ 
+
+// route Awards Received for add req
+router.route("/awards-recieved").post(facultyAuthenticator, awardsReceivedFileUpload.fields([
+  { name: "certificate", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+  addAwardRecieved
+);
+
+// route Awards Received for get req
+router.route('/awards-recieved').get(facultyAuthenticator, getAwardRecievedData)
+
+// route Awards Received for get by ID req
+router.route('/awards-recieved/:id').get(facultyAuthenticator,getAwardRecievedById)
+
+// route Awards Received for delete req
+router.route('/awards-recieved').delete(facultyAuthenticator,deleteAwardRecieved)
+
+// route Awards Received for update req
+router.route("/awards-recieved").put(facultyAuthenticator, awardsReceivedFileUpload.fields([
+  { name: "certificate", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+updateAwardRecieved
+);
+
+/**
+ * AWARDS RECEIVED END
+*/ 
+
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
   { name: 'sanctionedOrder', maxCount: 1 },
   { name: 'transactionProof', maxCount: 1 },
@@ -2992,7 +3031,6 @@ router.route('/journal').put(facultyAuthenticator, journalFileUpload.fields([
   { name: "paper", maxCount: 1 },
   { name: "certificate", maxCount: 1 },
 ]), updateJournal)
-
 
 
 router.route("/conference").put(facultyAuthenticator, conferenceFileUpload.fields([

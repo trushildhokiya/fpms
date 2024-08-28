@@ -162,7 +162,22 @@ const facultySchema = new mongoose.Schema({
     needBasedProjects: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'needBasedProject' }],
         required: false
-    }
+    },
+
+    activityConducted: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'activityConducted' }],
+        required: false
+    },
+
+    awardRecieved: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'awardRecieved' }],
+        required: false
+    },
+
+    courseCertification: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'courseCertification' }],
+        required: false
+    },
 
 
 }, { timestamps: true }

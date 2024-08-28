@@ -11,6 +11,7 @@ const AwardHonors = require('../models/award-honors')
 const Consultancy = require('../models/consultancy')
 const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
+const AwardRecieved = require('../models/awards-recieved')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -852,7 +853,6 @@ const addJournal = asyncHandler(async (req, res) => {
   data.certificate = certificateURL;
 
   // create entry in journal
-
   const journal = await Journal.create(data);
 
 
@@ -910,7 +910,6 @@ const getJournalById = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User not found!")
   }
-
 
   const journalData = await Journal.findById(id)
 
@@ -1795,7 +1794,7 @@ const deleteAwardsHonors = asyncHandler(async (req, res) => {
     const awardsHonors = await AwardHonors.findById(award_id);
 
     if (!awardsHonors) {
-      throw new Error('Book not found');
+      throw new Error('Awards Honors not found');
     }
 
     // Remove the awards honors ID from the faculty
@@ -2165,6 +2164,197 @@ const deleteProject = asyncHandler(async (req, res) => {
   })
 
 })
+
+
+/**
+ * AWARDS RECEIVED
+*/ 
+
+const addAwardRecieved = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const certificateURL = req.files.certificate[0].path;
+  const photosURL = req.files.photos[0].path;
+
+  data.certificate = certificateURL;
+  data.photos = photosURL;
+
+  // create new Award Received entry
+  const awardRecieved = await AwardRecieved.create(data);
+
+  // add ref id to faculty 
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { awardRecieved: awardRecieved._id } }
+  );
+
+  res.status(200).json({  
+    message: "success",
+  });
+
+});
+
+
+const getAwardRecievedData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+  console.log("get awards controller")
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  console.log("first")
+  // Populate Award Received array to get full awards_recieved data
+  await user.populate('awardRecieved')
+  console.log("seocnd")
+
+  // Extract the populated Award Received data
+  const awardRecievedData = user.awardRecieved
+  console.log(awardRecievedData)
+  // Send the response
+  res.status(200).json(awardRecievedData);
+});
+
+
+const getAwardRecievedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Find by id
+  const awardRecievedData = await AwardRecieved.findById(id)
+
+  // Send the response
+  res.status(200).json(awardRecievedData);
+
+})
+
+
+const updateAwardRecieved = asyncHandler(async (req, res) => {
+  // Get required data
+  const data = req.body
+
+  try {
+
+    // Find the Award Received to get the necessary information
+    const awardRecieved = await AwardRecieved.findById(req.body._id)
+
+    if (!awardRecieved) {
+      throw new Error("Awards Received not found")
+    }
+
+    // Update the Award Received
+    // Update the certificate in Award Received
+    if (req.files.certificate) {
+
+      if (awardRecieved.certificate && fs.existsSync(awardRecieved.certificate)) {
+        fs.unlinkSync(awardRecieved.certificate);
+      }
+
+      data.certificate = req.files.certificate[0].path
+
+    }
+
+    // Update the photos in Award Received
+    if (req.files.photos) {
+
+      if (awardRecieved.photos && fs.existsSync(awardRecieved.photos)) {
+        fs.unlinkSync(awardRecieved.photos);
+      }
+
+      data.photos = req.files.photos[0].path
+
+    }
+
+    await awardRecieved.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const deleteAwardRecieved = asyncHandler(async (req, res) => {
+
+  const { awards_recieved_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+
+    // Find the Award Received to get the necessary information
+    const awardRecieved = await AwardRecieved.findById(awards_recieved_id);
+
+    if (!awardRecieved) {
+      throw new Error('Awards Received not found');
+    }
+
+    // Delete the associated file
+    // Delete the certificate
+    if (awardRecieved.certificate && fs.existsSync(awardRecieved.certificate)) {
+      fs.unlinkSync(awardRecieved.certificate);
+    }
+    
+    // Delete the photos
+    if (awardRecieved.photos && fs.existsSync(awardRecieved.photos)) {
+      fs.unlinkSync(awardRecieved.photos);
+    }
+    
+    // Remove the Award Received ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { awardRecieved: awards_recieved_id } }
+    );
+    
+    // Delete the Award Received entry from the database
+    await AwardRecieved.findByIdAndDelete(awards_recieved_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/**
+ * AWARDS RECEIVED END
+*/ 
+
 
 
 /**
@@ -2783,4 +2973,9 @@ module.exports = {
   updateBook,
   updateBookChapter,
   updateAwardsHonors,
+  addAwardRecieved,
+  getAwardRecievedData,
+  getAwardRecievedById,
+  updateAwardRecieved,
+  deleteAwardRecieved,
 };

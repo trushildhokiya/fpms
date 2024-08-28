@@ -247,6 +247,27 @@ const awardHonorsFileStorage = multer.diskStorage({
 const awardHonorsFileUpload = multer({ storage: awardHonorsFileStorage });
 
 /*
+AWARD RECEIVED FILE UPLOAD 
+*/
+const awardsReceivedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "awards-recieved");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "awards-received-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const awardsReceivedFileUpload = multer({ storage: awardsReceivedFileStorage });
+
+/*
 CONSULTANCY FILE UPLOAD 
 */
 const consultancyFileStorage = multer.diskStorage({
@@ -348,6 +369,7 @@ module.exports = {
   bookChapterUpload,
   needBasedProjectFileUpload,
   awardHonorsFileUpload,
+  awardsReceivedFileUpload,
   consultancyFileUpload,
   projectFileUpload,
   qualificationFileUpload,

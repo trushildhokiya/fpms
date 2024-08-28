@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import axios from 'axios'
+import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
@@ -11,43 +12,57 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { FileDown, Pencil, Table, Trash2Icon } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
-import jsPDF from 'jspdf'
 import { ScrollPanel } from 'primereact/scrollpanel'
+import jsPDF from 'jspdf'
 import Logo from '@/assets/image/logo.png'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
-interface Award {
+interface AwardRecieved {
     _id: string;
     title: string;
-    awardingBody: string;
-    year: number;
-    description: string;
-    proof: string;
+    organization: string;
+    venue: string;
+    type: string;
+    date: Date;
+    level: string;
+    remarks: string;
+    certificate: string;
+    photos: string;
+    videoUrl: string;
     createdAt: string;
     updatedAt: string;
     __v: number;
 }
 
-
-const AwardsHonorsDisplay = (props: Props) => {
+const AwardRecievedDisplay = (props: Props) => {
 
     // constants
     const user = useSelector((state: any) => state.user)
-    const [data, setData] = useState<Award[]>([]);
+    const [data, setData] = useState<AwardRecieved[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
 
+    // function to convert date strings to Date objects
+    const convertDates = (award_recieveds: AwardRecieved[]) => {
+        return award_recieveds.map(award_recieved => ({
+            ...award_recieved,
+            date: new Date(award_recieved.date)
+        }));
+    };
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/award-honors')
-            .then((res) => {
-                setData(res.data);
-                setTotalRecords(res.data.length)
+        // console.log("useEffect is running"); 
+        axios.get('/common/awards-recieved').then((res) => {
+                // console.log("API response received:", res.data);
+                const convertedData = convertDates(res.data);
+                setData(convertedData);
+                // console.log("Data set in state:", convertedData);
+                setTotalRecords(convertedData.length)
             })
             .catch((err) => {
                 console.log(err);
@@ -85,28 +100,49 @@ const AwardsHonorsDisplay = (props: Props) => {
 
 
     // template functions
-    const idBodyTemplate = (rowData: Award) => {
-        return <Badge className='bg-teal-400 bg-opacity-45 hover:bg-teal-300 text-teal-800'>{rowData._id}</Badge>;
+    const idBodyTemplate = (rowData: AwardRecieved) => {
+        return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
     };
 
-    const descriptionBodyTemplate = (rowData: Award) => {
-        return <ScrollPanel className='w-full h-36 text-sm leading-6'>{rowData.description}</ScrollPanel>
+    const remarksBodyTemplate = (rowData: AwardRecieved) => {
+        return <ScrollPanel className='w-full h-36 text-sm leading-6'>{rowData.remarks}</ScrollPanel>
     }
 
-    const proofBodyTemplate = (rowData: Award) => {
+    const dateBodyTemplate = (rowData: AwardRecieved) => rowData.date.toLocaleDateString()
+
+    const certificateBodyTemplate = (rowData: AwardRecieved) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.proof.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800' >Download</Button>
             </Link>
         )
     }
+
+    const photosBodyTemplate = (rowData: AwardRecieved) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
+        )
+    }
+
+    const URLBodyTemplate = (rowData: AwardRecieved) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={rowData.videoUrl}>
+                <Button variant={'link'} className='text-indigo-800' >View</Button>
+            </Link>
+        )
+    }
+
+    const dateFilterTemplate = (options: any) => {
+        return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
+    };
 
     const footerTemplate = () => {
         return "Total Records Matched: " + totalRecords; // Access total records here
     };
 
     // download functions
-
     const exportCSV = (selectionOnly: boolean) => {
         dt.current.exportCSV({ selectionOnly });
     };
@@ -117,19 +153,24 @@ const AwardsHonorsDisplay = (props: Props) => {
         // Initialize jsPDF instance
         const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
 
-        // Column definitions
+        // define columns
         interface Column {
             header: string;
-            dataKey: keyof Award;
+            dataKey: keyof AwardRecieved;
         }
 
         const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
-            { header: 'Awarding Body', dataKey: 'awardingBody' },
-            { header: 'Year', dataKey: 'year' },
-            { header: 'Description', dataKey: 'description' },
-            { header: 'Proof', dataKey: 'proof' },
+            { header: 'Awardee Organization', dataKey: 'organization' },
+            { header: 'Venue', dataKey: 'venue' },
+            { header: 'Type', dataKey: 'type' },
+            { header: 'Date', dataKey: 'date' },
+            { header: 'Level', dataKey: 'level' },
+            { header: 'Remarks', dataKey: 'remarks' },
+            { header: 'Certificate', dataKey: 'certificate' },
+            { header: 'Photos', dataKey: 'photos' },
+            { header: 'Video Url', dataKey: 'videoUrl' },
             { header: 'Created At', dataKey: 'createdAt' },
             { header: 'Updated At', dataKey: 'updatedAt' },
             { header: '__v', dataKey: '__v' },
@@ -174,10 +215,22 @@ const AwardsHonorsDisplay = (props: Props) => {
         };
 
 
+        const formatField = (value: any): string => {
+            if (Array.isArray(value)) {
+                return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item).join(', ');
+            } else if (value instanceof Date) {
+                return value.toLocaleDateString();
+            } else if (typeof value === 'object') {
+                return JSON.stringify(value);
+            } else {
+                return value.toString();
+            }
+        };
+
         // Add autoTable content to the PDF
         autoTable(doc, {
             head: [columns.map(col => col.header)],
-            body: data.map((row) => columns.map(col => row[col.dataKey])),
+            body: data.map(row => columns.map(col => formatField(row[col.dataKey]))),
             styles: {
                 overflow: 'linebreak',
                 font: 'times',
@@ -191,10 +244,11 @@ const AwardsHonorsDisplay = (props: Props) => {
             didDrawPage: addFooter
         });
 
+
         addBackgroundImage()
 
         // Save the PDF
-        doc.save('award-honors-data.pdf');
+        doc.save('awards-received-data.pdf');
     };
 
 
@@ -209,10 +263,10 @@ const AwardsHonorsDisplay = (props: Props) => {
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Award) => {
+    const actionBodyTemplate = (rowData: AwardRecieved) => {
         return (
             <>
-                <Link to={`/common/edit/awards-honors/${rowData._id}`}>
+                <Link to={`/common/edit/awards-recieved/${rowData._id}`}>
                     <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
                 </Link>
                 <AlertDialog>
@@ -238,10 +292,10 @@ const AwardsHonorsDisplay = (props: Props) => {
         );
     };
 
-    const handleDelete = (rowData: Award) => {
-        axios.delete('/common/award-honors', {
+    const handleDelete = (rowData: AwardRecieved) => {
+        axios.delete('/common/awards-recieved', {
             data: {
-                award_id: rowData._id
+                awards_recieved_id: rowData._id
             }
         })
             .then((res) => {
@@ -263,38 +317,39 @@ const AwardsHonorsDisplay = (props: Props) => {
             <div className="container font-Poppins my-10">
 
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                    Awards Honors Details
+                Awards Received Details
                 </h1>
 
                 <div className="my-10">
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Awards Honors</CardTitle>
-                            <CardDescription>Awards Honors details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Awards Received</CardTitle>
+                            <CardDescription>Awards Received details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
-                            <DataTable exportFilename='my-awards-honors' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='my-awards-recieved' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
-                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="awardingBody" style={{ minWidth: '250px' }} sortable filter filterPlaceholder='Search by awarding body' header="Awarding Body"></Column>
-                                <Column field="year" dataType="numeric" style={{ minWidth: '200px' }} filter filterPlaceholder='Search by year' align={'center'} header="Year" sortable ></Column>
-                                <Column field="description" style={{ minWidth: '250px' }} sortable header="Description" body={descriptionBodyTemplate}></Column>
-                                <Column field="proof" style={{ minWidth: '250px' }} align={'center'} header="Proof" body={proofBodyTemplate}></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
+                                <Column field="organization" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organization' sortable header="Awardee Organization"></Column>
+                                <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
+                                <Column field="type" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Type' sortable header="Type"></Column>
+                                <Column field="date" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by Date' filterElement={dateFilterTemplate} header="Date" body={dateBodyTemplate}></Column>
+                                <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="Level"></Column>
+                                <Column field="remarks" style={{ minWidth: '250px' }} sortable header="Remarks" body={remarksBodyTemplate}></Column>
+                                <Column field="certificate" style={{ minWidth: '250px' }} header="Certificate" body={certificateBodyTemplate}></Column>
+                                <Column field="photos" style={{ minWidth: '250px' }} header="Photos" body={photosBodyTemplate}></Column>
+                                <Column field="videoUrl" style={{ minWidth: '200px' }}  body={URLBodyTemplate} header="Video Url"></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                             </DataTable>
-
                         </CardContent>
-
                     </Card>
-
-
                 </div>
             </div>
         </div>
     )
 }
 
-export default AwardsHonorsDisplay
+export default AwardRecievedDisplay
