@@ -161,7 +161,6 @@ const AwardRecievedForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
     axios
       .post("/common/awards-recieved", values, {
         headers: {
@@ -169,7 +168,6 @@ const AwardRecievedForm = (props: Props) => {
         },
       })
       .then((res) => {
-        // console.log(res.data);
         if (res.data.message === "success") {
           toast({
             title: "Awards Received added successfully",

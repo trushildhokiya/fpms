@@ -41,6 +41,10 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { ToastAction } from "@/components/ui/toast";
 
 type Props = {};
 
@@ -109,11 +113,10 @@ const formSchema = z
     path: ["toDate"], // Field to which the error will be attached
   });
 
-const CourseCertificateForm = (props: Props) => {
+const CourseCertificate = (props: Props) => {
   const user = useSelector((state: any) => state.user);
-
-  // command
   const [open, setOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -127,7 +130,7 @@ const CourseCertificateForm = (props: Props) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // functions
+  // form schema
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -146,7 +149,26 @@ const CourseCertificateForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    axios
+      .post("/common/course-certification", values, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        if (res.data.message === "success") {
+          toast({
+            title: "Course Certificate added successfully",
+            description:
+              "Your Course Certificate information has been added successfully",
+            action: <ToastAction altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -159,6 +181,11 @@ const CourseCertificateForm = (props: Props) => {
           </span>
         </h1>
 
+        {/* FORM */}
+
+        <div className="p-2 font-Poppins text-xl">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* COMMAND DIALOG  */}
         <CommandDialog open={open} onOpenChange={setOpen}>
           <CommandInput placeholder="Type a command or search..." />
@@ -184,12 +211,6 @@ const CourseCertificateForm = (props: Props) => {
             </CommandGroup>
           </CommandList>
         </CommandDialog>
-
-        {/* FORM */}
-
-        <div className="p-2 font-Poppins text-xl">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
 
               {/* BASIC DETAILS */}
@@ -504,8 +525,9 @@ const CourseCertificateForm = (props: Props) => {
           </Form>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };
 
-export default CourseCertificateForm;
+export default CourseCertificate;

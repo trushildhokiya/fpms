@@ -289,6 +289,27 @@ const activityConductedFileStorage = multer.diskStorage({
 const activityConductedFileUpload = multer({ storage: activityConductedFileStorage });
 
 /*
+COURSE CERTIFICATION FILE UPLOAD 
+*/
+const courseCertificationFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "course-certification");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "course-certification-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const courseCertificationFileUpload = multer({ storage: courseCertificationFileStorage });
+
+/*
 CONSULTANCY FILE UPLOAD 
 */
 const consultancyFileStorage = multer.diskStorage({
@@ -392,6 +413,7 @@ module.exports = {
   awardHonorsFileUpload,
   awardsReceivedFileUpload,
   activityConductedFileUpload,
+  courseCertificationFileUpload,
   consultancyFileUpload,
   projectFileUpload,
   qualificationFileUpload,

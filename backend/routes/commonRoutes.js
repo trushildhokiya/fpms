@@ -74,6 +74,11 @@ const {
   getActivityConductedById,
   deleteActivityConducted,
   updateActivityConducted,
+  addCourseCertification,
+  getCourseCertificationData,
+  getCourseCertificationById,
+  deleteCourseCertification,
+  updateCourseCertification,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -93,7 +98,8 @@ const {
   qualificationFileUpload,
   debugFileUpload,
   awardsReceivedFileUpload,
-  activityConductedFileUpload
+  activityConductedFileUpload,
+  courseCertificationFileUpload
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -3012,6 +3018,34 @@ updateActivityConducted
 
 /**
  * ACTIVITY CONDUCTED END
+*/ 
+
+
+/**
+ * COURSE CERTIFICATION
+*/ 
+
+// route COURSE CERTIFICATION for add req
+router.route("/course-certification").post(facultyAuthenticator, courseCertificationFileUpload.single("certificate"),
+  addCourseCertification
+);
+
+// route COURSE CERTIFICATION for get req
+router.route('/course-certification').get(facultyAuthenticator, getCourseCertificationData)
+
+// route COURSE CERTIFICATION for get by ID req
+router.route('/course-certification/:id').get(facultyAuthenticator,getCourseCertificationById)
+
+// route COURSE CERTIFICATION for delete req
+router.route('/course-certification').delete(facultyAuthenticator,deleteCourseCertification)
+
+// route COURSE CERTIFICATION for update req
+router.route("/course-certification").put(facultyAuthenticator, courseCertificationFileUpload.single("certificate"),
+updateCourseCertification
+);
+
+/**~
+ * COURSE CERTIFICATION END
 */ 
 
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([

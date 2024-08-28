@@ -56,12 +56,9 @@ const AwardRecievedDisplay = (props: Props) => {
 
     // useEffect to fetch data
     useEffect(() => {
-        // console.log("useEffect is running"); 
         axios.get('/common/awards-recieved').then((res) => {
-                // console.log("API response received:", res.data);
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
-                // console.log("Data set in state:", convertedData);
                 setTotalRecords(convertedData.length)
             })
             .catch((err) => {
@@ -299,7 +296,6 @@ const AwardRecievedDisplay = (props: Props) => {
             }
         })
             .then((res) => {
-                console.log(res);
                 if (res.data.message === 'success') {
                     window.location.reload()
                 }

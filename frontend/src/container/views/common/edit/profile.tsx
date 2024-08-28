@@ -164,8 +164,6 @@ const ProfileForm = (props: Props) => {
     })
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-
-        // console.log(values);
         axios.put('/common/profile',values)
         .then((res)=>{
             if(res.data.message==='success'){

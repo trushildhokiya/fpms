@@ -267,6 +267,21 @@ const ActivityConductedDisplay = lazy(
   () => import("./container/views/common/display/activity-conducted")
 );
 
+//View Course Certificate Form
+const CourseCertificate = lazy(
+  () => import("@/container/views/common/forms/course-certification")
+);
+
+//Editable Course Certificate Form
+const CourseCertificateEdit = lazy(
+  () => import("./container/views/common/edit/course-certification")
+);
+
+//Display Course Certificate Form
+const CourseCertificateDisplay = lazy(
+  () => import("./container/views/common/display/course-certification")
+);
+
 const SeminarAttended = lazy(
   () => import("@/container/views/common/forms/seminar-attended")
 );
@@ -912,6 +927,36 @@ function App() {
               <CommonProtectedRoute>
                 {" "}
                 <ActivityConductedDisplay />{" "}
+              </CommonProtectedRoute>
+            }
+          />
+          {/* ACTIVITY CONDUCTED END*/}
+
+          {/* COURSE CERTIFICATE */}
+          <Route
+            path="/common/forms/course-certification"
+            element={
+              <CommonProtectedRoute>
+                {" "}
+                <CourseCertificate />{" "}
+              </CommonProtectedRoute>
+            }
+          />
+          <Route
+            path="/common/edit/course-certification/:id"
+            element={
+              <CommonProtectedRoute>
+                {" "}
+                <CourseCertificateEdit />{" "}
+              </CommonProtectedRoute>
+            }
+          />
+          <Route
+            path="/common/display/course-certification"
+            element={
+              <CommonProtectedRoute>
+                {" "}
+                <CourseCertificateDisplay />{" "}
               </CommonProtectedRoute>
             }
           />

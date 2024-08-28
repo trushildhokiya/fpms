@@ -154,7 +154,6 @@ const ActivityConducted = (props: Props) => {
 
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // console.log(values)
         axios.post("/common/activity-conducted", values, {
             headers: {
                 "Content-Type": "multipart/form-data",

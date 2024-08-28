@@ -13,6 +13,7 @@ const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
 const AwardRecieved = require('../models/awards-recieved')
 const ActivityConducted = require('../models/activity-conducted')
+const CourseCertification = require('../models/course-certification')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -2373,7 +2374,6 @@ const addActivityConducted = asyncHandler(async (req, res) => {
   }
 
   // add file paths to data
-  const invitationLetterURL = req.files.invitationLetter[0].path;
   const certificateURL = req.files.certificate[0].path;
   const bannerURL = req.files.banner[0].path;
   const reportURL = req.files.report[0].path;
@@ -2561,6 +2561,165 @@ const deleteActivityConducted = asyncHandler(async (req, res) => {
     // Delete the Award Received entry from the database
     await ActivityConducted.findByIdAndDelete(activity_conducted_id);
 
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/**
+ * ACTIVITY CONDUCTED END
+*/ 
+
+
+/**
+ * COURSE CERTIFICATION
+*/ 
+
+const addCourseCertification = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const certificateURL = req.file.path;
+  data.certificate = certificateURL;
+ 
+  // create new Course Certification entry
+  const courseCertification = await CourseCertification.create(data);
+
+  // add ref id to faculty 
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { courseCertification: courseCertification._id } }
+  );
+
+  res.status(200).json({  
+    message: "success",
+  });
+
+});
+
+
+const getCourseCertificationData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate Course Certification array to get full Course Certification data
+  await user.populate('courseCertification')
+
+  // Extract the populated Course Certification data
+  const courseCertificationData = user.courseCertification
+ 
+  // Send the response
+  res.status(200).json(courseCertificationData);
+});
+
+
+const getCourseCertificationById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Find by id
+  const courseCertificationData = await CourseCertification.findById(id)
+
+  // Send the response
+  res.status(200).json(courseCertificationData);
+
+})
+
+
+const updateCourseCertification = asyncHandler(async (req, res) => {
+  // Get required data
+  const data = req.body
+  try {
+    // Find the Course Certification to get the necessary information
+    const courseCertification = await CourseCertification.findById(req.body._id)
+
+    if (!courseCertification) {
+      throw new Error("Course Certification not found")
+    }
+
+    // Update the Course Certification
+    // Update the certificate
+    if (req.file) {
+      if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
+        fs.unlinkSync(courseCertification.certificate);
+      }
+      data.certificate = req.file.path
+    }
+  
+    await courseCertification.updateOne(data)
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const deleteCourseCertification = asyncHandler(async (req, res) => {
+  const { course_certification_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+    // Find the Course Certification to get the necessary information
+    const courseCertification = await CourseCertification.findById(course_certification_id);
+
+    if (!courseCertification) {
+      throw new Error('Course Certification not found');
+    }
+
+    // Delete the associated file
+    // Delete the certificate
+    if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
+      fs.unlinkSync(courseCertification.certificate);
+    }
+    
+    // Remove the Course Certification ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { courseCertification: course_certification_id } }
+    );
+    
+    // Delete the Course Certification entry from the database
+    await CourseCertification.findByIdAndDelete(course_certification_id);
   }
   catch (error) {
     throw new Error(error)
@@ -3204,4 +3363,9 @@ module.exports = {
   getActivityConductedById,
   updateActivityConducted,
   deleteActivityConducted,
+  addCourseCertification,
+  getCourseCertificationData,
+  getCourseCertificationById,
+  updateCourseCertification,
+  deleteCourseCertification,
 };
