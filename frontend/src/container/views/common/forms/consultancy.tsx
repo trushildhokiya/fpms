@@ -123,7 +123,7 @@ const formSchema = z.object({
 
     areaOfExpertise: z.string().min(1).max(100),
     description: z.string().min(1).max(1000),
-    transactionDetails: z.array(transactionSchema).nonempty(),
+    transactionDetails: z.array(transactionSchema).optional(),
 
     sanctionedOrder: pdfFileSchema,
     transactionProof: pdfFileSchema,

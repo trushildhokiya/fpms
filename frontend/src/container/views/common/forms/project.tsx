@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
 import { AlertCircle, BookUser, CalendarIcon, FileArchive, Receipt } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -130,7 +129,7 @@ const formSchema = z.object({
 
     areaOfExpertise: z.string().min(1).max(100),
     description: z.string().min(1).max(1000),
-    transactionDetails: z.array(transactionSchema).nonempty(),
+    transactionDetails: z.array(transactionSchema).optional(),
 
     sanctionedOrder: pdfFileSchema,
     transactionProof: pdfFileSchema,

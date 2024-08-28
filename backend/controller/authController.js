@@ -227,7 +227,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
                                 Change Password
                             </a>
                         </div>
-                        <p style="text-align: center; color: #991b1b; font-weight: bold;">Note: This link will expire in 15 minutes.</p>
+                        <p style="text-align: center; color: #991b1b; font-weight: bold;">Note: This link will expire in 5 minutes.</p>
                         <p>If you encounter any issues or need assistance, please contact our support team. Your security is our priority.</p>
                         <p>Thank you for using FPMS!</p>
                     </div>
