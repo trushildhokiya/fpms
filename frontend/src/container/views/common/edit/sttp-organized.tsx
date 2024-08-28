@@ -45,8 +45,42 @@ import { Toaster } from "@/components/ui/toaster";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
+interface STTPOrganized {
+    _id: string;
+    title: string;
+    type: string;
+    principalInvestigator: string;
+    coInvestigator: string;
+    coordinator: string;
+    coCoordintor: string;
+    organizedBy: string;
+    associationWith: string;
+    venue: string;
+    mode: string;
+    fromDate: Date;
+    toDate: Date;
+    totalDays: number;
+    level: string;
+    remarks: string;
+    fundingRecieved: string;
+    fundingAgencyType: string;
+    fundingAgency: string;
+    sanctionedAmount: number;
+    recievedAmount: number;
+    uploadFundSanctionedLetter: string;
+    uploadUtilizationCertificate: string;
+    uploadBanner: string;
+    uploadScheduleOfOrganizer: string;
+    uploadCertificateLOA: string;
+    uploadSupportingDocuments: string;
+    uploadReport: string;
+    uploadPhotos: string;
+    videoUrl: string;
+    __v: number;
+}
 
 /**
  * SCHEMAS
@@ -63,6 +97,7 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
+    _id:z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
@@ -170,11 +205,29 @@ const formSchema = z.object({
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SttpOrganizedForm = (props: Props) => {
+const SttpOrganizedEdit = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
     const { toast }= useToast()
+    const { id } = useParams()
 
+    useEffect(() => {
+        // Fetch the patent data
+        axios
+          .get(`/common/sttp-organized/${id}`)
+          .then((res) => {
+    
+            const data: STTPOrganized = res.data
+            form.reset({
+              ...data,
+              fromDate: new Date(data.fromDate),
+              toDate: new Date(data.toDate),
+            })
+          })
+          .catch((err) => {
+            console.error("Error fetching patent data:", err);
+          });
+      }, []);
 
     // command
     const [open, setOpen] = useState(false);
@@ -195,6 +248,7 @@ const SttpOrganizedForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id:"",
             title: "",
             type: "",
             principalInvestigator: "",
@@ -229,7 +283,7 @@ const SttpOrganizedForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        axios.post("/common/sttp-organized", values, {
+        axios.put("/common/sttp-organized", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -1046,4 +1100,4 @@ const SttpOrganizedForm = (props: Props) => {
     );
 };
 
-export default SttpOrganizedForm;
+export default SttpOrganizedEdit;

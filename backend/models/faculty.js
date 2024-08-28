@@ -169,6 +169,16 @@ const facultySchema = new mongoose.Schema({
         required: false
     },
 
+    sttpAttended: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sttpAttended' }],
+        required: false
+    },
+
+    sttpOrganized: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sttpOrganized' }],
+        required: false
+    },
+
 }, { timestamps: true }
 )
 

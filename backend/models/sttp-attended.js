@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // Define Mongoose schema for bookChapter
 const sttpAttendedSchema = new mongoose.Schema(
   {
-    sttpTitle: {
+    title: {
       type: String,
       required: true,
     },
@@ -48,7 +48,7 @@ const sttpAttendedSchema = new mongoose.Schema(
         required: true,
     },
 
-    numberOfDays: {
+    totalDays: {
         type: Number,
         required: true,
     },
@@ -68,4 +68,4 @@ const sttpAttendedSchema = new mongoose.Schema(
 );
 
 // Compile the schema into a model
-module.exports = mongoose.model("sttp-attended", sttpAttendedSchema);
+module.exports = mongoose.model("sttpAttended", sttpAttendedSchema);

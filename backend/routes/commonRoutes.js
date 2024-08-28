@@ -3050,9 +3050,9 @@ router.route('/sttp-attended').get(facultyAuthenticator, getSttpAttendedData)
 
 router.route('/sttp-attended').delete(facultyAuthenticator,deleteSttpAttended)
 
-router.route('/sttp-attended').post(facultyAuthenticator, sttpAttendedUpload.single('certUpload'), addSttpAttended)
+router.route('/sttp-attended').post(facultyAuthenticator, sttpAttendedUpload.single('certificate'), addSttpAttended)
 
-router.route('/sttp-attended').put(facultyAuthenticator, sttpAttendedUpload.single('certUpload'), updateSttpAttended)
+router.route('/sttp-attended').put(facultyAuthenticator, sttpAttendedUpload.single('certificate'), updateSttpAttended)
 
 router.route('/sttp-organized/:id').get(facultyAuthenticator,getSttpOrganizedById)
 
@@ -3061,25 +3061,25 @@ router.route('/sttp-organized').get(facultyAuthenticator, getSttpOrganizedData)
 router.route('/sttp-organized').delete(facultyAuthenticator,deleteSttpOrganized)
 
 router.route('/sttp-organized').post(facultyAuthenticator, sttpAttendedUpload.fields([
-  { name: 'uploadFundSanctionedLetter', maxCount: 1 },
-  { name: 'uploadUtilizationCertificate', maxCount: 1 },
-  { name: 'uploadBanner', maxCount: 1 },
-  { name: 'uploadScheduleOfOrganizer', maxCount: 1 },
-  { name: 'uploadCertificateLOA', maxCount: 1 },
-  { name: 'uploadSupportingDocuments', maxCount: 1 },
-  { name: 'uploadReport', maxCount: 1 },
-  { name: 'uploadPhotos', maxCount: 1 },
+  { name: 'fundSanctionedLetter', maxCount: 1 },
+  { name: 'utilizationCertificate', maxCount: 1 },
+  { name: 'banner', maxCount: 1 },
+  { name: 'schedule', maxCount: 1 },
+  { name: 'certificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+  { name: 'report', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
 ]), addSttpOrganized)
 
 router.route('/sttp-organized').put(facultyAuthenticator, sttpAttendedUpload.fields([
-  { name: 'uploadFundSanctionedLetter', maxCount: 1 },
-  { name: 'uploadUtilizationCertificate', maxCount: 1 },
-  { name: 'uploadBanner', maxCount: 1 },
-  { name: 'uploadScheduleOfOrganizer', maxCount: 1 },
-  { name: 'uploadCertificateLOA', maxCount: 1 },
-  { name: 'uploadSupportingDocuments', maxCount: 1 },
-  { name: 'uploadReport', maxCount: 1 },
-  { name: 'uploadPhotos', maxCount: 1 },
+  { name: 'fundSanctionedLetter', maxCount: 1 },
+  { name: 'utilizationCertificate', maxCount: 1 },
+  { name: 'banner', maxCount: 1 },
+  { name: 'schedule', maxCount: 1 },
+  { name: 'certificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+  { name: 'report', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
 ]), updateSttpOrganized)
 
 module.exports = router;

@@ -2308,23 +2308,34 @@ const updateSttpConducted = asyncHandler(async (req, res) => {
       throw new Error("no sttpCond found")
     }
 
-    if (req.file) {
+    if (req.files.certificate) {
 
       if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
         fs.unlinkSync(sttpCond.certUpload);
       }
-  
+
+      data.certUpload = req.files.certificate[0].path
+
+    }
+
+    if (req.files.invitationLetter) {
+
       if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
         fs.unlinkSync(sttpCond.invitationUpload);
       }
+  
+      data.invitationUpload = req.files.invitationLetter[0].path
+
+    }
+
+    if (req.files.photos) {
+
   
       if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
         fs.unlinkSync(sttpCond.photoUpload);
       }
 
-      data.certUpload = certUploadURL
-      data.invitationUpload = invitationUploadURL
-      data.photoUpload = photoUploadURL
+      data.photoUpload = req.files.photos[0].path
 
     }
 
@@ -2344,7 +2355,6 @@ const updateSttpConducted = asyncHandler(async (req, res) => {
 
 
 const addSttpAttended = asyncHandler(async (req, res) => {
-  console.log('adding......')
 
   //get required data
   const data = req.body;
@@ -2357,20 +2367,17 @@ const addSttpAttended = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User not found!");
   }
-
   // get file path 
-  const certUploadURL = req.files.certUpload[0].path
+  const certUploadURL = req.file.path
 
   // attach file path to data
-
   data.certUpload = certUploadURL
-
   // create consultancy entry
   const sttpAtt = await sttpAttended.create(data);
-
+  console.log('created')
   await Faculty.findOneAndUpdate(
     { email: email },
-    { $push: { sttpAtt: sttpAtt._id } }
+    { $push: { sttpAttended: sttpAtt._id } }
   );
 
   console.log('sttp added')
@@ -2393,7 +2400,6 @@ const getSttpAttendedById = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User not found!")
   }
-
 
   const sttpAttendedData = await sttpAttended.findById(id)
 
@@ -2431,12 +2437,10 @@ const getSttpAttendedData = asyncHandler(async (req, res) => {
 const deleteSttpAttended = asyncHandler(async (req, res) => {
 
   const { sttpAtt_id } = req.body
-
   try {
 
     // Find the STTP/FDP to get the necessary information
-    const sttpAtt = await sttpConducted.findById(sttpAtt_id);
-
+    const sttpAtt = await sttpAttended.findById(sttpAtt_id);
     if (!sttpAtt) {
       throw new Error('STTP/FDP not found');
     }
@@ -2445,10 +2449,8 @@ const deleteSttpAttended = asyncHandler(async (req, res) => {
     if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
       fs.unlinkSync(sttpAtt.certUpload);
     }
-
     // Delete the STTP/FDP entry from the database
     await sttpAttended.findByIdAndDelete(sttpAtt_id);
-
   }
   catch (error) {
     throw new Error(error)
@@ -2512,14 +2514,14 @@ const addSttpOrganized = asyncHandler(async (req, res) => {
   }
 
   // get file path 
-  const uploadFundSanctionedLetterURL = req.files.uploadFundSanctionedLetter[0].path
-  const uploadUtilizationCertificateURL = req.files.uploadUtilizationCertificate[0].path
-  const uploadBannerURL = req.files.uploadBanner[0].path
-  const uploadScheduleOfOrganizerURL = req.files.uploadScheduleOfOrganizer[0].path
-  const uploadCertificateLOAURL = req.files.uploadCertificateLOA[0].path
-  const uploadSupportingDocumentsURL = req.files.uploadSupportingDocuments[0].path
-  const uploadReportURL = req.files.uploadReport[0].path
-  const uploadPhotosURL = req.files.uploadPhotos[0].path
+  const uploadFundSanctionedLetterURL = req.files.fundSanctionedLetter[0].path
+  const uploadUtilizationCertificateURL = req.files.utilizationCertificate[0].path
+  const uploadBannerURL = req.files.banner[0].path
+  const uploadScheduleOfOrganizerURL = req.files.schedule[0].path
+  const uploadCertificateLOAURL = req.files.certificate[0].path
+  const uploadSupportingDocumentsURL = req.files.supportingDocuments[0].path
+  const uploadReportURL = req.files.report[0].path
+  const uploadPhotosURL = req.files.photos[0].path
 
   // attach file path to data
 
@@ -2533,14 +2535,12 @@ const addSttpOrganized = asyncHandler(async (req, res) => {
   data.uploadPhotos = uploadPhotosURL
 
   // create consultancy entry
-  const sttpCond = await sttpConducted.create(data);
-
+  const sttpOrg = await sttpOrganized.create(data);
   await Faculty.findOneAndUpdate(
     { email: email },
-    { $push: { sttpCond: sttpCond._id } }
+    { $push: { sttpOrganized: sttpOrg._id } }
   );
 
-  console.log('sttp added')
   res.status(200).json({
     message: "success",
   });
@@ -2562,10 +2562,10 @@ const getSttpOrganizedById = asyncHandler(async (req, res) => {
   }
 
 
-  const sttpConductedData = await sttpConducted.findById(id)
+  const sttpOrganizedData = await sttpOrganized.findById(id)
 
   // Send the response
-  res.status(200).json(sttpConductedData);
+  res.status(200).json(sttpOrganizedData);
 
 })
 
@@ -2584,45 +2584,66 @@ const getSttpOrganizedData = asyncHandler(async (req, res) => {
   }
 
   // Populate consultancy array to get full consultancy data
-  await user.populate('sttpConducted')
+  await user.populate('sttpOrganized')
 
 
   // Extract the populated consultancy data
-  const sttpConductedData = user.sttpConducted
+  const sttpOrganizedData = user.sttpOrganized
 
   // Send the response
-  res.status(200).json(sttpConductedData);
+  res.status(200).json(sttpOrganizedData);
 
 });
 
 const deleteSttpOrganized = asyncHandler(async (req, res) => {
 
-  const { sttpCond_id } = req.body
+  const { sttpOrg_id } = req.body
 
   try {
 
     // Find the STTP/FDP to get the necessary information
-    const sttpCond = await sttpConducted.findById(sttpCond_id);
+    const sttpOrg = await sttpOrganized.findById(sttpOrg_id);
 
-    if (!sttpCond) {
+    if (!sttpOrg) {
       throw new Error('STTP/FDP not found');
     }
 
     // Delete the associated file
-    if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
-      fs.unlinkSync(sttpCond.certUpload);
+    if (sttpOrg.uploadFundSanctionedLetter && fs.existsSync(sttpOrg.uploadFundSanctionedLetter)) {
+      fs.unlinkSync(sttpOrg.uploadFundSanctionedLetter);
     }
-
-    if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
-      fs.unlinkSync(sttpCond.invitationUpload);
+    
+    if (sttpOrg.uploadUtilizationCertificate && fs.existsSync(sttpOrg.uploadUtilizationCertificate)) {
+      fs.unlinkSync(sttpOrg.uploadUtilizationCertificate);
     }
-
-    if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
-      fs.unlinkSync(sttpCond.photoUpload);
+    
+    if (sttpOrg.uploadBanner && fs.existsSync(sttpOrg.uploadBanner)) {
+      fs.unlinkSync(sttpOrg.uploadBanner);
     }
+    
+    if (sttpOrg.uploadScheduleOfOrganizer && fs.existsSync(sttpOrg.uploadScheduleOfOrganizer)) {
+      fs.unlinkSync(sttpOrg.uploadScheduleOfOrganizer);
+    }
+    
+    if (sttpOrg.uploadCertificateLOA && fs.existsSync(sttpOrg.uploadCertificateLOA)) {
+      fs.unlinkSync(sttpOrg.uploadCertificateLOA);
+    }
+    
+    if (sttpOrg.uploadSupportingDocuments && fs.existsSync(sttpOrg.uploadSupportingDocuments)) {
+      fs.unlinkSync(sttpOrg.uploadSupportingDocuments);
+    }
+    
+    if (sttpOrg.uploadReport && fs.existsSync(sttpOrg.uploadReport)) {
+      fs.unlinkSync(sttpOrg.uploadReport);
+    }
+    
+    if (sttpOrg.uploadPhotos && fs.existsSync(sttpOrg.uploadPhotos)) {
+      fs.unlinkSync(sttpOrg.uploadPhotos);
+    }
+    
 
     // Delete the STTP/FDP entry from the database
-    await sttpConducted.findByIdAndDelete(sttpCond_id);
+    await sttpOrganized.findByIdAndDelete(sttpOrg_id);
 
   }
   catch (error) {
@@ -2641,23 +2662,70 @@ const updateSttpOrganized = asyncHandler(async (req, res) => {
 
   try {
 
-    const sttpCond = await sttpConducted.findById(req.body._id)
+    const sttpOrg = await sttpOrganized.findById(req.body._id)
 
-    if (!sttpCond) {
-      throw new Error("no sttpCond found")
+    if (!sttpOrg) {
+      throw new Error("no sttpOrg found")
     }
 
-    if (req.file) {
-
-      if (sttpCond.proof && fs.existsSync(sttpCond.proof)) {
-        fs.unlinkSync(sttpCond.proof);
+    if (req.files.fundSanctionedLetter) {
+      if (sttpOrg.uploadFundSanctionedLetter && fs.existsSync(sttpOrg.uploadFundSanctionedLetter)) {
+        fs.unlinkSync(sttpOrg.uploadFundSanctionedLetter);
       }
-
-      data.proof = req.file.path
-
+      data.uploadFundSanctionedLetter = req.files.fundSanctionedLetter[0].path;
     }
+    
+    if (req.files.utilizationCertificate) {
+      if (sttpOrg.uploadUtilizationCertificate && fs.existsSync(sttpOrg.uploadUtilizationCertificate)) {
+        fs.unlinkSync(sttpOrg.uploadUtilizationCertificate);
+      }
+      data.uploadUtilizationCertificate = req.files.utilizationCertificate[0].path;
+    }
+    
+    if (req.files.banner) {
+      if (sttpOrg.uploadBanner && fs.existsSync(sttpOrg.uploadBanner)) {
+        fs.unlinkSync(sttpOrg.uploadBanner);
+      }
+      data.uploadBanner = req.files.banner[0].path;
+    }
+    
+    if (req.files.schedule) {
+      if (sttpOrg.uploadScheduleOfOrganizer && fs.existsSync(sttpOrg.uploadScheduleOfOrganizer)) {
+        fs.unlinkSync(sttpOrg.uploadScheduleOfOrganizer);
+      }
+      data.uploadScheduleOfOrganizer = req.files.schedule[0].path;
+    }
+    
+    if (req.files.certificate) {
+      if (sttpOrg.uploadCertificateLOA && fs.existsSync(sttpOrg.uploadCertificateLOA)) {
+        fs.unlinkSync(sttpOrg.uploadCertificateLOA);
+      }
+      data.uploadCertificateLOA = req.files.certificate[0].path;
+    }
+    
+    if (req.files.supportingDocuments) {
+      if (sttpOrg.uploadSupportingDocuments && fs.existsSync(sttpOrg.uploadSupportingDocuments)) {
+        fs.unlinkSync(sttpOrg.uploadSupportingDocuments);
+      }
+      data.uploadSupportingDocuments = req.files.supportingDocuments[0].path;
+    }
+    
+    if (req.files.report) {
+      if (sttpOrg.uploadReport && fs.existsSync(sttpOrg.uploadReport)) {
+        fs.unlinkSync(sttpOrg.uploadReport);
+      }
+      data.uploadReport = req.files.report[0].path;
+    }
+    
+    if (req.files.photos) {
+      if (sttpOrg.uploadPhotos && fs.existsSync(sttpOrg.uploadPhotos)) {
+        fs.unlinkSync(sttpOrg.uploadPhotos);
+      }
+      data.uploadPhotos = req.files.photos[0].path;
+    }
+    
 
-    await sttpCond.updateOne(data)
+    await sttpOrg.updateOne(data)
 
   }
   catch (err) {

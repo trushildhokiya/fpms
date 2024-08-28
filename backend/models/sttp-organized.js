@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // Define Mongoose schema for bookChapter
 const sttpOrganizedSchema = new mongoose.Schema(
   {
-    sttpTitle: {
+    title: {
       type: String,
       required: true,
     },
@@ -28,7 +28,7 @@ const sttpOrganizedSchema = new mongoose.Schema(
         required: true,
     },
     
-    coCoordinator: {
+    coCoordintor: {
         type: String,
         required: true,
     },
@@ -63,7 +63,7 @@ const sttpOrganizedSchema = new mongoose.Schema(
         required: true,
     },
 
-    numberOfDays: {
+    totalDays: {
         type: Number,
         required: true,
     },
@@ -78,7 +78,7 @@ const sttpOrganizedSchema = new mongoose.Schema(
         required: true,
     },
 
-    fundingReceived: {
+    fundingRecieved: {
         type: String,
         required: true,
     },
@@ -93,12 +93,12 @@ const sttpOrganizedSchema = new mongoose.Schema(
         required: true,
     },
 
-    sanctionedFundAmount: {
+    sanctionedAmount: {
         type: Number,
         required: true,
     },
 
-    fundAmountReceived: {
+    recievedAmount: {
         type: Number,
         required: true,
     },
@@ -144,8 +144,8 @@ const sttpOrganizedSchema = new mongoose.Schema(
     },
 
     videoUrl: {
-    type: String,
-    required: true,
+        type: String,
+        required: true,
     },
     
   },
@@ -153,4 +153,4 @@ const sttpOrganizedSchema = new mongoose.Schema(
 );
 
 // Compile the schema into a model
-module.exports = mongoose.model("sttp-organized", sttpOrganizedSchema);
+module.exports = mongoose.model("sttpOrganized", sttpOrganizedSchema);

@@ -44,9 +44,27 @@ import { Toaster } from "@/components/ui/toaster";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
-
+interface STTPAttended {
+    _id: string;
+    title: string;
+    sessionTitle: string;
+    organizedBy: string;
+    associationWith: string;
+    type: string;
+    mode: string;
+    level: string;
+    venue: string;
+    fromDate: Date;
+    toDate: Date;
+    totalDays: number;
+    remarks: string;
+    certUpload: string;
+    __v: number;
+  }
+  
 /**
  * SCHEMAS
  */
@@ -62,6 +80,7 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
+    _id:z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
@@ -115,8 +134,26 @@ const formSchema = z.object({
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SttpAttendedForm = (props: Props) => {
+const SttpAttendedEdit = (props: Props) => {
+    const { id } = useParams()
 
+    useEffect(() => {
+        // Fetch the patent data
+        axios
+          .get(`/common/sttp-attended/${id}`)
+          .then((res) => {
+    
+            const data: STTPAttended = res.data
+            form.reset({
+              ...data,
+              fromDate: new Date(data.fromDate),
+              toDate: new Date(data.toDate),
+            })
+          })
+          .catch((err) => {
+            console.error("Error fetching patent data:", err);
+          });
+      }, []);
     const user = useSelector((state: any) => state.user);
     const { toast }= useToast()
 
@@ -140,6 +177,7 @@ const SttpAttendedForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id:"",
             title: "",
             type: "",
             organizedBy: "",
@@ -157,7 +195,7 @@ const SttpAttendedForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        axios.post("/common/sttp-attended", values, {
+        axios.put("/common/sttp-attended", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -579,4 +617,4 @@ const SttpAttendedForm = (props: Props) => {
     );
 };
 
-export default SttpAttendedForm;
+export default SttpAttendedEdit;

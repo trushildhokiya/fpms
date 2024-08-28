@@ -78,6 +78,10 @@ import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
 import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
 import SttpConductedDisplay from './container/views/common/display/sttp-conducted';
 import SttpConductedEdit from './container/views/common/edit/sttp-conducted';
+import SttpAttendedEdit from './container/views/common/edit/sttp-attended';
+import SttpAttendedDisplay from './container/views/common/display/sttp-attended';
+import SttpOrganizedDisplay from './container/views/common/display/sttp-organized';
+import SttpOrganizedEdit from './container/views/common/edit/sttp-organized';
 
 
 
@@ -241,6 +245,8 @@ function App() {
           <Route path='/common/edit/awards-honors/:id' element={<CommonProtectedRoute> <AwardsHonorsEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/consultancy/:id' element={<CommonProtectedRoute> <ConsultancyEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/sttp-conducted/:id' element={<CommonProtectedRoute> <SttpConductedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/sttp-attended/:id' element={<CommonProtectedRoute> <SttpAttendedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/sttp-organized/:id' element={<CommonProtectedRoute> <SttpOrganizedEdit /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
@@ -256,6 +262,8 @@ function App() {
           <Route path='/common/display/projects' element={<CommonProtectedRoute> <ProjectsDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/qualification' element={<CommonProtectedRoute> <QualificationDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/sttp-conducted' element={<CommonProtectedRoute> <SttpConductedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/sttp-attended' element={<CommonProtectedRoute> <SttpAttendedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/sttp-organized' element={<CommonProtectedRoute> <SttpOrganizedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/upload/bulk' element={<CommonProtectedRoute> <BulkUpload /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
