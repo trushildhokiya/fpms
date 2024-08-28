@@ -357,6 +357,63 @@ const FacultyNavbar = () => {
                                                 </DropdownMenuSub>
                                                 <DropdownMenuSub>
                                                     <DropdownMenuSubTrigger> Achievements </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/common/display/sttp-conducted'>
+                                                                    <DropdownMenuItem>
+                                                                        Sttp/Fdp Conducted
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/sttp-attended'>
+                                                                    <DropdownMenuItem>
+                                                                    Sttp/Fdp Attended
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/sttp-organized'>
+                                                                    <DropdownMenuItem>
+                                                                    Sttp/Fdp Organized
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/common/display/seminar-conducted'>
+                                                                    <DropdownMenuItem>
+                                                                        Seminars Conducted
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/seminar-attended'>
+                                                                    <DropdownMenuItem>
+                                                                    Seminars Attended
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/seminar-organized'>
+                                                                    <DropdownMenuItem>
+                                                                    Seminars Organized
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/common/display/course-certification'>
+                                                                    <DropdownMenuItem>
+                                                                        Course Certfication
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/awards-recieved'>
+                                                                    <DropdownMenuItem>
+                                                                        Awards and Recognitions
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/common/display/activity-conducted'>
+                                                                    <DropdownMenuItem>
+                                                                        Activity Conducted
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
                                                 </DropdownMenuSub>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
