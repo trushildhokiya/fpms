@@ -127,8 +127,8 @@ const formSchema = z.object({
 
     principalInvestigator: z.string().min(2, {
         message: "Principal Investigator is required!"
-    }).max(100, {
-        message: "Principal Investigator must not exceed 100 characters"
+    }).max(300, {
+        message: "Principal Investigator must not exceed 300 characters"
     }),
 
     coInvestigators: z.string({

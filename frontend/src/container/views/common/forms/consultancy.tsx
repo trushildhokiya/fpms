@@ -75,8 +75,8 @@ const pdfFileSchema = z
 const formSchema = z.object({
     projectTitle: z.string().min(2, {
         message: "Project Title required!"
-    }).max(100, {
-        message: "Project Title must not exceed 100 characters"
+    }).max(300, {
+        message: "Project Title must not exceed 300 characters"
     }),
 
     principalInvestigator: z.string().min(2, {

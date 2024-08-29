@@ -90,8 +90,8 @@ const formSchema = z.object({
     .min(1, {
       message: "journal Title is required!",
     })
-    .max(100, {
-      message: "journal Title  must not exceed 100 characters",
+    .max(300, {
+      message: "journal Title  must not exceed 300 characters",
     }),
 
   authorsAffiliation: z
@@ -175,6 +175,7 @@ const journalPublication: React.FC = (props: Props) => {
   const indexingOptions = [
     "Scopus",
     "Web of Science",
+    "SCI",
     "UGC CARE-I",
     "UGC CARE-II",
     "others",

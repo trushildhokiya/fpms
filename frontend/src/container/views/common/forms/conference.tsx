@@ -80,7 +80,7 @@ const formSchema = z.object({
       message: "research paper title is required!",
     })
     .max(300, {
-      message: "research paper title must not exceed 100 characters",
+      message: "research paper title must not exceed 300 characters",
     }),
 
   authors: z
@@ -151,6 +151,7 @@ const ConferenceForm: React.FC = (props: Props) => {
   const indexingOptions = [
     "Scopus",
     "Web of Science",
+    "SCI",
     "UGC CARE-I",
     "UGC CARE-II",
     "others",

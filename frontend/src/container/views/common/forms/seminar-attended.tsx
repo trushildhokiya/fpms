@@ -68,8 +68,8 @@ const formSchema = z
 
     organizedBy: z.string().min(2, {
       message: "Organized by is required!",
-    }).max(100, {
-      message: "Organized By must not exceed 100 characters",
+    }).max(300, {
+      message: "Organized By must not exceed 300 characters",
     }),
 
     associationWith: z.string().min(2, {

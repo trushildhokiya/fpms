@@ -77,7 +77,7 @@ const formSchema = z.object({
       message: "Book Title is required!",
     })
     .max(300, {
-      message: "Book Title must not exceed 100 characters",
+      message: "Book Title must not exceed 300 characters",
     }),
 
   chapterTitle: z
@@ -183,6 +183,7 @@ const BookChapterForm: React.FC = (props: Props) => {
   const indexingOptions = [
     "Scopus",
     "Web of Science",
+    "SCI",
     "UGC CARE-I",
     "UGC CARE-II",
     "others",

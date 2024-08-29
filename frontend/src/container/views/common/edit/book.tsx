@@ -211,6 +211,7 @@ const BookForm: React.FC = (props: Props) => {
   const indexingOptions = [
     "Scopus",
     "Web of Science",
+    "SCI",
     "UGC CARE-I",
     "UGC CARE-II",
     "others",

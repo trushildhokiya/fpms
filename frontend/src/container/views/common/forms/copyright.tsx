@@ -79,7 +79,7 @@ const formSchema = z
         message: "Copyright Title required!",
       })
       .max(300, {
-        message: "Copyright Title must not exceed 100 characters",
+        message: "Copyright Title must not exceed 300 characters",
       }),
 
     inventors: z
