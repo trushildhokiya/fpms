@@ -29,7 +29,7 @@ const About = () => {
     {
       id: 2,
       name: 'Hitanshu Gandhi',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
+      description: 'Avid reader with a passion for historical fiction and coffee.',
       linkedinURI: 'https://www.linkedin.com/in/hitanshu-gandhi-92b855244',
       githubURI: 'https://github.com/Hitanshu-Gandhi',
       profileImage: HitanshuProfileImage
@@ -37,7 +37,7 @@ const About = () => {
     {
       id: 3,
       name: 'Tavion Fernandes',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
+      description: 'Enjoys painting and has a knack for discovering hidden gems in music.',
       linkedinURI: '',
       githubURI: 'https://github.com/Tavion20',
       profileImage: TavionProfileImage
@@ -45,7 +45,7 @@ const About = () => {
     {
       id: 4,
       name: 'Ojas Golatkar',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
+      description: 'Passionate about hiking and capturing nature through photography.',
       linkedinURI: 'https://www.linkedin.com/in/ojas-golatkar-2b6882226',
       githubURI: 'https://github.com/jackfr8st',
       profileImage: OjasProfileImage
@@ -53,7 +53,7 @@ const About = () => {
     {
       id: 5,
       name: 'Kushal Harsora',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
+      description: 'Food enthusiast who loves experimenting with new recipes.',
       linkedinURI: '',
       githubURI: 'https://github.com/KushalHarsora',
       profileImage: KushalProfileImage
@@ -61,10 +61,29 @@ const About = () => {
     {
       id: 6,
       name: 'Devam Dixit',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas sed aut ipsam?',
+      description: 'Fitness junkie who enjoys running and exploring different cuisines.',
       linkedinURI: 'http://www.linkedin.com/in/devamdixit',
       githubURI: 'https://github.com/Devam45',
       profileImage: DevamProfileImage
+    },
+  ]
+
+  const facultyData = [
+    {
+      id: 1,
+      name: 'Prof. Pradnya Patil',
+      description: "Turning ideas into code and creativity into innovation.",
+      linkedinURI: 'https://in.linkedin.com/in/trushil-dhokiya',
+      githubURI: 'https://www.github.com/trushildhokiya',
+      profileImage: 'https://picsum.photos/640/420'
+    },
+    {
+      id: 2,
+      name: 'Dr. Sarita Ambadekar',
+      description: 'Avid reader with a passion for historical fiction and coffee.',
+      linkedinURI: 'https://www.linkedin.com/in/hitanshu-gandhi-92b855244',
+      githubURI: 'https://github.com/Hitanshu-Gandhi',
+      profileImage: 'https://picsum.photos/720/720'
     },
   ]
 
@@ -91,7 +110,7 @@ const About = () => {
           </p>
 
           <p className="my-5">
-            Faculty Profile Management System (FPMS), a revolutionary platform designed to streamline the process of managing and showcasing faculty achievements. Our system provides an intuitive and efficient way for faculty members to maintain and display their professional profiles.
+            Faculty Profile Management System (FPMS), a revolutionary platform designed to streamline the process of managing and showcasing faculty research work and achievements. Our system provides an intuitive and efficient way for faculty members to maintain and display their professional profiles.
             The FPMS offers a centralized hub where faculty can easily update their profiles, track their accomplishments, and collaborate with colleagues. With a focus on user-friendliness and comprehensive functionality, FPMS is set to enhance the academic community's ability to share and celebrate their work.
           </p>
 
@@ -161,7 +180,65 @@ const About = () => {
               )
             })
           }
+        </div>
 
+
+        {/* Faculty */}
+        <h2 className="font-OpenSans mt-[6rem] text-2xl text-red-800 my-6 font-bold ">
+          MENTORS
+        </h2>
+        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+
+          {
+            facultyData.map((member) => {
+              return (
+
+                <Card key={member.id}>
+                  <CardContent className="p-0 m-0">
+                    <div className="grid grid-cols-3">
+                      <div className="col-span-1">
+                        <img src={member.profileImage} draggable={false} className="rounded-lg  object-cover h-full" alt={`${member.name}-profile-image`} />
+                      </div>
+                      <div className="col-span-2 mx-4 my-4">
+                        <h2 className="font-OpenSans text-lg text-gray-700 font-bold">
+                          {member.name}
+                        </h2>
+                        <div className="">
+                          <HoverCard>
+                            <HoverCardTrigger>
+                              <Badge variant='secondary' className="bg-amber-400  bg-opacity-30 text-amber-600">
+                                Active
+                              </Badge>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="text-xs text-gray-500">
+                              This Badge indicates that the person has actively contributed in the development of the software
+                            </HoverCardContent>
+                          </HoverCard>
+
+                        </div>
+                        <p className="text-sm text-gray-600 leading-6 my-3">
+                          {member.description}
+                        </p>
+                        <div className="flex justify-center">
+                          <a href={member.linkedinURI} target="_blank" >
+                            <div className="bg-red-800 p-2 rounded-full text-white mx-3 my-3">
+                              <Linkedin />
+                            </div>
+                          </a>
+                          <a href={member.githubURI} target="_blank">
+                            <div className="bg-zinc-100 p-2 rounded-full mx-3 my-3">
+                              <img height="28" width="28" src="https://cdn.simpleicons.org/github/#181717" draggable={false} alt="github-icon" />
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+              )
+            })
+          }
         </div>
 
         {/* FEEDBACK */}

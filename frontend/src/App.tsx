@@ -17,7 +17,8 @@ import PageNotFound from './utils/pages/PageNotFound';
 import Loader from './utils/pages/Loader';
 import ResetPassword from './container/auth/reset-password';
 import ForgotPassword from './container/auth/forgot-password';
-
+import FAQs from './container/faq/faq';
+import Privacy from './container/privacy/privacy';
 /**
  * SUPER ADMIN IMPORTS
  */
@@ -162,6 +163,8 @@ function App() {
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
           <Route path='/about' element={<About />} />
+          <Route path='/faqs' element={<FAQs />} />
+          <Route path='/privacy-policy' element={<Privacy />} />
           <Route path='/auth/forgot-password' element={<ForgotPassword />} />
           <Route path='/auth/reset-password/:token' element={<ResetPassword />} />
           <Route path='/superadmin' element={<SuperAdminProtectedRoute> <SuperAdminDashboard /> </SuperAdminProtectedRoute>} />

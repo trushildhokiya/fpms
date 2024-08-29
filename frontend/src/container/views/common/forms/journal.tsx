@@ -436,8 +436,8 @@ const journalPublication: React.FC = (props: Props) => {
                                       option
                                     )
                                       ? field.value.filter(
-                                          (val) => val !== option
-                                        )
+                                        (val) => val !== option
+                                      )
                                       : [...(field.value || []), option];
                                     field.onChange(newValue);
                                   }}
@@ -574,7 +574,7 @@ const journalPublication: React.FC = (props: Props) => {
                   )}
                 />
 
-<FormField
+                <FormField
                   control={form.control}
                   name="dateOfPublication"
                   render={({ field }) => (
@@ -699,8 +699,8 @@ const journalPublication: React.FC = (props: Props) => {
                                 onCheckedChange={() => {
                                   const newValue = field.value?.includes(option)
                                     ? field.value.filter(
-                                        (val) => val !== option
-                                      )
+                                      (val) => val !== option
+                                    )
                                     : [...(field.value || []), option];
                                   field.onChange(newValue);
                                 }}
