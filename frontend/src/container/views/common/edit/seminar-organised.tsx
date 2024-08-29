@@ -40,10 +40,51 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
-import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
+import { Toaster } from "@/components/ui/toaster";
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
+interface SEMINAROrganized {
+    _id: string;
+    title: string;
+    type: string;
+    principalInvestigator: string;
+    coInvestigator: string;
+    coordinator: string;
+    coCoordintor: string;
+    organizedBy: string;
+    associationWith: string;
+    venue: string;
+    mode: string;
+    fromDate: Date;
+    toDate: Date;
+    totalDays: number;
+    level: string;
+    remarks: string;
+    fundingRecieved: string;
+    fundingAgencyType: string;
+    fundingAgency: string;
+    sanctionedAmount: number;
+    recievedAmount: number;
+    uploadFundSanctionedLetter: string;
+    uploadUtilizationCertificate: string;
+    uploadBanner: string;
+    uploadScheduleOfOrganizer: string;
+    uploadCertificateLOA: string;
+    uploadSupportingDocuments: string;
+    uploadReport: string;
+    uploadPhotos: string;
+    uploadInvitationLetter: string,
+    uploadCertificateLOAToSpeaker: string,
+    uploadCertificateOfOrganizer: string,
+    uploadLOAOfOrganizer: string,
+    videoUrl: string;
+    __v: number;
+}
 
 /**
  * SCHEMAS
@@ -60,6 +101,7 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
+    _id: z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
@@ -69,6 +111,30 @@ const formSchema = z.object({
 
     type: z.string().min(1, {
         message: "Type is required!"
+    }),
+
+    principalInvestigator: z.string().min(1, {
+        message: "principal Investigator is required!"
+    }).max(100, {
+        message: "principal Investigator must not exceed 100 characters"
+    }),
+
+    coInvestigator: z.string().min(1, {
+        message: "co-investigator is required!"
+    }).max(100, {
+        message: "co-investigator must not exceed 100 characters"
+    }),
+
+    coordinator: z.string().min(1, {
+        message: "coordinator is required!"
+    }).max(100, {
+        message: "coordinator must not exceed 100 characters"
+    }),
+
+    coCoordintor: z.string().min(1, {
+        message: "co-coordinator is required!"
+    }).max(100, {
+        message: "co-coordinator must not exceed 100 characters"
     }),
 
     organizedBy: z.string().min(1, {
@@ -96,15 +162,11 @@ const formSchema = z.object({
 
     fromDate: z.date(),
     toDate: z.date(),
-
+    totalDays: z.coerce.number().nonnegative(),
 
     level: z.string().min(1, {
         message: "level is required!"
     }),
-
-    facultiesCount: z.coerce.number().nonnegative(),
-    studentsCount: z.coerce.number().nonnegative(),
-    participants: z.coerce.number().nonnegative(),
 
     fundingRecieved: z.string().min(1, {
         message: "Funded or not is required!"
@@ -133,6 +195,7 @@ const formSchema = z.object({
         message: "Not a valid Url"
     }),
 
+    fundSanctionedLetter: pdfFileSchema,
     utilizationCertificate: pdfFileSchema,
     banner: pdfFileSchema,
     schedule: pdfFileSchema,
@@ -140,22 +203,39 @@ const formSchema = z.object({
     supportingDocuments: pdfFileSchema,
     report: pdfFileSchema,
     photos: pdfFileSchema,
-    fundSanctionedLetter: pdfFileSchema,
-    invitationLetter: pdfFileSchema,
-    speakerCertificate: pdfFileSchema,
-    organizerCertificate: pdfFileSchema,
-    organizerLOA: pdfFileSchema,
-
+    InvitationLetter: pdfFileSchema,
+    CertificateLOAToSpeaker: pdfFileSchema,
+    CertificateOfOrganizer: pdfFileSchema,
+    LOAOfOrganizer: pdfFileSchema,
 
 }).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SeminarOrganizedForm = (props: Props) => {
+const SeminarOrganizedEdit = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
+    const { toast } = useToast()
+    const { id } = useParams()
 
+    useEffect(() => {
+        // Fetch the patent data
+        axios
+            .get(`/common/seminar-organized/${id}`)
+            .then((res) => {
+
+                const data: SEMINAROrganized = res.data
+                form.reset({
+                    ...data,
+                    fromDate: new Date(data.fromDate),
+                    toDate: new Date(data.toDate),
+                })
+            })
+            .catch((err) => {
+                console.error("Error fetching patent data:", err);
+            });
+    }, []);
 
     // command
     const [open, setOpen] = useState(false);
@@ -176,18 +256,21 @@ const SeminarOrganizedForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id: "",
             title: "",
             type: "",
+            principalInvestigator: "",
+            coInvestigator: "",
+            coordinator: "",
+            coCoordintor: "",
             organizedBy: "",
             associationWith: "",
             venue: "",
             mode: "",
             fromDate: new Date(),
             toDate: new Date(),
+            totalDays: 0,
             level: "",
-            facultiesCount: 0,
-            studentsCount: 0,
-            participants: 0,
             fundingRecieved: "",
             fundingAgency: "",
             fundingAgencyType: "",
@@ -195,6 +278,7 @@ const SeminarOrganizedForm = (props: Props) => {
             recievedAmount: 0,
             remarks: "",
             videoUrl: "",
+            fundSanctionedLetter: new File([], ''),
             utilizationCertificate: new File([], ''),
             banner: new File([], ''),
             schedule: new File([], ''),
@@ -202,16 +286,35 @@ const SeminarOrganizedForm = (props: Props) => {
             supportingDocuments: new File([], ''),
             report: new File([], ''),
             photos: new File([], ''),
-            fundSanctionedLetter: new File([], ''),
-            invitationLetter: new File([], ''),
-            speakerCertificate: new File([], ''),
-            organizerCertificate: new File([], ''),
-            organizerLOA: new File([], '')
+            InvitationLetter: new File([], ''),
+            CertificateLOAToSpeaker: new File([], ''),
+            CertificateOfOrganizer: new File([], ''),
+            LOAOfOrganizer: new File([], ''),
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
+        axios.put("/common/seminar-organized", values, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+            .then((res) => {
+
+                if (res.data.message === "success") {
+                    toast({
+                        title: "Seminar added successfully",
+                        description:
+                            "Your Seminar information has been added successfully",
+                        action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     return (
@@ -220,7 +323,7 @@ const SeminarOrganizedForm = (props: Props) => {
             <div className="container my-8">
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
                     <span className="border-b-4 border-red-800 break-words ">
-                        SEMINAR <span className="hidden md:inline-block">Organized</span>
+                        Seminar <span className="hidden md:inline-block">Organized</span>
                     </span>
                 </h1>
 
@@ -290,11 +393,11 @@ const SeminarOrganizedForm = (props: Props) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-gray-800">
-                                            Title
+                                            Seminar Title
                                         </FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="title"
+                                                placeholder="Seminar Title"
                                                 {...field}
                                                 autoComplete="off"
                                             />
@@ -304,34 +407,114 @@ const SeminarOrganizedForm = (props: Props) => {
                                 )}
                             />
 
-
+                            <FormField
+                                control={form.control}
+                                name="type"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-gray-800">
+                                            Type
+                                        </FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a category" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="seminar">Seminar</SelectItem>
+                                                <SelectItem value="fdp"> FDP </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <div className="grid md:grid-cols-2 gap-6">
 
                                 <FormField
                                     control={form.control}
-                                    name="type"
+                                    name="principalInvestigator"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className='text-gray-800'>Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a type" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="seminar">Seminars</SelectItem>
-                                                    <SelectItem value="webinar">Webinars</SelectItem>
-                                                    <SelectItem value="expertTalk">Expert Talks</SelectItem>
-                                                    <SelectItem value="workshop">Workshops</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormLabel className="text-gray-800">
+                                                Principal Investigator
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="principal investigator"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
+                                <FormField
+                                    control={form.control}
+                                    name="coInvestigator"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Co-Investigator
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="co-investigator"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="coordinator"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Coordinator
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="coordinator"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="coCoordintor"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Co-Coordinator
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="co-coordinator"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
 
                                 <FormField
@@ -423,36 +606,6 @@ const SeminarOrganizedForm = (props: Props) => {
                                     )}
                                 />
 
-
-                                <FormField
-                                    control={form.control}
-                                    name="level"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Level
-                                            </FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a level" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="international">International</SelectItem>
-                                                    <SelectItem value="national">National</SelectItem>
-                                                    <SelectItem value="state">State</SelectItem>
-                                                    <SelectItem value="regional">Regional</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
                                 <FormField
                                     control={form.control}
                                     name="fromDate"
@@ -533,16 +686,16 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="participants"
+                                    name="totalDays"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Number of Participants
+                                                Number of Days
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
-                                                    placeholder="participants count"
+                                                    placeholder="venue"
                                                     {...field}
                                                     autoComplete="off"
                                                 />
@@ -552,43 +705,31 @@ const SeminarOrganizedForm = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="studentsCount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Number of Students attended
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="count"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
 
                                 <FormField
                                     control={form.control}
-                                    name="facultiesCount"
+                                    name="level"
                                     render={({ field }) => (
-                                        <FormItem className="md:col-span-2">
+                                        <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Number of faculties attended
+                                                Level
                                             </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="count"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a level" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="international">International</SelectItem>
+                                                    <SelectItem value="national">National</SelectItem>
+                                                    <SelectItem value="state">State</SelectItem>
+                                                    <SelectItem value="regional">Regional</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -702,7 +843,7 @@ const SeminarOrganizedForm = (props: Props) => {
                                             <FormControl>
                                                 <Input
                                                     type="text"
-                                                    placeholder="funding agency"
+                                                    placeholder="funding Agency"
                                                     {...field}
                                                     autoComplete="off"
                                                 />
@@ -777,6 +918,25 @@ const SeminarOrganizedForm = (props: Props) => {
 
                             <div className="grid md:grid-cols-2 gap-6">
 
+                                <FormField
+                                    control={form.control}
+                                    name="fundSanctionedLetter"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Fund Sanctioned Letter
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
                                 <FormField
                                     control={form.control}
@@ -824,7 +984,7 @@ const SeminarOrganizedForm = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Upload Schedule
+                                                Upload Schedule of Organizer
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -920,28 +1080,7 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="fundSanctionedLetter"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Upload Fund Sanctioned Letter
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    accept=".pdf"
-                                                    type="file"
-                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-
-                                <FormField
-                                    control={form.control}
-                                    name="invitationLetter"
+                                    name='InvitationLetter'
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -962,7 +1101,7 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="speakerCertificate"
+                                    name='CertificateLOAToSpeaker'
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -983,7 +1122,7 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="organizerCertificate"
+                                    name='CertificateOfOrganizer'
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -1004,7 +1143,7 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="organizerLOA"
+                                    name='LOAOfOrganizer'
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -1021,7 +1160,6 @@ const SeminarOrganizedForm = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-
 
                                 <FormField
                                     control={form.control}
@@ -1057,4 +1195,4 @@ const SeminarOrganizedForm = (props: Props) => {
     );
 };
 
-export default SeminarOrganizedForm;
+export default SeminarOrganizedEdit;
