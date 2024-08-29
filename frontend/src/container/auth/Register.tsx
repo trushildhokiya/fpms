@@ -108,7 +108,7 @@ const Register = () => {
                       <FormItem>
                         <FormLabel>Somaiya ID</FormLabel>
                         <FormControl>
-                          <Input placeholder="trushil.d@somaiya.edu" autoComplete='off' {...field} />
+                          <Input placeholder="alex@somaiya.edu" autoComplete='off' {...field} />
                         </FormControl>
 
                         <FormMessage />

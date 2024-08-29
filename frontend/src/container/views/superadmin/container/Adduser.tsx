@@ -134,7 +134,7 @@ const Adduser = () => {
                                                     <FormItem>
                                                         <FormLabel>Somaiya Email</FormLabel>
                                                         <FormControl>
-                                                            <Input placeholder="trushil.d@somaiya.edu" {...field} autoComplete="off" />
+                                                            <Input placeholder="alex@somaiya.edu" {...field} autoComplete="off" />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>

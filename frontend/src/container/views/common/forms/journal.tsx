@@ -509,7 +509,7 @@ const journalPublication: React.FC = (props: Props) => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-800">
-                        journal Type
+                        Journal Type
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}

@@ -257,6 +257,7 @@ const About = () => {
 
             Thank you for taking the time to contribute to the growth of FPMS. Together, let's build a platform that truly serves and elevates the academic experience for everyone.
           </p>
+          <a href="https://forms.gle/bR5o2MP9wiSgN6WZ7" className="text-red-800 italic font-semibold underline underline-offset-4" target="_blank" referrerPolicy="no-referrer" >Share your experience with us</a>
         </div>
 
       </div>

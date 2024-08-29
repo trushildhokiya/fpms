@@ -88,7 +88,7 @@ const ForgotPassword = () => {
                                             <FormItem>
                                                 <FormLabel>Registered Somaiya ID</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="trushil.d@somaiya.edu" autoComplete='off' {...field} />
+                                                    <Input placeholder="alex@somaiya.edu" autoComplete='off' {...field} />
                                                 </FormControl>
                                                 <FormDescription>
                                                     Enter the somaiya mail which you have used to register on our servers

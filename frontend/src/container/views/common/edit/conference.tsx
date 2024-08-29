@@ -548,7 +548,7 @@ const ConferenceForm: React.FC = (props: Props) => {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select journal type" />
+                            <SelectValue placeholder="Select conference type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
