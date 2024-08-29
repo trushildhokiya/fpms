@@ -82,6 +82,8 @@ import SttpAttendedEdit from './container/views/common/edit/sttp-attended';
 import SttpAttendedDisplay from './container/views/common/display/sttp-attended';
 import SttpOrganizedDisplay from './container/views/common/display/sttp-organized';
 import SttpOrganizedEdit from './container/views/common/edit/sttp-organized';
+import SeminarAttendedDisplay from './container/views/common/display/seminar-attended';
+import SeminarAttendedEdit from './container/views/common/edit/seminar-attended';
 
 
 
@@ -247,6 +249,7 @@ function App() {
           <Route path='/common/edit/sttp-conducted/:id' element={<CommonProtectedRoute> <SttpConductedEdit /> </CommonProtectedRoute>} />
           <Route path='/common/edit/sttp-attended/:id' element={<CommonProtectedRoute> <SttpAttendedEdit /> </CommonProtectedRoute>} />
           <Route path='/common/edit/sttp-organized/:id' element={<CommonProtectedRoute> <SttpOrganizedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/seminar-attended/:id' element={<CommonProtectedRoute> <SeminarAttendedEdit /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
@@ -264,6 +267,7 @@ function App() {
           <Route path='/common/display/sttp-conducted' element={<CommonProtectedRoute> <SttpConductedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/sttp-attended' element={<CommonProtectedRoute> <SttpAttendedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/sttp-organized' element={<CommonProtectedRoute> <SttpOrganizedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/seminar-attended' element={<CommonProtectedRoute> <SeminarAttendedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/upload/bulk' element={<CommonProtectedRoute> <BulkUpload /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>

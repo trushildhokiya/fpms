@@ -79,6 +79,11 @@ const {
   getSttpOrganizedData,
   deleteSttpOrganized,
   updateSttpOrganized,
+  addSeminarAttended,
+  getSeminarAttendedById,
+  getSeminarAttendedData,
+  deleteSeminarAttended,
+  updateSeminarAttended
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -99,7 +104,10 @@ const {
   debugFileUpload,
   sttpConductedUpload,
   sttpAttendedUpload,
-  sttpOrganizedUpload
+  sttpOrganizedUpload,
+  seminarAttendedUpload,
+  seminarConductedUpload,
+  seminarOrganizedUpload
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -3081,5 +3089,21 @@ router.route('/sttp-organized').put(facultyAuthenticator, sttpAttendedUpload.fie
   { name: 'report', maxCount: 1 },
   { name: 'photos', maxCount: 1 },
 ]), updateSttpOrganized)
+
+router.route('/seminar-attended/:id').get(facultyAuthenticator,getSeminarAttendedById)
+
+router.route('/seminar-attended').get(facultyAuthenticator, getSeminarAttendedData)
+
+router.route('/seminar-attended').delete(facultyAuthenticator,deleteSeminarAttended)
+
+router.route('/seminar-attended').post(facultyAuthenticator, seminarAttendedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), addSeminarAttended)
+
+router.route('/seminar-attended').put(facultyAuthenticator, seminarAttendedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), updateSeminarAttended)
 
 module.exports = router;

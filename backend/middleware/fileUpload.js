@@ -390,6 +390,64 @@ const sttpOrganizedStorage = multer.diskStorage({
 
 const sttpOrganizedUpload = multer({ storage: sttpOrganizedStorage });
 
+/*
+SEMINAR FILE UPLOAD 
+*/
+
+const seminarConductedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarConductedUpload = multer({ storage: seminarConductedStorage });
+
+const seminarAttendedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-attended");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-attended-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarAttendedUpload = multer({ storage: seminarAttendedStorage });
+
+const seminarOrganizedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-organized");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-organized-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarOrganizedUpload = multer({ storage: seminarOrganizedStorage });
+
 
 module.exports = {
   adminProfileImageUpload,
@@ -409,5 +467,8 @@ module.exports = {
   debugFileUpload,
   sttpConductedUpload,
   sttpAttendedUpload,
-  sttpOrganizedUpload
+  sttpOrganizedUpload,
+  seminarConductedUpload,
+  seminarOrganizedUpload,
+  seminarAttendedUpload,
 };

@@ -14,6 +14,9 @@ const Project = require('../models/projects')
 const sttpAttended = require('../models/sttp-attended')
 const SttpConducted = require('../models/sttp-conducted')
 const sttpOrganized = require('../models/sttp-organized')
+const seminarAttended = require('../models/seminar-attended')
+const seminarConducted = require('../models/seminar-conducted')
+const seminarOrganised = require('../models/seminar-organised')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -2739,6 +2742,169 @@ const updateSttpOrganized = asyncHandler(async (req, res) => {
 
 })
 
+/*
+Seminar Controller
+*/
+
+const addSeminarAttended = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+  // get file path 
+  const certUploadURL = req.files.certificate[0].path
+  const photoUploadURL = req.files.photos[0].path
+
+  // attach file path to data
+  data.certUpload = certUploadURL  
+  data.photoUpload = photoUploadURL
+
+  // create entry
+  const seminarAtt = await seminarAttended.create(data);
+  console.log('created entry for seminar attended')
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { seminarAttended: seminarAtt._id } }
+  );
+
+  console.log('seminar attended added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSeminarAttendedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  const seminarAttendedData = await seminarAttended.findById(id)
+
+  // Send the response
+  res.status(200).json(seminarAttendedData);
+
+})
+
+
+const getSeminarAttendedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate seminar array to get full sttp data
+  await user.populate('seminarAttended')
+
+
+  // Extract the populated sttp data
+  const seminarAttendedData = user.seminarAttended
+
+  // Send the response
+  res.status(200).json(seminarAttendedData);
+
+});
+
+const deleteSeminarAttended = asyncHandler(async (req, res) => {
+
+  const { seminarAtt_id } = req.body
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const seminarAtt = await seminarAttended.findById(seminarAtt_id);
+    if (!seminarAtt) {
+      throw new Error('Seminar not found');
+    }
+
+    // Delete the associated file
+    if (seminarAtt.certUpload && fs.existsSync(seminarAtt.certUpload)) {
+      fs.unlinkSync(seminarAtt.certUpload);
+    }
+
+    if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
+      fs.unlinkSync(seminarAtt.photosUpload);
+    }
+    // Delete the STTP/FDP entry from the database
+    await seminarAttended.findByIdAndDelete(seminarAtt_id);
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSeminarAttended = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const seminarAtt = await seminarAttended.findById(req.body._id)
+
+    if (!sttpAtt) {
+      throw new Error("no seminarAttended found")
+    }
+
+    if (req.files.certificate) {
+
+      if (seminarAtt.certUpload && fs.existsSync(seminarAtt.certUpload)) {
+        fs.unlinkSync(seminarAtt.certUpload);
+      }
+
+      data.certUpload = req.files.certUpload[0].path
+
+    }
+
+    if(req.files.photos) {
+      if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
+        fs.unlinkSync(seminarAtt.photosUpload);
+      }
+
+      data.photosUpload= req.files.photoUpload[0].path
+    }
+
+    await seminarAtt.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 /**
  * BULK UPLOAD LOGIC
  */
@@ -3370,4 +3536,9 @@ module.exports = {
   getSttpOrganizedData,
   deleteSttpOrganized,
   updateSttpOrganized,
+  addSeminarAttended,
+  getSeminarAttendedById,
+  getSeminarAttendedData,
+  deleteSeminarAttended,
+  updateSeminarAttended,
 };
