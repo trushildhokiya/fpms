@@ -102,15 +102,14 @@ const pdfFileSchema = z
   .instanceof(File)
   .refine((file) => {
     return !file || file.size <= 5 * 1024 * 1024;
-  }, `File Size must be less than 50 mb`)
+  }, `File size must be less than 5MB`)
   .refine((file) => {
     return ACCEPTED_FILE_TYPES.includes(file.type);
-  }, `File Type must be of pdf`);
+  }, 'File must be a pdf'
+  )
 
 const formSchema = z.object({
-
   _id:z.string().optional(),
-
   title: z
     .string()
     .min(1, {
@@ -159,26 +158,128 @@ const formSchema = z.object({
   toDate: z.date(),
   paperStatus: z.string().min(1).max(100),
 
-  publicationDate: z.date(),
+  publicationDate: z.union([z.date(), z.date().optional()]),
   issn: z.union([z.string().min(1).max(100), z.string().optional()]),
-  impactFactor: z.coerce.number().nonnegative(),
-  pageNo: z.union([z.string().min(1).max(100), z.string().optional()]),
-  yearOfPublication: z.coerce.number().min(1900).max(2300),
-  doi: z.string().min(1).max(100),
-  indexing: z.array(z.string()).nonempty(),
+  impactFactor: z.union([z.coerce.number().optional(), z.coerce.number().nonnegative()]),
+  pageNo: z.union([z.string().optional(), z.string().min(1).max(100)]),
+  yearOfPublication: z.union([z.coerce.number().optional(), z.coerce.number().min(1800).max(2300).nonnegative()]),
+  doi: z.union([z.string().optional(), z.string().min(1).max(300)]),
+  indexing: z.union([z.array(z.string()).optional(), z.array(z.string()).nonempty()]),
 
-  paperUrl: z.union([z.string().min(1).url({
-    message: "Invalid url"
-  }), z.string().optional()]),
-
-  citationCount: z.coerce.number().nonnegative(),
-  paper: z.union([pdfFileSchema, z.any().optional()]),
-  certificate: z.union([pdfFileSchema, z.any().optional()])
+  paperUrl: z.union([z.string().optional(), z.string().min(1).max(100)]),
+  citationCount: z.union([z.coerce.number().optional(), z.coerce.number().nonnegative()]),
+  paper: z.union([z.any().optional(), pdfFileSchema]),
+  certificate: z.union([z.any().optional(), pdfFileSchema]),
 
 }).refine((data) => data.toDate > data.fromDate, {
   message: "End date must be greater than start date",
   path: ["toDate"], // Field to which the error will be attached
-});
+})
+  .superRefine((data, ctx) => {
+    // Example: Making certain fields required if paperStatus is "published"
+
+    if (data.paperStatus === "presented and published") {
+
+      // Validate publicationDate
+      if (!data.publicationDate) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["publicationDate"],
+          message: "Publication date is required when paper is published",
+        });
+      }
+
+      // Validate ISSN (if you want to apply additional rules here)
+      if (!data.issn) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["issn"],
+          message: "ISSN is required when paper is published",
+        });
+      }
+
+      // Validate impactFactor
+      if (!data.impactFactor) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["impactFactor"],
+          message: "Impact factor is required when paper is published",
+        });
+      }
+
+      // Validate pageNo
+      if (!data.pageNo) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["pageNo"],
+          message: "Page number is required when paper is published",
+        });
+      }
+
+      // Validate yearOfPublication
+      if (!data.yearOfPublication) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["yearOfPublication"],
+          message: "Year of publication is required when paper is published",
+        });
+      }
+
+      // Validate DOI
+      if (!data.doi) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["doi"],
+          message: "DOIis required when paper is published",
+        });
+      }
+
+      // Validate indexing
+      if (!data.indexing || data.indexing.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["indexing"],
+          message: "At least one indexing option is required when paper is published",
+        });
+      }
+
+      // Validate paperUrl
+      if (!data.paperUrl) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["paperUrl"],
+          message: "Paper URL must be entered when paper is published",
+        });
+      }
+
+      // Validate citationCount
+      if (!data.citationCount) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["citationCount"],
+          message: "Citation count is required when paper is published",
+        });
+      }
+
+      // Validate paper file
+      if (!data.paper || !(data.paper instanceof File)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["paper"],
+          message: "Paper file is required when paper is published",
+        });
+      }
+  
+      // Validate certificate file
+      if (!data.certificate || !(data.certificate instanceof File)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["certificate"],
+          message: "Certificate file is required when paper is published",
+        });
+      }
+    }
+  });
 
 const ConferenceForm: React.FC = (props: Props) => {
   const user = useSelector((state: any) => state.user);

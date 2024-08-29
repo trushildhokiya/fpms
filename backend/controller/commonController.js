@@ -1014,12 +1014,11 @@ const deleteJournal = asyncHandler(async (req, res) => {
 
 
 const addConference = asyncHandler(async (req, res) => {
-
-  //get required data
+  // Get required data
   const data = req.body;
   const { email } = req.decodedData;
 
-  // find user
+  // Find user
   const user = await Faculty.findOne({ email: email });
 
   if (!user) {
@@ -1027,20 +1026,27 @@ const addConference = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
 
-  //get file paths
-  const paperURL = req.files.paper[0].path;
-  const certificateURL = req.files.certificate[0].path;
+  // Initialize file paths
+  let paperURL = data.paperUrl || '';  // Fallback if no file uploaded
+  let certificateURL = data.certificateUrl || '';  // Fallback if no file uploaded
 
+  // Check if files are present
+  if (req.files.paper && req.files.paper.length > 0) {
+    paperURL = req.files.paper[0].path;
+  }
 
-  // attach file path in data
+  if (req.files.certificate && req.files.certificate.length > 0) {
+    certificateURL = req.files.certificate[0].path;
+  }
+
+  // Attach file paths in data
   data.paper = paperURL;
   data.certificate = certificateURL;
 
-
-  // create conference entry
+  // Create conference entry
   const conference = await Conference.create(data);
 
-  // attach entry to involved faculties
+  // Attach entry to involved faculties
   for (const email of data.facultiesInvolved) {
     await Faculty.findOneAndUpdate(
       { email: email },
