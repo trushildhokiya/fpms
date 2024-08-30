@@ -1,37 +1,31 @@
-import FacultyNavbar from "@/components/navbar/FacultyNavbar";
-import HeadNavbar from "@/components/navbar/HeadNavbar";
-import { useSelector } from "react-redux";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+/**
+ * IMPORTS
+ */
+import FacultyNavbar from '@/components/navbar/FacultyNavbar'
+import HeadNavbar from '@/components/navbar/HeadNavbar'
+import { useSelector } from 'react-redux'
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useFieldArray, useForm } from "react-hook-form"
+import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { useEffect, useState } from "react";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, BookUser, CalendarIcon, FileArchive } from "lucide-react";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive, Users, UserCheck, GraduationCap } from 'lucide-react'
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
+import { Separator } from '@/components/ui/separator'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
     CommandDialog,
     CommandEmpty,
@@ -39,9 +33,13 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-} from "@/components/ui/command";
-import { Toaster } from "@/components/ui/toaster";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/ui/command"
+import { useState, useEffect } from 'react'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
+import { Toaster } from '@/components/ui/toaster'
 
 type Props = {};
 
@@ -66,6 +64,15 @@ const formSchema = z.object({
     }).max(300, {
         message: "Title must not exceed 300 characters"
     }),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    }).transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
+    
+    departmentInvolved: z.array(z.string()).nonempty(),
 
     type: z.string().min(1, {
         message: "Type is required!"
@@ -156,6 +163,14 @@ const SeminarOrganizedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
 
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
+
 
     // command
     const [open, setOpen] = useState(false);
@@ -177,6 +192,8 @@ const SeminarOrganizedForm = (props: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: "",
+            facultiesInvolved: [],
+            departmentInvolved: [],
             type: "",
             organizedBy: "",
             associationWith: "",
@@ -220,7 +237,7 @@ const SeminarOrganizedForm = (props: Props) => {
             <div className="container my-8">
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
                     <span className="border-b-4 border-red-800 break-words ">
-                        SEMINAR <span className="hidden md:inline-block">Organized</span>
+                        SEMINAR / Webinar  / Expert Talk / Workshop <span className="hidden md:inline-block">Organized</span>
                     </span>
                 </h1>
 
@@ -303,6 +320,61 @@ const SeminarOrganizedForm = (props: Props) => {
                                     </FormItem>
                                 )}
                             />
+
+                            <FormField
+                                    control={form.control}
+                                    name="facultiesInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full overflow-hidden'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
 
 

@@ -157,7 +157,7 @@ const SeminarAttendedForm = (props: Props) => {
       <div className="container my-8">
         <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
           <span className="border-b-4 border-red-800 break-words ">
-            Seminars <span className="hidden md:inline-block">Attended</span>
+          SEMINAR / Webinar  / Expert Talk / Workshop <span className="hidden md:inline-block">Attended</span>
           </span>
         </h1>
 
