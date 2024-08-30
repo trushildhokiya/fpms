@@ -44,9 +44,27 @@ import { Toaster } from "@/components/ui/toaster";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
-
+interface STTPAttended {
+    _id: string;
+    title: string;
+    sessionTitle: string;
+    organizedBy: string;
+    associationWith: string;
+    type: string;
+    mode: string;
+    level: string;
+    venue: string;
+    fromDate: Date;
+    toDate: Date;
+    totalDays: number;
+    remarks: string;
+    certUpload: string;
+    __v: number;
+  }
+  
 /**
  * SCHEMAS
  */
@@ -62,19 +80,13 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
+    _id:z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
-    }).max(300, {
-        message: "Title must not exceed 300 characters"
-    }),
-
-    sessionTitle: z.string().min(1, {
-        message: "Session title is required!"
     }).max(100, {
-        message: "Session title must not exceed 100 characters"
+        message: "Title must not exceed 100 characters"
     }),
-
 
     type: z.string().min(1, {
         message: "Type is required!"
@@ -116,19 +128,35 @@ const formSchema = z.object({
         message: "Venue must not exceed 200 characters"
     }),
 
-    certificate: pdfFileSchema,
-    invitationLetter: pdfFileSchema,
-    photos: pdfFileSchema
-
+    certificate: pdfFileSchema
 }).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SttpConductedForm = (props: Props) => {
+const SttpAttendedEdit = (props: Props) => {
+    const { id } = useParams()
 
+    useEffect(() => {
+        // Fetch the patent data
+        axios
+          .get(`/common/sttp-attended/${id}`)
+          .then((res) => {
+    
+            const data: STTPAttended = res.data
+            form.reset({
+              ...data,
+              fromDate: new Date(data.fromDate),
+              toDate: new Date(data.toDate),
+            })
+          })
+          .catch((err) => {
+            console.error("Error fetching patent data:", err);
+          });
+      }, []);
     const user = useSelector((state: any) => state.user);
     const { toast }= useToast()
+
 
     // command
     const [open, setOpen] = useState(false);
@@ -149,8 +177,8 @@ const SttpConductedForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id:"",
             title: "",
-            sessionTitle: '',
             type: "",
             organizedBy: "",
             associationWith: "",
@@ -161,15 +189,13 @@ const SttpConductedForm = (props: Props) => {
             toDate: new Date(),
             totalDays: 0,
             remarks: "",
-            certificate: new File([], ""),
-            invitationLetter: new File([], ""),
-            photos: new File([], ""),
+            certificate: new File([], "")
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        axios.post("/common/sttp-conducted", values, {
+        axios.put("/common/sttp-attended", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -195,9 +221,9 @@ const SttpConductedForm = (props: Props) => {
         <>
             {user.role === "Faculty" ? <FacultyNavbar /> : <HeadNavbar />}
             <div className="container my-8">
-                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase ">
                     <span className="border-b-4 border-red-800 break-words ">
-                        STTP/FDP <span className="hidden md:inline-block">Conducted</span>
+                        STTP/FDP <span className="hidden md:inline-block">Attended</span>
                     </span>
                 </h1>
 
@@ -272,27 +298,6 @@ const SttpConductedForm = (props: Props) => {
                                     </FormItem>
                                 )}
                             />
-
-                            <FormField
-                                control={form.control}
-                                name="sessionTitle"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-800">
-                                            Session Title
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="session title"
-                                                {...field}
-                                                autoComplete="off"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
 
                             <div className="grid md:grid-cols-2 gap-6">
 
@@ -574,73 +579,31 @@ const SttpConductedForm = (props: Props) => {
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        STTP/FDP uploads must be in a single pdf file of maximum size 5MB.
+                                        STTP/FDP Certificate must be in a single pdf file of maximum
+                                        size 5MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-6">
-
-                                <FormField
-                                    control={form.control}
-                                    name="certificate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Upload Certificate / LOA
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    accept=".pdf"
-                                                    type="file"
-                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="invitationLetter"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Upload Invitation Letter
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    accept=".pdf"
-                                                    type="file"
-                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="photos"
-                                    render={({ field }) => (
-                                        <FormItem className="md:col-span-2">
-                                            <FormLabel className="text-gray-800">
-                                                Upload Photos
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    accept=".pdf"
-                                                    type="file"
-                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <FormField
+                                control={form.control}
+                                name="certificate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-gray-800">
+                                            Upload Certificate
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                accept=".pdf"
+                                                type="file"
+                                                onChange={(e) => field.onChange(e.target.files?.[0])}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <Button type="submit" className="bg-red-800 hover:bg-red-700">
                                 Submit
@@ -654,4 +617,4 @@ const SttpConductedForm = (props: Props) => {
     );
 };
 
-export default SttpConductedForm;
+export default SttpAttendedEdit;

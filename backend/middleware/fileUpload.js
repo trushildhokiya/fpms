@@ -397,6 +397,119 @@ const debugFileStorage = multer.diskStorage({
 
 const debugFileUpload = multer({ storage: debugFileStorage });
 
+// STTP File Uploads
+
+const sttpConductedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpConductedUpload = multer({ storage: sttpConductedStorage });
+
+const sttpAttendedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-attended");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-attended-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpAttendedUpload = multer({ storage: sttpAttendedStorage });
+
+const sttpOrganizedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-organized");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-organized-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpOrganizedUpload = multer({ storage: sttpOrganizedStorage });
+
+/*
+SEMINAR FILE UPLOAD 
+*/
+
+const seminarConductedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarConductedUpload = multer({ storage: seminarConductedStorage });
+
+const seminarAttendedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-attended");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-attended-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarAttendedUpload = multer({ storage: seminarAttendedStorage });
+
+const seminarOrganizedStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-organized");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-organized-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarOrganizedUpload = multer({ storage: seminarOrganizedStorage });
 
 
 module.exports = {
@@ -417,5 +530,11 @@ module.exports = {
   consultancyFileUpload,
   projectFileUpload,
   qualificationFileUpload,
-  debugFileUpload
+  debugFileUpload,
+  sttpConductedUpload,
+  sttpAttendedUpload,
+  sttpOrganizedUpload,
+  seminarConductedUpload,
+  seminarOrganizedUpload,
+  seminarAttendedUpload,
 };

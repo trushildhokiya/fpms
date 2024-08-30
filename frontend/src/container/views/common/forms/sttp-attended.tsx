@@ -41,6 +41,9 @@ import {
     CommandList,
 } from "@/components/ui/command";
 import { Toaster } from "@/components/ui/toaster";
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
 
 type Props = {};
 
@@ -115,6 +118,7 @@ const formSchema = z.object({
 const SttpAttendedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
+    const { toast }= useToast()
 
 
     // command
@@ -153,6 +157,26 @@ const SttpAttendedForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
+        axios.post("/common/sttp-attended", values, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+        .then((res) => {
+
+            if (res.data.message === "success") {
+                toast({
+                    title: "STTP/FDP added successfully",
+                    description:
+                        "Your STTP/FDP information has been added successfully",
+                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                });
+                form.reset();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     }
 
     return (

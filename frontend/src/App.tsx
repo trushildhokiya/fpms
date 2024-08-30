@@ -135,11 +135,25 @@ const FacultyDashboard = lazy(
 /**
  * PROTECTED ROUTES
  */
-import AdminProtectedRoute from "./components/protected/AdminProtectedRoute";
-import HeadProtectedRoute from "./components/protected/HeadProtectedRoute";
-import FacultyProtectedRoute from "./components/protected/FacultyProtectedRoute";
-import CommonProtectedRoute from "./components/protected/CommonProtectedRoute";
-import SuperAdminProtectedRoute from "./components/protected/SuperAdminProtectedRoute";
+import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
+import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
+import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute';
+import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
+import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
+import SttpConductedDisplay from './container/views/common/display/sttp-conducted';
+import SttpConductedEdit from './container/views/common/edit/sttp-conducted';
+import SttpAttendedEdit from './container/views/common/edit/sttp-attended';
+import SttpAttendedDisplay from './container/views/common/display/sttp-attended';
+import SttpOrganizedDisplay from './container/views/common/display/sttp-organized';
+import SttpOrganizedEdit from './container/views/common/edit/sttp-organized';
+import SeminarAttendedDisplay from './container/views/common/display/seminar-attended';
+import SeminarAttendedEdit from './container/views/common/edit/seminar-attended';
+import SeminarConductedDisplay from './container/views/common/display/seminar-conducted';
+import SeminarConductedEdit from './container/views/common/edit/seminar-conducted';
+import SeminarOrganizedEdit from './container/views/common/edit/seminar-organised';
+import SeminarOrganizedDisplay from './container/views/common/display/seminar-organised';
+
+
 
 /**
  * RESEARCH AND PROFILE FORM IMPORTS
@@ -434,6 +448,12 @@ function App() {
           <Route path='/common/edit/need-based-project/:id' element={<CommonProtectedRoute> <NeedBasedProjectEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/awards-honors/:id' element={<CommonProtectedRoute> <AwardsHonorsEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/consultancy/:id' element={<CommonProtectedRoute> <ConsultancyEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/sttp-conducted/:id' element={<CommonProtectedRoute> <SttpConductedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/sttp-attended/:id' element={<CommonProtectedRoute> <SttpAttendedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/sttp-organized/:id' element={<CommonProtectedRoute> <SttpOrganizedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/seminar-attended/:id' element={<CommonProtectedRoute> <SeminarAttendedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/seminar-conducted/:id' element={<CommonProtectedRoute> <SeminarConductedEdit /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/seminar-organized/:id' element={<CommonProtectedRoute> <SeminarOrganizedEdit /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
@@ -448,6 +468,12 @@ function App() {
           <Route path='/common/display/consultancy' element={<CommonProtectedRoute> <ConsultancyDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/projects' element={<CommonProtectedRoute> <ProjectsDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/qualification' element={<CommonProtectedRoute> <QualificationDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/sttp-conducted' element={<CommonProtectedRoute> <SttpConductedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/sttp-attended' element={<CommonProtectedRoute> <SttpAttendedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/sttp-organized' element={<CommonProtectedRoute> <SttpOrganizedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/seminar-attended' element={<CommonProtectedRoute> <SeminarAttendedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/seminar-conducted' element={<CommonProtectedRoute> <SeminarConductedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/seminar-organized' element={<CommonProtectedRoute> <SeminarOrganizedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/upload/bulk' element={<CommonProtectedRoute> <BulkUpload /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>

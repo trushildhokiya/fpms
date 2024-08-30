@@ -79,6 +79,36 @@ const {
   getCourseCertificationById,
   deleteCourseCertification,
   updateCourseCertification,
+  addSttpConducted,
+  getSttpConductedById,
+  getSttpConductedData,
+  deleteSttpConducted,
+  updateSttpConducted,
+  addSttpAttended,
+  getSttpAttendedById,
+  getSttpAttendedData,
+  deleteSttpAttended,
+  updateSttpAttended,
+  addSttpOrganized,
+  getSttpOrganizedById,
+  getSttpOrganizedData,
+  deleteSttpOrganized,
+  updateSttpOrganized,
+  addSeminarAttended,
+  getSeminarAttendedById,
+  getSeminarAttendedData,
+  deleteSeminarAttended,
+  updateSeminarAttended,
+  addSeminarConducted,
+  getSeminarConductedById,
+  getSeminarConductedData,
+  deleteSeminarConducted,
+  updateSeminarConducted,
+  addSeminarOrganized,
+  getSeminarOrganizedById,
+  getSeminarOrganizedData,
+  deleteSeminarOrganized,
+  updateSeminarOrganized,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -99,7 +129,13 @@ const {
   debugFileUpload,
   awardsReceivedFileUpload,
   activityConductedFileUpload,
-  courseCertificationFileUpload
+  courseCertificationFileUpload,
+  sttpConductedUpload,
+  sttpAttendedUpload,
+  sttpOrganizedUpload,
+  seminarAttendedUpload,
+  seminarConductedUpload,
+  seminarOrganizedUpload
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -3125,5 +3161,131 @@ router.route("/book").put(facultyAuthenticator, bookFileUpload.single("proof"), 
 router.route("/book-chapter").put(facultyAuthenticator, bookChapterUpload.single("proof"), updateBookChapter);
 
 router.route('/award-honors').put(facultyAuthenticator, awardHonorsFileUpload.single('proof'), updateAwardsHonors)
+
+router.route('/sttp-conducted/:id').get(facultyAuthenticator,getSttpConductedById)
+
+router.route('/sttp-conducted').get(facultyAuthenticator, getSttpConductedData)
+
+router.route('/sttp-conducted').delete(facultyAuthenticator,deleteSttpConducted)
+
+router.route('/sttp-conducted').post(facultyAuthenticator, sttpConductedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'invitationLetter', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), addSttpConducted)
+
+router.route('/sttp-conducted').put(facultyAuthenticator, sttpConductedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'invitationLetter', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), updateSttpConducted)
+
+router.route('/sttp-attended/:id').get(facultyAuthenticator,getSttpAttendedById)
+
+router.route('/sttp-attended').get(facultyAuthenticator, getSttpAttendedData)
+
+router.route('/sttp-attended').delete(facultyAuthenticator,deleteSttpAttended)
+
+router.route('/sttp-attended').post(facultyAuthenticator, sttpAttendedUpload.single('certificate'), addSttpAttended)
+
+router.route('/sttp-attended').put(facultyAuthenticator, sttpAttendedUpload.single('certificate'), updateSttpAttended)
+
+router.route('/sttp-organized/:id').get(facultyAuthenticator,getSttpOrganizedById)
+
+router.route('/sttp-organized').get(facultyAuthenticator, getSttpOrganizedData)
+
+router.route('/sttp-organized').delete(facultyAuthenticator,deleteSttpOrganized)
+
+router.route('/sttp-organized').post(facultyAuthenticator, sttpAttendedUpload.fields([
+  { name: 'fundSanctionedLetter', maxCount: 1 },
+  { name: 'utilizationCertificate', maxCount: 1 },
+  { name: 'banner', maxCount: 1 },
+  { name: 'schedule', maxCount: 1 },
+  { name: 'certificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+  { name: 'report', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), addSttpOrganized)
+
+router.route('/sttp-organized').put(facultyAuthenticator, sttpAttendedUpload.fields([
+  { name: 'fundSanctionedLetter', maxCount: 1 },
+  { name: 'utilizationCertificate', maxCount: 1 },
+  { name: 'banner', maxCount: 1 },
+  { name: 'schedule', maxCount: 1 },
+  { name: 'certificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+  { name: 'report', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), updateSttpOrganized)
+
+router.route('/seminar-attended/:id').get(facultyAuthenticator,getSeminarAttendedById)
+
+router.route('/seminar-attended').get(facultyAuthenticator, getSeminarAttendedData)
+
+router.route('/seminar-attended').delete(facultyAuthenticator,deleteSeminarAttended)
+
+router.route('/seminar-attended').post(facultyAuthenticator, seminarAttendedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), addSeminarAttended)
+
+router.route('/seminar-attended').put(facultyAuthenticator, seminarAttendedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), updateSeminarAttended)
+
+router.route('/seminar-organized/:id').get(facultyAuthenticator,getSeminarOrganizedById)
+
+router.route('/seminar-organized').get(facultyAuthenticator, getSeminarOrganizedData)
+
+router.route('/seminar-organized').delete(facultyAuthenticator,deleteSeminarOrganized)
+
+router.route('/seminar-organized').post(facultyAuthenticator, seminarAttendedUpload.fields([
+  { name: 'fundSanctionedLetter', maxCount: 1 },
+  { name: 'utilizationCertificate', maxCount: 1 },
+  { name: 'banner', maxCount: 1 },
+  { name: 'schedule', maxCount: 1 },
+  { name: 'certificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+  { name: 'report', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+  { name: 'invitationLetter', maxCount: 1 },
+  { name: 'certificateLOAToSpeaker', maxCount: 1 },
+  { name: 'certificateOfOrganizer', maxCount: 1 },
+  { name: 'lOAOfOrganizer', maxCount: 1 },
+]), addSeminarOrganized)
+
+router.route('/seminar-organized').put(facultyAuthenticator, seminarAttendedUpload.fields([
+  { name: 'fundSanctionedLetter', maxCount: 1 },
+  { name: 'utilizationCertificate', maxCount: 1 },
+  { name: 'banner', maxCount: 1 },
+  { name: 'schedule', maxCount: 1 },
+  { name: 'certificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+  { name: 'report', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+  { name: 'invitationLetter', maxCount: 1 },
+  { name: 'certificateLOAToSpeaker', maxCount: 1 },
+  { name: 'certificateOfOrganizer', maxCount: 1 },
+  { name: 'lOAOfOrganizer', maxCount: 1 },
+]), updateSeminarOrganized)
+
+router.route('/seminar-conducted/:id').get(facultyAuthenticator,getSeminarConductedById)
+
+router.route('/seminar-conducted').get(facultyAuthenticator, getSeminarConductedData)
+
+router.route('/seminar-conducted').delete(facultyAuthenticator,deleteSeminarConducted)
+
+router.route('/seminar-conducted').post(facultyAuthenticator, seminarConductedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'invitationLetter', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), addSeminarConducted)
+
+router.route('/seminar-conducted').put(facultyAuthenticator, seminarConductedUpload.fields([
+  { name: 'certificate', maxCount: 1 },
+  { name: 'invitationLetter', maxCount: 1 },
+  { name: 'photos', maxCount: 1 },
+]), updateSeminarConducted)
 
 module.exports = router;

@@ -44,9 +44,29 @@ import { Toaster } from "@/components/ui/toaster";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 
+interface SEMINARConducted {
+    _id: string;
+    title: string;
+    sessionTitle: string;
+    organizedBy: string;
+    associationWith: string;
+    type: string;
+    mode: string;
+    level: string;
+    venue: string;
+    fromDate: Date;
+    toDate: Date;
+    totalDays: number;
+    remarks: string;
+    certUpload: string;
+    invitationUpload: string;
+    photoUpload: string;
+    __v: number;
+  }
 /**
  * SCHEMAS
  */
@@ -62,11 +82,12 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
+    _id:z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
-    }).max(300, {
-        message: "Title must not exceed 300 characters"
+    }).max(100, {
+        message: "Title must not exceed 100 characters"
     }),
 
     sessionTitle: z.string().min(1, {
@@ -125,7 +146,26 @@ const formSchema = z.object({
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SttpConductedForm = (props: Props) => {
+const SeminarConductedEdit = (props: Props) => {
+    const { id } = useParams()
+
+    useEffect(() => {
+        // Fetch the patent data
+        axios
+          .get(`/common/seminar-conducted/${id}`)
+          .then((res) => {
+    
+            const data: SEMINARConducted = res.data
+            form.reset({
+              ...data,
+              fromDate: new Date(data.fromDate),
+              toDate: new Date(data.toDate),
+            })
+          })
+          .catch((err) => {
+            console.error("Error fetching patent data:", err);
+          });
+      }, []);
 
     const user = useSelector((state: any) => state.user);
     const { toast }= useToast()
@@ -149,6 +189,7 @@ const SttpConductedForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id:"",
             title: "",
             sessionTitle: '',
             type: "",
@@ -169,7 +210,7 @@ const SttpConductedForm = (props: Props) => {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        axios.post("/common/sttp-conducted", values, {
+        axios.put("/common/seminar-conducted", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -178,9 +219,9 @@ const SttpConductedForm = (props: Props) => {
 
             if (res.data.message === "success") {
                 toast({
-                    title: "STTP/FDP added successfully",
+                    title: "Seminar Conducted added successfully",
                     description:
-                        "Your STTP/FDP information has been added successfully",
+                        "Your Seminar Conducted information has been added successfully",
                     action: <ToastAction className='' altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
@@ -197,7 +238,7 @@ const SttpConductedForm = (props: Props) => {
             <div className="container my-8">
                 <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
                     <span className="border-b-4 border-red-800 break-words ">
-                        STTP/FDP <span className="hidden md:inline-block">Conducted</span>
+                        Seminar Conducted <span className="hidden md:inline-block">Conducted</span>
                     </span>
                 </h1>
 
@@ -252,6 +293,21 @@ const SttpConductedForm = (props: Props) => {
                                     form
                                 </AlertDescription>
                             </Alert>
+                            
+                            {/* ID HIDDEN */}
+                            <FormField
+                                control={form.control}
+                                name={`_id`}
+                                render={({ field }) => (
+                                    <FormItem className='hidden'>
+                                    <FormLabel className='text-grey-800'>ID</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="ID" autoComplete='off' {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <FormField
                                 control={form.control}
@@ -259,11 +315,11 @@ const SttpConductedForm = (props: Props) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-gray-800">
-                                            STTP/FDP Title
+                                            Seminar Conducted Title
                                         </FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="STTP/FDP Title"
+                                                placeholder="Seminar Conducted Title"
                                                 {...field}
                                                 autoComplete="off"
                                             />
@@ -354,7 +410,7 @@ const SttpConductedForm = (props: Props) => {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="sttp">STTP</SelectItem>
+                                                    <SelectItem value="seminar">Seminar</SelectItem>
                                                     <SelectItem value="fdp"> FDP </SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -574,7 +630,7 @@ const SttpConductedForm = (props: Props) => {
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        STTP/FDP uploads must be in a single pdf file of maximum size 5MB.
+                                        Seminar Conducted uploads must be in a single pdf file of maximum size 5MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>
@@ -654,4 +710,4 @@ const SttpConductedForm = (props: Props) => {
     );
 };
 
-export default SttpConductedForm;
+export default SeminarConductedEdit;

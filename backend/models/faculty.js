@@ -179,6 +179,35 @@ const facultySchema = new mongoose.Schema({
         required: false
     },
 
+    sttpConducted: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sttpConducted' }],
+        required: false
+    },
+
+    sttpAttended: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sttpAttended' }],
+        required: false
+    },
+
+    sttpOrganized: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sttpOrganized' }],
+        required: false
+    },
+
+    seminarConducted: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'seminarConducted' }],
+        required: false
+    },
+
+    seminarAttended: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'seminarAttended' }],
+        required: false
+    },
+
+    seminarOrganized: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'seminarOrganized' }],
+        required: false
+    },
 
 }, { timestamps: true }
 )

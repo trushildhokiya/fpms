@@ -41,6 +41,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import axios from "axios";
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/components/ui/use-toast";
 
 type Props = {};
 
@@ -149,6 +152,26 @@ const SeminarAttendedForm = (props: Props) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    axios.post("/common/seminar-attended", values, {
+      headers: {
+          "Content-Type": "multipart/form-data",
+      },
+  })
+  .then((res) => {
+
+      if (res.data.message === "success") {
+          toast({
+              title: "Seminar added successfully",
+              description:
+                  "Your Seminar information has been added successfully",
+              action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+      }
+  })
+  .catch((err) => {
+      console.log(err);
+  });
   }
 
   return (

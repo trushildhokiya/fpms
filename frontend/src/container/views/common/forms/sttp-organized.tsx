@@ -53,6 +53,9 @@ import {
 
 import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
+import axios from 'axios'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
 
 type Props = {};
 
@@ -73,9 +76,9 @@ const pdfFileSchema = z
 const formSchema = z
   .object({
     title: z.string().min(1, {
-        message: "Title is required!"
+      message: "Title is required!"
     }).max(300, {
-        message: "Title must not exceed 300 characters"
+      message: "Title must not exceed 300 characters"
     }),
     facultiesInvolved: z
       .string({
@@ -223,6 +226,7 @@ const SttpOrganizedForm = (props: Props) => {
 
   // command
   const [open, setOpen] = useState(false);
+  const { toast } = useToast()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -284,6 +288,26 @@ const SttpOrganizedForm = (props: Props) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    axios.post("/common/sttp-organized", values, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then((res) => {
+
+        if (res.data.message === "success") {
+          toast({
+            title: "STTP/FDP added successfully",
+            description:
+              "Your STTP/FDP information has been added successfully",
+            action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+          });
+          form.reset();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -641,9 +665,8 @@ const SttpOrganizedForm = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
@@ -679,9 +702,8 @@ const SttpOrganizedForm = (props: Props) => {
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className={`w-full pl-3 text-left font-normal ${
-                              !field.value ? "text-muted-foreground" : ""
-                            }`}
+                            className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""
+                              }`}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (

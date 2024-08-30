@@ -14,6 +14,12 @@ const Project = require('../models/projects')
 const AwardRecieved = require('../models/awards-recieved')
 const ActivityConducted = require('../models/activity-conducted')
 const CourseCertification = require('../models/course-certification')
+const sttpAttended = require('../models/sttp-attended')
+const SttpConducted = require('../models/sttp-conducted')
+const sttpOrganized = require('../models/sttp-organized')
+const seminarAttended = require('../models/seminar-attended')
+const seminarConducted = require('../models/seminar-conducted')
+const seminarOrganised = require('../models/seminar-organised')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -2172,6 +2178,1210 @@ const deleteProject = asyncHandler(async (req, res) => {
 })
 
 
+// ACHIEVEMENTS FORMS
+
+const addSttpConducted = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const certUploadURL = req.files.certificate[0].path
+  const invitationUploadURL = req.files.invitationLetter[0].path
+  const photoUploadURL = req.files.photos[0].path
+
+  // attach file path to data
+
+  data.certUpload = certUploadURL
+  data.invitationUpload = invitationUploadURL
+  data.photoUpload = photoUploadURL
+
+  // create consultancy entry
+  const sttpCond = await SttpConducted.create(data);
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { sttpConducted: sttpCond._id } }
+  );
+
+  console.log('sttp added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSttpConductedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const sttpConductedData = await SttpConducted.findById(id)
+
+  // Send the response
+  res.status(200).json(sttpConductedData);
+
+})
+
+
+const getSttpConductedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate('sttpConducted')
+
+  // Extract the populated consultancy data
+  const sttpConductedData = user.sttpConducted
+
+  // Send the response
+  res.status(200).json(sttpConductedData);
+
+});
+
+const deleteSttpConducted = asyncHandler(async (req, res) => {
+
+  const { sttpCond_id } = req.body
+
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const sttpCond = await SttpConducted.findById(sttpCond_id);
+
+    if (!sttpCond) {
+      throw new Error('STTP/FDP not found');
+    }
+
+    // Delete the associated file
+    if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
+      fs.unlinkSync(sttpCond.certUpload);
+    }
+
+    if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
+      fs.unlinkSync(sttpCond.invitationUpload);
+    }
+
+    if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
+      fs.unlinkSync(sttpCond.photoUpload);
+    }
+
+    // Delete the STTP/FDP entry from the database
+    await SttpConducted.findByIdAndDelete(sttpCond_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSttpConducted = asyncHandler(async (req, res) => {
+  const data = req.body
+
+  try {
+
+    const sttpCond = await SttpConducted.findById(req.body._id)
+
+    if (!sttpCond) {
+      throw new Error("no sttpCond found")
+    }
+
+    if (req.files.certificate) {
+
+      if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
+        fs.unlinkSync(sttpCond.certUpload);
+      }
+
+      data.certUpload = req.files.certificate[0].path
+
+    }
+
+    if (req.files.invitationLetter) {
+
+      if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
+        fs.unlinkSync(sttpCond.invitationUpload);
+      }
+  
+      data.invitationUpload = req.files.invitationLetter[0].path
+
+    }
+
+    if (req.files.photos) {
+
+  
+      if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
+        fs.unlinkSync(sttpCond.photoUpload);
+      }
+
+      data.photoUpload = req.files.photos[0].path
+
+    }
+
+    await sttpCond.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+
+const addSttpAttended = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+  // get file path 
+  const certUploadURL = req.file.path
+
+  // attach file path to data
+  data.certUpload = certUploadURL
+  // create consultancy entry
+  const sttpAtt = await sttpAttended.create(data);
+  console.log('created')
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { sttpAttended: sttpAtt._id } }
+  );
+
+  console.log('sttp added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSttpAttendedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  const sttpAttendedData = await sttpAttended.findById(id)
+
+  // Send the response
+  res.status(200).json(sttpAttendedData);
+
+})
+
+
+const getSttpAttendedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate sttp array to get full sttp data
+  await user.populate('sttpAttended')
+
+
+  // Extract the populated sttp data
+  const sttpAttendedData = user.sttpAttended
+
+  // Send the response
+  res.status(200).json(sttpAttendedData);
+
+});
+
+const deleteSttpAttended = asyncHandler(async (req, res) => {
+
+  const { sttpAtt_id } = req.body
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const sttpAtt = await sttpAttended.findById(sttpAtt_id);
+    if (!sttpAtt) {
+      throw new Error('STTP/FDP not found');
+    }
+
+    // Delete the associated file
+    if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
+      fs.unlinkSync(sttpAtt.certUpload);
+    }
+    // Delete the STTP/FDP entry from the database
+    await sttpAttended.findByIdAndDelete(sttpAtt_id);
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSttpAttended = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const sttpAtt = await sttpAttended.findById(req.body._id)
+
+    if (!sttpAtt) {
+      throw new Error("no sttpCond found")
+    }
+
+    if (req.file) {
+
+      if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
+        fs.unlinkSync(sttpAtt.certUpload);
+      }
+
+      data.certUpload = req.file.path
+
+    }
+
+    await sttpAtt.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const addSttpOrganized = asyncHandler(async (req, res) => {
+  console.log('adding......')
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const uploadFundSanctionedLetterURL = req.files.fundSanctionedLetter[0].path
+  const uploadUtilizationCertificateURL = req.files.utilizationCertificate[0].path
+  const uploadBannerURL = req.files.banner[0].path
+  const uploadScheduleOfOrganizerURL = req.files.schedule[0].path
+  const uploadCertificateLOAURL = req.files.certificate[0].path
+  const uploadSupportingDocumentsURL = req.files.supportingDocuments[0].path
+  const uploadReportURL = req.files.report[0].path
+  const uploadPhotosURL = req.files.photos[0].path
+
+  // attach file path to data
+
+  data.uploadFundSanctionedLetter = uploadFundSanctionedLetterURL
+  data.uploadUtilizationCertificate = uploadUtilizationCertificateURL
+  data.uploadBanner = uploadBannerURL
+  data.uploadScheduleOfOrganizer = uploadScheduleOfOrganizerURL
+  data.uploadCertificateLOA = uploadCertificateLOAURL
+  data.uploadSupportingDocuments = uploadSupportingDocumentsURL
+  data.uploadReport = uploadReportURL
+  data.uploadPhotos = uploadPhotosURL
+
+  // create consultancy entry
+  const sttpOrg = await sttpOrganized.create(data);
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { sttpOrganized: sttpOrg._id } }
+  );
+
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSttpOrganizedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const sttpOrganizedData = await sttpOrganized.findById(id)
+
+  // Send the response
+  res.status(200).json(sttpOrganizedData);
+
+})
+
+
+const getSttpOrganizedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate('sttpOrganized')
+
+
+  // Extract the populated consultancy data
+  const sttpOrganizedData = user.sttpOrganized
+
+  // Send the response
+  res.status(200).json(sttpOrganizedData);
+
+});
+
+const deleteSttpOrganized = asyncHandler(async (req, res) => {
+
+  const { sttpOrg_id } = req.body
+
+  try {
+
+    // Find the STTP/FDP to get the necessary information
+    const sttpOrg = await sttpOrganized.findById(sttpOrg_id);
+
+    if (!sttpOrg) {
+      throw new Error('STTP/FDP not found');
+    }
+
+    // Delete the associated file
+    if (sttpOrg.uploadFundSanctionedLetter && fs.existsSync(sttpOrg.uploadFundSanctionedLetter)) {
+      fs.unlinkSync(sttpOrg.uploadFundSanctionedLetter);
+    }
+    
+    if (sttpOrg.uploadUtilizationCertificate && fs.existsSync(sttpOrg.uploadUtilizationCertificate)) {
+      fs.unlinkSync(sttpOrg.uploadUtilizationCertificate);
+    }
+    
+    if (sttpOrg.uploadBanner && fs.existsSync(sttpOrg.uploadBanner)) {
+      fs.unlinkSync(sttpOrg.uploadBanner);
+    }
+    
+    if (sttpOrg.uploadScheduleOfOrganizer && fs.existsSync(sttpOrg.uploadScheduleOfOrganizer)) {
+      fs.unlinkSync(sttpOrg.uploadScheduleOfOrganizer);
+    }
+    
+    if (sttpOrg.uploadCertificateLOA && fs.existsSync(sttpOrg.uploadCertificateLOA)) {
+      fs.unlinkSync(sttpOrg.uploadCertificateLOA);
+    }
+    
+    if (sttpOrg.uploadSupportingDocuments && fs.existsSync(sttpOrg.uploadSupportingDocuments)) {
+      fs.unlinkSync(sttpOrg.uploadSupportingDocuments);
+    }
+    
+    if (sttpOrg.uploadReport && fs.existsSync(sttpOrg.uploadReport)) {
+      fs.unlinkSync(sttpOrg.uploadReport);
+    }
+    
+    if (sttpOrg.uploadPhotos && fs.existsSync(sttpOrg.uploadPhotos)) {
+      fs.unlinkSync(sttpOrg.uploadPhotos);
+    }
+    
+
+    // Delete the STTP/FDP entry from the database
+    await sttpOrganized.findByIdAndDelete(sttpOrg_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSttpOrganized = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const sttpOrg = await sttpOrganized.findById(req.body._id)
+
+    if (!sttpOrg) {
+      throw new Error("no sttpOrg found")
+    }
+
+    if (req.files.fundSanctionedLetter) {
+      if (sttpOrg.uploadFundSanctionedLetter && fs.existsSync(sttpOrg.uploadFundSanctionedLetter)) {
+        fs.unlinkSync(sttpOrg.uploadFundSanctionedLetter);
+      }
+      data.uploadFundSanctionedLetter = req.files.fundSanctionedLetter[0].path;
+    }
+    
+    if (req.files.utilizationCertificate) {
+      if (sttpOrg.uploadUtilizationCertificate && fs.existsSync(sttpOrg.uploadUtilizationCertificate)) {
+        fs.unlinkSync(sttpOrg.uploadUtilizationCertificate);
+      }
+      data.uploadUtilizationCertificate = req.files.utilizationCertificate[0].path;
+    }
+    
+    if (req.files.banner) {
+      if (sttpOrg.uploadBanner && fs.existsSync(sttpOrg.uploadBanner)) {
+        fs.unlinkSync(sttpOrg.uploadBanner);
+      }
+      data.uploadBanner = req.files.banner[0].path;
+    }
+    
+    if (req.files.schedule) {
+      if (sttpOrg.uploadScheduleOfOrganizer && fs.existsSync(sttpOrg.uploadScheduleOfOrganizer)) {
+        fs.unlinkSync(sttpOrg.uploadScheduleOfOrganizer);
+      }
+      data.uploadScheduleOfOrganizer = req.files.schedule[0].path;
+    }
+    
+    if (req.files.certificate) {
+      if (sttpOrg.uploadCertificateLOA && fs.existsSync(sttpOrg.uploadCertificateLOA)) {
+        fs.unlinkSync(sttpOrg.uploadCertificateLOA);
+      }
+      data.uploadCertificateLOA = req.files.certificate[0].path;
+    }
+    
+    if (req.files.supportingDocuments) {
+      if (sttpOrg.uploadSupportingDocuments && fs.existsSync(sttpOrg.uploadSupportingDocuments)) {
+        fs.unlinkSync(sttpOrg.uploadSupportingDocuments);
+      }
+      data.uploadSupportingDocuments = req.files.supportingDocuments[0].path;
+    }
+    
+    if (req.files.report) {
+      if (sttpOrg.uploadReport && fs.existsSync(sttpOrg.uploadReport)) {
+        fs.unlinkSync(sttpOrg.uploadReport);
+      }
+      data.uploadReport = req.files.report[0].path;
+    }
+    
+    if (req.files.photos) {
+      if (sttpOrg.uploadPhotos && fs.existsSync(sttpOrg.uploadPhotos)) {
+        fs.unlinkSync(sttpOrg.uploadPhotos);
+      }
+      data.uploadPhotos = req.files.photos[0].path;
+    }
+    
+
+    await sttpOrg.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/*
+Seminar Controller
+*/
+
+const addSeminarAttended = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+  // get file path 
+  const certUploadURL = req.files.certificate[0].path
+  const photoUploadURL = req.files.photos[0].path
+
+  // attach file path to data
+  data.certUpload = certUploadURL  
+  data.photoUpload = photoUploadURL
+
+  // create entry
+  const seminarAtt = await seminarAttended.create(data);
+  console.log('created entry for seminar attended')
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { seminarAttended: seminarAtt._id } }
+  );
+
+  console.log('seminar attended added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSeminarAttendedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  const seminarAttendedData = await seminarAttended.findById(id)
+
+  // Send the response
+  res.status(200).json(seminarAttendedData);
+
+})
+
+
+const getSeminarAttendedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate seminar array to get full seminar data
+  await user.populate('seminarAttended')
+
+
+  // Extract the populated seminar data
+  const seminarAttendedData = user.seminarAttended
+
+  // Send the response
+  res.status(200).json(seminarAttendedData);
+
+});
+
+const deleteSeminarAttended = asyncHandler(async (req, res) => {
+
+  const { seminarAtt_id } = req.body
+  try {
+
+    // Find the Seminar to get the necessary information
+    const seminarAtt = await seminarAttended.findById(seminarAtt_id);
+    if (!seminarAtt) {
+      throw new Error('Seminar not found');
+    }
+
+    // Delete the associated file
+    if (seminarAtt.certUpload && fs.existsSync(seminarAtt.certUpload)) {
+      fs.unlinkSync(seminarAtt.certUpload);
+    }
+
+    if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
+      fs.unlinkSync(seminarAtt.photosUpload);
+    }
+    // Delete the Seminar entry from the database
+    await seminarAttended.findByIdAndDelete(seminarAtt_id);
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSeminarAttended = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const seminarAtt = await seminarAttended.findById(req.body._id)
+
+    if (!seminarAtt) {
+      throw new Error("no seminarAttended found")
+    }
+
+    if (req.files.certificate) {
+
+      if (seminarAtt.certUpload && fs.existsSync(seminarAtt.certUpload)) {
+        fs.unlinkSync(seminarAtt.certUpload);
+      }
+
+      data.certUpload = req.files.certUpload[0].path
+
+    }
+
+    if(req.files.photos) {
+      if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
+        fs.unlinkSync(seminarAtt.photosUpload);
+      }
+
+      data.photosUpload= req.files.photoUpload[0].path
+    }
+
+    await seminarAtt.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const addSeminarConducted = asyncHandler(async (req, res) => {
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const certUploadURL = req.files.certificate[0].path
+  const invitationUploadURL = req.files.invitationLetter[0].path
+  const photoUploadURL = req.files.photos[0].path
+
+  // attach file path to data
+
+  data.certUpload = certUploadURL
+  data.invitationUpload = invitationUploadURL
+  data.photoUpload = photoUploadURL
+
+  // create consultancy entry
+  const seminarCond = await seminarConducted.create(data);
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { seminarConducted: seminarCond._id } }
+  );
+
+  console.log('seminar conducted added')
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSeminarConductedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const seminarConductedData = await seminarConducted.findById(id)
+
+  // Send the response
+  res.status(200).json(seminarConductedData);
+
+})
+
+
+const getSeminarConductedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate('seminarConducted')
+
+  // Extract the populated consultancy data
+  const seminarConductedData = user.seminarConducted
+
+  // Send the response
+  res.status(200).json(seminarConductedData);
+
+});
+
+const deleteSeminarConducted = asyncHandler(async (req, res) => {
+
+  const { seminarCond_id } = req.body
+
+  try {
+
+    // Find the Seminar to get the necessary information
+    const seminarCond = await seminarConducted.findById(seminarCond_id);
+
+    if (!seminarCond) {
+      throw new Error('Seminar Conducted not found');
+    }
+
+    // Delete the associated file
+    if (seminarCond.certUpload && fs.existsSync(seminarCond.certUpload)) {
+      fs.unlinkSync(seminarCond.certUpload);
+    }
+
+    if (seminarCond.invitationUpload && fs.existsSync(seminarCond.invitationUpload)) {
+      fs.unlinkSync(seminarCond.invitationUpload);
+    }
+
+    if (seminarCond.photoUpload && fs.existsSync(seminarCond.photoUpload)) {
+      fs.unlinkSync(seminarCond.photoUpload);
+    }
+
+    // Delete the Seminar entry from the database
+    await seminarConducted.findByIdAndDelete(seminarCond_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSeminarConducted = asyncHandler(async (req, res) => {
+  const data = req.body
+
+  try {
+
+    const seminarCond = await seminarConducted.findById(req.body._id)
+
+    if (!seminarCond) {
+      throw new Error("no sttpCond found")
+    }
+
+    if (req.files.certificate) {
+
+      if (seminarCond.certUpload && fs.existsSync(seminarCond.certUpload)) {
+        fs.unlinkSync(seminarCond.certUpload);
+      }
+
+      data.certUpload = req.files.certificate[0].path
+
+    }
+
+    if (req.files.invitationLetter) {
+
+      if (seminarCond.invitationUpload && fs.existsSync(seminarCond.invitationUpload)) {
+        fs.unlinkSync(seminarCond.invitationUpload);
+      }
+  
+      data.invitationUpload = req.files.invitationLetter[0].path
+
+    }
+
+    if (req.files.photos) {
+
+  
+      if (seminarCond.photoUpload && fs.existsSync(seminarCond.photoUpload)) {
+        fs.unlinkSync(seminarCond.photoUpload);
+      }
+
+      data.photoUpload = req.files.photos[0].path
+
+    }
+
+    await seminarCond.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const addSeminarOrganized = asyncHandler(async (req, res) => {
+  console.log('adding......')
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // get file path 
+  const uploadUtilizationCertificateURL = req.files.utilizationCertificate[0].path
+  const uploadBannerURL = req.files.banner[0].path
+  const uploadScheduleOfOrganizerURL = req.files.schedule[0].path
+  const uploadCertificateLOAURL = req.files.certificate[0].path
+  const uploadSupportingDocumentsURL = req.files.supportingDocuments[0].path
+  const uploadReportURL = req.files.report[0].path
+  const uploadPhotosURL = req.files.photos[0].path
+  const uploadFundSanctionedLetterURL = req.files.fundSanctionedLetter[0].path
+  const uploadInvitationLetterURL = req.files.uploadInvitationLetter[0].path
+  const uploadCertificateLOAToSpeakerURL = req.files.uploadCertificateLOAToSpeaker[0].path
+  const uploadCertificateOfOrganizerURL = req.files.uploadCertificateOfOrganizer[0].path
+  const uploadLOAOfOrganizerURL = req.files.uploadLOAOfOrganizer[0].path
+
+  // attach file path to data
+  data.uploadFundSanctionedLetter = uploadFundSanctionedLetterURL
+  data.uploadUtilizationCertificate = uploadUtilizationCertificateURL
+  data.uploadBanner = uploadBannerURL
+  data.uploadScheduleOfOrganizer = uploadScheduleOfOrganizerURL
+  data.uploadCertificateLOA = uploadCertificateLOAURL
+  data.uploadSupportingDocuments = uploadSupportingDocumentsURL
+  data.uploadReport = uploadReportURL
+  data.uploadPhotos = uploadPhotosURL
+  data.uploadInvitationLetter = uploadInvitationLetterURL
+  data.uploadCertificateLOAToSpeaker = uploadCertificateLOAToSpeakerURL
+  data.uploadCertificateOfOrganizer = uploadCertificateOfOrganizerURL
+  data.uploadLOAOfOrganizer = uploadLOAOfOrganizerURL
+
+  // create consultancy entry
+  const seminarOrg = await seminarOrganized.create(data);
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { seminarOrganized: seminarOrg._id } }
+  );
+
+  res.status(200).json({
+    message: "success",
+  });
+
+});
+
+const getSeminarOrganizedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+
+  const seminarOrganizedData = await seminarOrganised.findById(id)
+
+  // Send the response
+  res.status(200).json(seminarOrganizedData);
+
+})
+
+
+const getSeminarOrganizedData = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate consultancy array to get full consultancy data
+  await user.populate('seminarOrganized')
+
+
+  // Extract the populated consultancy data
+  const seminarOrganizedData = user.sttpOrganized
+
+  // Send the response
+  res.status(200).json(seminarOrganizedData);
+
+});
+
+const deleteSeminarOrganized = asyncHandler(async (req, res) => {
+
+  const { seminarOrg_id } = req.body
+
+  try {
+
+    // Find the Seminar Org to get the necessary information
+    const seminarOrg = await seminarOrganised.findById(sttpOrg_id);
+
+    if (!seminarOrg) {
+      throw new Error('Seminar org not found');
+    }
+
+    // Delete the associated file
+    if (seminarOrg.uploadFundSanctionedLetter && fs.existsSync(seminarOrg.uploadFundSanctionedLetter)) {
+      fs.unlinkSync(seminarOrg.uploadFundSanctionedLetter);
+    }
+    
+    if (seminarOrg.uploadUtilizationCertificate && fs.existsSync(seminarOrg.uploadUtilizationCertificate)) {
+      fs.unlinkSync(seminarOrg.uploadUtilizationCertificate);
+    }
+    
+    if (seminarOrg.uploadBanner && fs.existsSync(seminarOrg.uploadBanner)) {
+      fs.unlinkSync(seminarOrg.uploadBanner);
+    }
+    
+    if (seminarOrg.uploadScheduleOfOrganizer && fs.existsSync(seminarOrg.uploadScheduleOfOrganizer)) {
+      fs.unlinkSync(seminarOrg.uploadScheduleOfOrganizer);
+    }
+    
+    if (seminarOrg.uploadCertificateLOA && fs.existsSync(seminarOrg.uploadCertificateLOA)) {
+      fs.unlinkSync(seminarOrg.uploadCertificateLOA);
+    }
+    
+    if (seminarOrg.uploadSupportingDocuments && fs.existsSync(seminarOrg.uploadSupportingDocuments)) {
+      fs.unlinkSync(seminarOrg.uploadSupportingDocuments);
+    }
+    
+    if (seminarOrg.uploadReport && fs.existsSync(seminarOrg.uploadReport)) {
+      fs.unlinkSync(seminarOrg.uploadReport);
+    }
+    
+    if (seminarOrg.uploadPhotos && fs.existsSync(seminarOrg.uploadPhotos)) {
+      fs.unlinkSync(seminarOrg.uploadPhotos);
+    }
+
+    if (seminarOrg.uploadInvitationLetter && fs.existsSync(seminarOrg.uploadInvitationLetter)) {
+      fs.unlinkSync(seminarOrg.uploadInvitationLetter);
+    }
+
+    if (seminarOrg.uploadCertificateLOAToSpeaker && fs.existsSync(seminarOrg.uploadCertificateLOAToSpeaker)) {
+      fs.unlinkSync(seminarOrg.uploadCertificateLOAToSpeaker);
+    }
+
+    if (seminarOrg.uploadCertificateOfOrganizer && fs.existsSync(seminarOrg.uploadCertificateOfOrganizer)) {
+      fs.unlinkSync(seminarOrg.uploadCertificateOfOrganizer);
+    }
+
+    if (seminarOrg.uploadLOAOfOrganizer && fs.existsSync(seminarOrg.uploadLOAOfOrganizer)) {
+      fs.unlinkSync(seminarOrg.uploadLOAOfOrganizer);
+    }
+    
+
+    // Delete the Seminar org entry from the database
+    await seminarOrganised.findByIdAndDelete(seminarOrg_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const updateSeminarOrganized = asyncHandler(async (req, res) => {
+
+  const data = req.body
+
+  try {
+
+    const seminarOrg = await seminarOrganised.findById(req.body._id)
+
+    if (!seminarOrg) {
+      throw new Error("no seminarOrg found")
+    }
+
+    if (req.files.fundSanctionedLetter) {
+      if (seminarOrg.uploadFundSanctionedLetter && fs.existsSync(seminarOrg.uploadFundSanctionedLetter)) {
+        fs.unlinkSync(seminarOrg.uploadFundSanctionedLetter);
+      }
+      data.uploadFundSanctionedLetter = req.files.fundSanctionedLetter[0].path;
+    }
+    
+    if (req.files.utilizationCertificate) {
+      if (seminarOrg.uploadUtilizationCertificate && fs.existsSync(seminarOrg.uploadUtilizationCertificate)) {
+        fs.unlinkSync(seminarOrg.uploadUtilizationCertificate);
+      }
+      data.uploadUtilizationCertificate = req.files.utilizationCertificate[0].path;
+    }
+    
+    if (req.files.banner) {
+      if (seminarOrg.uploadBanner && fs.existsSync(seminarOrg.uploadBanner)) {
+        fs.unlinkSync(seminarOrg.uploadBanner);
+      }
+      data.uploadBanner = req.files.banner[0].path;
+    }
+    
+    if (req.files.schedule) {
+      if (seminarOrg.uploadScheduleOfOrganizer && fs.existsSync(seminarOrg.uploadScheduleOfOrganizer)) {
+        fs.unlinkSync(seminarOrg.uploadScheduleOfOrganizer);
+      }
+      data.uploadScheduleOfOrganizer = req.files.schedule[0].path;
+    }
+    
+    if (req.files.certificate) {
+      if (seminarOrg.uploadCertificateLOA && fs.existsSync(seminarOrg.uploadCertificateLOA)) {
+        fs.unlinkSync(seminarOrg.uploadCertificateLOA);
+      }
+      data.uploadCertificateLOA = req.files.certificate[0].path;
+    }
+    
+    if (req.files.supportingDocuments) {
+      if (seminarOrg.uploadSupportingDocuments && fs.existsSync(seminarOrg.uploadSupportingDocuments)) {
+        fs.unlinkSync(seminarOrg.uploadSupportingDocuments);
+      }
+      data.uploadSupportingDocuments = req.files.supportingDocuments[0].path;
+    }
+    
+    if (req.files.report) {
+      if (seminarOrg.uploadReport && fs.existsSync(seminarOrg.uploadReport)) {
+        fs.unlinkSync(seminarOrg.uploadReport);
+      }
+      data.uploadReport = req.files.report[0].path;
+    }
+    
+    if (req.files.photos) {
+      if (seminarOrg.uploadPhotos && fs.existsSync(seminarOrg.uploadPhotos)) {
+        fs.unlinkSync(seminarOrg.uploadPhotos);
+      }
+      data.uploadPhotos = req.files.photos[0].path;
+    }
+
+    if (req.files.photos) {
+      if (seminarOrg.uploadInvitationLetter && fs.existsSync(seminarOrg.uploadInvitationLetter)) {
+        fs.unlinkSync(seminarOrg.uploadInvitationLetter);
+      }
+      data.uploadInvitationLetter = req.files.photos[0].path;
+    }
+
+    if (req.files.photos) {
+      if (seminarOrg.uploadCertificateLOAToSpeaker && fs.existsSync(seminarOrg.uploadCertificateLOAToSpeaker)) {
+        fs.unlinkSync(seminarOrg.uploadCertificateLOAToSpeaker);
+      }
+      data.uploadCertificateLOAToSpeaker = req.files.photos[0].path;
+    }
+    
+    if (req.files.photos) {
+      if (seminarOrg.uploadCertificateOfOrganizer && fs.existsSync(seminarOrg.uploadCertificateOfOrganizer)) {
+        fs.unlinkSync(seminarOrg.uploadCertificateOfOrganizer);
+      }
+      data.uploadCertificateOfOrganizer = req.files.photos[0].path;
+    }
+
+    if (req.files.photos) {
+      if (seminarOrg.uploadLOAOfOrganizer && fs.existsSync(seminarOrg.uploadLOAOfOrganizer)) {
+        fs.unlinkSync(seminarOrg.uploadLOAOfOrganizer);
+      }
+      data.uploadLOAOfOrganizer = req.files.photos[0].path;
+    }
+
+    await seminarOrg.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
 /**
  * AWARDS RECEIVED
 */ 
@@ -3372,4 +4582,34 @@ module.exports = {
   getCourseCertificationById,
   updateCourseCertification,
   deleteCourseCertification,
+  addSttpConducted,
+  getSttpConductedById,
+  getSttpConductedData,
+  deleteSttpConducted,
+  updateSttpConducted,
+  addSttpAttended,
+  getSttpAttendedById,
+  getSttpAttendedData,
+  deleteSttpAttended,
+  updateSttpAttended,
+  addSttpOrganized,
+  getSttpOrganizedById,
+  getSttpOrganizedData,
+  deleteSttpOrganized,
+  updateSttpOrganized,
+  addSeminarAttended,
+  getSeminarAttendedById,
+  getSeminarAttendedData,
+  deleteSeminarAttended,
+  updateSeminarAttended,
+  addSeminarConducted,
+  getSeminarConductedById,
+  getSeminarConductedData,
+  deleteSeminarConducted,
+  updateSeminarConducted,
+  addSeminarOrganized,
+  getSeminarOrganizedById,
+  getSeminarOrganizedData,
+  deleteSeminarOrganized,
+  updateSeminarOrganized,
 };
