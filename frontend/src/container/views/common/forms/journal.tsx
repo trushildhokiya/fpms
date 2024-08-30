@@ -55,9 +55,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 type Props = {};
 
-/**
- * SCHEMAS
- */
 const ACCEPTED_FILE_TYPES = ["application/pdf"];
 
 const pdfFileSchema = z
@@ -170,6 +167,7 @@ const formSchema = z.object({
 const journalPublication: React.FC = (props: Props) => {
   const user = useSelector((state: any) => state.user);
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
 
   //constants
   const indexingOptions = [
@@ -189,9 +187,7 @@ const journalPublication: React.FC = (props: Props) => {
     "Basic Science and Humanities",
   ];
 
-  // command
-  const [open, setOpen] = useState(false);
-
+  // key-listener
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "d" && (e.metaKey || e.ctrlKey)) {
@@ -204,8 +200,8 @@ const journalPublication: React.FC = (props: Props) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // functions
-
+ 
+  //form schema
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -231,8 +227,8 @@ const journalPublication: React.FC = (props: Props) => {
     },
   });
 
+  //submit 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
     axios
       .post("/common/journal", values, {
         headers: {
@@ -240,7 +236,6 @@ const journalPublication: React.FC = (props: Props) => {
         },
       })
       .then((res) => {
-        // console.log(res.data);
         if (res.data.message === "success") {
           toast({
             title: "Journal added successfully",

@@ -181,7 +181,6 @@ const CopyrightForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
     axios
       .post("/common/copyright", values, {
         headers: {
@@ -189,7 +188,6 @@ const CopyrightForm = (props: Props) => {
         },
       })
       .then((res) => {
-        // console.log(res.data);
         if (res.data.message === "success") {
           toast({
             title: "Copyright added successfully",

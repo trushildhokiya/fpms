@@ -209,15 +209,12 @@ const ProjectForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-
-        // console.log(values)
         axios.post("/common/projects", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         })
             .then((res) => {
-                // console.log(res.data);
                 if (res.data.message === "success") {
                     toast({
                         title: "Project added successfully",

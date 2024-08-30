@@ -161,7 +161,6 @@ const QualificationForm = (props: Props) => {
             }
         })
             .then((res) => {
-                // console.log(res);
                 if (res.data.message === 'success') {
 
                     toast({
@@ -178,8 +177,6 @@ const QualificationForm = (props: Props) => {
             .catch((err) => {
                 console.log(err);
             })
-
-        // console.log(values)
     }
 
     const handleExperienceClick = (event: any) => {

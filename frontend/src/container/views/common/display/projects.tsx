@@ -509,7 +509,6 @@ const ProjectsDisplay = (props: Props) => {
             }
         })
         .then((res)=>{
-            console.log(res);
             if(res.data.message==='success'){
                 window.location.reload()
             }

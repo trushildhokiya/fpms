@@ -11,6 +11,9 @@ const AwardHonors = require('../models/award-honors')
 const Consultancy = require('../models/consultancy')
 const Transaction = require('../models/transaction')
 const Project = require('../models/projects')
+const AwardRecieved = require('../models/awards-recieved')
+const ActivityConducted = require('../models/activity-conducted')
+const CourseCertification = require('../models/course-certification')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -852,7 +855,6 @@ const addJournal = asyncHandler(async (req, res) => {
   data.certificate = certificateURL;
 
   // create entry in journal
-
   const journal = await Journal.create(data);
 
 
@@ -910,7 +912,6 @@ const getJournalById = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User not found!")
   }
-
 
   const journalData = await Journal.findById(id)
 
@@ -1801,7 +1802,7 @@ const deleteAwardsHonors = asyncHandler(async (req, res) => {
     const awardsHonors = await AwardHonors.findById(award_id);
 
     if (!awardsHonors) {
-      throw new Error('Book not found');
+      throw new Error('Awards Honors not found');
     }
 
     // Remove the awards honors ID from the faculty
@@ -2169,6 +2170,575 @@ const deleteProject = asyncHandler(async (req, res) => {
   })
 
 })
+
+
+/**
+ * AWARDS RECEIVED
+*/ 
+
+const addAwardRecieved = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const certificateURL = req.files.certificate[0].path;
+  const photosURL = req.files.photos[0].path;
+
+  data.certificate = certificateURL;
+  data.photos = photosURL;
+
+  // create new Award Received entry
+  const awardRecieved = await AwardRecieved.create(data);
+
+  // add ref id to faculty 
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { awardRecieved: awardRecieved._id } }
+  );
+
+  res.status(200).json({  
+    message: "success",
+  });
+
+});
+
+
+const getAwardRecievedData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate Award Received array to get full awards_recieved data
+  await user.populate('awardRecieved')
+
+  // Extract the populated Award Received data
+  const awardRecievedData = user.awardRecieved
+
+  // Send the response
+  res.status(200).json(awardRecievedData);
+});
+
+
+const getAwardRecievedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Find by id
+  const awardRecievedData = await AwardRecieved.findById(id)
+
+  // Send the response
+  res.status(200).json(awardRecievedData);
+
+})
+
+
+const updateAwardRecieved = asyncHandler(async (req, res) => {
+  // Get required data
+  const data = req.body
+
+  try {
+
+    // Find the Award Received to get the necessary information
+    const awardRecieved = await AwardRecieved.findById(req.body._id)
+
+    if (!awardRecieved) {
+      throw new Error("Awards Received not found")
+    }
+
+    // Update the Award Received
+    // Update the certificate in Award Received
+    if (req.files.certificate) {
+
+      if (awardRecieved.certificate && fs.existsSync(awardRecieved.certificate)) {
+        fs.unlinkSync(awardRecieved.certificate);
+      }
+
+      data.certificate = req.files.certificate[0].path
+
+    }
+
+    // Update the photos in Award Received
+    if (req.files.photos) {
+
+      if (awardRecieved.photos && fs.existsSync(awardRecieved.photos)) {
+        fs.unlinkSync(awardRecieved.photos);
+      }
+
+      data.photos = req.files.photos[0].path
+
+    }
+
+    await awardRecieved.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const deleteAwardRecieved = asyncHandler(async (req, res) => {
+
+  const { awards_recieved_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+
+    // Find the Award Received to get the necessary information
+    const awardRecieved = await AwardRecieved.findById(awards_recieved_id);
+
+    if (!awardRecieved) {
+      throw new Error('Awards Received not found');
+    }
+
+    // Delete the associated file
+    // Delete the certificate
+    if (awardRecieved.certificate && fs.existsSync(awardRecieved.certificate)) {
+      fs.unlinkSync(awardRecieved.certificate);
+    }
+    
+    // Delete the photos
+    if (awardRecieved.photos && fs.existsSync(awardRecieved.photos)) {
+      fs.unlinkSync(awardRecieved.photos);
+    }
+    
+    // Remove the Award Received ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { awardRecieved: awards_recieved_id } }
+    );
+    
+    // Delete the Award Received entry from the database
+    await AwardRecieved.findByIdAndDelete(awards_recieved_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/**
+ * AWARDS RECEIVED END
+*/ 
+
+
+/**
+ * ACTIVITY CONDUCTED
+*/ 
+
+const addActivityConducted = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const certificateURL = req.files.certificate[0].path;
+  const bannerURL = req.files.banner[0].path;
+  const reportURL = req.files.report[0].path;
+  const photosURL = req.files.photos[0].path;
+
+  data.invitationLetter = invitationLetterURL;
+  data.certificate = certificateURL;
+  data.banner = bannerURL;
+  data.report = reportURL;
+  data.photos = photosURL;
+
+  // create new Award Received entry
+  const activityConducted = await ActivityConducted.create(data);
+
+  // add ref id to faculty 
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { activityConducted: activityConducted._id } }
+  );
+
+  res.status(200).json({  
+    message: "success",
+  });
+
+});
+
+
+const getActivityConductedData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate Award Received array to get full awards_recieved data
+  await user.populate('activityConducted')
+
+  // Extract the populated Award Received data
+  const activityConductedData = user.activityConducted
+ 
+  // Send the response
+  res.status(200).json(activityConductedData);
+});
+
+
+const getActivityConductedById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Find by id
+  const activityConductedData = await ActivityConducted.findById(id)
+
+  // Send the response
+  res.status(200).json(activityConductedData);
+
+})
+
+
+const updateActivityConducted = asyncHandler(async (req, res) => {
+  // Get required data
+  const data = req.body
+  console.log(data)
+  try {
+    // Find the Activity Conducted to get the necessary information
+    const activityConducted = await ActivityConducted.findById(req.body._id)
+
+    if (!activityConducted) {
+      throw new Error("Activity Conducted not found")
+    }
+
+    // Update the Activity Conducted
+    // Update the invitation letter in Activity Conducted
+    if (req.files.invitationLetter) {
+      if (activityConducted.invitationLetter && fs.existsSync(activityConducted.invitationLetter)) {
+        fs.unlinkSync(activityConducted.invitationLetter);
+      }
+      data.invitationLetter = req.files.invitationLetter[0].path
+    }
+
+    // Update the certificate in Activity Conducted
+    if (req.files.certificate) {
+      if (activityConducted.certificate && fs.existsSync(activityConducted.certificate)) {
+        fs.unlinkSync(activityConducted.certificate);
+      }
+      data.certificate = req.files.certificate[0].path
+    }
+    
+    // Update the banner in Activity Conducted
+    if (req.files.banner) {
+      if (activityConducted.banner && fs.existsSync(activityConducted.banner)) {
+        fs.unlinkSync(activityConducted.banner);
+      }
+      data.banner = req.files.banner[0].path
+    }
+
+    // Update the report in Activity Conducted
+    if (req.files.report) {
+      if (activityConducted.report && fs.existsSync(activityConducted.report)) {
+        fs.unlinkSync(activityConducted.report);
+      }
+      data.report = req.files.report[0].path
+    }
+
+    // Update the photos in Activity Conducted
+    if (req.files.photos) {
+      if (activityConducted.photos && fs.existsSync(activityConducted.photos)) {
+        fs.unlinkSync(activityConducted.photos);
+      }
+      data.photos = req.files.photos[0].path
+    }
+    await activityConducted.updateOne(data)
+
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const deleteActivityConducted = asyncHandler(async (req, res) => {
+  const { activity_conducted_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+    // Find the Award Received to get the necessary information
+    const activityConducted = await ActivityConducted.findById(activity_conducted_id);
+
+    if (!activityConducted) {
+      throw new Error('Activity Conducted not found');
+    }
+
+    // Delete the associated file
+    // Delete the invitationLetter
+    if (activityConducted.invitationLetter && fs.existsSync(activityConducted.invitationLetter)) {
+      fs.unlinkSync(activityConducted.invitationLetter);
+    }
+
+    // Delete the certificate
+    if (activityConducted.certificate && fs.existsSync(activityConducted.certificate)) {
+      fs.unlinkSync(activityConducted.certificate);
+    }
+
+    // Delete the banner
+    if (activityConducted.banner && fs.existsSync(activityConducted.banner)) {
+      fs.unlinkSync(activityConducted.banner);
+    }
+
+    // Delete the report
+    if (activityConducted.report && fs.existsSync(activityConducted.report)) {
+      fs.unlinkSync(activityConducted.report);
+    }
+
+    // Delete the photos
+    if (activityConducted.photos && fs.existsSync(activityConducted.photos)) {
+      fs.unlinkSync(activityConducted.photos);
+    }
+
+    
+    // Remove the Award Received ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { activityConducted: activity_conducted_id } }
+    );
+    
+    // Delete the Award Received entry from the database
+    await ActivityConducted.findByIdAndDelete(activity_conducted_id);
+
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/**
+ * ACTIVITY CONDUCTED END
+*/ 
+
+
+/**
+ * COURSE CERTIFICATION
+*/ 
+
+const addCourseCertification = asyncHandler(async (req, res) => {
+
+  //get required data
+  const data = req.body;
+  const { email } = req.decodedData;
+
+  // find user
+  const user = await Faculty.findOne({ email: email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!");
+  }
+
+  // add file paths to data
+  const certificateURL = req.file.path;
+  data.certificate = certificateURL;
+ 
+  // create new Course Certification entry
+  const courseCertification = await CourseCertification.create(data);
+
+  // add ref id to faculty 
+  await Faculty.findOneAndUpdate(
+    { email: email },
+    { $push: { courseCertification: courseCertification._id } }
+  );
+
+  res.status(200).json({  
+    message: "success",
+  });
+
+});
+
+
+const getCourseCertificationData = asyncHandler(async (req, res) => {
+  // Get required data
+  const { email } = req.decodedData
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Populate Course Certification array to get full Course Certification data
+  await user.populate('courseCertification')
+
+  // Extract the populated Course Certification data
+  const courseCertificationData = user.courseCertification
+ 
+  // Send the response
+  res.status(200).json(courseCertificationData);
+});
+
+
+const getCourseCertificationById = asyncHandler(async (req, res) => {
+
+  // Get required data
+  const { email } = req.decodedData
+  const { id } = req.params
+
+  // Find user
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found!")
+  }
+
+  // Find by id
+  const courseCertificationData = await CourseCertification.findById(id)
+
+  // Send the response
+  res.status(200).json(courseCertificationData);
+
+})
+
+
+const updateCourseCertification = asyncHandler(async (req, res) => {
+  // Get required data
+  const data = req.body
+  try {
+    // Find the Course Certification to get the necessary information
+    const courseCertification = await CourseCertification.findById(req.body._id)
+
+    if (!courseCertification) {
+      throw new Error("Course Certification not found")
+    }
+
+    // Update the Course Certification
+    // Update the certificate
+    if (req.file) {
+      if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
+        fs.unlinkSync(courseCertification.certificate);
+      }
+      data.certificate = req.file.path
+    }
+  
+    await courseCertification.updateOne(data)
+  }
+  catch (err) {
+    res.status(400)
+    throw new Error(err)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+const deleteCourseCertification = asyncHandler(async (req, res) => {
+  const { course_certification_id } = req.body
+  const { email } = req.decodedData
+
+  try {
+    // Find the Course Certification to get the necessary information
+    const courseCertification = await CourseCertification.findById(course_certification_id);
+
+    if (!courseCertification) {
+      throw new Error('Course Certification not found');
+    }
+
+    // Delete the associated file
+    // Delete the certificate
+    if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
+      fs.unlinkSync(courseCertification.certificate);
+    }
+    
+    // Remove the Course Certification ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { courseCertification: course_certification_id } }
+    );
+    
+    // Delete the Course Certification entry from the database
+    await CourseCertification.findByIdAndDelete(course_certification_id);
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+
+  res.status(200).json({
+    message: 'success'
+  })
+
+})
+
+/**
+ * ACTIVITY CONDUCTED END
+*/ 
+
 
 
 /**
@@ -2787,4 +3357,19 @@ module.exports = {
   updateBook,
   updateBookChapter,
   updateAwardsHonors,
+  addAwardRecieved,
+  getAwardRecievedData,
+  getAwardRecievedById,
+  updateAwardRecieved,
+  deleteAwardRecieved,
+  addActivityConducted,
+  getActivityConductedData,
+  getActivityConductedById,
+  updateActivityConducted,
+  deleteActivityConducted,
+  addCourseCertification,
+  getCourseCertificationData,
+  getCourseCertificationById,
+  updateCourseCertification,
+  deleteCourseCertification,
 };

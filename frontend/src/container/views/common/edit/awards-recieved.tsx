@@ -54,12 +54,31 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import { useNavigate, useParams } from 'react-router-dom'
 
 type Props = {};
 
 /**
  * SCHEMAS
  */
+
+interface AwardRecieved {
+  _id: string;
+  title: string;
+  organization: string;
+  venue: string;
+  type: string;
+  date: Date;
+  level: string;
+  remarks: string;
+  certificate: string;
+  photos: string;
+  videoUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 const ACCEPTED_FILE_TYPES = ["application/pdf"];
 const pdfFileSchema = z
   .instanceof(File)
@@ -71,12 +90,16 @@ const pdfFileSchema = z
   }, "File must be a pdf");
 
 const formSchema = z.object({
-  
-  title: z.string().min(2, {
-    message: "Title is required!",
-  }).max(300, {
-    message: "Title must not exceed 300 characters",
-  }),
+  _id: z.string().optional(),
+  title: z
+    .string()
+    .min(2, {
+      message: "Title is required!",
+    })
+    .max(100, {
+      message: "Title must not exceed 100 characters",
+    }),
+
   organization: z
     .string()
     .min(2, {
@@ -111,22 +134,22 @@ const formSchema = z.object({
       message: "Remark is required!",
     })
     .max(200, {
-      message: "Remark mus not exceed 200 characters",
+      message: "Remark must not exceed 200 characters",
     }),
 
-  certificate: pdfFileSchema,
-  photos: pdfFileSchema,
+  certificate: z.union([pdfFileSchema, z.any().optional()]),
+  photos: z.union([pdfFileSchema, z.any().optional()]),
   videoUrl: z.string().min(1).url({
     message: "Invalid url",
   }),
 });
 
-const AwardRecievedForm = (props: Props) => {
+const AwardRecievedEditForm = (props: Props) => {
   const user = useSelector((state: any) => state.user);
   const { toast } = useToast();
-
-  // command
   const [open, setOpen] = useState(false);
+  const { id } = useParams()
+    const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -140,10 +163,23 @@ const AwardRecievedForm = (props: Props) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // functions
+  // Fetch the Award Recieved data
+  useEffect(() => {
+    axios
+        .get(`/common/awards-recieved/${id}`)
+        .then((res) => {
+            const data: AwardRecieved = res.data
+            form.reset(data)
+        })
+        .catch((err) => {
+            console.error("Error fetching Awards Recieved data:", err);
+        });
+}, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id: "",
       title: "",
       venue: "",
       organization: "",
@@ -158,26 +194,27 @@ const AwardRecievedForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    axios
-      .post("/common/awards-recieved", values, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+    axios.put('/common/awards-recieved', values, {
+      headers: {
+          'Content-Type': 'multipart/form-data'
+      }
+  })
       .then((res) => {
-        if (res.data.message === "success") {
-          toast({
-            title: "Awards Received added successfully",
-            description:
-              "Your Awards Received information has been added successfully",
-            action: <ToastAction altText="okay">Okay</ToastAction>,
-          });
-          form.reset();
-        }
+          if (res.data.message === 'success') {
+
+              toast({
+                  title: "Awards Recieved updated successfully",
+                  description: "Your Awards Recieved information has been updated successfully",
+                  action: (
+                      <ToastAction className='' onClick={() => { navigate('/common/display/awards-recieved') }} altText="okay">Okay</ToastAction>
+                  ),
+              })
+              form.reset()
+          }
       })
       .catch((err) => {
-        console.log(err);
-      });
+          console.error(err);
+      })
   }
 
   return (
@@ -240,6 +277,21 @@ const AwardRecievedForm = (props: Props) => {
                 </AlertDescription>
               </Alert>
 
+              {/* ID HIDDEN */}
+              <FormField
+                  control={form.control}
+                  name={`_id`}
+                  render={({ field }) => (
+                    <FormItem className='hidden'>
+                      <FormLabel className='text-grey-800'>ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ID" autoComplete='off' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
               <FormField
                 control={form.control}
                 name="title"
@@ -268,6 +320,7 @@ const AwardRecievedForm = (props: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -295,6 +348,7 @@ const AwardRecievedForm = (props: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -500,4 +554,4 @@ const AwardRecievedForm = (props: Props) => {
   );
 };
 
-export default AwardRecievedForm;
+export default AwardRecievedEditForm;

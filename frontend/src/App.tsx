@@ -1,10 +1,10 @@
 /**
  * MAIN IMPORTS
  */
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
-import { useEffect } from 'react';
-import { loadUserData } from './utils/functions/reduxFunctions';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { useEffect } from "react";
+import { loadUserData } from "./utils/functions/reduxFunctions";
 /**
  * CUSTOM IMPORTS
  */
@@ -23,137 +23,330 @@ import Privacy from './container/privacy/privacy';
  * SUPER ADMIN IMPORTS
  */
 
-const SuperAdminDashboard = lazy(() => import('./container/views/superadmin/container/dashboard/dashboard'));
-const Toggleusers = lazy(() => import('./container/views/superadmin/container/Toggleusers'));
-const Adduser = lazy(() => import('./container/views/superadmin/container/Adduser'));
+const SuperAdminDashboard = lazy(
+  () => import("./container/views/superadmin/container/dashboard/dashboard")
+);
+const Toggleusers = lazy(
+  () => import("./container/views/superadmin/container/Toggleusers")
+);
+const Adduser = lazy(
+  () => import("./container/views/superadmin/container/Adduser")
+);
 
 /**
  * ADMIN IMPORTS
  */
-const Dashboard = lazy(() => import('./container/views/admin/container/dashboard/dashboard'));
-const AddUser = lazy(() => import('./container/views/admin/container/addUser/AddUser'));
-const Profile = lazy(() => import('./container/views/admin/container/profile/Profile'));
-const DisplayUsers = lazy(() => import('./container/views/admin/container/displayUsers/DisplayUsers'));
-const AdminPatentDisplay = lazy(() => import('./container/views/admin/container/display/patent'));
-const AdminCopyrightDisplay = lazy(() => import('./container/views/admin/container/display/copyright'));
-const AdminJournalDisplay = lazy(() => import('./container/views/admin/container/display/journal'));
-const AdminConferenceDisplay = lazy(() => import('./container/views/admin/container/display/conference'));
-const AdminBookDisplay = lazy(() => import('./container/views/admin/container/display/book'));
-const AdminBookChapterDisplay = lazy(() => import('./container/views/admin/container/display/book-chapter'));
-const AdminNeedBasedProjectDisplay = lazy(() => import('./container/views/admin/container/display/need-based-project'));
-const AdminAwardsHonorsDisplay = lazy(() => import('./container/views/admin/container/display/award-honors'));
-const AdminProjectsDisplay = lazy(() => import('./container/views/admin/container/display/projects'));
-const AdminConsultancyDisplay = lazy(() => import('./container/views/admin/container/display/consultancy'));
-
+const Dashboard = lazy(
+  () => import("./container/views/admin/container/dashboard/dashboard")
+);
+const AddUser = lazy(
+  () => import("./container/views/admin/container/addUser/AddUser")
+);
+const Profile = lazy(
+  () => import("./container/views/admin/container/profile/Profile")
+);
+const DisplayUsers = lazy(
+  () => import("./container/views/admin/container/displayUsers/DisplayUsers")
+);
+const AdminPatentDisplay = lazy(
+  () => import("./container/views/admin/container/display/patent")
+);
+const AdminCopyrightDisplay = lazy(
+  () => import("./container/views/admin/container/display/copyright")
+);
+const AdminJournalDisplay = lazy(
+  () => import("./container/views/admin/container/display/journal")
+);
+const AdminConferenceDisplay = lazy(
+  () => import("./container/views/admin/container/display/conference")
+);
+const AdminBookDisplay = lazy(
+  () => import("./container/views/admin/container/display/book")
+);
+const AdminBookChapterDisplay = lazy(
+  () => import("./container/views/admin/container/display/book-chapter")
+);
+const AdminNeedBasedProjectDisplay = lazy(
+  () => import("./container/views/admin/container/display/need-based-project")
+);
+const AdminAwardsHonorsDisplay = lazy(
+  () => import("./container/views/admin/container/display/award-honors")
+);
+const AdminProjectsDisplay = lazy(
+  () => import("./container/views/admin/container/display/projects")
+);
+const AdminConsultancyDisplay = lazy(
+  () => import("./container/views/admin/container/display/consultancy")
+);
 
 /**
  * HEAD OF DEPARTMENT IMPORTS
  */
-const HeadDashboard = lazy(() => import('./container/views/head/container/dashboard/dashboard'));
-const Faculty = lazy(() => import('./container/views/head/container/faculties/Faculty'));
-const Notify = lazy(() => import('./container/views/head/container/notify/Notify'));
-const Notifications = lazy(() => import('./container/views/head/container/notifications/Notifications'));
-const HeadPatentDisplay = lazy(() => import('./container/views/head/container/display/patent'));
-const HeadCopyrightDisplay = lazy(() => import('./container/views/head/container/display/copyright'));
-const HeadJournalDisplay = lazy(() => import('./container/views/head/container/display/journal'));
-const HeadConferenceDisplay = lazy(() => import('./container/views/head/container/display/conference'));
-const HeadBookDisplay = lazy(() => import('./container/views/head/container/display/book'));
-const HeadBookChapterDisplay = lazy(() => import('./container/views/head/container/display/book-chapter'));
-const HeadNeedBasedProjectDisplay = lazy(() => import('./container/views/head/container/display/need-based-project'));
-const HeadAwardsHonorsDisplay = lazy(() => import('./container/views/head/container/display/award-honors'));
-const HeadProjectsDisplay = lazy(() => import('./container/views/head/container/display/projects'));
-const HeadConsultancyDisplay = lazy(() => import('./container/views/head/container/display/consultancy'));
+const HeadDashboard = lazy(
+  () => import("./container/views/head/container/dashboard/dashboard")
+);
+const Faculty = lazy(
+  () => import("./container/views/head/container/faculties/Faculty")
+);
+const Notify = lazy(
+  () => import("./container/views/head/container/notify/Notify")
+);
+const Notifications = lazy(
+  () => import("./container/views/head/container/notifications/Notifications")
+);
+const HeadPatentDisplay = lazy(
+  () => import("./container/views/head/container/display/patent")
+);
+const HeadCopyrightDisplay = lazy(
+  () => import("./container/views/head/container/display/copyright")
+);
+const HeadJournalDisplay = lazy(
+  () => import("./container/views/head/container/display/journal")
+);
+const HeadConferenceDisplay = lazy(
+  () => import("./container/views/head/container/display/conference")
+);
+const HeadBookDisplay = lazy(
+  () => import("./container/views/head/container/display/book")
+);
+const HeadBookChapterDisplay = lazy(
+  () => import("./container/views/head/container/display/book-chapter")
+);
+const HeadNeedBasedProjectDisplay = lazy(
+  () => import("./container/views/head/container/display/need-based-project")
+);
+const HeadAwardsHonorsDisplay = lazy(
+  () => import("./container/views/head/container/display/award-honors")
+);
+const HeadProjectsDisplay = lazy(
+  () => import("./container/views/head/container/display/projects")
+);
+const HeadConsultancyDisplay = lazy(
+  () => import("./container/views/head/container/display/consultancy")
+);
 
 /**
  * FACULTY IMPORTS
  */
-const FacultyDashboard = lazy(() => import('./container/views/faculty/container/dashboard/dashboard'));
+const FacultyDashboard = lazy(
+  () => import("./container/views/faculty/container/dashboard/dashboard")
+);
 
 /**
  * PROTECTED ROUTES
  */
-import AdminProtectedRoute from './components/protected/AdminProtectedRoute';
-import HeadProtectedRoute from './components/protected/HeadProtectedRoute';
-import FacultyProtectedRoute from './components/protected/FacultyProtectedRoute';
-import CommonProtectedRoute from './components/protected/CommonProtectedRoute';
-import SuperAdminProtectedRoute from './components/protected/SuperAdminProtectedRoute';
-
-
+import AdminProtectedRoute from "./components/protected/AdminProtectedRoute";
+import HeadProtectedRoute from "./components/protected/HeadProtectedRoute";
+import FacultyProtectedRoute from "./components/protected/FacultyProtectedRoute";
+import CommonProtectedRoute from "./components/protected/CommonProtectedRoute";
+import SuperAdminProtectedRoute from "./components/protected/SuperAdminProtectedRoute";
 
 /**
  * RESEARCH AND PROFILE FORM IMPORTS
  */
-const ConsultancyForm = lazy(() => import('./container/views/common/forms/consultancy'));
-const CopyrightForm = lazy(() => import('./container/views/common/forms/copyright'));
-const ProjectForm = lazy(() => import('./container/views/common/forms/project'));
-const JournalForm = lazy(() => import('./container/views/common/forms/journal'));
-const BookForm = lazy(() => import('./container/views/common/forms/book'));
-const BookChapterForm = lazy(() => import('./container/views/common/forms/book-chapter'));
-const PatentForm = lazy(() => import('./container/views/common/forms/patent'));
-const ResearchProfileForm = lazy(() => import('./container/views/common/forms/research-profile'));
-const ProfileForm = lazy(() => import('./container/views/common/forms/profile'));
-const ExperienceForm = lazy(() => import('./container/views/common/forms/experience'));
-const QualificationForm = lazy(() => import('./container/views/common/forms/qualification'));
-const AwardsAndHonorsForm = lazy(() => import('./container/views/common/forms/awards-honors'));
-const ConferenceForm = lazy(() => import('./container/views/common/forms/conference'));
-const NeedProjectsForm = lazy(() => import('./container/views/common/forms/need-based-project'));
+const ConsultancyForm = lazy(
+  () => import("./container/views/common/forms/consultancy")
+);
+const CopyrightForm = lazy(
+  () => import("./container/views/common/forms/copyright")
+);
+const ProjectForm = lazy(
+  () => import("./container/views/common/forms/project")
+);
+const JournalForm = lazy(
+  () => import("./container/views/common/forms/journal")
+);
+const BookForm = lazy(() => import("./container/views/common/forms/book"));
+const BookChapterForm = lazy(
+  () => import("./container/views/common/forms/book-chapter")
+);
+const PatentForm = lazy(() => import("./container/views/common/forms/patent"));
+const ResearchProfileForm = lazy(
+  () => import("./container/views/common/forms/research-profile")
+);
+const ProfileForm = lazy(
+  () => import("./container/views/common/forms/profile")
+);
+const ExperienceForm = lazy(
+  () => import("./container/views/common/forms/experience")
+);
+const QualificationForm = lazy(
+  () => import("./container/views/common/forms/qualification")
+);
+const AwardsAndHonorsForm = lazy(
+  () => import("./container/views/common/forms/awards-honors")
+);
+const ConferenceForm = lazy(
+  () => import("./container/views/common/forms/conference")
+);
+const NeedProjectsForm = lazy(
+  () => import("./container/views/common/forms/need-based-project")
+);
 
 /**
  * EDITABLE RESEARCH AND PROFILE FORM IMPORTS
  */
-const ResearchProfileEditForm = lazy(() => import('./container/views/common/edit/research-profile'));
-const ProfileEditForm = lazy(() => import('./container/views/common/edit/profile'));
-const ExperienceEditForm = lazy(() => import('./container/views/common/edit/experience'));
-const QualificationEditForm = lazy(() => import('./container/views/common/edit/qualification'));
-const PatentEditForm = lazy(() => import('./container/views/common/edit/patent'));
-const CopyrightEditForm = lazy(() => import('./container/views/common/edit/copyright'));
-const JournalEditForm = lazy(() => import('./container/views/common/edit/journal'));
-const ConferenceEditForm = lazy(() => import('./container/views/common/edit/conference'));
-const BookEditForm = lazy(() => import('./container/views/common/edit/book'));
-const BookChapterEditForm = lazy(() => import('./container/views/common/edit/book-chapter'));
-const AwardsHonorsEditForm = lazy(() => import('./container/views/common/edit/awards-honors'));
-const NeedBasedProjectEditForm = lazy(() => import('./container/views/common/edit/need-based-project'));
-const ProjectEditForm = lazy(() => import('./container/views/common/edit/project'));
-const ConsultancyEditForm = lazy(() => import('./container/views/common/edit/consultancy'));
+const ResearchProfileEditForm = lazy(
+  () => import("./container/views/common/edit/research-profile")
+);
+const ProfileEditForm = lazy(
+  () => import("./container/views/common/edit/profile")
+);
+const ExperienceEditForm = lazy(
+  () => import("./container/views/common/edit/experience")
+);
+const QualificationEditForm = lazy(
+  () => import("./container/views/common/edit/qualification")
+);
+const PatentEditForm = lazy(
+  () => import("./container/views/common/edit/patent")
+);
+const CopyrightEditForm = lazy(
+  () => import("./container/views/common/edit/copyright")
+);
+const JournalEditForm = lazy(
+  () => import("./container/views/common/edit/journal")
+);
+const ConferenceEditForm = lazy(
+  () => import("./container/views/common/edit/conference")
+);
+const BookEditForm = lazy(() => import("./container/views/common/edit/book"));
+const BookChapterEditForm = lazy(
+  () => import("./container/views/common/edit/book-chapter")
+);
+const AwardsHonorsEditForm = lazy(
+  () => import("./container/views/common/edit/awards-honors")
+);
+const NeedBasedProjectEditForm = lazy(
+  () => import("./container/views/common/edit/need-based-project")
+);
+const ProjectEditForm = lazy(
+  () => import("./container/views/common/edit/project")
+);
+const ConsultancyEditForm = lazy(
+  () => import("./container/views/common/edit/consultancy")
+);
 
 /**
  *  ACHIEVEMENTS FORM IMPORTS
  */
 
-const SttpAttended = lazy(() => import('@/container/views/common/forms/sttp-attended'));
-const SttpConducted = lazy(() => import('@/container/views/common/forms/sttp-conducted'));
-const CourseCertificate = lazy(() => import('@/container/views/common/forms/course-certificate'));
-const AwardRecieved = lazy(() => import('@/container/views/common/forms/awards-recieved'));
-const SeminarAttended = lazy(() => import('@/container/views/common/forms/seminar-attended'));
-const SeminarConducted = lazy(() => import('@/container/views/common/forms/seminar-conducted'));
-const ActivityConducted = lazy(() => import('@/container/views/common/forms/activity-conducted'));
-const SttpOrganized = lazy(() => import('@/container/views/common/forms/sttp-organized'));
-const SeminarOrganized = lazy(()=> import('@/container/views/common/forms/seminar-organized'))
+const SttpAttended = lazy(
+  () => import("@/container/views/common/forms/sttp-attended")
+);
+const SttpConducted = lazy(
+  () => import("@/container/views/common/forms/sttp-conducted")
+);
+
+//View Awards Received Form
+const AwardRecieved = lazy(
+  () => import("@/container/views/common/forms/awards-recieved")
+);
+
+//Editable Awards Received Form
+const AwardRecievedEditForm = lazy(
+  () => import("./container/views/common/edit/awards-recieved")
+);
+
+//Display Awards Received Form
+const AwardRecievedDisplay = lazy(
+  () => import("./container/views/common/display/awards-recieved")
+);
+
+//View Activity Conducted Form
+const ActivityConducted = lazy(
+  () => import("@/container/views/common/forms/activity-conducted")
+);
+
+//Editable Activity Conducted Form
+const ActivityConductedEdit = lazy(
+  () => import("./container/views/common/edit/activity-conducted")
+);
+
+//Display Activity Conducted Form
+const ActivityConductedDisplay = lazy(
+  () => import("./container/views/common/display/activity-conducted")
+);
+
+//View Course Certificate Form
+const CourseCertificate = lazy(
+  () => import("@/container/views/common/forms/course-certification")
+);
+
+//Editable Course Certificate Form
+const CourseCertificateEdit = lazy(
+  () => import("./container/views/common/edit/course-certification")
+);
+
+//Display Course Certificate Form
+const CourseCertificateDisplay = lazy(
+  () => import("./container/views/common/display/course-certification")
+);
+
+const SeminarAttended = lazy(
+  () => import("@/container/views/common/forms/seminar-attended")
+);
+const SeminarConducted = lazy(
+  () => import("@/container/views/common/forms/seminar-conducted")
+);
+
+const SttpOrganized = lazy(
+  () => import("@/container/views/common/forms/sttp-organized")
+);
+const SeminarOrganized = lazy(
+  () => import("@/container/views/common/forms/seminar-organized")
+);
 
 /**
  * COMMON DISPLAY IMPORTS
  */
-const ProfileDisplay = lazy(() => import('./container/views/common/display/profile'));
-const ExperienceDisplay = lazy(() => import('./container/views/common/display/experience'));
-const ResearchProfileDisplay = lazy(() => import('./container/views/common/display/research-profile'));
-const QualificationDisplay = lazy(() => import('./container/views/common/display/qualification'));
-const PatentDisplay = lazy(() => import('./container/views/common/display/patent'));
-const CopyrightDisplay = lazy(() => import('./container/views/common/display/copyright'));
-const JournalDisplay = lazy(() => import('./container/views/common/display/journal'));
-const ConferenceDisplay = lazy(() => import('./container/views/common/display/conference'));
-const BookDisplay = lazy(() => import('./container/views/common/display/book'));
-const BookChapterDisplay = lazy(() => import('./container/views/common/display/book-chapter'));
-const NeedBasedProjectDisplay = lazy(() => import('./container/views/common/display/need-based-project'));
-const AwardHonorsDisplay = lazy(() => import('./container/views/common/display/award-honors'));
-const ConsultancyDisplay = lazy(() => import('./container/views/common/display/consultancy'));
-const ProjectsDisplay = lazy(() => import('./container/views/common/display/projects'));
-const BulkUpload = lazy(()=> import('@/container/views/common/bulk/bulk'))
+const ProfileDisplay = lazy(
+  () => import("./container/views/common/display/profile")
+);
+const ExperienceDisplay = lazy(
+  () => import("./container/views/common/display/experience")
+);
+const ResearchProfileDisplay = lazy(
+  () => import("./container/views/common/display/research-profile")
+);
+const QualificationDisplay = lazy(
+  () => import("./container/views/common/display/qualification")
+);
+const PatentDisplay = lazy(
+  () => import("./container/views/common/display/patent")
+);
+const CopyrightDisplay = lazy(
+  () => import("./container/views/common/display/copyright")
+);
+const JournalDisplay = lazy(
+  () => import("./container/views/common/display/journal")
+);
+const ConferenceDisplay = lazy(
+  () => import("./container/views/common/display/conference")
+);
+const BookDisplay = lazy(() => import("./container/views/common/display/book"));
+const BookChapterDisplay = lazy(
+  () => import("./container/views/common/display/book-chapter")
+);
+const NeedBasedProjectDisplay = lazy(
+  () => import("./container/views/common/display/need-based-project")
+);
+const AwardHonorsDisplay = lazy(
+  () => import("./container/views/common/display/award-honors")
+);
+const ConsultancyDisplay = lazy(
+  () => import("./container/views/common/display/consultancy")
+);
+const ProjectsDisplay = lazy(
+  () => import("./container/views/common/display/projects")
+);
+const BulkUpload = lazy(() => import("@/container/views/common/bulk/bulk"));
+
 
 function App() {
-
   useEffect(() => {
-    loadUserData()
-  })
+    loadUserData();
+  });
 
   return (
     <BrowserRouter>

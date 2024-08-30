@@ -145,7 +145,6 @@ const ProfileForm = (props: Props) => {
 
         axios.post('/common/profile',values)
         .then((res)=>{
-            console.log(res);
             if(res.data.message==='success'){
 
                 toast({

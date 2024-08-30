@@ -61,6 +61,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {};
 
+//add this
 interface Patent {
   _id: string;
   title: string;
@@ -149,7 +150,7 @@ const formSchema = z
 
     filingDate: z.date(),
     grantDate: z.date(),
-    patentCertificate: z.union([pdfFileSchema, z.any().optional()]),
+    patentCertificate: z.union([pdfFileSchema, z.any().optional()]), //
   })
   .refine((data) => new Date(data.grantDate) > new Date(data.filingDate), {
     message: "End date must be greater than start date",
@@ -172,8 +173,8 @@ const PatentForm = (props: Props) => {
 
   // command
   const [open, setOpen] = useState(false);
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const { id } = useParams() // 
+  const navigate = useNavigate() //
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -187,6 +188,7 @@ const PatentForm = (props: Props) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  ///
   useEffect(() => {
     // Fetch the patent data
     axios
@@ -238,11 +240,11 @@ const PatentForm = (props: Props) => {
         if (res.data.message === 'success') {
 
           toast({
-            title: "patent updated successfully",
+            title: "Patent Updated Successfully",
             description: "Your patent information has been updated successfully",
             action: (
               <ToastAction className='' onClick={() => { navigate('/common/display/patent') }} altText="okay">Okay</ToastAction>
-            ),
+            ),///
           })
           form.reset()
 
@@ -491,8 +493,8 @@ const PatentForm = (props: Props) => {
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
+                        defaultValue={field.value}//
+                        value={field.value}//
                       >
                         <FormControl>
                           <SelectTrigger>

@@ -175,7 +175,6 @@ const FacultyResearchProfile: React.FC = (props: Props) => {
         
         axios.post('/common/research-profile',values)
         .then((res)=>{
-            // console.log(res);
             if(res.data.message==='success'){
 
                 toast({

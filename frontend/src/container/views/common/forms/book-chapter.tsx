@@ -239,7 +239,6 @@ const BookChapterForm: React.FC = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // console.log(values);
     axios
       .post("/common/book-chapter", values, {
         headers: {
@@ -247,7 +246,6 @@ const BookChapterForm: React.FC = (props: Props) => {
         },
       })
       .then((res) => {
-        // console.log(res.data);
         if (res.data.message === "success") {
           toast({
             title: "Book Chapter added successfully",

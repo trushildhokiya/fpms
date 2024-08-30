@@ -41,7 +41,7 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {}
 
@@ -106,7 +106,7 @@ const pdfFileSchema = z.instanceof(File)
     )
 
 const formSchema = z.object({
-
+    _id: z.string().optional(),
     projectTitle: z.string().min(1, {
         message: "Project Title required!"
     }).max(300, {
@@ -188,10 +188,12 @@ const formSchema = z.object({
 const NeedBasedProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
-    const { toast } = useToast()
+    const [open, setOpen] = useState(false)
+    const { id } = useParams()
+    const navigate = useNavigate()
+    const { toast }= useToast()
 
     //constants
-
     const departments = [
         "Computer",
         "Information Technology",
@@ -199,10 +201,6 @@ const NeedBasedProjectForm = (props: Props) => {
         "Electronics and Telecommunication",
         "Basic Science and Humanities"
     ];
-
-    // command
-    const [open, setOpen] = useState(false)
-    const { id } = useParams()
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -216,8 +214,9 @@ const NeedBasedProjectForm = (props: Props) => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
+
+    // Fetch the project data
     useEffect(() => {
-        // Fetch the project data
         axios
             .get(`/common/need-based-project/${id}`)
             .then((res) => {
@@ -236,13 +235,12 @@ const NeedBasedProjectForm = (props: Props) => {
                 console.error("Error fetching project honors data:", err);
             });
     }, []);
-    // functions
 
-
-
+    //form schema
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id: "",
             projectTitle: "",
             institutionName: "",
             collaborationType: "",
@@ -358,12 +356,29 @@ const NeedBasedProjectForm = (props: Props) => {
         </div>
     );
 
-
-
+    //Posting the updates 
     function onSubmit(values: z.infer<typeof formSchema>) {
-
-        console.log(values);
-
+        axios.put("/common/need-based-project", values, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+        .then((res) => {
+            if (res.data.message === "success") {
+                toast({
+                    title: "Projects updated successfully",
+                    description:
+                        "Your need based projects information has been updated successfully",
+                    action: (
+                      <ToastAction className='' onClick={() => { navigate('/common/display/need-based-project') }} altText="okay">Okay</ToastAction>
+                    ),
+                });
+                form.reset();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     }
 
     return (
@@ -426,6 +441,22 @@ const NeedBasedProjectForm = (props: Props) => {
                             </Alert>
 
                             <div className="">
+
+                                {/* ID HIDDEN */}
+                                <FormField
+                                control={form.control}
+                                name={`_id`}
+                                render={({ field }) => (
+                                    <FormItem className='hidden'>
+                                    <FormLabel className='text-grey-800'>ID</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="ID" autoComplete='off' {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                
                                 <FormField
                                     control={form.control}
                                     name="projectTitle"
@@ -723,7 +754,7 @@ const NeedBasedProjectForm = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Department</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select  Department" />

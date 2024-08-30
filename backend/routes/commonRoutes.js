@@ -64,6 +64,21 @@ const {
   updateBook,
   updateBookChapter,
   updateAwardsHonors,
+  updateAwardRecieved,
+  getAwardRecievedById,
+  addAwardRecieved,
+  getAwardRecievedData,
+  deleteAwardRecieved,
+  addActivityConducted,
+  getActivityConductedData,
+  getActivityConductedById,
+  deleteActivityConducted,
+  updateActivityConducted,
+  addCourseCertification,
+  getCourseCertificationData,
+  getCourseCertificationById,
+  deleteCourseCertification,
+  updateCourseCertification,
 } = require("../controller/commonController");
 
 //add the file upload modules here
@@ -82,6 +97,9 @@ const {
   facultyProfileImageUpload,
   qualificationFileUpload,
   debugFileUpload,
+  awardsReceivedFileUpload,
+  activityConductedFileUpload,
+  courseCertificationFileUpload
 } = require("../middleware/fileUpload");
 const router = express.Router();
 
@@ -2929,6 +2947,107 @@ router.route('/award-honors').get(facultyAuthenticator, getAwardHonorsData)
 
 router.route('/award-honors').delete(facultyAuthenticator,deleteAwardsHonors)
 
+/**
+ * AWARDS RECEIVED
+*/ 
+
+// route Awards Received for add req
+router.route("/awards-recieved").post(facultyAuthenticator, awardsReceivedFileUpload.fields([
+  { name: "certificate", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+  addAwardRecieved
+);
+
+// route Awards Received for get req
+router.route('/awards-recieved').get(facultyAuthenticator, getAwardRecievedData)
+
+// route Awards Received for get by ID req
+router.route('/awards-recieved/:id').get(facultyAuthenticator,getAwardRecievedById)
+
+// route Awards Received for delete req
+router.route('/awards-recieved').delete(facultyAuthenticator,deleteAwardRecieved)
+
+// route Awards Received for update req
+router.route("/awards-recieved").put(facultyAuthenticator, awardsReceivedFileUpload.fields([
+  { name: "certificate", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+updateAwardRecieved
+);
+
+/**
+ * AWARDS RECEIVED END
+*/ 
+
+
+/**
+ * ACTIVITY CONDUCTED
+*/ 
+
+// route ACTIVITY CONDUCTED for add req
+router.route("/activity-conducted").post(facultyAuthenticator, activityConductedFileUpload.fields([
+  { name: "invitationLetter", maxCount: 1 },
+  { name: "certificate", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+  { name: "report", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+  addActivityConducted
+);
+
+// route ACTIVITY CONDUCTED for get req
+router.route('/activity-conducted').get(facultyAuthenticator, getActivityConductedData)
+
+// route ACTIVITY CONDUCTED for get by ID req
+router.route('/activity-conducted/:id').get(facultyAuthenticator,getActivityConductedById)
+
+// route ACTIVITY CONDUCTED for delete req
+router.route('/activity-conducted').delete(facultyAuthenticator,deleteActivityConducted)
+
+// route ACTIVITY CONDUCTED for update req
+router.route("/activity-conducted").put(facultyAuthenticator, activityConductedFileUpload.fields([
+  { name: "invitationLetter", maxCount: 1 },
+  { name: "certificate", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+  { name: "report", maxCount: 1 },
+  { name: "photos", maxCount: 1 },
+]),
+updateActivityConducted
+);
+
+/**
+ * ACTIVITY CONDUCTED END
+*/ 
+
+
+/**
+ * COURSE CERTIFICATION
+*/ 
+
+// route COURSE CERTIFICATION for add req
+router.route("/course-certification").post(facultyAuthenticator, courseCertificationFileUpload.single("certificate"),
+  addCourseCertification
+);
+
+// route COURSE CERTIFICATION for get req
+router.route('/course-certification').get(facultyAuthenticator, getCourseCertificationData)
+
+// route COURSE CERTIFICATION for get by ID req
+router.route('/course-certification/:id').get(facultyAuthenticator,getCourseCertificationById)
+
+// route COURSE CERTIFICATION for delete req
+router.route('/course-certification').delete(facultyAuthenticator,deleteCourseCertification)
+
+// route COURSE CERTIFICATION for update req
+router.route("/course-certification").put(facultyAuthenticator, courseCertificationFileUpload.single("certificate"),
+updateCourseCertification
+);
+
+/**~
+ * COURSE CERTIFICATION END
+*/ 
+
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
   { name: 'sanctionedOrder', maxCount: 1 },
   { name: 'transactionProof', maxCount: 1 },
@@ -2992,7 +3111,6 @@ router.route('/journal').put(facultyAuthenticator, journalFileUpload.fields([
   { name: "paper", maxCount: 1 },
   { name: "certificate", maxCount: 1 },
 ]), updateJournal)
-
 
 
 router.route("/conference").put(facultyAuthenticator, conferenceFileUpload.fields([

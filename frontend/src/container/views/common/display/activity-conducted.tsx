@@ -10,56 +10,64 @@ import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import countryCodes from '@/utils/data/country-codes'
 import { FileDown, Pencil, Table, Trash2Icon } from 'lucide-react'
 import autoTable from 'jspdf-autotable'
+import { ScrollPanel } from 'primereact/scrollpanel'
 import jsPDF from 'jspdf'
 import Logo from '@/assets/image/logo.png'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 type Props = {}
 
-interface Patent {
+/**
+ * SCHEMAS 
+ */
+
+interface ActivityConducted {
     _id: string;
     title: string;
-    inventors: string[];
-    affiliationInventors: string[];
-    departmentInvolved: string[];
-    facultiesInvolved: string[];
-    nationalInternational: string;
-    country: string;
-    applicationNumber: string;
-    filingDate: Date;
-    grantDate: Date;
-    patentCertificate: string;
+    organizedBy: string;
+    associationWith: string;
+    mode: string;
+    level: string;
+    participants: number;
+    fromDate: Date;
+    toDate: Date;
+    venue: string;
+    remarks: string;
+    invitationLetter: string;
+    certificate: string;
+    banner: string;
+    report: string;
+    photos: string;
+    videoLink: string;
     createdAt: string;
     updatedAt: string;
     __v: number;
-}
+  }
 
-const PatentDisplay = (props: Props) => {
+const ActivityConductedDisplay = (props: Props) => {
 
     // constants
     const user = useSelector((state: any) => state.user)
-    const [data, setData] = useState<Patent[]>([]);
+    const [data, setData] = useState<ActivityConducted[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
 
     // function to convert date strings to Date objects
-    const convertDates = (patents: Patent[]) => {
-        return patents.map(patent => ({
-            ...patent,
-            filingDate: new Date(patent.filingDate),
-            grantDate: new Date(patent.grantDate)
+    const convertDates = (activity_conducteds: ActivityConducted[]) => {
+        return activity_conducteds.map(activity_conducted => ({
+            ...activity_conducted,
+            fromDate: new Date(activity_conducted.fromDate),
+            toDate: new Date(activity_conducted.toDate),
         }));
     };
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/common/patent')
-            .then((res) => {
+        axios.get('/common/activity-conducted').then((res) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
                 setTotalRecords(convertedData.length)
@@ -70,7 +78,6 @@ const PatentDisplay = (props: Props) => {
     }, [])
 
     useEffect(() => {
-
         // Function to create and append a link element for the CSS file
         const addCSS = () => {
             const link = document.createElement('link');
@@ -88,7 +95,6 @@ const PatentDisplay = (props: Props) => {
                 document.head.removeChild(link);
             }
         };
-
         // Call the function to add the CSS
         addCSS();
 
@@ -100,39 +106,61 @@ const PatentDisplay = (props: Props) => {
 
 
     // template functions
-    const idBodyTemplate = (rowData: Patent) => {
+    const idBodyTemplate = (rowData: ActivityConducted) => {
         return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
     };
 
-    const inventorBodyTemplate = (rowData: Patent) => rowData.inventors.join(", ")
+    const remarksBodyTemplate = (rowData: ActivityConducted) => {
+        return <ScrollPanel className='w-full h-36 text-sm leading-6'>{rowData.remarks}</ScrollPanel>
+    }
 
-    const affiliationBodyTemplate = (rowData: Patent) => rowData.affiliationInventors.join(", ")
+    const toDateBodyTemplate = (rowData: ActivityConducted) => rowData.toDate.toLocaleDateString()
 
-    const departmentInvolvedBodyTemplate = (rowData: Patent) => {
-        return rowData.departmentInvolved.map((department: string) => (
-            <Badge key={department} className='bg-green-800 bg-opacity-85 text-green-200'>{department}</Badge>
-        ));
-    };
+    const fromDateBodyTemplate = (rowData: ActivityConducted) => rowData.fromDate.toLocaleDateString()
 
-    const facultyInvolvedBodyTemplate = (rowData: Patent) => rowData.facultiesInvolved.join(", ")
-
-    const filingDateBodyTemplate = (rowData: Patent) => rowData.filingDate.toLocaleDateString()
-
-    const countryBodyTemplate = (rowData: Patent) => {
+    const invitationLetterBodyTemplate = (rowData: ActivityConducted) => {
         return (
-            <div className="flex align-items-center gap-2">
-                <img draggable={false} alt="flag" src={`https://flagicons.lipis.dev/flags/4x3/${countryCodes[rowData.country.toLowerCase()]}.svg`} style={{ width: '24px' }} />
-                <span>{rowData.country}</span>
-            </div>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.invitationLetter.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
         )
     }
 
-    const grantDateBodyTemplate = (rowData: Patent) => rowData.grantDate.toLocaleDateString()
-
-    const certificateBodyTemplate = (rowData: Patent) => {
+    const certificateBodyTemplate = (rowData: ActivityConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.patentCertificate.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
+        )
+    }
+    const bannerBodyTemplate = (rowData: ActivityConducted) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.banner.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
+        )
+    }
+
+    const reportBodyTemplate = (rowData: ActivityConducted) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.report.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
+        )
+    }
+    const photosBodyTemplate = (rowData: ActivityConducted) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+            </Link>
+        )
+    }
+
+
+    const URLBodyTemplate = (rowData: ActivityConducted) => {
+        return (
+            <Link target='_blank' referrerPolicy='no-referrer' to={rowData.videoLink}>
+                <Button variant={'link'} className='text-indigo-800' >View</Button>
             </Link>
         )
     }
@@ -151,33 +179,34 @@ const PatentDisplay = (props: Props) => {
     };
 
 
-
-
     const exportPdf = () => {
-
         // Initialize jsPDF instance
         const doc = new jsPDF('landscape', 'in', [8.3, 11.7]);
-
 
         // define columns
         interface Column {
             header: string;
-            dataKey: keyof Patent;
+            dataKey: keyof ActivityConducted;
         }
 
         const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
-            { header: 'Inventors', dataKey: 'inventors' },
-            { header: 'Affiliation Inventors', dataKey: 'affiliationInventors' },
-            { header: 'Department Involved', dataKey: 'departmentInvolved' },
-            { header: 'Faculties Involved', dataKey: 'facultiesInvolved' },
-            { header: 'National/International', dataKey: 'nationalInternational' },
-            { header: 'Country', dataKey: 'country' },
-            { header: 'Application Number', dataKey: 'applicationNumber' },
-            { header: 'Filing Date', dataKey: 'filingDate' },
-            { header: 'Grant Date', dataKey: 'grantDate' },
-            { header: 'Patent Certificate', dataKey: 'patentCertificate' },
+            { header: 'Activity Organized By', dataKey: 'organizedBy' },
+            { header: 'In Association with', dataKey: 'associationWith' },
+            { header: 'Mode', dataKey: 'mode' },
+            { header: 'Level', dataKey: 'level' },
+            { header: 'No. of Participants', dataKey: 'participants' },
+            { header: 'From Date', dataKey: 'fromDate' },
+            { header: 'To Date', dataKey: 'toDate' },
+            { header: 'Venue', dataKey: 'venue' },
+            { header: 'Remarks', dataKey: 'remarks' },
+            { header: 'Invitation Letter', dataKey: 'invitationLetter' },
+            { header: 'Certificate', dataKey: 'certificate' },
+            { header: 'Banner', dataKey: 'banner' },
+            { header: 'Photos', dataKey: 'report' },
+            { header: 'Report', dataKey: 'photos' },
+            { header: 'Video Url', dataKey: 'videoLink' },
             { header: 'Created At', dataKey: 'createdAt' },
             { header: 'Updated At', dataKey: 'updatedAt' },
             { header: '__v', dataKey: '__v' },
@@ -251,29 +280,28 @@ const PatentDisplay = (props: Props) => {
             didDrawPage: addFooter
         });
 
-
         addBackgroundImage()
 
         // Save the PDF
-        doc.save('patent_data.pdf');
+        doc.save('activity-conducted-data.pdf');
     };
 
 
     const header = (
         <div className="flex w-full justify-end gap-6 flex-wrap font-Poppins">
             <Button className='rounded-full bg-green-600' onClick={() => exportCSV(false)}>
-                <Table className='w-5 h-5 mr-2' /> Download
+                <Table className='w-5 h-5 mr-2' /> Excel
             </Button>
             <Button className='rounded-full bg-red-600' onClick={() => exportPdf()}>
-                <FileDown className='w-5 h-5 mr-2' /> Download
+                <FileDown className='w-5 h-5 mr-2' /> PDF
             </Button>
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Patent) => {
+    const actionBodyTemplate = (rowData: ActivityConducted) => {
         return (
             <>
-                <Link to={`/common/edit/patent/${rowData._id}`}>
+                <Link to={`/common/edit/activity-conducted/${rowData._id}`}>
                     <Button size={'icon'} className='rounded-full bg-teal-500 mr-2'><Pencil className='w-5 h-5' color='#fff' /></Button>
                 </Link>
                 <AlertDialog>
@@ -299,10 +327,10 @@ const PatentDisplay = (props: Props) => {
         );
     };
 
-    const handleDelete = (rowData: Patent) => {
-        axios.delete('/common/patent', {
+    const handleDelete = (rowData: ActivityConducted) => {
+        axios.delete('/common/activity-conducted', {
             data: {
-                patent_id: rowData._id
+                activity_conducted_id: rowData._id
             }
         })
             .then((res) => {
@@ -323,44 +351,44 @@ const PatentDisplay = (props: Props) => {
             <div className="container font-Poppins my-10">
 
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                    Patent Details
+                Activities Conducted Details
                 </h1>
 
                 <div className="my-10">
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Patents</CardTitle>
-                            <CardDescription>Patent details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Conducted Activities</CardTitle>
+                            <CardDescription>Conducted Activities details of the faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
-
-                            <DataTable exportFilename='my-patents' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='my-activity-conducted' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
-                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by title' sortable header="Title"></Column>
-                                <Column field="inventors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Inventors' header="Inventors" body={inventorBodyTemplate}></Column>
-                                <Column field="affiliationInventors" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by affiliation' header="Affiliation Inventors" body={affiliationBodyTemplate}></Column>
-                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
-                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
-                                <Column field="nationalInternational" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by type' sortable header="National/International"></Column>
-                                <Column field="country" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Country' body={countryBodyTemplate} sortable header="Country"></Column>
-                                <Column field="applicationNumber" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Application number' sortable header="Application Number"></Column>
-                                <Column field="filingDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by filing date' filterElement={dateFilterTemplate} header="Filing Date" body={filingDateBodyTemplate}></Column>
-                                <Column field="grantDate" style={{ minWidth: '250px' }} sortable dataType='date' header="Grant Date" filter filterPlaceholder='Search by grant date' filterElement={dateFilterTemplate} body={grantDateBodyTemplate}></Column>
-                                <Column field="patentCertificate" style={{ minWidth: '250px' }} header="Patent Certificate" body={certificateBodyTemplate}></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
+                                <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organized By' sortable header="Activity Organized By"></Column>
+                                <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association with' sortable header="In Association With"></Column>
+                                <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
+                                <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
+                                <Column field="participants" style={{ minWidth: '250px' }} header="No. of Participants"></Column>
+                                <Column field="from date" style={{ minWidth: '250px' }}  dataType='date' filter filterPlaceholder='Search by From Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
+                                <Column field="to date" style={{ minWidth: '250px' }}  dataType='date' filter filterPlaceholder='Search by To Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
+                                <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
+                                <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
+                                <Column field="invitationLetter" style={{ minWidth: '250px' }} header="Invitation Letter" body={invitationLetterBodyTemplate}></Column>
+                                <Column field="certificate" style={{ minWidth: '250px' }} header="Certificate" body={certificateBodyTemplate}></Column>
+                                <Column field="banner" style={{ minWidth: '250px' }} header="Banner" body={bannerBodyTemplate}></Column>
+                                <Column field="report" style={{ minWidth: '250px' }} header="Report" body={reportBodyTemplate}></Column>
+                                <Column field="photos" style={{ minWidth: '250px' }} header="Photos" body={photosBodyTemplate}></Column>
+                                <Column field="videoLink" style={{ minWidth: '200px' }}  body={URLBodyTemplate} header="Video Url"></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                             </DataTable>
-
                         </CardContent>
-
                     </Card>
-
-
                 </div>
             </div>
         </div>
     )
 }
 
-export default PatentDisplay
+export default ActivityConductedDisplay

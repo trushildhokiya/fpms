@@ -247,6 +247,69 @@ const awardHonorsFileStorage = multer.diskStorage({
 const awardHonorsFileUpload = multer({ storage: awardHonorsFileStorage });
 
 /*
+AWARD RECEIVED FILE UPLOAD 
+*/
+const awardsReceivedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "awards-recieved");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "awards-received-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const awardsReceivedFileUpload = multer({ storage: awardsReceivedFileStorage });
+
+/*
+ACTIVITY CONDUCTED FILE UPLOAD 
+*/
+const activityConductedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "activity-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "activity-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const activityConductedFileUpload = multer({ storage: activityConductedFileStorage });
+
+/*
+COURSE CERTIFICATION FILE UPLOAD 
+*/
+const courseCertificationFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "course-certification");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "course-certification-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const courseCertificationFileUpload = multer({ storage: courseCertificationFileStorage });
+
+/*
 CONSULTANCY FILE UPLOAD 
 */
 const consultancyFileStorage = multer.diskStorage({
@@ -348,6 +411,9 @@ module.exports = {
   bookChapterUpload,
   needBasedProjectFileUpload,
   awardHonorsFileUpload,
+  awardsReceivedFileUpload,
+  activityConductedFileUpload,
+  courseCertificationFileUpload,
   consultancyFileUpload,
   projectFileUpload,
   qualificationFileUpload,
