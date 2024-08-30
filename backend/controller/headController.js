@@ -12,6 +12,8 @@ const NeedBasedProjects = require('../models/need-based-projects')
 const Notification = require('../models/notification')
 const nodemailer = require('nodemailer');
 const consultancy = require('../models/consultancy');
+const faculty = require('../models/faculty');
+const SttpConducted = require('../models/sttp-conducted');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -438,6 +440,61 @@ const getConsultancyData = asyncHandler(async (req, res) => {
     res.status(200).json(consultancyData);
 });
 
+const getSttpConductedData = asyncHandler(async (req, res) => {
+    // get department
+    const { department } = req.decodedData;
+
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+
+    // get departmental journal data
+    const sttpCondids = await faculty.find({ department })
+    .select('sttpConducted')
+    .populate('sttpConducted')
+    .exec();
+
+    const sttpCond = sttpCondids.map(id => id.sttpConducted).flat()
+
+    res.status(200).json(sttpCond);
+});
+
+const getSttpAttendedData = asyncHandler(async (req, res) => {
+    // get department
+    const { department } = req.decodedData;
+
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+
+    // get departmental journal data
+    const sttpAttids = await faculty.find({ department })
+    .select('sttpAttended')
+    .populate('sttpAttended')
+    .exec();
+
+    const sttpAtt = sttpAttids.map(id => id.sttpAttended).flat()
+
+    res.status(200).json(sttpAtt);
+});
+
+const getSttpOrganizedData = asyncHandler(async (req, res) => {
+    console.log('works')
+    // get department
+    const { department } = req.decodedData;
+
+    // construct case insensitive regex
+    const regex = new RegExp(department, 'i');
+
+    // get departmental journal data
+    const sttpOrgids = await faculty.find({ department })
+    .select('sttpOrganized')
+    .populate('sttpOrganized')
+    .exec();
+
+    const sttpOrg = sttpOrgids.map(id => id.sttpOrganized).flat()
+    console.log(sttpOrg)
+    res.status(200).json(sttpOrg);
+});
+
 
 const getDashboardData = asyncHandler(async (req, res) => {
     // Get department from decoded data
@@ -639,5 +696,8 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
-    getDashboardData
+    getDashboardData,
+    getSttpConductedData,
+    getSttpAttendedData,
+    getSttpOrganizedData
 }

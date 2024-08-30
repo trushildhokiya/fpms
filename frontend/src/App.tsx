@@ -82,6 +82,9 @@ import SttpAttendedEdit from './container/views/common/edit/sttp-attended';
 import SttpAttendedDisplay from './container/views/common/display/sttp-attended';
 import SttpOrganizedDisplay from './container/views/common/display/sttp-organized';
 import SttpOrganizedEdit from './container/views/common/edit/sttp-organized';
+import SttpConductedHeadDisplay from './container/views/head/container/display/sttp-conducted';
+import SttpAttendedHeadDisplay from './container/views/head/container/display/sttp-attended';
+import SttpOrganizedHeadDisplay from './container/views/head/container/display/sttp-organized';
 
 
 
@@ -200,6 +203,9 @@ function App() {
           <Route path='/hod/display/awards-honors' element={<HeadProtectedRoute> <HeadAwardsHonorsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/projects' element={<HeadProtectedRoute> <HeadProjectsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/consultancy' element={<HeadProtectedRoute> <HeadConsultancyDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/sttp-conducted' element={<HeadProtectedRoute> <SttpConductedHeadDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/sttp-attended' element={<HeadProtectedRoute> <SttpAttendedHeadDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/sttp-organized' element={<HeadProtectedRoute> <SttpOrganizedHeadDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />
