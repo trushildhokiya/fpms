@@ -16,7 +16,7 @@ const ActivityConducted = require('../models/activity-conducted')
 const CourseCertification = require('../models/course-certification')
 const SttpAttended = require('../models/sttp-attended')
 const SttpConducted = require('../models/sttp-conducted')
-const sttpOrganized = require('../models/sttp-organized')
+const SttpOrganized = require('../models/sttp-organized')
 const seminarAttended = require('../models/seminar-attended')
 const seminarConducted = require('../models/seminar-conducted')
 const seminarOrganised = require('../models/seminar-organised')
@@ -2181,6 +2181,7 @@ const deleteProject = asyncHandler(async (req, res) => {
 // ACHIEVEMENTS FORMS
 
 const addSttpConducted = asyncHandler(async (req, res) => {
+
   //get required data
   const data = req.body;
   const { email } = req.decodedData;
@@ -2194,24 +2195,24 @@ const addSttpConducted = asyncHandler(async (req, res) => {
   }
 
   // get file path 
-  const certUploadURL = req.files.certificate[0].path
-  const invitationUploadURL = req.files.invitationLetter[0].path
-  const photoUploadURL = req.files.photos[0].path
+  const certificateURL = req.files.certificate[0].path
+  const invitationLetterURL = req.files.invitationLetter[0].path
+  const photosURL = req.files.photos[0].path
 
   // attach file path to data
 
-  data.certUpload = certUploadURL
-  data.invitationUpload = invitationUploadURL
-  data.photoUpload = photoUploadURL
+  data.certificate = certificateURL
+  data.invitationLetter = invitationLetterURL
+  data.photos = photosURL
 
   // create consultancy entry
-  const sttpCond = await SttpConducted.create(data);
+  const sttpConducted = await SttpConducted.create(data);
+
   await Faculty.findOneAndUpdate(
     { email: email },
-    { $push: { sttpConducted: sttpCond._id } }
+    { $push: { sttpConducted: sttpConducted._id } }
   );
 
-  console.log('sttp added')
   res.status(200).json({
     message: "success",
   });
@@ -2267,87 +2268,92 @@ const getSttpConductedData = asyncHandler(async (req, res) => {
 
 const deleteSttpConducted = asyncHandler(async (req, res) => {
 
-  const { sttpCond_id } = req.body
+  const { sttpConducted_id } = req.body;
+  const { email } = req.decodedData;
 
   try {
 
-    // Find the STTP/FDP to get the necessary information
-    const sttpCond = await SttpConducted.findById(sttpCond_id);
+    // Find the STTP/FDP conducted entry to get the necessary information
+    const sttpConducted = await SttpConducted.findById(sttpConducted_id);
 
-    if (!sttpCond) {
-      throw new Error('STTP/FDP not found');
+    if (!sttpConducted) {
+      return res.status(404).json({ message: 'STTP/FDP conducted not found' });
     }
 
-    // Delete the associated file
-    if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
-      fs.unlinkSync(sttpCond.certUpload);
+    // Delete the associated files if they exist
+    if (sttpConducted.certificate && fs.existsSync(sttpConducted.certificate)) {
+      fs.unlinkSync(sttpConducted.certificate);
     }
 
-    if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
-      fs.unlinkSync(sttpCond.invitationUpload);
+    if (sttpConducted.invitationLetter && fs.existsSync(sttpConducted.invitationLetter)) {
+      fs.unlinkSync(sttpConducted.invitationLetter);
     }
 
-    if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
-      fs.unlinkSync(sttpCond.photoUpload);
+    if (sttpConducted.photos && fs.existsSync(sttpConducted.photos)) {
+      fs.unlinkSync(sttpConducted.photos);
     }
 
-    // Delete the STTP/FDP entry from the database
-    await SttpConducted.findByIdAndDelete(sttpCond_id);
+    // Delete the STTP/FDP conducted entry from the database
+    await SttpConducted.findByIdAndDelete(sttpConducted_id);
 
+    // Update the Faculty document by removing the reference
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { sttpConducted: sttpConducted_id } }
+    );
+
+    res.status(200).json({ message: 'success' });
+
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-  catch (error) {
-    throw new Error(error)
-  }
-
-  res.status(200).json({
-    message: 'success'
-  })
-
-})
+});
 
 const updateSttpConducted = asyncHandler(async (req, res) => {
+  
   const data = req.body
 
   try {
 
-    const sttpCond = await SttpConducted.findById(req.body._id)
+    const sttpConducted = await SttpConducted.findById(req.body._id)
 
-    if (!sttpCond) {
-      throw new Error("no sttpCond found")
+    if (!sttpConducted) {
+      throw new Error("sttp Conducted not found")
     }
 
     if (req.files.certificate) {
 
-      if (sttpCond.certUpload && fs.existsSync(sttpCond.certUpload)) {
-        fs.unlinkSync(sttpCond.certUpload);
+      if (sttpConducted.certificate && fs.existsSync(sttpConducted.certificate)) {
+        fs.unlinkSync(sttpConducted.certificate);
       }
 
-      data.certUpload = req.files.certificate[0].path
+      data.certificate = req.files.certificate[0].path
 
     }
 
     if (req.files.invitationLetter) {
 
-      if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
-        fs.unlinkSync(sttpCond.invitationUpload);
+      if (sttpConducted.invitationLetter && fs.existsSync(sttpConducted.invitationLetter)) {
+        fs.unlinkSync(sttpConducted.invitationLetter);
       }
 
-      data.invitationUpload = req.files.invitationLetter[0].path
+      data.invitationLetter = req.files.invitationLetter[0].path
 
     }
 
     if (req.files.photos) {
 
 
-      if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
-        fs.unlinkSync(sttpCond.photoUpload);
+      if (sttpConducted.photos && fs.existsSync(sttpConducted.photos)) {
+        fs.unlinkSync(sttpConducted.photos);
       }
 
-      data.photoUpload = req.files.photos[0].path
+      data.photos = req.files.photos[0].path
 
     }
-
-    await sttpCond.updateOne(data)
+    
+    await sttpConducted.updateOne(data)
 
   }
   catch (err) {

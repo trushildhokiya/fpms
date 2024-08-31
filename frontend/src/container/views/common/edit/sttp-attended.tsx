@@ -128,7 +128,7 @@ const formSchema = z.object({
         message: "Venue must not exceed 200 characters"
     }),
 
-    certificate: pdfFileSchema
+    certificate: z.union([z.any().optional(), pdfFileSchema])
 }).refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached

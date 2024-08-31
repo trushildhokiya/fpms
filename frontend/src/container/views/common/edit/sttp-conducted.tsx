@@ -137,17 +137,19 @@ const formSchema = z.object({
         message: "Venue must not exceed 200 characters"
     }),
 
-    certificate: pdfFileSchema,
-    invitationLetter: pdfFileSchema,
-    photos: pdfFileSchema
+    certificate: z.union([z.any().optional(), pdfFileSchema]),
+    invitationLetter: z.union([z.any().optional(), pdfFileSchema]),
+    photos: z.union([z.any().optional(), pdfFileSchema])
 
-}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
+}).refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
 const SttpConductedEdit = (props: Props) => {
+
     const { id } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         // Fetch the patent data
@@ -222,7 +224,7 @@ const SttpConductedEdit = (props: Props) => {
                     title: "STTP/FDP added successfully",
                     description:
                         "Your STTP/FDP information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    action: <ToastAction className='' onClick={()=> navigate('/common/display/sttp-conducted')} altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
             }

@@ -33,10 +33,12 @@ interface STTPConducted {
     toDate: Date;
     totalDays: number;
     remarks: string;
-    certUpload: string;
-    invitationUpload: string;
-    photoUpload: string;
+    certificate: string;
+    invitationLetter: string;
+    photos: string;
     __v: number;
+    createdAt: string;
+    updatedAt: string;
   }
   
 
@@ -123,7 +125,7 @@ const SttpConductedDisplay = (props: Props) => {
     
     const certUploadBodyTemplate = (rowData: STTPConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certUpload.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800'>Download Certificate</Button>
             </Link>
         );
@@ -131,7 +133,7 @@ const SttpConductedDisplay = (props: Props) => {
     
     const invitationUploadBodyTemplate = (rowData: STTPConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.invitationUpload.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.invitationLetter.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800'>Download Invitation</Button>
             </Link>
         );
@@ -139,7 +141,7 @@ const SttpConductedDisplay = (props: Props) => {
     
     const photoUploadBodyTemplate = (rowData: STTPConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photoUpload.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800'>View Photo</Button>
             </Link>
         );
@@ -187,9 +189,11 @@ const SttpConductedDisplay = (props: Props) => {
             { header: 'To Date', dataKey: 'toDate' },
             { header: 'Total Days', dataKey: 'totalDays' },
             { header: 'Remarks', dataKey: 'remarks' },
-            { header: 'Certificate Upload', dataKey: 'certUpload' },
-            { header: 'Invitation Upload', dataKey: 'invitationUpload' },
-            { header: 'Photo Upload', dataKey: 'photoUpload' }
+            { header: 'Certificate', dataKey: 'certificate' },
+            { header: 'Invitation Letter', dataKey: 'invitationLetter' },
+            { header: 'Photos', dataKey: 'photos' },
+            { header: 'Created At', dataKey: 'createdAt' },
+            { header: 'Updated At', dataKey: 'updatedAt' }
         ];
 
         // Function to add footer to each page
@@ -262,7 +266,7 @@ const SttpConductedDisplay = (props: Props) => {
 
         addBackgroundImage()
         // Save the PDF
-        doc.save('copyright_data.pdf');
+        doc.save('sttp_conducted.pdf');
     };
 
 
@@ -309,7 +313,7 @@ const SttpConductedDisplay = (props: Props) => {
     const handleDelete = (rowData: STTPConducted) => {
         axios.delete('/common/sttp-conducted', {
             data: {
-                sttpCond_id: rowData._id
+                sttpConducted_id: rowData._id
             }
         })
             .then((res) => {
@@ -375,9 +379,9 @@ const SttpConductedDisplay = (props: Props) => {
                             <Column field="toDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by End Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
                             <Column field="totalDays" style={{ minWidth: '150px' }} sortable header="Total Days"></Column>
                             <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
-                            <Column field="certUpload" style={{ minWidth: '250px' }} header="Certificate" body={certUploadBodyTemplate}></Column>
-                            <Column field="invitationUpload" style={{ minWidth: '250px' }} header="Invitation" body={invitationUploadBodyTemplate}></Column>
-                            <Column field="photoUpload" style={{ minWidth: '250px' }} header="Photo" body={photoUploadBodyTemplate}></Column>
+                            <Column field="certificate" style={{ minWidth: '250px' }} header="Certificate" body={certUploadBodyTemplate}></Column>
+                            <Column field="invitationLetter" style={{ minWidth: '250px' }} header="Invitation" body={invitationUploadBodyTemplate}></Column>
+                            <Column field="photos" style={{ minWidth: '250px' }} header="Photo" body={photoUploadBodyTemplate}></Column>
                             <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                         </DataTable>
 

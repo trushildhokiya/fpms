@@ -44,6 +44,7 @@ import { Toaster } from "@/components/ui/toaster";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -120,7 +121,7 @@ const formSchema = z.object({
     invitationLetter: pdfFileSchema,
     photos: pdfFileSchema
 
-}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
+}).refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
@@ -129,6 +130,7 @@ const SttpConductedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
     const { toast }= useToast()
+    const navigate = useNavigate()
 
     // command
     const [open, setOpen] = useState(false);
@@ -181,7 +183,7 @@ const SttpConductedForm = (props: Props) => {
                     title: "STTP/FDP added successfully",
                     description:
                         "Your STTP/FDP information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    action: <ToastAction className='' onClick={()=>navigate('/faculty')} altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
             }

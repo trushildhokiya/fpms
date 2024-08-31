@@ -63,17 +63,17 @@ const sttpConductedSchema = new mongoose.Schema(
         required: true,
     },
 
-    certUpload: {
+    certificate: {
         type: String,
         required: true,
     },
     
-    invitationUpload: {
+    invitationLetter: {
         type: String,
         required: true,
     },
 
-    photoUpload: {
+    photos: {
       type: String,
       required: true,
     },
@@ -82,6 +82,4 @@ const sttpConductedSchema = new mongoose.Schema(
 );
 
 // Compile the schema into a model
-// module.exports = mongoose.model("sttpConducted", sttpConductedSchema);
-const SttpConducted = mongoose.model("sttpConducted", sttpConductedSchema);
-module.exports = SttpConducted;
+module.exports = mongoose.model("sttpConducted", sttpConductedSchema);
