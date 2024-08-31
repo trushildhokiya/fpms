@@ -246,68 +246,7 @@ const awardHonorsFileStorage = multer.diskStorage({
 
 const awardHonorsFileUpload = multer({ storage: awardHonorsFileStorage });
 
-/*
-AWARD RECEIVED FILE UPLOAD 
-*/
-const awardsReceivedFileStorage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const destinationPath = path.join("uploads", "awards-recieved");
 
-    await ensureDirectoryExists(destinationPath);
-
-    cb(null, destinationPath);
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      "awards-received-proof" + "-" + uuid.v7() + path.extname(file.originalname)
-    );
-  },
-});
-
-const awardsReceivedFileUpload = multer({ storage: awardsReceivedFileStorage });
-
-/*
-ACTIVITY CONDUCTED FILE UPLOAD 
-*/
-const activityConductedFileStorage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const destinationPath = path.join("uploads", "activity-conducted");
-
-    await ensureDirectoryExists(destinationPath);
-
-    cb(null, destinationPath);
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      "activity-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
-    );
-  },
-});
-
-const activityConductedFileUpload = multer({ storage: activityConductedFileStorage });
-
-/*
-COURSE CERTIFICATION FILE UPLOAD 
-*/
-const courseCertificationFileStorage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const destinationPath = path.join("uploads", "course-certification");
-
-    await ensureDirectoryExists(destinationPath);
-
-    cb(null, destinationPath);
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      "course-certification-proof" + "-" + uuid.v7() + path.extname(file.originalname)
-    );
-  },
-});
-
-const courseCertificationFileUpload = multer({ storage: courseCertificationFileStorage });
 
 /*
 CONSULTANCY FILE UPLOAD 
@@ -397,27 +336,12 @@ const debugFileStorage = multer.diskStorage({
 
 const debugFileUpload = multer({ storage: debugFileStorage });
 
-// STTP File Uploads
+/**
+ * STTP FILE UPLOADS
+*/
 
-const sttpConductedStorage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const destinationPath = path.join("uploads", "sttp-conducted");
-
-    await ensureDirectoryExists(destinationPath);
-
-    cb(null, destinationPath);
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      "sttp-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
-    );
-  },
-});
-
-const sttpConductedUpload = multer({ storage: sttpConductedStorage });
-
-const sttpAttendedStorage = multer.diskStorage({
+// attended
+const sttpAttendedFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     const destinationPath = path.join("uploads", "sttp-attended");
 
@@ -433,9 +357,30 @@ const sttpAttendedStorage = multer.diskStorage({
   },
 });
 
-const sttpAttendedUpload = multer({ storage: sttpAttendedStorage });
+const sttpAttendedFileUpload = multer({ storage: sttpAttendedFileStorage });
 
-const sttpOrganizedStorage = multer.diskStorage({
+// conducted
+const sttpConductedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "sttp-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "sttp-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const sttpConductedFileUpload = multer({ storage: sttpConductedFileStorage });
+
+// organized
+
+const sttpOrganizedFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     const destinationPath = path.join("uploads", "sttp-organized");
 
@@ -451,31 +396,16 @@ const sttpOrganizedStorage = multer.diskStorage({
   },
 });
 
-const sttpOrganizedUpload = multer({ storage: sttpOrganizedStorage });
+const sttpOrganizedFileUpload = multer({ storage: sttpOrganizedFileStorage });
 
 /*
-SEMINAR FILE UPLOAD 
+SEMINAR / WORKSHOPS FILE UPLOAD 
 */
 
-const seminarConductedStorage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const destinationPath = path.join("uploads", "seminar-conducted");
 
-    await ensureDirectoryExists(destinationPath);
+// attended
 
-    cb(null, destinationPath);
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      "seminar-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
-    );
-  },
-});
-
-const seminarConductedUpload = multer({ storage: seminarConductedStorage });
-
-const seminarAttendedStorage = multer.diskStorage({
+const seminarAttendedFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     const destinationPath = path.join("uploads", "seminar-attended");
 
@@ -491,9 +421,33 @@ const seminarAttendedStorage = multer.diskStorage({
   },
 });
 
-const seminarAttendedUpload = multer({ storage: seminarAttendedStorage });
+const seminarAttendedFileUpload = multer({ storage: seminarAttendedFileStorage });
 
-const seminarOrganizedStorage = multer.diskStorage({
+
+// conducted
+
+const seminarConductedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "seminar-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "seminar-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const seminarConductedFileUpload = multer({ storage: seminarConductedFileStorage });
+
+
+// organized
+
+const seminarOrganizedFileStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     const destinationPath = path.join("uploads", "seminar-organized");
 
@@ -509,32 +463,101 @@ const seminarOrganizedStorage = multer.diskStorage({
   },
 });
 
-const seminarOrganizedUpload = multer({ storage: seminarOrganizedStorage });
+const seminarOrganizedFileUpload = multer({ storage: seminarOrganizedFileStorage });
+
+
+/**
+ * OTHER ACHIEVEMENTS
+ */
+
+/*
+COURSE CERTIFICATION FILE UPLOAD 
+*/
+const courseCertificationFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "course-certification");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "course-certification-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const courseCertificationFileUpload = multer({ storage: courseCertificationFileStorage });
+
+/*
+AWARD RECEIVED FILE UPLOAD 
+*/
+const awardsReceivedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "awards-recieved");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "awards-received-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const awardsReceivedFileUpload = multer({ storage: awardsReceivedFileStorage });
+
+
+/*
+ACTIVITY CONDUCTED FILE UPLOAD 
+*/
+const activityConductedFileStorage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const destinationPath = path.join("uploads", "activity-conducted");
+
+    await ensureDirectoryExists(destinationPath);
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      "activity-conducted-proof" + "-" + uuid.v7() + path.extname(file.originalname)
+    );
+  },
+});
+
+const activityConductedFileUpload = multer({ storage: activityConductedFileStorage });
 
 
 module.exports = {
   adminProfileImageUpload,
   facultyProfileImageUpload,
   experienceFileUpload,
+  qualificationFileUpload,
   patentFileUpload,
-  bookFileUpload,
+  copyrightFileUpload,
   journalFileUpload,
   conferenceFileUpload,
-  copyrightFileUpload,
+  bookFileUpload,
   bookChapterUpload,
+  projectFileUpload,
   needBasedProjectFileUpload,
+  consultancyFileUpload,
   awardHonorsFileUpload,
+  sttpAttendedFileUpload,
+  sttpConductedFileUpload,
+  sttpOrganizedFileUpload,
+  seminarAttendedFileUpload,
+  seminarConductedFileUpload,
+  seminarOrganizedFileUpload,
+  courseCertificationFileUpload,
   awardsReceivedFileUpload,
   activityConductedFileUpload,
-  courseCertificationFileUpload,
-  consultancyFileUpload,
-  projectFileUpload,
-  qualificationFileUpload,
   debugFileUpload,
-  sttpConductedUpload,
-  sttpAttendedUpload,
-  sttpOrganizedUpload,
-  seminarConductedUpload,
-  seminarOrganizedUpload,
-  seminarAttendedUpload,
 };
