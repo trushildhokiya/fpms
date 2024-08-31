@@ -14,7 +14,7 @@ const Project = require('../models/projects')
 const AwardRecieved = require('../models/awards-recieved')
 const ActivityConducted = require('../models/activity-conducted')
 const CourseCertification = require('../models/course-certification')
-const sttpAttended = require('../models/sttp-attended')
+const SttpAttended = require('../models/sttp-attended')
 const SttpConducted = require('../models/sttp-conducted')
 const sttpOrganized = require('../models/sttp-organized')
 const seminarAttended = require('../models/seminar-attended')
@@ -927,7 +927,7 @@ const getJournalById = asyncHandler(async (req, res) => {
 })
 
 
-const updateJournal = asyncHandler(async(req,res)=>{
+const updateJournal = asyncHandler(async (req, res) => {
 
   const data = req.body
 
@@ -1115,7 +1115,7 @@ const getConferenceById = asyncHandler(async (req, res) => {
 })
 
 
-const updateConference = asyncHandler(async(req,res)=>{
+const updateConference = asyncHandler(async (req, res) => {
 
   const data = req.body
 
@@ -2331,14 +2331,14 @@ const updateSttpConducted = asyncHandler(async (req, res) => {
       if (sttpCond.invitationUpload && fs.existsSync(sttpCond.invitationUpload)) {
         fs.unlinkSync(sttpCond.invitationUpload);
       }
-  
+
       data.invitationUpload = req.files.invitationLetter[0].path
 
     }
 
     if (req.files.photos) {
 
-  
+
       if (sttpCond.photoUpload && fs.existsSync(sttpCond.photoUpload)) {
         fs.unlinkSync(sttpCond.photoUpload);
       }
@@ -2363,37 +2363,47 @@ const updateSttpConducted = asyncHandler(async (req, res) => {
 
 
 const addSttpAttended = asyncHandler(async (req, res) => {
+  try {
+    // Get required data
+    const data = req.body;
+    const { email } = req.decodedData;
 
-  //get required data
-  const data = req.body;
-  const { email } = req.decodedData;
+    // Find user
+    const user = await Faculty.findOne({ email: email });
 
-  // find user
-  const user = await Faculty.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
 
-  if (!user) {
-    res.status(400);
-    throw new Error("User not found!");
+    // Get file path
+    const certificateURL = req.file?.path;
+
+    if (!certificateURL) {
+      return res.status(400).json({ message: "File not uploaded" });
+    }
+
+    // Attach file path to data
+    data.certificate = certificateURL;
+
+    // Create consultancy entry
+    const sttpAttendedEntry = await SttpAttended.create(data);
+
+    // Update user with new sttpAttended entry
+    user.sttpAttended.push(sttpAttendedEntry._id);
+    await user.save();
+
+    res.status(200).json({
+      message: "success"
+    });
+
   }
-  // get file path 
-  const certUploadURL = req.file.path
-
-  // attach file path to data
-  data.certUpload = certUploadURL
-  // create consultancy entry
-  const sttpAtt = await sttpAttended.create(data);
-  console.log('created')
-  await Faculty.findOneAndUpdate(
-    { email: email },
-    { $push: { sttpAttended: sttpAtt._id } }
-  );
-
-  console.log('sttp added')
-  res.status(200).json({
-    message: "success",
-  });
-
+  catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
+
+
 
 const getSttpAttendedById = asyncHandler(async (req, res) => {
 
@@ -2409,7 +2419,7 @@ const getSttpAttendedById = asyncHandler(async (req, res) => {
     throw new Error("User not found!")
   }
 
-  const sttpAttendedData = await sttpAttended.findById(id)
+  const sttpAttendedData = await SttpAttended.findById(id)
 
   // Send the response
   res.status(200).json(sttpAttendedData);
@@ -2433,7 +2443,6 @@ const getSttpAttendedData = asyncHandler(async (req, res) => {
   // Populate sttp array to get full sttp data
   await user.populate('sttpAttended')
 
-
   // Extract the populated sttp data
   const sttpAttendedData = user.sttpAttended
 
@@ -2443,32 +2452,41 @@ const getSttpAttendedData = asyncHandler(async (req, res) => {
 });
 
 const deleteSttpAttended = asyncHandler(async (req, res) => {
+  const { sttpAttended_id } = req.body;
+  const { email } = req.decodedData;
 
-  const { sttpAtt_id } = req.body
   try {
 
     // Find the STTP/FDP to get the necessary information
-    const sttpAtt = await sttpAttended.findById(sttpAtt_id);
-    if (!sttpAtt) {
-      throw new Error('STTP/FDP not found');
+    const sttpAttended = await SttpAttended.findById(sttpAttended_id);
+    if (!sttpAttended) {
+      return res.status(404).json({ message: 'STTP/FDP not found' });
     }
+
+    // Remove the STTP/FDP ID from the faculty
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { sttpAttended: sttpAttended_id } }
+    );
 
     // Delete the associated file
-    if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
-      fs.unlinkSync(sttpAtt.certUpload);
+    if (sttpAttended.certificate && fs.existsSync(sttpAttended.certificate)) {
+      fs.unlinkSync(sttpAttended.certificate);
     }
+
     // Delete the STTP/FDP entry from the database
-    await sttpAttended.findByIdAndDelete(sttpAtt_id);
-  }
-  catch (error) {
-    throw new Error(error)
-  }
+    await SttpAttended.findByIdAndDelete(sttpAttended._id);
 
-  res.status(200).json({
-    message: 'success'
-  })
+    res.status(200).json({
+      message: 'success'
+    });
 
-})
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 const updateSttpAttended = asyncHandler(async (req, res) => {
 
@@ -2476,23 +2494,23 @@ const updateSttpAttended = asyncHandler(async (req, res) => {
 
   try {
 
-    const sttpAtt = await sttpAttended.findById(req.body._id)
+    const sttpAttended = await SttpAttended.findById(req.body._id)
 
-    if (!sttpAtt) {
+    if (!sttpAttended) {
       throw new Error("no sttpCond found")
     }
 
     if (req.file) {
 
-      if (sttpAtt.certUpload && fs.existsSync(sttpAtt.certUpload)) {
-        fs.unlinkSync(sttpAtt.certUpload);
+      if (sttpAttended.certificate && fs.existsSync(sttpAttended.certificate)) {
+        fs.unlinkSync(sttpAttended.certificate);
       }
 
-      data.certUpload = req.file.path
+      data.certificate = req.file.path
 
     }
 
-    await sttpAtt.updateOne(data)
+    await sttpAttended.updateOne(data)
 
   }
   catch (err) {
@@ -2620,35 +2638,35 @@ const deleteSttpOrganized = asyncHandler(async (req, res) => {
     if (sttpOrg.uploadFundSanctionedLetter && fs.existsSync(sttpOrg.uploadFundSanctionedLetter)) {
       fs.unlinkSync(sttpOrg.uploadFundSanctionedLetter);
     }
-    
+
     if (sttpOrg.uploadUtilizationCertificate && fs.existsSync(sttpOrg.uploadUtilizationCertificate)) {
       fs.unlinkSync(sttpOrg.uploadUtilizationCertificate);
     }
-    
+
     if (sttpOrg.uploadBanner && fs.existsSync(sttpOrg.uploadBanner)) {
       fs.unlinkSync(sttpOrg.uploadBanner);
     }
-    
+
     if (sttpOrg.uploadScheduleOfOrganizer && fs.existsSync(sttpOrg.uploadScheduleOfOrganizer)) {
       fs.unlinkSync(sttpOrg.uploadScheduleOfOrganizer);
     }
-    
+
     if (sttpOrg.uploadCertificateLOA && fs.existsSync(sttpOrg.uploadCertificateLOA)) {
       fs.unlinkSync(sttpOrg.uploadCertificateLOA);
     }
-    
+
     if (sttpOrg.uploadSupportingDocuments && fs.existsSync(sttpOrg.uploadSupportingDocuments)) {
       fs.unlinkSync(sttpOrg.uploadSupportingDocuments);
     }
-    
+
     if (sttpOrg.uploadReport && fs.existsSync(sttpOrg.uploadReport)) {
       fs.unlinkSync(sttpOrg.uploadReport);
     }
-    
+
     if (sttpOrg.uploadPhotos && fs.existsSync(sttpOrg.uploadPhotos)) {
       fs.unlinkSync(sttpOrg.uploadPhotos);
     }
-    
+
 
     // Delete the STTP/FDP entry from the database
     await sttpOrganized.findByIdAndDelete(sttpOrg_id);
@@ -2682,56 +2700,56 @@ const updateSttpOrganized = asyncHandler(async (req, res) => {
       }
       data.uploadFundSanctionedLetter = req.files.fundSanctionedLetter[0].path;
     }
-    
+
     if (req.files.utilizationCertificate) {
       if (sttpOrg.uploadUtilizationCertificate && fs.existsSync(sttpOrg.uploadUtilizationCertificate)) {
         fs.unlinkSync(sttpOrg.uploadUtilizationCertificate);
       }
       data.uploadUtilizationCertificate = req.files.utilizationCertificate[0].path;
     }
-    
+
     if (req.files.banner) {
       if (sttpOrg.uploadBanner && fs.existsSync(sttpOrg.uploadBanner)) {
         fs.unlinkSync(sttpOrg.uploadBanner);
       }
       data.uploadBanner = req.files.banner[0].path;
     }
-    
+
     if (req.files.schedule) {
       if (sttpOrg.uploadScheduleOfOrganizer && fs.existsSync(sttpOrg.uploadScheduleOfOrganizer)) {
         fs.unlinkSync(sttpOrg.uploadScheduleOfOrganizer);
       }
       data.uploadScheduleOfOrganizer = req.files.schedule[0].path;
     }
-    
+
     if (req.files.certificate) {
       if (sttpOrg.uploadCertificateLOA && fs.existsSync(sttpOrg.uploadCertificateLOA)) {
         fs.unlinkSync(sttpOrg.uploadCertificateLOA);
       }
       data.uploadCertificateLOA = req.files.certificate[0].path;
     }
-    
+
     if (req.files.supportingDocuments) {
       if (sttpOrg.uploadSupportingDocuments && fs.existsSync(sttpOrg.uploadSupportingDocuments)) {
         fs.unlinkSync(sttpOrg.uploadSupportingDocuments);
       }
       data.uploadSupportingDocuments = req.files.supportingDocuments[0].path;
     }
-    
+
     if (req.files.report) {
       if (sttpOrg.uploadReport && fs.existsSync(sttpOrg.uploadReport)) {
         fs.unlinkSync(sttpOrg.uploadReport);
       }
       data.uploadReport = req.files.report[0].path;
     }
-    
+
     if (req.files.photos) {
       if (sttpOrg.uploadPhotos && fs.existsSync(sttpOrg.uploadPhotos)) {
         fs.unlinkSync(sttpOrg.uploadPhotos);
       }
       data.uploadPhotos = req.files.photos[0].path;
     }
-    
+
 
     await sttpOrg.updateOne(data)
 
@@ -2769,7 +2787,7 @@ const addSeminarAttended = asyncHandler(async (req, res) => {
   const photoUploadURL = req.files.photos[0].path
 
   // attach file path to data
-  data.certUpload = certUploadURL  
+  data.certUpload = certUploadURL
   data.photoUpload = photoUploadURL
 
   // create entry
@@ -2888,12 +2906,12 @@ const updateSeminarAttended = asyncHandler(async (req, res) => {
 
     }
 
-    if(req.files.photos) {
+    if (req.files.photos) {
       if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
         fs.unlinkSync(seminarAtt.photosUpload);
       }
 
-      data.photosUpload= req.files.photoUpload[0].path
+      data.photosUpload = req.files.photoUpload[0].path
     }
 
     await seminarAtt.updateOne(data)
@@ -3061,14 +3079,14 @@ const updateSeminarConducted = asyncHandler(async (req, res) => {
       if (seminarCond.invitationUpload && fs.existsSync(seminarCond.invitationUpload)) {
         fs.unlinkSync(seminarCond.invitationUpload);
       }
-  
+
       data.invitationUpload = req.files.invitationLetter[0].path
 
     }
 
     if (req.files.photos) {
 
-  
+
       if (seminarCond.photoUpload && fs.existsSync(seminarCond.photoUpload)) {
         fs.unlinkSync(seminarCond.photoUpload);
       }
@@ -3212,31 +3230,31 @@ const deleteSeminarOrganized = asyncHandler(async (req, res) => {
     if (seminarOrg.uploadFundSanctionedLetter && fs.existsSync(seminarOrg.uploadFundSanctionedLetter)) {
       fs.unlinkSync(seminarOrg.uploadFundSanctionedLetter);
     }
-    
+
     if (seminarOrg.uploadUtilizationCertificate && fs.existsSync(seminarOrg.uploadUtilizationCertificate)) {
       fs.unlinkSync(seminarOrg.uploadUtilizationCertificate);
     }
-    
+
     if (seminarOrg.uploadBanner && fs.existsSync(seminarOrg.uploadBanner)) {
       fs.unlinkSync(seminarOrg.uploadBanner);
     }
-    
+
     if (seminarOrg.uploadScheduleOfOrganizer && fs.existsSync(seminarOrg.uploadScheduleOfOrganizer)) {
       fs.unlinkSync(seminarOrg.uploadScheduleOfOrganizer);
     }
-    
+
     if (seminarOrg.uploadCertificateLOA && fs.existsSync(seminarOrg.uploadCertificateLOA)) {
       fs.unlinkSync(seminarOrg.uploadCertificateLOA);
     }
-    
+
     if (seminarOrg.uploadSupportingDocuments && fs.existsSync(seminarOrg.uploadSupportingDocuments)) {
       fs.unlinkSync(seminarOrg.uploadSupportingDocuments);
     }
-    
+
     if (seminarOrg.uploadReport && fs.existsSync(seminarOrg.uploadReport)) {
       fs.unlinkSync(seminarOrg.uploadReport);
     }
-    
+
     if (seminarOrg.uploadPhotos && fs.existsSync(seminarOrg.uploadPhotos)) {
       fs.unlinkSync(seminarOrg.uploadPhotos);
     }
@@ -3256,7 +3274,7 @@ const deleteSeminarOrganized = asyncHandler(async (req, res) => {
     if (seminarOrg.uploadLOAOfOrganizer && fs.existsSync(seminarOrg.uploadLOAOfOrganizer)) {
       fs.unlinkSync(seminarOrg.uploadLOAOfOrganizer);
     }
-    
+
 
     // Delete the Seminar org entry from the database
     await seminarOrganised.findByIdAndDelete(seminarOrg_id);
@@ -3290,49 +3308,49 @@ const updateSeminarOrganized = asyncHandler(async (req, res) => {
       }
       data.uploadFundSanctionedLetter = req.files.fundSanctionedLetter[0].path;
     }
-    
+
     if (req.files.utilizationCertificate) {
       if (seminarOrg.uploadUtilizationCertificate && fs.existsSync(seminarOrg.uploadUtilizationCertificate)) {
         fs.unlinkSync(seminarOrg.uploadUtilizationCertificate);
       }
       data.uploadUtilizationCertificate = req.files.utilizationCertificate[0].path;
     }
-    
+
     if (req.files.banner) {
       if (seminarOrg.uploadBanner && fs.existsSync(seminarOrg.uploadBanner)) {
         fs.unlinkSync(seminarOrg.uploadBanner);
       }
       data.uploadBanner = req.files.banner[0].path;
     }
-    
+
     if (req.files.schedule) {
       if (seminarOrg.uploadScheduleOfOrganizer && fs.existsSync(seminarOrg.uploadScheduleOfOrganizer)) {
         fs.unlinkSync(seminarOrg.uploadScheduleOfOrganizer);
       }
       data.uploadScheduleOfOrganizer = req.files.schedule[0].path;
     }
-    
+
     if (req.files.certificate) {
       if (seminarOrg.uploadCertificateLOA && fs.existsSync(seminarOrg.uploadCertificateLOA)) {
         fs.unlinkSync(seminarOrg.uploadCertificateLOA);
       }
       data.uploadCertificateLOA = req.files.certificate[0].path;
     }
-    
+
     if (req.files.supportingDocuments) {
       if (seminarOrg.uploadSupportingDocuments && fs.existsSync(seminarOrg.uploadSupportingDocuments)) {
         fs.unlinkSync(seminarOrg.uploadSupportingDocuments);
       }
       data.uploadSupportingDocuments = req.files.supportingDocuments[0].path;
     }
-    
+
     if (req.files.report) {
       if (seminarOrg.uploadReport && fs.existsSync(seminarOrg.uploadReport)) {
         fs.unlinkSync(seminarOrg.uploadReport);
       }
       data.uploadReport = req.files.report[0].path;
     }
-    
+
     if (req.files.photos) {
       if (seminarOrg.uploadPhotos && fs.existsSync(seminarOrg.uploadPhotos)) {
         fs.unlinkSync(seminarOrg.uploadPhotos);
@@ -3353,7 +3371,7 @@ const updateSeminarOrganized = asyncHandler(async (req, res) => {
       }
       data.uploadCertificateLOAToSpeaker = req.files.photos[0].path;
     }
-    
+
     if (req.files.photos) {
       if (seminarOrg.uploadCertificateOfOrganizer && fs.existsSync(seminarOrg.uploadCertificateOfOrganizer)) {
         fs.unlinkSync(seminarOrg.uploadCertificateOfOrganizer);
@@ -3384,7 +3402,7 @@ const updateSeminarOrganized = asyncHandler(async (req, res) => {
 
 /**
  * AWARDS RECEIVED
-*/ 
+*/
 
 const addAwardRecieved = asyncHandler(async (req, res) => {
 
@@ -3416,7 +3434,7 @@ const addAwardRecieved = asyncHandler(async (req, res) => {
     { $push: { awardRecieved: awardRecieved._id } }
   );
 
-  res.status(200).json({  
+  res.status(200).json({
     message: "success",
   });
 
@@ -3538,18 +3556,18 @@ const deleteAwardRecieved = asyncHandler(async (req, res) => {
     if (awardRecieved.certificate && fs.existsSync(awardRecieved.certificate)) {
       fs.unlinkSync(awardRecieved.certificate);
     }
-    
+
     // Delete the photos
     if (awardRecieved.photos && fs.existsSync(awardRecieved.photos)) {
       fs.unlinkSync(awardRecieved.photos);
     }
-    
+
     // Remove the Award Received ID from the faculty
     await Faculty.updateOne(
       { email: email },
       { $pull: { awardRecieved: awards_recieved_id } }
     );
-    
+
     // Delete the Award Received entry from the database
     await AwardRecieved.findByIdAndDelete(awards_recieved_id);
 
@@ -3566,12 +3584,12 @@ const deleteAwardRecieved = asyncHandler(async (req, res) => {
 
 /**
  * AWARDS RECEIVED END
-*/ 
+*/
 
 
 /**
  * ACTIVITY CONDUCTED
-*/ 
+*/
 
 const addActivityConducted = asyncHandler(async (req, res) => {
 
@@ -3608,7 +3626,7 @@ const addActivityConducted = asyncHandler(async (req, res) => {
     { $push: { activityConducted: activityConducted._id } }
   );
 
-  res.status(200).json({  
+  res.status(200).json({
     message: "success",
   });
 
@@ -3632,7 +3650,7 @@ const getActivityConductedData = asyncHandler(async (req, res) => {
 
   // Extract the populated Award Received data
   const activityConductedData = user.activityConducted
- 
+
   // Send the response
   res.status(200).json(activityConductedData);
 });
@@ -3689,7 +3707,7 @@ const updateActivityConducted = asyncHandler(async (req, res) => {
       }
       data.certificate = req.files.certificate[0].path
     }
-    
+
     // Update the banner in Activity Conducted
     if (req.files.banner) {
       if (activityConducted.banner && fs.existsSync(activityConducted.banner)) {
@@ -3765,13 +3783,13 @@ const deleteActivityConducted = asyncHandler(async (req, res) => {
       fs.unlinkSync(activityConducted.photos);
     }
 
-    
+
     // Remove the Award Received ID from the faculty
     await Faculty.updateOne(
       { email: email },
       { $pull: { activityConducted: activity_conducted_id } }
     );
-    
+
     // Delete the Award Received entry from the database
     await ActivityConducted.findByIdAndDelete(activity_conducted_id);
 
@@ -3788,12 +3806,12 @@ const deleteActivityConducted = asyncHandler(async (req, res) => {
 
 /**
  * ACTIVITY CONDUCTED END
-*/ 
+*/
 
 
 /**
  * COURSE CERTIFICATION
-*/ 
+*/
 
 const addCourseCertification = asyncHandler(async (req, res) => {
 
@@ -3812,7 +3830,7 @@ const addCourseCertification = asyncHandler(async (req, res) => {
   // add file paths to data
   const certificateURL = req.file.path;
   data.certificate = certificateURL;
- 
+
   // create new Course Certification entry
   const courseCertification = await CourseCertification.create(data);
 
@@ -3822,7 +3840,7 @@ const addCourseCertification = asyncHandler(async (req, res) => {
     { $push: { courseCertification: courseCertification._id } }
   );
 
-  res.status(200).json({  
+  res.status(200).json({
     message: "success",
   });
 
@@ -3846,7 +3864,7 @@ const getCourseCertificationData = asyncHandler(async (req, res) => {
 
   // Extract the populated Course Certification data
   const courseCertificationData = user.courseCertification
- 
+
   // Send the response
   res.status(200).json(courseCertificationData);
 });
@@ -3894,7 +3912,7 @@ const updateCourseCertification = asyncHandler(async (req, res) => {
       }
       data.certificate = req.file.path
     }
-  
+
     await courseCertification.updateOne(data)
   }
   catch (err) {
@@ -3925,13 +3943,13 @@ const deleteCourseCertification = asyncHandler(async (req, res) => {
     if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
       fs.unlinkSync(courseCertification.certificate);
     }
-    
+
     // Remove the Course Certification ID from the faculty
     await Faculty.updateOne(
       { email: email },
       { $pull: { courseCertification: course_certification_id } }
     );
-    
+
     // Delete the Course Certification entry from the database
     await CourseCertification.findByIdAndDelete(course_certification_id);
   }
@@ -3947,7 +3965,7 @@ const deleteCourseCertification = asyncHandler(async (req, res) => {
 
 /**
  * ACTIVITY CONDUCTED END
-*/ 
+*/
 
 
 
@@ -4555,7 +4573,7 @@ module.exports = {
   getSeminarAttendedData,
   getSeminarConductedData,
   getSeminarOrganizedData,
-  
+
   // Get by ID operations
   getPatentById,
   getCopyrightById,

@@ -58,7 +58,7 @@ const sttpAttendedSchema = new mongoose.Schema(
         required: true,
     },
 
-    certUpload: {
+    certificate: {
         type: String,
         required: true,
     },

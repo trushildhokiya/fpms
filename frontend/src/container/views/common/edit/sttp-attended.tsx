@@ -129,13 +129,15 @@ const formSchema = z.object({
     }),
 
     certificate: pdfFileSchema
-}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
+}).refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
 const SttpAttendedEdit = (props: Props) => {
+
     const { id } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         // Fetch the patent data
@@ -173,6 +175,7 @@ const SttpAttendedEdit = (props: Props) => {
         return () => document.removeEventListener("keydown", down);
     }, []);
 
+
     // functions
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -193,6 +196,7 @@ const SttpAttendedEdit = (props: Props) => {
         },
     });
 
+    
     function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
         axios.put("/common/sttp-attended", values, {
@@ -207,7 +211,7 @@ const SttpAttendedEdit = (props: Props) => {
                     title: "STTP/FDP added successfully",
                     description:
                         "Your STTP/FDP information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    action: <ToastAction className='' onClick={()=>navigate('/common/display/sttp-attended')} altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
             }
