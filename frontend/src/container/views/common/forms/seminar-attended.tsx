@@ -44,6 +44,8 @@ import {
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 
 type Props = {};
 
@@ -107,7 +109,7 @@ const formSchema = z
     certificate: pdfFileSchema,
     photos: pdfFileSchema,
   })
-  .refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
+  .refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
   });
@@ -115,6 +117,7 @@ const formSchema = z
 const SeminarAttendedForm = (props: Props) => {
 
   const user = useSelector((state: any) => state.user);
+  const navigate = useNavigate()
 
   // command
   const [open, setOpen] = useState(false);
@@ -154,24 +157,24 @@ const SeminarAttendedForm = (props: Props) => {
     console.log(values);
     axios.post("/common/seminar-attended", values, {
       headers: {
-          "Content-Type": "multipart/form-data",
+        "Content-Type": "multipart/form-data",
       },
-  })
-  .then((res) => {
+    })
+      .then((res) => {
 
-      if (res.data.message === "success") {
+        if (res.data.message === "success") {
           toast({
-              title: "Seminar added successfully",
-              description:
-                  "Your Seminar information has been added successfully",
-              action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+            title: "Seminar added successfully",
+            description:
+              "Your Seminar information has been added successfully",
+            action: <ToastAction className='' onClick={()=>navigate('/faculty')} altText="okay">Okay</ToastAction>,
           });
           form.reset();
-      }
-  })
-  .catch((err) => {
-      console.log(err);
-  });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -180,7 +183,7 @@ const SeminarAttendedForm = (props: Props) => {
       <div className="container my-8">
         <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
           <span className="border-b-4 border-red-800 break-words ">
-          SEMINAR / Webinar  / Expert Talk / Workshop <span className="hidden md:inline-block">Attended</span>
+            SEMINAR / Webinar  / Expert Talk / Workshop <span className="hidden md:inline-block">Attended</span>
           </span>
         </h1>
 
@@ -558,6 +561,7 @@ const SeminarAttendedForm = (props: Props) => {
             </form>
           </Form>
         </div>
+        <Toaster />
       </div>
     </>
   );

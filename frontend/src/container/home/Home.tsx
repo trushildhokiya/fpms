@@ -100,7 +100,7 @@ const Home = () => {
                         <h2 className='font-AzoSans font-bold text-3xl text-red-800 uppercase'>
                             Download Manual
                         </h2>
-                        <div className="text-sm text-gray-800 font-Poppins leading-7 my-4 space-y-3">
+                        <div className="text-base text-gray-800 font-Poppins leading-7 my-4 space-y-3">
                             <p>
                                 Our software is designed to be user-friendly and intuitive, allowing you to navigate through features with ease. From managing profiles to generating reports, every function is crafted to enhance your productivity and streamline your workflow.
                             </p>

@@ -54,12 +54,12 @@ const seminarAttendedSchema = new mongoose.Schema(
         required: true,
     },
 
-    certUpload: {
+    certificate: {
         type: String,
         required: true,
     },
 
-    photosUpload: {
+    photos: {
         type: String,
         required: true,
     },

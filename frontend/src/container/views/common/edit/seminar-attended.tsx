@@ -45,9 +45,10 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { useNavigate, useParams } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
 
 type Props = {};
-interface SEMINARAttended {
+interface SeminarAttended {
     _id: string;
     title: string;
     sessionTitle: string;
@@ -59,12 +60,12 @@ interface SEMINARAttended {
     venue: string;
     fromDate: Date;
     toDate: Date;
-    totalDays: number;
     remarks: string;
-    certUpload: string;
+    certficate: string;
+    photos: string;
     __v: number;
-  }
-  
+}
+
 /**
  * SCHEMAS
  */
@@ -80,7 +81,7 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
-    _id:z.string().optional(),
+    _id: z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
@@ -116,7 +117,6 @@ const formSchema = z.object({
 
     fromDate: z.date(),
     toDate: z.date(),
-    totalDays: z.coerce.number().nonnegative(),
 
     level: z.string().min(1, {
         message: "Level is required!"
@@ -128,34 +128,38 @@ const formSchema = z.object({
         message: "Venue must not exceed 200 characters"
     }),
 
-    certificate: pdfFileSchema
-}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
+    certificate: z.union([z.any().optional(), pdfFileSchema]),
+    photos: z.union([z.any().optional(), pdfFileSchema]),
+
+}).refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
 const SeminarAttendedEdit = (props: Props) => {
+
     const { id } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         // Fetch the patent data
         axios
-          .get(`/common/seminar-attended/${id}`)
-          .then((res) => {
-    
-            const data: SEMINARAttended = res.data
-            form.reset({
-              ...data,
-              fromDate: new Date(data.fromDate),
-              toDate: new Date(data.toDate),
+            .get(`/common/seminar-attended/${id}`)
+            .then((res) => {
+
+                const data: SeminarAttended = res.data
+                form.reset({
+                    ...data,
+                    fromDate: new Date(data.fromDate),
+                    toDate: new Date(data.toDate),
+                })
             })
-          })
-          .catch((err) => {
-            console.error("Error fetching patent data:", err);
-          });
-      }, []);
+            .catch((err) => {
+                console.error("Error fetching patent data:", err);
+            });
+    }, []);
     const user = useSelector((state: any) => state.user);
-    const { toast }= useToast()
+    const { toast } = useToast()
 
 
     // command
@@ -177,7 +181,7 @@ const SeminarAttendedEdit = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            _id:"",
+            _id: "",
             title: "",
             type: "",
             organizedBy: "",
@@ -187,34 +191,33 @@ const SeminarAttendedEdit = (props: Props) => {
             venue: "",
             fromDate: new Date(),
             toDate: new Date(),
-            totalDays: 0,
             remarks: "",
             certificate: new File([], "")
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+
         axios.put("/common/seminar-attended", values, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         })
-        .then((res) => {
+            .then((res) => {
 
-            if (res.data.message === "success") {
-                toast({
-                    title: "Seminar added successfully",
-                    description:
-                        "Your Seminar information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
-                });
-                form.reset();
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+                if (res.data.message === "success") {
+                    toast({
+                        title: "Seminar added successfully",
+                        description:
+                            "Your Seminar information has been added successfully",
+                        action: <ToastAction className='' onClick={() => navigate('/common/display/seminar-attended')} altText="okay">Okay</ToastAction>,
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     return (
@@ -260,7 +263,6 @@ const SeminarAttendedEdit = (props: Props) => {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
-
                             {/* BASIC DETAILS */}
                             <h2
                                 id="basicDetails"
@@ -284,12 +286,10 @@ const SeminarAttendedEdit = (props: Props) => {
                                 name="title"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-800">
-                                            Seminar Title
-                                        </FormLabel>
+                                        <FormLabel className="text-gray-800">Title</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Seminar Title"
+                                                placeholder="Enter Title"
                                                 {...field}
                                                 autoComplete="off"
                                             />
@@ -299,7 +299,9 @@ const SeminarAttendedEdit = (props: Props) => {
                                 )}
                             />
 
-                            <div className="grid md:grid-cols-2 gap-6">
+
+
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
 
                                 <FormField
                                     control={form.control}
@@ -307,11 +309,11 @@ const SeminarAttendedEdit = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
-                                                Organized By
+                                                Organized by
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="organized by"
+                                                    placeholder="Organized by"
                                                     {...field}
                                                     autoComplete="off"
                                                 />
@@ -331,7 +333,7 @@ const SeminarAttendedEdit = (props: Props) => {
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="association with ..."
+                                                    placeholder="Association With .."
                                                     {...field}
                                                     autoComplete="off"
                                                 />
@@ -346,12 +348,11 @@ const SeminarAttendedEdit = (props: Props) => {
                                     name="type"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Type
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Type</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -360,7 +361,9 @@ const SeminarAttendedEdit = (props: Props) => {
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="seminar">Seminar</SelectItem>
-                                                    <SelectItem value="fdp"> FDP </SelectItem>
+                                                    <SelectItem value="webinar">Webinar</SelectItem>
+                                                    <SelectItem value="expertTalk">Expert Talk</SelectItem>
+                                                    <SelectItem value="workshop">Workshop</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -374,12 +377,11 @@ const SeminarAttendedEdit = (props: Props) => {
                                     name="mode"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Mode
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Mode</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -396,21 +398,40 @@ const SeminarAttendedEdit = (props: Props) => {
                                     )}
                                 />
 
+
+                                <FormField
+                                    control={form.control}
+                                    name="venue"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">Venue</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Venue"
+                                                    {...field}
+                                                    autoComplete="off"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+
                                 <FormField
                                     control={form.control}
                                     name="level"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Level
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Level</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select a level" />
+                                                        <SelectValue placeholder="Select a category" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -425,34 +446,14 @@ const SeminarAttendedEdit = (props: Props) => {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="venue"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Venue
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="venue"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+
 
                                 <FormField
                                     control={form.control}
                                     name="fromDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className="text-grey-800">
-                                                From Date
-                                            </FormLabel>
+                                            <FormLabel className="text-grey-800">From Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -489,9 +490,7 @@ const SeminarAttendedEdit = (props: Props) => {
                                     name="toDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className="text-grey-800">
-                                                To Date
-                                            </FormLabel>
+                                            <FormLabel className="text-grey-800">To Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -522,49 +521,26 @@ const SeminarAttendedEdit = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-
-                                <FormField
-                                    control={form.control}
-                                    name="totalDays"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Number of Days
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="venue"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="remarks"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Remarks
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="remarks (NA if not)"
-                                                    {...field}
-                                                    autoComplete="off"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
                             </div>
+
+
+                            <FormField
+                                control={form.control}
+                                name="remarks"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-gray-800">Remarks</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Remarks ( NA if not )"
+                                                {...field}
+                                                autoComplete="off"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <Separator className="bg-red-800" />
 
@@ -579,31 +555,53 @@ const SeminarAttendedEdit = (props: Props) => {
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        Seminar Attended Certificate must be in a single pdf file of maximum
-                                        size 5MB.
+                                        Documents must be in a single pdf file of maximum size
+                                        5MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>
 
-                            <FormField
-                                control={form.control}
-                                name="certificate"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-800">
-                                            Upload Certificate
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                accept=".pdf"
-                                                type="file"
-                                                onChange={(e) => field.onChange(e.target.files?.[0])}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="certificate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Certificate
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="photos"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-800">
+                                                Upload Photos
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    accept=".pdf"
+                                                    type="file"
+                                                    onChange={(e) => field.onChange(e.target.files?.[0])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
 
                             <Button type="submit" className="bg-red-800 hover:bg-red-700">
                                 Submit

@@ -17,9 +17,9 @@ const CourseCertification = require('../models/course-certification')
 const SttpAttended = require('../models/sttp-attended')
 const SttpConducted = require('../models/sttp-conducted')
 const SttpOrganized = require('../models/sttp-organized')
-const seminarAttended = require('../models/seminar-attended')
-const seminarConducted = require('../models/seminar-conducted')
-const seminarOrganised = require('../models/seminar-organised')
+const SeminarAttended = require('../models/seminar-attended')
+const SeminarConducted = require('../models/seminar-conducted')
+const SeminarOrganised = require('../models/seminar-organised')
 const fs = require('fs');
 const download = require('download')
 const validator = require('validator')
@@ -2311,7 +2311,7 @@ const deleteSttpConducted = asyncHandler(async (req, res) => {
 });
 
 const updateSttpConducted = asyncHandler(async (req, res) => {
-  
+
   const data = req.body
 
   try {
@@ -2352,7 +2352,7 @@ const updateSttpConducted = asyncHandler(async (req, res) => {
       data.photos = req.files.photos[0].path
 
     }
-    
+
     await sttpConducted.updateOne(data)
 
   }
@@ -2789,22 +2789,21 @@ const addSeminarAttended = asyncHandler(async (req, res) => {
     throw new Error("User not found!");
   }
   // get file path 
-  const certUploadURL = req.files.certificate[0].path
-  const photoUploadURL = req.files.photos[0].path
+  const certificateURL = req.files.certificate[0].path
+  const photosURL = req.files.photos[0].path
 
   // attach file path to data
-  data.certUpload = certUploadURL
-  data.photoUpload = photoUploadURL
+  data.certificate = certificateURL
+  data.photos = photosURL
 
   // create entry
-  const seminarAtt = await seminarAttended.create(data);
-  console.log('created entry for seminar attended')
+  const seminarAttended = await SeminarAttended.create(data);
+
   await Faculty.findOneAndUpdate(
     { email: email },
-    { $push: { seminarAttended: seminarAtt._id } }
+    { $push: { seminarAttended: seminarAttended._id } }
   );
 
-  console.log('seminar attended added')
   res.status(200).json({
     message: "success",
   });
@@ -2825,7 +2824,7 @@ const getSeminarAttendedById = asyncHandler(async (req, res) => {
     throw new Error("User not found!")
   }
 
-  const seminarAttendedData = await seminarAttended.findById(id)
+  const seminarAttendedData = await SeminarAttended.findById(id)
 
   // Send the response
   res.status(200).json(seminarAttendedData);
@@ -2858,37 +2857,43 @@ const getSeminarAttendedData = asyncHandler(async (req, res) => {
 
 });
 
+
 const deleteSeminarAttended = asyncHandler(async (req, res) => {
+  const { seminarAttended_id } = req.body;
+  const { email } = req.decodedData;
 
-  const { seminarAtt_id } = req.body
   try {
-
     // Find the Seminar to get the necessary information
-    const seminarAtt = await seminarAttended.findById(seminarAtt_id);
-    if (!seminarAtt) {
-      throw new Error('Seminar not found');
+    const seminarAttended = await SeminarAttended.findById(seminarAttended_id);
+
+    if (!seminarAttended) {
+      return res.status(404).json({ message: 'Seminar not found' });
     }
 
-    // Delete the associated file
-    if (seminarAtt.certUpload && fs.existsSync(seminarAtt.certUpload)) {
-      fs.unlinkSync(seminarAtt.certUpload);
+    // Update Faculty document
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { seminarAttended: seminarAttended._id } }
+    );
+
+    // Delete the associated files if they exist
+    if (seminarAttended.certificate && fs.existsSync(seminarAttended.certificate)) {
+      fs.unlinkSync(seminarAttended.certificate);
     }
 
-    if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
-      fs.unlinkSync(seminarAtt.photosUpload);
+    if (seminarAttended.photos && fs.existsSync(seminarAttended.photos)) {
+      fs.unlinkSync(seminarAttended.photos);
     }
+
     // Delete the Seminar entry from the database
-    await seminarAttended.findByIdAndDelete(seminarAtt_id);
-  }
-  catch (error) {
-    throw new Error(error)
-  }
+    await SeminarAttended.findByIdAndDelete(seminarAttended_id);
 
-  res.status(200).json({
-    message: 'success'
-  })
-
-})
+    res.status(200).json({ message: 'success' });
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 const updateSeminarAttended = asyncHandler(async (req, res) => {
 
@@ -2896,31 +2901,31 @@ const updateSeminarAttended = asyncHandler(async (req, res) => {
 
   try {
 
-    const seminarAtt = await seminarAttended.findById(req.body._id)
+    const seminarAttended = await SeminarAttended.findById(req.body._id)
 
-    if (!seminarAtt) {
+    if (!seminarAttended) {
       throw new Error("no seminarAttended found")
     }
 
     if (req.files.certificate) {
 
-      if (seminarAtt.certUpload && fs.existsSync(seminarAtt.certUpload)) {
-        fs.unlinkSync(seminarAtt.certUpload);
+      if (seminarAttended.certificate && fs.existsSync(seminarAttended.certificate)) {
+        fs.unlinkSync(seminarAttended.certificate);
       }
 
-      data.certUpload = req.files.certUpload[0].path
+      data.certificate = req.files.certificate[0].path
 
     }
 
     if (req.files.photos) {
-      if (seminarAtt.photosUpload && fs.existsSync(seminarAtt.photosUpload)) {
-        fs.unlinkSync(seminarAtt.photosUpload);
+      if (seminarAttended.photos && fs.existsSync(seminarAttended.photos)) {
+        fs.unlinkSync(seminarAttended.photos);
       }
 
-      data.photosUpload = req.files.photoUpload[0].path
+      data.photos = req.files.photos[0].path
     }
 
-    await seminarAtt.updateOne(data)
+    await seminarAttended.updateOne(data)
 
   }
   catch (err) {
