@@ -37,6 +37,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from '@/components/ui/use-toast'
 import { ToastAction } from '@/components/ui/toast'
+import { useNavigate } from 'react-router-dom'
+import { Toaster } from '@/components/ui/toaster'
 
 type Props = {}
 
@@ -102,7 +104,7 @@ const formSchema = z.object({
     certificate: pdfFileSchema,
     photos: pdfFileSchema,
 
-}).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
+}).refine((data) => new Date(data.toDate) >= new Date(data.fromDate), {
     message: "End Date must be greater than start date",
     path: ['toDate']
 }) // Field to which the error will be attached);
@@ -110,6 +112,7 @@ const formSchema = z.object({
 const SeminarConductedForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
+    const navigate = useNavigate()
 
     // command
     const [open, setOpen] = useState(false)
@@ -166,7 +169,7 @@ const SeminarConductedForm = (props: Props) => {
                     title: "Seminar Conducted added successfully",
                     description:
                         "Your Seminar Conducted information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    action: <ToastAction className='' onClick={()=>navigate('/faculty')} altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
             }
@@ -535,6 +538,7 @@ const SeminarConductedForm = (props: Props) => {
                 </div>
 
             </div>
+            <Toaster />
         </div>
     )
 }

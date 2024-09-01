@@ -18,12 +18,12 @@ const seminarConductedSchema = new mongoose.Schema(
         required: true,
     },
 
-    programConductedType: {
+    type: {
         type: String,
         required: true,
     },
 
-    programConductedMode: {
+    mode: {
         type: String,
         required: true,
     },
@@ -43,7 +43,7 @@ const seminarConductedSchema = new mongoose.Schema(
         required: true,
     },
 
-    numberOfParticipants: {
+    participants: {
         type: String,
         required: true
     },
@@ -58,17 +58,17 @@ const seminarConductedSchema = new mongoose.Schema(
         required: true,
     },
     
-    invitationLetterUpload: {
+    invitationLetter: {
         type: String,
         required: true,
     },
 
-    completionCertificateUpload: {
+    certificate: {
         type: String,
         required: true,
     },
 
-    photoUpload: {
+    photos: {
       type: String,
       required: true,
     },
@@ -77,5 +77,4 @@ const seminarConductedSchema = new mongoose.Schema(
 );
 
 // Compile the schema into a model
-const SeminarConducted = mongoose.model("seminarConducted", seminarConductedSchema);
-module.exports = SeminarConducted;
+module.exports = mongoose.model("seminarConducted", seminarConductedSchema);

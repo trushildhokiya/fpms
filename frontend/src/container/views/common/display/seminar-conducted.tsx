@@ -19,39 +19,40 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 type Props = {}
 
-interface SEMINARConducted {
+interface SeminarConducted {
     _id: string;
     title: string;
-    sessionTitle: string;
     organizedBy: string;
     associationWith: string;
     type: string;
     mode: string;
-    level: string;
-    venue: string;
     fromDate: Date;
     toDate: Date;
-    totalDays: number;
+    level: string;
+    participants: string;
+    venue: string;
     remarks: string;
-    certUpload: string;
-    invitationUpload: string;
-    photoUpload: string;
+    invitationLetter: string;
+    certificate: string;
+    photos: string;
+    createdAt:string;
+    updatedAt:string;
     __v: number;
-  }
-  
+}
+
 
 const SeminarConductedDisplay = (props: Props) => {
 
     // constants
     const user = useSelector((state: any) => state.user)
-    const [data, setData] = useState<SEMINARConducted[]>([]);
+    const [data, setData] = useState<SeminarConducted[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
 
     // function to convert date strings to Date objects
-    const convertDates = (seminarConducted: SEMINARConducted[]) => {
+    const convertDates = (seminarConducted: SeminarConducted[]) => {
         return seminarConducted.map(seminar => ({
             ...seminar,
             fromDate: new Date(seminar.fromDate),
@@ -66,7 +67,6 @@ const SeminarConductedDisplay = (props: Props) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
                 setTotalRecords(convertedData.length)
-                console.log(convertedData);
             })
             .catch((err) => {
                 console.log(err);
@@ -105,46 +105,46 @@ const SeminarConductedDisplay = (props: Props) => {
 
     // template functions
 
-    const idBodyTemplate = (rowData: SEMINARConducted) => {
+    const idBodyTemplate = (rowData: SeminarConducted) => {
         return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
     };
 
-    const remarksBodyTemplate = (rowData: SEMINARConducted) => {
+    const remarksBodyTemplate = (rowData: SeminarConducted) => {
         return (
             <span className="remarks-text">
                 {rowData.remarks}
             </span>
         );
-    };    
-    
-    const fromDateBodyTemplate = (rowData: SEMINARConducted) => rowData.fromDate.toLocaleDateString();
-    
-    const toDateBodyTemplate = (rowData: SEMINARConducted) => rowData.toDate.toLocaleDateString();
-    
-    const certUploadBodyTemplate = (rowData: SEMINARConducted) => {
+    };
+
+    const fromDateBodyTemplate = (rowData: SeminarConducted) => rowData.fromDate.toLocaleDateString();
+
+    const toDateBodyTemplate = (rowData: SeminarConducted) => rowData.toDate.toLocaleDateString();
+
+    const certificateBodyTemplate = (rowData: SeminarConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certUpload.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800'>Download Certificate</Button>
             </Link>
         );
     };
-    
-    const invitationUploadBodyTemplate = (rowData: SEMINARConducted) => {
+
+    const invitationBodyTemplate = (rowData: SeminarConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.invitationUpload.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.invitationLetter.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800'>Download Invitation</Button>
             </Link>
         );
     };
-    
-    const photoUploadBodyTemplate = (rowData: SEMINARConducted) => {
+
+    const photosBodyTemplate = (rowData: SeminarConducted) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photoUpload.split('uploads')[1]}>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1]}>
                 <Button variant={'link'} className='text-indigo-800'>View Photo</Button>
             </Link>
         );
     };
-    
+
 
     const dateFilterTemplate = (options: any) => {
         return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
@@ -170,13 +170,12 @@ const SeminarConductedDisplay = (props: Props) => {
         // define columns
         interface Column {
             header: string;
-            dataKey: keyof SEMINARConducted;
+            dataKey: keyof SeminarConducted;
         }
 
         const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
-            { header: 'Session Title', dataKey: 'sessionTitle' },
             { header: 'Organized By', dataKey: 'organizedBy' },
             { header: 'Association With', dataKey: 'associationWith' },
             { header: 'Type', dataKey: 'type' },
@@ -185,11 +184,13 @@ const SeminarConductedDisplay = (props: Props) => {
             { header: 'Venue', dataKey: 'venue' },
             { header: 'From Date', dataKey: 'fromDate' },
             { header: 'To Date', dataKey: 'toDate' },
-            { header: 'Total Days', dataKey: 'totalDays' },
+            { header: 'Participants', dataKey: 'participants' },
             { header: 'Remarks', dataKey: 'remarks' },
-            { header: 'Certificate Upload', dataKey: 'certUpload' },
-            { header: 'Invitation Upload', dataKey: 'invitationUpload' },
-            { header: 'Photo Upload', dataKey: 'photoUpload' }
+            { header: 'Invitation Letter', dataKey: 'invitationLetter' },
+            { header: 'Certificate', dataKey: 'certificate' },
+            { header: 'Photos', dataKey: 'photos' },
+            { header: 'Created At', dataKey: 'createdAt' },
+            { header: 'Updated At', dataKey: 'updatedAt' }
         ];
 
         // Function to add footer to each page
@@ -277,7 +278,7 @@ const SeminarConductedDisplay = (props: Props) => {
         </div>
     );
 
-    const actionBodyTemplate = (rowData: SEMINARConducted) => {
+    const actionBodyTemplate = (rowData: SeminarConducted) => {
         return (
             <>
                 <Link to={`/common/edit/seminar-conducted/${rowData._id}`}>
@@ -306,10 +307,10 @@ const SeminarConductedDisplay = (props: Props) => {
         );
     };
 
-    const handleDelete = (rowData: SEMINARConducted) => {
+    const handleDelete = (rowData: SeminarConducted) => {
         axios.delete('/common/seminar-conducted', {
             data: {
-                seminarCond_id: rowData._id
+                seminarConducted_id: rowData._id
             }
         })
             .then((res) => {
@@ -344,42 +345,41 @@ const SeminarConductedDisplay = (props: Props) => {
 
                         <CardContent className='font-Poppins'>
 
-                        <DataTable 
-                            exportFilename='my-seminar-conducted' 
-                            ref={dt} 
-                            header={header} 
-                            footer={footerTemplate} 
-                            value={data} 
-                            scrollable 
-                            removableSort 
-                            sortMode='multiple' 
-                            paginator 
-                            rows={5} 
-                            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" 
-                            currentPageReportTemplate="{first} to {last} of {totalRecords}" 
-                            rowsPerPageOptions={[5, 10, 25, 50]} 
-                            onValueChange={(e) => setTotalRecords(e.length)} 
-                            showGridlines 
-                            size='large'
-                        >
-                            <Column field="_id" body={idBodyTemplate} header="Id" filter filterPlaceholder='search by id' sortable></Column>
-                            <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
-                            <Column field="sessionTitle" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Session Title' sortable header="Session Title"></Column>
-                            <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organizer' sortable header="Organized By"></Column>
-                            <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association' sortable header="Association With"></Column>
-                            <Column field="type" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Type' sortable header="Type"></Column>
-                            <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
-                            <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
-                            <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
-                            <Column field="fromDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by Start Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
-                            <Column field="toDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by End Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
-                            <Column field="totalDays" style={{ minWidth: '150px' }} sortable header="Total Days"></Column>
-                            <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
-                            <Column field="certUpload" style={{ minWidth: '250px' }} header="Certificate" body={certUploadBodyTemplate}></Column>
-                            <Column field="invitationUpload" style={{ minWidth: '250px' }} header="Invitation" body={invitationUploadBodyTemplate}></Column>
-                            <Column field="photoUpload" style={{ minWidth: '250px' }} header="Photo" body={photoUploadBodyTemplate}></Column>
-                            <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
-                        </DataTable>
+                            <DataTable
+                                exportFilename='my-seminar-conducted'
+                                ref={dt}
+                                header={header}
+                                footer={footerTemplate}
+                                value={data}
+                                scrollable
+                                removableSort
+                                sortMode='multiple'
+                                paginator
+                                rows={5}
+                                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                                currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                onValueChange={(e) => setTotalRecords(e.length)}
+                                showGridlines
+                                size='large'
+                            >
+                                <Column field="_id" body={idBodyTemplate} header="ID" filter filterPlaceholder='Search by ID' sortable></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
+                                <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organizer' sortable header="Organized By"></Column>
+                                <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association' sortable header="Association With"></Column>
+                                <Column field="type" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Type' sortable header="Type"></Column>
+                                <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
+                                <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
+                                <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
+                                <Column field="fromDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by Start Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
+                                <Column field="toDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by End Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
+                                <Column field="participants" style={{ minWidth: '150px' }} sortable header="Participants"></Column>
+                                <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
+                                <Column field="certificate" style={{ minWidth: '250px' }} header="Certificate" body={certificateBodyTemplate}></Column>
+                                <Column field="invitationLetter" style={{ minWidth: '250px' }} header="Invitation Letter" body={invitationBodyTemplate}></Column>
+                                <Column field="photos" style={{ minWidth: '250px' }} header="Photos" body={photosBodyTemplate}></Column>
+                                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
+                            </DataTable>
 
                         </CardContent>
 

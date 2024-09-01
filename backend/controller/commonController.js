@@ -2953,24 +2953,24 @@ const addSeminarConducted = asyncHandler(async (req, res) => {
   }
 
   // get file path 
-  const certUploadURL = req.files.certificate[0].path
-  const invitationUploadURL = req.files.invitationLetter[0].path
-  const photoUploadURL = req.files.photos[0].path
+  const certificateURL = req.files.certificate[0].path
+  const invitationLetterURL = req.files.invitationLetter[0].path
+  const photoURL = req.files.photos[0].path
 
   // attach file path to data
 
-  data.certUpload = certUploadURL
-  data.invitationUpload = invitationUploadURL
-  data.photoUpload = photoUploadURL
+  data.certificate = certificateURL
+  data.invitationLetter = invitationLetterURL
+  data.photos = photoURL
 
   // create consultancy entry
-  const seminarCond = await seminarConducted.create(data);
+  const seminarConducted = await SeminarConducted.create(data);
+
   await Faculty.findOneAndUpdate(
     { email: email },
-    { $push: { seminarConducted: seminarCond._id } }
+    { $push: { seminarConducted: seminarConducted._id } }
   );
 
-  console.log('seminar conducted added')
   res.status(200).json({
     message: "success",
   });
@@ -2992,7 +2992,7 @@ const getSeminarConductedById = asyncHandler(async (req, res) => {
   }
 
 
-  const seminarConductedData = await seminarConducted.findById(id)
+  const seminarConductedData = await SeminarConducted.findById(id)
 
   // Send the response
   res.status(200).json(seminarConductedData);
@@ -3026,32 +3026,39 @@ const getSeminarConductedData = asyncHandler(async (req, res) => {
 
 const deleteSeminarConducted = asyncHandler(async (req, res) => {
 
-  const { seminarCond_id } = req.body
+  const { seminarConducted_id } = req.body
+  const { email } = req.decodedData
+
 
   try {
 
     // Find the Seminar to get the necessary information
-    const seminarCond = await seminarConducted.findById(seminarCond_id);
+    const seminarConducted = await SeminarConducted.findById(seminarConducted_id);
 
-    if (!seminarCond) {
+    if (!seminarConducted) {
       throw new Error('Seminar Conducted not found');
     }
 
+    await Faculty.updateOne(
+      { email: email },
+      { $pull: { seminarConducted: seminarConducted._id } }
+    );
+    
     // Delete the associated file
-    if (seminarCond.certUpload && fs.existsSync(seminarCond.certUpload)) {
-      fs.unlinkSync(seminarCond.certUpload);
+    if (seminarConducted.certificate && fs.existsSync(seminarConducted.certificate)) {
+      fs.unlinkSync(seminarConducted.certificate);
     }
 
-    if (seminarCond.invitationUpload && fs.existsSync(seminarCond.invitationUpload)) {
-      fs.unlinkSync(seminarCond.invitationUpload);
+    if (seminarConducted.invitationLetter && fs.existsSync(seminarConducted.invitationLetter)) {
+      fs.unlinkSync(seminarConducted.invitationLetter);
     }
 
-    if (seminarCond.photoUpload && fs.existsSync(seminarCond.photoUpload)) {
-      fs.unlinkSync(seminarCond.photoUpload);
+    if (seminarConducted.photos && fs.existsSync(seminarConducted.photos)) {
+      fs.unlinkSync(seminarConducted.photos);
     }
 
     // Delete the Seminar entry from the database
-    await seminarConducted.findByIdAndDelete(seminarCond_id);
+    await SeminarConducted.findByIdAndDelete(seminarConducted_id);
 
   }
   catch (error) {
@@ -3065,48 +3072,49 @@ const deleteSeminarConducted = asyncHandler(async (req, res) => {
 })
 
 const updateSeminarConducted = asyncHandler(async (req, res) => {
-  const data = req.body
+
+  const data = req.body  
 
   try {
 
-    const seminarCond = await seminarConducted.findById(req.body._id)
+    const seminarConducted = await SeminarConducted.findById(req.body._id)
 
-    if (!seminarCond) {
-      throw new Error("no sttpCond found")
+    if (!seminarConducted) {
+      throw new Error("Seminar Conducted not found!")
     }
 
     if (req.files.certificate) {
 
-      if (seminarCond.certUpload && fs.existsSync(seminarCond.certUpload)) {
-        fs.unlinkSync(seminarCond.certUpload);
+      if (seminarConducted.certificate && fs.existsSync(seminarConducted.certificate)) {
+        fs.unlinkSync(seminarConducted.certificate);
       }
 
-      data.certUpload = req.files.certificate[0].path
+      data.certificate = req.files.certificate[0].path
 
     }
 
     if (req.files.invitationLetter) {
 
-      if (seminarCond.invitationUpload && fs.existsSync(seminarCond.invitationUpload)) {
-        fs.unlinkSync(seminarCond.invitationUpload);
+      if (seminarConducted.invitationLetter && fs.existsSync(seminarConducted.invitationLetter)) {
+        fs.unlinkSync(seminarConducted.invitationLetter);
       }
 
-      data.invitationUpload = req.files.invitationLetter[0].path
+      data.invitationLetter = req.files.invitationLetter[0].path
 
     }
 
     if (req.files.photos) {
 
 
-      if (seminarCond.photoUpload && fs.existsSync(seminarCond.photoUpload)) {
-        fs.unlinkSync(seminarCond.photoUpload);
+      if (seminarConducted.photos && fs.existsSync(seminarConducted.photos)) {
+        fs.unlinkSync(seminarConducted.photos);
       }
 
-      data.photoUpload = req.files.photos[0].path
+      data.photos = req.files.photos[0].path
 
     }
 
-    await seminarCond.updateOne(data)
+    await seminarConducted.updateOne(data)
 
   }
   catch (err) {
