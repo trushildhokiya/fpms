@@ -6,7 +6,7 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -40,8 +40,8 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
+import { useNavigate } from 'react-router-dom'
 
-type Props = {};
 
 /**
  * SCHEMAS
@@ -58,7 +58,6 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
-
     title: z.string().min(1, {
         message: "Title is required!"
     }).max(300, {
@@ -66,12 +65,12 @@ const formSchema = z.object({
     }),
 
     facultiesInvolved: z.string({
-        invalid_type_error: "Faculties Somaiya ID is required!"
+        invalid_type_error: "Faculties' email addresses are required!"
     }).transform(value => value.split(',').map(email => email.trim()))
         .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
             message: "Each faculty email must be a valid email address",
         }),
-    
+
     departmentInvolved: z.array(z.string()).nonempty(),
 
     type: z.string().min(1, {
@@ -85,36 +84,34 @@ const formSchema = z.object({
     }),
 
     associationWith: z.string().min(1, {
-        message: "association with is required!"
+        message: "Association with is required!"
     }).max(100, {
-        message: "association with must not exceed 100 characters"
+        message: "Association with must not exceed 100 characters"
     }),
 
-
     venue: z.string().min(1, {
-        message: "venue is required!"
+        message: "Venue is required!"
     }).max(100, {
-        message: "venue must not exceed 100 characters"
+        message: "Venue must not exceed 100 characters"
     }),
 
     mode: z.string().min(1, {
-        message: "mode is required!"
+        message: "Mode is required!"
     }),
 
     fromDate: z.date(),
     toDate: z.date(),
 
-
     level: z.string().min(1, {
-        message: "level is required!"
+        message: "Level is required!"
     }),
 
     facultiesCount: z.coerce.number().nonnegative(),
     studentsCount: z.coerce.number().nonnegative(),
     participants: z.coerce.number().nonnegative(),
 
-    fundingRecieved: z.string().min(1, {
-        message: "Funded or not is required!"
+    fundingReceived: z.string().min(1, {
+        message: "Funding received status is required!"
     }),
 
     fundingAgency: z.string().min(1, {
@@ -124,20 +121,20 @@ const formSchema = z.object({
     }),
 
     fundingAgencyType: z.string().min(1, {
-        message: "funding agency type is required!"
+        message: "Funding agency type is required!"
     }),
 
     sanctionedAmount: z.coerce.number().nonnegative(),
-    recievedAmount: z.coerce.number().nonnegative(),
+    receivedAmount: z.coerce.number().nonnegative(),
 
     remarks: z.string().min(1, {
-        message: "Remarks is required!"
+        message: "Remarks are required!"
     }).max(200, {
-        message: "Remarks must not exceed 100 characters"
+        message: "Remarks must not exceed 200 characters"
     }),
 
     videoUrl: z.string().min(1).url({
-        message: "Not a valid Url"
+        message: "Not a valid URL"
     }),
 
     utilizationCertificate: pdfFileSchema,
@@ -152,16 +149,16 @@ const formSchema = z.object({
     speakerCertificate: pdfFileSchema,
     organizerCertificate: pdfFileSchema,
     organizerLOA: pdfFileSchema,
-
-
 }).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End date must be greater than start date",
     path: ["toDate"], // Field to which the error will be attached
 });
 
-const SeminarOrganizedForm = (props: Props) => {
+const SeminarOrganizedForm = () => {
 
     const user = useSelector((state: any) => state.user);
+    const { toast } = useToast()
+    const navigate = useNavigate()
 
     const departments = [
         "Computer",
@@ -205,11 +202,11 @@ const SeminarOrganizedForm = (props: Props) => {
             facultiesCount: 0,
             studentsCount: 0,
             participants: 0,
-            fundingRecieved: "",
+            fundingReceived: "",
             fundingAgency: "",
             fundingAgencyType: "",
             sanctionedAmount: 0,
-            recievedAmount: 0,
+            receivedAmount: 0,
             remarks: "",
             videoUrl: "",
             utilizationCertificate: new File([], ''),
@@ -228,7 +225,26 @@ const SeminarOrganizedForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+        axios.post("/common/seminar-organized", values, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+            .then((res) => {
+
+                if (res.data.message === "success") {
+                    toast({
+                        title: "Achievement added successfully",
+                        description:
+                            "Yourschievement information has been added successfully",
+                        action: <ToastAction className='' onClick={() => navigate('/common/display/seminar-organized')} altText="okay">Okay</ToastAction>,
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }
 
     return (
@@ -322,59 +338,59 @@ const SeminarOrganizedForm = (props: Props) => {
                             />
 
                             <FormField
-                                    control={form.control}
-                                    name="facultiesInvolved"
-                                    render={({ field }) => (
-                                        <FormItem className='my-4'>
-                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
-                                            <FormControl>
-                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Write mutiple email seperated by commas(,)
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                control={form.control}
+                                name="facultiesInvolved"
+                                render={({ field }) => (
+                                    <FormItem className='my-4'>
+                                        <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Write mutiple email seperated by commas(,)
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                                <FormField
-                                    control={form.control}
-                                    name="departmentInvolved"
-                                    render={({ field }) => (
-                                        <FormItem className=''>
-                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
-                                            <FormControl>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="outline" className='w-full overflow-hidden'>
-                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent className="">
-                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        {departments.map(option => (
-                                                            <DropdownMenuCheckboxItem
-                                                                key={option}
-                                                                checked={field.value?.includes(option)}
-                                                                onCheckedChange={() => {
-                                                                    const newValue = field.value?.includes(option)
-                                                                        ? field.value.filter(val => val !== option)
-                                                                        : [...(field.value || []), option];
-                                                                    field.onChange(newValue);
-                                                                }}
-                                                            >
-                                                                {option}
-                                                            </DropdownMenuCheckboxItem>
-                                                        ))}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            <FormField
+                                control={form.control}
+                                name="departmentInvolved"
+                                render={({ field }) => (
+                                    <FormItem className=''>
+                                        <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                        <FormControl>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="outline" className='w-full overflow-hidden'>
+                                                        {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="">
+                                                    <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    {departments.map(option => (
+                                                        <DropdownMenuCheckboxItem
+                                                            key={option}
+                                                            checked={field.value?.includes(option)}
+                                                            onCheckedChange={() => {
+                                                                const newValue = field.value?.includes(option)
+                                                                    ? field.value.filter(val => val !== option)
+                                                                    : [...(field.value || []), option];
+                                                                field.onChange(newValue);
+                                                            }}
+                                                        >
+                                                            {option}
+                                                        </DropdownMenuCheckboxItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
 
 
@@ -711,7 +727,7 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="fundingRecieved"
+                                    name="fundingReceived"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -756,6 +772,7 @@ const SeminarOrganizedForm = (props: Props) => {
                                                 <SelectContent>
                                                     <SelectItem value="government">Government</SelectItem>
                                                     <SelectItem value="private">Private</SelectItem>
+                                                    <SelectItem value="not applicable">Not Applicable</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -807,7 +824,7 @@ const SeminarOrganizedForm = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="recievedAmount"
+                                    name="receivedAmount"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">

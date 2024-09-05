@@ -19,41 +19,43 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 type Props = {}
 
-interface SEMINAROrganized {
+interface SeminarOrganized {
     _id: string;
     title: string;
+    facultiesInvolved: string[];
+    departmentInvolved: string[];
     type: string;
-    principalInvestigator: string;
-    coInvestigator: string;
-    coordinator: string;
-    coCoordintor: string;
     organizedBy: string;
     associationWith: string;
     venue: string;
     mode: string;
     fromDate: Date;
     toDate: Date;
-    totalDays: number;
     level: string;
-    remarks: string;
-    fundingRecieved: string;
-    fundingAgencyType: string;
+    facultiesCount: number;
+    studentsCount: number;
+    participants: number;
+    fundingReceived: string;
     fundingAgency: string;
+    fundingAgencyType: string;
     sanctionedAmount: number;
-    recievedAmount: number;
-    uploadFundSanctionedLetter: string;
-    uploadUtilizationCertificate: string;
-    uploadBanner: string;
-    uploadScheduleOfOrganizer: string;
-    uploadCertificateLOA: string;
-    uploadSupportingDocuments: string;
-    uploadReport: string;
-    uploadPhotos: string;
-    uploadInvitationLetter: string,
-    uploadCertificateLOAToSpeaker: string,
-    uploadCertificateOfOrganizer: string,
-    uploadLOAOfOrganizer: string,
+    receivedAmount: number;
+    remarks: string;
     videoUrl: string;
+    utilizationCertificate: string;
+    banner: string;
+    schedule: string;
+    certificate: string;
+    supportingDocuments: string;
+    report: string;
+    photos: string;
+    fundSanctionedLetter: string;
+    invitationLetter: string;
+    speakerCertificate: string;
+    organizerCertificate: string;
+    organizerLOA: string;
+    createdAt: string;
+    updatedAt: string;
     __v: number;
 }
 
@@ -62,14 +64,14 @@ const SeminarOrganizedDisplay = (props: Props) => {
 
     // constants
     const user = useSelector((state: any) => state.user)
-    const [data, setData] = useState<SEMINAROrganized[]>([]);
+    const [data, setData] = useState<SeminarOrganized[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
 
     // function to convert date strings to Date objects
-    const convertDates = (seminarOrganized: SEMINAROrganized[]) => {
+    const convertDates = (seminarOrganized: SeminarOrganized[]) => {
         return seminarOrganized.map(seminar => ({
             ...seminar,
             fromDate: new Date(seminar.fromDate),
@@ -84,7 +86,6 @@ const SeminarOrganizedDisplay = (props: Props) => {
                 const convertedData = convertDates(res.data);
                 setData(convertedData);
                 setTotalRecords(convertedData.length)
-                console.log(convertedData);
             })
             .catch((err) => {
                 console.log(err);
@@ -123,123 +124,132 @@ const SeminarOrganizedDisplay = (props: Props) => {
 
     // template functions
 
-    const idBodyTemplate = (rowData: SEMINAROrganized) => {
+    const idBodyTemplate = (rowData: SeminarOrganized) => {
         return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
     };
 
-    const remarksBodyTemplate = (rowData: SEMINAROrganized) => {
+    const remarksBodyTemplate = (rowData: SeminarOrganized) => {
         return (
             <span className="remarks-text">
                 {rowData.remarks}
             </span>
         );
-    };    
-    
-    const fromDateBodyTemplate = (rowData: SEMINAROrganized) => rowData.fromDate.toLocaleDateString();
-    
-    const toDateBodyTemplate = (rowData: SEMINAROrganized) => rowData.toDate.toLocaleDateString();
-    
-    const uploadFundSanctionedLetterBodyTemplate = (rowData: SEMINAROrganized) => {
+    };
+
+    const fromDateBodyTemplate = (rowData: SeminarOrganized) => rowData.fromDate.toLocaleDateString();
+
+    const toDateBodyTemplate = (rowData: SeminarOrganized) => rowData.toDate.toLocaleDateString();
+
+    const uploadFundSanctionedLetterBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadFundSanctionedLetter.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.fundSanctionedLetter.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Fund Sanctioned Letter</Button>
             </Link>
         );
     };
-    
-    const uploadUtilizationCertificateBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadUtilizationCertificateBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadUtilizationCertificate.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.utilizationCertificate.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Utilization Certificate</Button>
             </Link>
         );
     };
-    
-    const uploadBannerBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadBannerBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadBanner.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.banner.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Banner</Button>
             </Link>
         );
     };
-    
-    const uploadScheduleBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadScheduleBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadScheduleOfOrganizer.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.schedule.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Schedule</Button>
             </Link>
         );
     };
-    
-    const uploadCertificateLOABodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadCertificateLOABodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadCertificateLOA.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.certificate.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Certificate LOA</Button>
             </Link>
         );
     };
-    
-    const uploadSupportingDocumentsBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const departmentInvolvedBodyTemplate = (rowData: SeminarOrganized) => {
+        return rowData.departmentInvolved.map((department: string) => (
+            <Badge key={department} className='bg-purple-400 hover:bg-purple-300 bg-opacity-85 text-purple-900'>{department}</Badge>
+        ));
+    };
+
+    const facultyInvolvedBodyTemplate = (rowData: SeminarOrganized) => rowData.facultiesInvolved.join(", ")
+
+
+    const uploadSupportingDocumentsBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadSupportingDocuments.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.supportingDocuments.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Supporting Documents</Button>
             </Link>
         );
     };
-    
-    const uploadReportBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadReportBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadReport.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.report.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Report</Button>
             </Link>
         );
     };
-    
-    const uploadPhotosBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadPhotosBodyTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadPhotos.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.photos.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Photos</Button>
             </Link>
         );
     };
-    
-    const videoUrlBodyTemplate = (rowData: SEMINAROrganized) => {
+
+    const videoUrlBodyTemplate = (rowData: SeminarOrganized) => {
         return rowData.videoUrl ? (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
                 to={rowData.videoUrl}
             >
                 <Button variant='link' className='text-indigo-800'>Watch Video</Button>
@@ -249,53 +259,54 @@ const SeminarOrganizedDisplay = (props: Props) => {
         );
     };
 
-    const uploadInvitationLetterTemplate = (rowData: SEMINAROrganized) => {
+    const uploadInvitationLetterTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadCertificateLOA.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.invitationLetter.split('uploads')[1]}`}
             >
-                <Button variant='link' className='text-indigo-800'>Download Invitation LOA</Button>
+                <Button variant='link' className='text-indigo-800'>Download Invitation Letter</Button>
             </Link>
         );
     };
 
-    const uploadCertificateLOAToSpeakerTemplate = (rowData: SEMINAROrganized) => {
+    const uploadCertificateLOAToSpeakerTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadCertificateLOA.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.speakerCertificate.split('uploads')[1]}`}
             >
-                <Button variant='link' className='text-indigo-800'>Download Speaker LOA Certificate LOA</Button>
+                <Button variant='link' className='text-indigo-800'>Download Speaker Certificate LOA</Button>
             </Link>
         );
     };
-    
-    const uploadCertificateOfOrganizerTemplate = (rowData: SEMINAROrganized) => {
+
+    const uploadCertificateOfOrganizerTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadCertificateLOA.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.organizerCertificate.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download Organizer Certificate</Button>
             </Link>
         );
     };
 
-    const uploadLOAOfOrganizerTemplate = (rowData: SEMINAROrganized) => {
+    const uploadLOAOfOrganizerTemplate = (rowData: SeminarOrganized) => {
         return (
-            <Link 
-                target='_blank' 
-                referrerPolicy='no-referrer' 
-                to={`${axios.defaults.baseURL}/${rowData.uploadCertificateLOA.split('uploads')[1]}`}
+            <Link
+                target='_blank'
+                referrerPolicy='no-referrer'
+                to={`${axios.defaults.baseURL}/${rowData.organizerLOA.split('uploads')[1]}`}
             >
                 <Button variant='link' className='text-indigo-800'>Download LOA of Organizer</Button>
             </Link>
         );
     };
+
 
     const dateFilterTemplate = (options: any) => {
         return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
@@ -321,16 +332,15 @@ const SeminarOrganizedDisplay = (props: Props) => {
         // define columns
         interface Column {
             header: string;
-            dataKey: keyof SEMINAROrganized;
+            dataKey: keyof SeminarOrganized;
         }
-
         const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
+            { header: 'Department Involved', dataKey: 'departmentInvolved' },
+            { header: 'Faculties Involved', dataKey: 'facultiesInvolved' },
             { header: 'Organized By', dataKey: 'organizedBy' },
             { header: 'Association With', dataKey: 'associationWith' },
-            { header: 'Coordinator', dataKey: 'coordinator' },
-            { header: 'Co-Coordinator', dataKey: 'coCoordintor' },
             { header: 'Type', dataKey: 'type' },
             { header: 'Mode', dataKey: 'mode' },
             { header: 'Level', dataKey: 'level' },
@@ -338,26 +348,29 @@ const SeminarOrganizedDisplay = (props: Props) => {
             { header: 'From Date', dataKey: 'fromDate' },
             { header: 'To Date', dataKey: 'toDate' },
             { header: 'Remarks', dataKey: 'remarks' },
-            { header: 'Funding Received', dataKey: 'fundingRecieved' },
+            { header: 'Funding Received', dataKey: 'fundingReceived' },
             { header: 'Funding Agency Type', dataKey: 'fundingAgencyType' },
             { header: 'Funding Agency', dataKey: 'fundingAgency' },
             { header: 'Sanctioned Amount', dataKey: 'sanctionedAmount' },
-            { header: 'Received Amount', dataKey: 'recievedAmount' },
-            { header: 'Upload Utilization Certificate', dataKey: 'uploadUtilizationCertificate' },
-            { header: 'Upload Banner', dataKey: 'uploadBanner' },
-            { header: 'Upload Schedule of Organizer', dataKey: 'uploadScheduleOfOrganizer' },
-            { header: 'Upload Certificate LOA', dataKey: 'uploadCertificateLOA' },
-            { header: 'Upload Supporting Documents', dataKey: 'uploadSupportingDocuments' },
-            { header: 'Upload Report', dataKey: 'uploadReport' },
-            { header: 'Upload Photos', dataKey: 'uploadPhotos' },
-            { header: 'Upload Fund Sanctioned Letter', dataKey: 'uploadFundSanctionedLetter' },
-            { header: 'Upload Invitation Letter', dataKey: 'uploadInvitationLetter' },
-            { header: 'Upload Certificate LOA To Speaker', dataKey: 'uploadCertificateLOAToSpeaker' },
-            { header: 'Upload Certificate of Organizer', dataKey: 'uploadCertificateOfOrganizer' },
-            { header: 'Upload LOA of Organizer', dataKey: 'uploadLOAOfOrganizer' },
+            { header: 'Received Amount', dataKey: 'receivedAmount' },
+            { header: 'Utilization Certificate', dataKey: 'utilizationCertificate' },
+            { header: 'Banner', dataKey: 'banner' },
+            { header: 'Schedule', dataKey: 'schedule' },
+            { header: 'Certificate LOA', dataKey: 'certificate' },
+            { header: 'Supporting Documents', dataKey: 'supportingDocuments' },
+            { header: 'Report', dataKey: 'report' },
+            { header: 'Photos', dataKey: 'photos' },
+            { header: 'Fund Sanctioned Letter', dataKey: 'fundSanctionedLetter' },
+            { header: 'Invitation Letter', dataKey: 'invitationLetter' },
+            { header: 'Speaker Certificate LOA', dataKey: 'speakerCertificate' },
+            { header: 'Organizer Certificate', dataKey: 'organizerCertificate' },
+            { header: 'Organizer LOA', dataKey: 'organizerLOA' },
             { header: 'Video URL', dataKey: 'videoUrl' },
+            { header: 'Created At', dataKey: 'createdAt' },
+            { header: 'Updated At', dataKey: 'updatedAt' },
+            { header: 'Version', dataKey: '__v' },
         ];
-        
+
 
         // Function to add footer to each page
         const addFooter = () => {
@@ -429,7 +442,7 @@ const SeminarOrganizedDisplay = (props: Props) => {
 
         addBackgroundImage()
         // Save the PDF
-        doc.save('copyright_data.pdf');
+        doc.save('seminar-organized.pdf');
     };
 
 
@@ -444,7 +457,7 @@ const SeminarOrganizedDisplay = (props: Props) => {
         </div>
     );
 
-    const actionBodyTemplate = (rowData: SEMINAROrganized) => {
+    const actionBodyTemplate = (rowData: SeminarOrganized) => {
         return (
             <>
                 <Link to={`/common/edit/seminar-organized/${rowData._id}`}>
@@ -473,10 +486,10 @@ const SeminarOrganizedDisplay = (props: Props) => {
         );
     };
 
-    const handleDelete = (rowData: SEMINAROrganized) => {
+    const handleDelete = (rowData: SeminarOrganized) => {
         axios.delete('/common/seminar-organized', {
             data: {
-                seminarOrg_id: rowData._id
+                seminarOrganized_id: rowData._id
             }
         })
             .then((res) => {
@@ -497,72 +510,76 @@ const SeminarOrganizedDisplay = (props: Props) => {
 
             <div className="container font-Poppins my-10">
 
-                <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                    Seminar Details
+                <h1 className="font-AzoSans font-bold text-3xl tracking-wide my-6 text-red-800 uppercase">
+                    <span className="border-b-4 border-red-800 break-words ">
+                        SEMINAR / Webinar  / Expert Talk / Workshop <span className="hidden md:inline-block">Organized</span>
+                    </span>
                 </h1>
 
                 <div className="my-10">
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Seminar organized</CardTitle>
-                            <CardDescription>Seminar organized details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Seminar Organized</CardTitle>
+                            <CardDescription>Details of Seminar / Webinar  / Expert Talk / Workshop Organized of faculty is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
 
-                        <DataTable 
-                            exportFilename='my-seminar-organized' 
-                            ref={dt} 
-                            header={header} 
-                            footer={footerTemplate} 
-                            value={data} 
-                            scrollable 
-                            removableSort 
-                            sortMode='multiple' 
-                            paginator 
-                            rows={5} 
-                            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" 
-                            currentPageReportTemplate="{first} to {last} of {totalRecords}" 
-                            rowsPerPageOptions={[5, 10, 25, 50]} 
-                            onValueChange={(e) => setTotalRecords(e.length)} 
-                            showGridlines 
-                            size='large'
-                        >
-                            <Column field="_id" body={idBodyTemplate} header="ID" filter filterPlaceholder='Search by ID' sortable></Column>
-                            <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
-                            <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organizer' sortable header="Organized By"></Column>
-                            <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association' sortable header="Association With"></Column>
-                            <Column field="coordinator" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Coordinator' sortable header="Coordinator"></Column>
-                            <Column field="coCoordintor" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Co-Coordinator' sortable header="Co-Coordinator"></Column>
-                            <Column field="type" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Type' sortable header="Type"></Column>
-                            <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
-                            <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
-                            <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
-                            <Column field="fromDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by Start Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
-                            <Column field="toDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by End Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
-                            <Column field="totalDays" style={{ minWidth: '150px' }} sortable header="Total Days"></Column>
-                            <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
-                            <Column field="fundingRecieved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Funding Received' sortable header="Funding Received"></Column>
-                            <Column field="fundingAgencyType" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Funding Agency Type' sortable header="Funding Agency Type"></Column>
-                            <Column field="fundingAgency" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Funding Agency' sortable header="Funding Agency"></Column>
-                            <Column field="sanctionedAmount" style={{ minWidth: '150px' }} sortable header="Sanctioned Amount"></Column>
-                            <Column field="recievedAmount" style={{ minWidth: '150px' }} sortable header="Received Amount"></Column>
-                            <Column field="uploadUtilizationCertificate" style={{ minWidth: '250px' }} header="Utilization Certificate" body={uploadUtilizationCertificateBodyTemplate}></Column>
-                            <Column field="uploadBanner" style={{ minWidth: '250px' }} header="Banner" body={uploadBannerBodyTemplate}></Column>
-                            <Column field="uploadScheduleOfOrganizer" style={{ minWidth: '250px' }} header="Schedule" body={uploadScheduleBodyTemplate}></Column>
-                            <Column field="uploadCertificateLOA" style={{ minWidth: '250px' }} header="Certificate LOA" body={uploadCertificateLOABodyTemplate}></Column>
-                            <Column field="uploadSupportingDocuments" style={{ minWidth: '250px' }} header="Supporting Documents" body={uploadSupportingDocumentsBodyTemplate}></Column>
-                            <Column field="uploadReport" style={{ minWidth: '250px' }} header="Report" body={uploadReportBodyTemplate}></Column>
-                            <Column field="uploadPhotos" style={{ minWidth: '250px' }} header="Photos" body={uploadPhotosBodyTemplate}></Column>
-                            <Column field="uploadFundSanctionedLetter" style={{ minWidth: '250px' }} header="Fund Sanctioned Letter" body={uploadFundSanctionedLetterBodyTemplate}></Column>
-                            <Column field="uploadInvitationLetter" style={{ minWidth: '250px' }} header="Invitaiton Letter" body={uploadInvitationLetterTemplate}></Column>
-                            <Column field="uploadCertificateLOAToSpeaker" style={{ minWidth: '250px' }} header="Certificate LOA To Speaker" body={uploadCertificateLOAToSpeakerTemplate}></Column>
-                            <Column field="uploadCertificateOfOrganizer" style={{ minWidth: '250px' }} header="Certificate Of Organizer" body={uploadCertificateOfOrganizerTemplate}></Column>
-                            <Column field="uploadLOAOfOrganizer" style={{ minWidth: '250px' }} header="LOA Of Organizer" body={uploadLOAOfOrganizerTemplate}></Column>
-                            <Column field="videoUrl" style={{ minWidth: '250px' }} header="Video URL" body={videoUrlBodyTemplate}></Column>
-                            <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
-                        </DataTable>
+                            <DataTable
+                                exportFilename='my-seminar-organized'
+                                ref={dt}
+                                header={header}
+                                footer={footerTemplate}
+                                value={data}
+                                scrollable
+                                removableSort
+                                sortMode='multiple'
+                                paginator
+                                rows={5}
+                                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                                currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                onValueChange={(e) => setTotalRecords(e.length)}
+                                showGridlines
+                                size='large'
+                            >
+                                <Column field="_id" body={idBodyTemplate} header="ID" filter filterPlaceholder='Search by ID' sortable></Column>
+                                <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
+                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
+                                <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organizer' sortable header="Organized By"></Column>
+                                <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association' sortable header="Association With"></Column>
+                                <Column field="type" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Type' sortable header="Type"></Column>
+                                <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
+                                <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
+                                <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
+                                <Column field="fromDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by Start Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
+                                <Column field="toDate" style={{ minWidth: '250px' }} sortable dataType='date' filter filterPlaceholder='Search by End Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
+                                <Column field="facultiesCount" style={{ minWidth: '150px' }} sortable header="Faculties Count"></Column>
+                                <Column field="studentsCount" style={{ minWidth: '150px' }} sortable header="Students Count"></Column>
+                                <Column field="participants" style={{ minWidth: '150px' }} sortable header="Participants"></Column>
+                                <Column field="fundingReceived" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Funding Received' sortable header="Funding Received"></Column>
+                                <Column field="fundingAgencyType" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Funding Agency Type' sortable header="Funding Agency Type"></Column>
+                                <Column field="fundingAgency" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Funding Agency' sortable header="Funding Agency"></Column>
+                                <Column field="sanctionedAmount" style={{ minWidth: '150px' }} sortable header="Sanctioned Amount"></Column>
+                                <Column field="receivedAmount" style={{ minWidth: '150px' }} sortable header="Received Amount"></Column>
+                                <Column field="utilizationCertificate" style={{ minWidth: '250px' }} header="Utilization Certificate" body={uploadUtilizationCertificateBodyTemplate}></Column>
+                                <Column field="banner" style={{ minWidth: '250px' }} header="Banner" body={uploadBannerBodyTemplate}></Column>
+                                <Column field="schedule" style={{ minWidth: '250px' }} header="Schedule" body={uploadScheduleBodyTemplate}></Column>
+                                <Column field="certificate" style={{ minWidth: '250px' }} header="Certificate LOA" body={uploadCertificateLOABodyTemplate}></Column>
+                                <Column field="supportingDocuments" style={{ minWidth: '250px' }} header="Supporting Documents" body={uploadSupportingDocumentsBodyTemplate}></Column>
+                                <Column field="report" style={{ minWidth: '250px' }} header="Report" body={uploadReportBodyTemplate}></Column>
+                                <Column field="photos" style={{ minWidth: '250px' }} header="Photos" body={uploadPhotosBodyTemplate}></Column>
+                                <Column field="fundSanctionedLetter" style={{ minWidth: '250px' }} header="Fund Sanctioned Letter" body={uploadFundSanctionedLetterBodyTemplate}></Column>
+                                <Column field="invitationLetter" style={{ minWidth: '250px' }} header="Invitation Letter" body={uploadInvitationLetterTemplate}></Column>
+                                <Column field="speakerCertificate" style={{ minWidth: '250px' }} header="Speaker Certificate" body={uploadCertificateLOAToSpeakerTemplate}></Column>
+                                <Column field="organizerCertificate" style={{ minWidth: '250px' }} header="Organizer Certificate" body={uploadCertificateOfOrganizerTemplate}></Column>
+                                <Column field="organizerLOA" style={{ minWidth: '250px' }} header="Organizer LOA" body={uploadLOAOfOrganizerTemplate}></Column>
+                                <Column field="videoUrl" style={{ minWidth: '250px' }} header="Video URL" body={videoUrlBodyTemplate}></Column>
+                                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
+
+                            </DataTable>
 
 
                         </CardContent>

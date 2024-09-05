@@ -289,7 +289,7 @@ const SttpOrganizedForm = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    // console.log(values);
     axios.post("/common/sttp-organized", values, {
       headers: {
         "Content-Type": "multipart/form-data",

@@ -497,7 +497,7 @@ router.route("/profile").get(facultyAuthenticator, getProfileData);
 router.route("/experience").post(facultyAuthenticator, experienceFileUpload.any("experienceProof"), addExperience);
 
 
-router.route('/qualification').post(facultyAuthenticator,qualificationFileUpload.any('proof'), addQualification)
+router.route('/qualification').post(facultyAuthenticator, qualificationFileUpload.any('proof'), addQualification)
 
 router.route('/qualification').get(facultyAuthenticator, getQualificationData)
 /**
@@ -1120,7 +1120,7 @@ router.route("/patent").post(facultyAuthenticator, patentFileUpload.single("pate
  */
 router.route('/patent').get(facultyAuthenticator, getPatentData)
 
-router.route('/patent').delete(facultyAuthenticator,deletePatent)
+router.route('/patent').delete(facultyAuthenticator, deletePatent)
 
 /**
  * @swagger
@@ -1376,7 +1376,7 @@ router.route("/copyright").post(facultyAuthenticator, copyrightFileUpload.single
 router.route('/copyright').get(facultyAuthenticator, getCopyrightData)
 
 
-router.route('/copyright').delete(facultyAuthenticator,deleteCopyright)
+router.route('/copyright').delete(facultyAuthenticator, deleteCopyright)
 
 /**
  * @swagger
@@ -1691,7 +1691,7 @@ router.route("/journal").post(facultyAuthenticator, journalFileUpload.fields([
  */
 router.route("/journal").get(facultyAuthenticator, getJournalData)
 
-router.route('/journal').delete(facultyAuthenticator,deleteJournal)
+router.route('/journal').delete(facultyAuthenticator, deleteJournal)
 
 
 /**
@@ -2035,7 +2035,7 @@ router.route("/conference").post(facultyAuthenticator, conferenceFileUpload.fiel
  */
 router.route("/conference").get(facultyAuthenticator, getConferenceData)
 
-router.route('/conference').delete(facultyAuthenticator,deleteConference)
+router.route('/conference').delete(facultyAuthenticator, deleteConference)
 
 /**
  * @swagger
@@ -2329,7 +2329,7 @@ router.route("/book").post(facultyAuthenticator, bookFileUpload.single("proof"),
  */
 router.route('/book').get(facultyAuthenticator, getBookData)
 
-router.route('/book').delete(facultyAuthenticator,deleteBook)
+router.route('/book').delete(facultyAuthenticator, deleteBook)
 
 /**
  * @swagger
@@ -2632,7 +2632,7 @@ router.route("/book-chapter").post(facultyAuthenticator, bookChapterUpload.singl
  */
 router.route('/book-chapter').get(facultyAuthenticator, getBookChapterData)
 
-router.route('/book-chapter').delete(facultyAuthenticator,deleteBookChapter)
+router.route('/book-chapter').delete(facultyAuthenticator, deleteBookChapter)
 
 /**
  * @swagger
@@ -2972,14 +2972,14 @@ router.route('/need-based-project').post(facultyAuthenticator, needBasedProjectF
  */
 router.route('/need-based-project').get(facultyAuthenticator, getNeedBasedProjectData)
 
-router.route('/need-based-project').delete(facultyAuthenticator,deleteNeedBasedProject)
+router.route('/need-based-project').delete(facultyAuthenticator, deleteNeedBasedProject)
 
 
 router.route('/award-honors').post(facultyAuthenticator, awardHonorsFileUpload.single('proof'), addAwardHonors)
 
 router.route('/award-honors').get(facultyAuthenticator, getAwardHonorsData)
 
-router.route('/award-honors').delete(facultyAuthenticator,deleteAwardsHonors)
+router.route('/award-honors').delete(facultyAuthenticator, deleteAwardsHonors)
 
 
 router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fields([
@@ -2992,7 +2992,7 @@ router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fi
 
 router.route('/consultancy').get(facultyAuthenticator, getConsultancyData)
 
-router.route('/consultancy').delete(facultyAuthenticator,deleteConsultancy)
+router.route('/consultancy').delete(facultyAuthenticator, deleteConsultancy)
 
 
 router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
@@ -3005,37 +3005,37 @@ router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
 
 router.route('/projects').get(facultyAuthenticator, getProjectsData)
 
-router.route('/projects').delete(facultyAuthenticator,deleteProject)
+router.route('/projects').delete(facultyAuthenticator, deleteProject)
 
-router.route('/bulk-upload').post(facultyAuthenticator,bulkUploader)
+router.route('/bulk-upload').post(facultyAuthenticator, bulkUploader)
 
-router.route('/patent/:id').get(facultyAuthenticator,getPatentById)
+router.route('/patent/:id').get(facultyAuthenticator, getPatentById)
 
-router.route('/copyright/:id').get(facultyAuthenticator,getCopyrightById)
+router.route('/copyright/:id').get(facultyAuthenticator, getCopyrightById)
 
-router.route('/journal/:id').get(facultyAuthenticator,getJournalById)
+router.route('/journal/:id').get(facultyAuthenticator, getJournalById)
 
-router.route('/conference/:id').get(facultyAuthenticator,getConferenceById)
+router.route('/conference/:id').get(facultyAuthenticator, getConferenceById)
 
-router.route('/book/:id').get(facultyAuthenticator,getBookById)
+router.route('/book/:id').get(facultyAuthenticator, getBookById)
 
-router.route('/book-chapter/:id').get(facultyAuthenticator,getBookChapterById)
+router.route('/book-chapter/:id').get(facultyAuthenticator, getBookChapterById)
 
-router.route('/projects/:id').get(facultyAuthenticator,getProjectById)
+router.route('/projects/:id').get(facultyAuthenticator, getProjectById)
 
-router.route('/need-based-project/:id').get(facultyAuthenticator,getNeedBasedProjectById)
+router.route('/need-based-project/:id').get(facultyAuthenticator, getNeedBasedProjectById)
 
-router.route('/consultancy/:id').get(facultyAuthenticator,getConsultancyById)
+router.route('/consultancy/:id').get(facultyAuthenticator, getConsultancyById)
 
-router.route('/award-honors/:id').get(facultyAuthenticator,getAwardHonorsById)
+router.route('/award-honors/:id').get(facultyAuthenticator, getAwardHonorsById)
 
-router.route('/profile').put(facultyAuthenticator,updateProfile)
+router.route('/profile').put(facultyAuthenticator, updateProfile)
 
-router.route('/research-profile').put(facultyAuthenticator,updateResearchProfile)
+router.route('/research-profile').put(facultyAuthenticator, updateResearchProfile)
 
-router.route('/qualification').put(facultyAuthenticator,qualificationFileUpload.any('proof'),updateQualification)
+router.route('/qualification').put(facultyAuthenticator, qualificationFileUpload.any('proof'), updateQualification)
 
-router.route('/experience').put(facultyAuthenticator,experienceFileUpload.any('experienceProof'),updateExperience)
+router.route('/experience').put(facultyAuthenticator, experienceFileUpload.any('experienceProof'), updateExperience)
 
 router.route('/patent').put(facultyAuthenticator, patentFileUpload.single('patentCertificate'), updatePatent)
 
@@ -3149,7 +3149,6 @@ router.route('/seminar-organized').get(facultyAuthenticator, getSeminarOrganized
 router.route('/seminar-organized').delete(facultyAuthenticator, deleteSeminarOrganized);
 
 router.route('/seminar-organized').post(facultyAuthenticator, seminarOrganizedFileUpload.fields([
-  { name: 'fundSanctionedLetter', maxCount: 1 },
   { name: 'utilizationCertificate', maxCount: 1 },
   { name: 'banner', maxCount: 1 },
   { name: 'schedule', maxCount: 1 },
@@ -3157,14 +3156,14 @@ router.route('/seminar-organized').post(facultyAuthenticator, seminarOrganizedFi
   { name: 'supportingDocuments', maxCount: 1 },
   { name: 'report', maxCount: 1 },
   { name: 'photos', maxCount: 1 },
+  { name: 'fundSanctionedLetter', maxCount: 1 },
   { name: 'invitationLetter', maxCount: 1 },
-  { name: 'certificateLOAToSpeaker', maxCount: 1 },
-  { name: 'certificateOfOrganizer', maxCount: 1 },
-  { name: 'lOAOfOrganizer', maxCount: 1 }
+  { name: 'speakerCertificate', maxCount: 1 },
+  { name: 'organizerCertificate', maxCount: 1 },
+  { name: 'organizerLOA', maxCount: 1 }
 ]), addSeminarOrganized);
 
 router.route('/seminar-organized').put(facultyAuthenticator, seminarOrganizedFileUpload.fields([
-  { name: 'fundSanctionedLetter', maxCount: 1 },
   { name: 'utilizationCertificate', maxCount: 1 },
   { name: 'banner', maxCount: 1 },
   { name: 'schedule', maxCount: 1 },
@@ -3172,10 +3171,11 @@ router.route('/seminar-organized').put(facultyAuthenticator, seminarOrganizedFil
   { name: 'supportingDocuments', maxCount: 1 },
   { name: 'report', maxCount: 1 },
   { name: 'photos', maxCount: 1 },
+  { name: 'fundSanctionedLetter', maxCount: 1 },
   { name: 'invitationLetter', maxCount: 1 },
-  { name: 'certificateLOAToSpeaker', maxCount: 1 },
-  { name: 'certificateOfOrganizer', maxCount: 1 },
-  { name: 'lOAOfOrganizer', maxCount: 1 }
+  { name: 'speakerCertificate', maxCount: 1 },
+  { name: 'organizerCertificate', maxCount: 1 },
+  { name: 'organizerLOA', maxCount: 1 }
 ]), updateSeminarOrganized);
 
 
