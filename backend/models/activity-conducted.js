@@ -18,6 +18,16 @@ const ActivityConductedSchema = new mongoose.Schema(
       required: true,
     },
 
+    departmentInvolved: {
+      type: [String],
+      required: true,
+    },
+
+    facultiesInvolved: {
+      type: [String],
+      required: true,
+    },
+
     mode: {
       type: String,
       required: true,
@@ -55,7 +65,7 @@ const ActivityConductedSchema = new mongoose.Schema(
 
     invitationLetter: {
       type: String,
-      required: true,
+      required: false,
     },
 
     certificate: {
@@ -65,17 +75,17 @@ const ActivityConductedSchema = new mongoose.Schema(
 
     banner: {
       type: String,
-      required: true,
+      required: false,
     },
 
     report: {
       type: String,
-      required: true,
+      required: false,
     },
 
     photos: {
       type: String,
-      required: true,
+      required: false,
     },
 
     videoLink: {

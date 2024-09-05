@@ -28,6 +28,8 @@ interface ActivityConducted {
     title: string;
     organizedBy: string;
     associationWith: string;
+    departmentInvolved: string[];
+    facultiesInvolved: string[];
     mode: string;
     level: string;
     participants: number;
@@ -44,7 +46,7 @@ interface ActivityConducted {
     createdAt: string;
     updatedAt: string;
     __v: number;
-  }
+}
 
 const ActivityConductedDisplay = (props: Props) => {
 
@@ -68,10 +70,10 @@ const ActivityConductedDisplay = (props: Props) => {
     // useEffect to fetch data
     useEffect(() => {
         axios.get('/common/activity-conducted').then((res) => {
-                const convertedData = convertDates(res.data);
-                setData(convertedData);
-                setTotalRecords(convertedData.length)
-            })
+            const convertedData = convertDates(res.data);
+            setData(convertedData);
+            setTotalRecords(convertedData.length)
+        })
             .catch((err) => {
                 console.log(err);
             })
@@ -119,42 +121,68 @@ const ActivityConductedDisplay = (props: Props) => {
     const fromDateBodyTemplate = (rowData: ActivityConducted) => rowData.fromDate.toLocaleDateString()
 
     const invitationLetterBodyTemplate = (rowData: ActivityConducted) => {
-        return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.invitationLetter.split('uploads')[1]}>
-                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+        const invitationLetterURL = rowData.invitationLetter ? axios.defaults.baseURL + "/" + rowData.invitationLetter.split('uploads')[1] : null;
+        return invitationLetterURL ? (
+            <Link target='_blank' referrerPolicy='no-referrer' to={invitationLetterURL}>
+                <Button variant={'link'} className='text-indigo-800'>Download</Button>
             </Link>
-        )
-    }
+        ) : (
+            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
+        );
+    };
 
     const certificateBodyTemplate = (rowData: ActivityConducted) => {
-        return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
-                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+        const certificateURL = rowData.certificate ? axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1] : null;
+        return certificateURL ? (
+            <Link target='_blank' referrerPolicy='no-referrer' to={certificateURL}>
+                <Button variant={'link'} className='text-indigo-800'>Download</Button>
             </Link>
-        )
-    }
+        ) : (
+            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
+        );
+    };
+
+    const departmentInvolvedBodyTemplate = (rowData: ActivityConducted) => {
+        return rowData.departmentInvolved.map((department: string) => (
+            <Badge key={department} className='bg-purple-400 hover:bg-purple-300 bg-opacity-85 text-purple-900'>{department}</Badge>
+        ));
+    };
+
+    const facultyInvolvedBodyTemplate = (rowData: ActivityConducted) => rowData.facultiesInvolved.join(", ")
+
+
     const bannerBodyTemplate = (rowData: ActivityConducted) => {
-        return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.banner.split('uploads')[1]}>
-                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+        const bannerURL = rowData.banner ? axios.defaults.baseURL + "/" + rowData.banner.split('uploads')[1] : null;
+        return bannerURL ? (
+            <Link target='_blank' referrerPolicy='no-referrer' to={bannerURL}>
+                <Button variant={'link'} className='text-indigo-800'>Download</Button>
             </Link>
-        )
-    }
+        ) : (
+            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
+        );
+    };
 
     const reportBodyTemplate = (rowData: ActivityConducted) => {
-        return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.report.split('uploads')[1]}>
-                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+        const reportURL = rowData.report ? axios.defaults.baseURL + "/" + rowData.report.split('uploads')[1] : null;
+        return reportURL ? (
+            <Link target='_blank' referrerPolicy='no-referrer' to={reportURL}>
+                <Button variant={'link'} className='text-indigo-800'>Download</Button>
             </Link>
-        )
-    }
+        ) : (
+            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
+        );
+    };
+
     const photosBodyTemplate = (rowData: ActivityConducted) => {
-        return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1]}>
-                <Button variant={'link'} className='text-indigo-800' >Download</Button>
+        const photosURL = rowData.photos ? axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1] : null;
+        return photosURL ? (
+            <Link target='_blank' referrerPolicy='no-referrer' to={photosURL}>
+                <Button variant={'link'} className='text-indigo-800'>Download</Button>
             </Link>
-        )
-    }
+        ) : (
+            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
+        );
+    };
 
 
     const URLBodyTemplate = (rowData: ActivityConducted) => {
@@ -259,7 +287,7 @@ const ActivityConductedDisplay = (props: Props) => {
             } else if (typeof value === 'object') {
                 return JSON.stringify(value);
             } else {
-                return value.toString();
+                return value
             }
         };
 
@@ -351,7 +379,7 @@ const ActivityConductedDisplay = (props: Props) => {
             <div className="container font-Poppins my-10">
 
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                Activities Conducted Details
+                    Activities Conducted Details
                 </h1>
 
                 <div className="my-10">
@@ -366,13 +394,15 @@ const ActivityConductedDisplay = (props: Props) => {
                             <DataTable exportFilename='my-activity-conducted' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
+                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
+                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
                                 <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organized By' sortable header="Activity Organized By"></Column>
                                 <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association with' sortable header="In Association With"></Column>
                                 <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
                                 <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
                                 <Column field="participants" style={{ minWidth: '250px' }} header="No. of Participants"></Column>
-                                <Column field="from date" style={{ minWidth: '250px' }}  dataType='date' filter filterPlaceholder='Search by From Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
-                                <Column field="to date" style={{ minWidth: '250px' }}  dataType='date' filter filterPlaceholder='Search by To Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
+                                <Column field="from date" style={{ minWidth: '250px' }} dataType='date' filter filterPlaceholder='Search by From Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
+                                <Column field="to date" style={{ minWidth: '250px' }} dataType='date' filter filterPlaceholder='Search by To Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
                                 <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
                                 <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
                                 <Column field="invitationLetter" style={{ minWidth: '250px' }} header="Invitation Letter" body={invitationLetterBodyTemplate}></Column>
@@ -380,7 +410,7 @@ const ActivityConductedDisplay = (props: Props) => {
                                 <Column field="banner" style={{ minWidth: '250px' }} header="Banner" body={bannerBodyTemplate}></Column>
                                 <Column field="report" style={{ minWidth: '250px' }} header="Report" body={reportBodyTemplate}></Column>
                                 <Column field="photos" style={{ minWidth: '250px' }} header="Photos" body={photosBodyTemplate}></Column>
-                                <Column field="videoLink" style={{ minWidth: '200px' }}  body={URLBodyTemplate} header="Video Url"></Column>
+                                <Column field="videoLink" style={{ minWidth: '200px' }} body={URLBodyTemplate} header="Video Url"></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }} header="Actions"></Column>
                             </DataTable>
                         </CardContent>

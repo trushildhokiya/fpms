@@ -6,7 +6,7 @@ import HeadNavbar from '@/components/navbar/HeadNavbar'
 import { useSelector } from 'react-redux'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AlertCircle, BookUser, CalendarIcon, FileArchive, Users, UserCheck, GraduationCap } from 'lucide-react'
+import { AlertCircle, BookUser, CalendarIcon, FileArchive } from 'lucide-react'
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { Separator } from '@/components/ui/separator'
@@ -41,7 +41,6 @@ import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 
-type Props = {}
 
 /**
  * SCHEMAS 
@@ -104,11 +103,11 @@ const formSchema = z.object({
     venue: z.string().min(1).max(100),
     remarks: z.string().min(1).max(100),
 
-    invitationLetter: pdfFileSchema,
     certificate: pdfFileSchema,
-    banner: pdfFileSchema,
-    report: pdfFileSchema,
-    photos: pdfFileSchema,
+    invitationLetter: z.union([pdfFileSchema, z.any().optional()]),
+    banner: z.union([pdfFileSchema, z.any().optional()]),
+    report: z.union([pdfFileSchema, z.any().optional()]),
+    photos: z.union([pdfFileSchema, z.any().optional()]),
 
     videoLink: z.string().min(1).url({
         message: "Invalid url"
@@ -119,7 +118,7 @@ const formSchema = z.object({
     path: ['toDate']
 }) // Field to which the error will be attached);
 
-const ActivityConducted = (props: Props) => {
+const ActivityConducted = () => {
 
     const user = useSelector((state: any) => state.user)
     const [open, setOpen] = useState(false)

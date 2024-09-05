@@ -1,3 +1,4 @@
+//@ts-nocheck
 /**
  * IMPORTS
  */
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -39,6 +41,7 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 type Props = {}
 
@@ -47,26 +50,28 @@ type Props = {}
  */
 
 interface ActivityConducted {
-  _id: string;
-  title: string;
-  organizedBy: string;
-  associationWith: string;
-  mode: string;
-  level: string;
-  participants: number;
-  fromDate: Date;
-  toDate: Date;
-  venue: string;
-  remarks: string;
-  invitationLetter: string;
-  certificate: string;
-  banner: string;
-  report: string;
-  photos: string;
-  videoLink: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
+    _id: string;
+    title: string;
+    organizedBy: string;
+    departmentInvolved: string[];
+    facultiesInvolved: string[];
+    associationWith: string;
+    mode: string;
+    level: string;
+    participants: number;
+    fromDate: Date;
+    toDate: Date;
+    venue: string;
+    remarks: string;
+    invitationLetter: string;
+    certificate: string;
+    banner: string;
+    report: string;
+    photos: string;
+    videoLink: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
 }
 
 const ACCEPTED_FILE_TYPES = [
@@ -88,6 +93,15 @@ const formSchema = z.object({
     }).max(100, {
         message: "Activity title must not exceed 100 characters"
     }),
+
+    facultiesInvolved: z.string({
+        invalid_type_error: "Faculties Somaiya ID is required!"
+    }).transform(value => value.split(',').map(email => email.trim()))
+        .refine(emails => emails.every(email => z.string().email().safeParse(email).success), {
+            message: "Each faculty email must be a valid email address",
+        }),
+
+    departmentInvolved: z.array(z.string()).nonempty(),
 
     organizedBy: z.string().min(1, {
         message: "Organized by is required!"
@@ -138,8 +152,16 @@ const ActivityConductedEdit = (props: Props) => {
     const [open, setOpen] = useState(false)
     const { id } = useParams()
     const navigate = useNavigate()
-    const { toast }= useToast()
-    
+    const { toast } = useToast()
+
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities"
+    ];
+
     //functions
     //key-board events
     useEffect(() => {
@@ -157,20 +179,21 @@ const ActivityConductedEdit = (props: Props) => {
 
     // Fetch the project data
     useEffect(() => {
-      axios
-          .get(`/common/activity-conducted/${id}`)
-          .then((res) => {
-              const data: ActivityConducted = res.data
-              form.reset({
-                  ...data,
-                  fromDate: new Date(data.fromDate),
-                  toDate: new Date(data.toDate),
-              })
-          })
-          .catch((err) => {
-              console.error("Error fetching Activity Conducted data:", err);
-          });
-  }, []);
+        axios
+            .get(`/common/activity-conducted/${id}`)
+            .then((res) => {
+                const data: ActivityConducted = res.data
+                form.reset({
+                    ...data,
+                    fromDate: new Date(data.fromDate),
+                    facultiesInvolved: data.facultiesInvolved.join(', '),
+                    toDate: new Date(data.toDate),
+                })
+            })
+            .catch((err) => {
+                console.error("Error fetching Activity Conducted data:", err);
+            });
+    }, []);
 
 
     // form schema
@@ -204,22 +227,22 @@ const ActivityConductedEdit = (props: Props) => {
                 "Content-Type": "multipart/form-data",
             },
         })
-        .then((res) => {
-            if (res.data.message === "success") {
-                toast({
-                    title: "Activities Conducted updated successfully",
-                    description:
-                        "Your conducted activities information has been updated successfully",
-                    action: (
-                      <ToastAction className='' onClick={() => { navigate('/common/display/activity-conducted') }} altText="okay">Okay</ToastAction>
-                    ),
-                });
-                form.reset();
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res) => {
+                if (res.data.message === "success") {
+                    toast({
+                        title: "Activities Conducted updated successfully",
+                        description:
+                            "Your conducted activities information has been updated successfully",
+                        action: (
+                            <ToastAction className='' onClick={() => { navigate('/common/display/activity-conducted') }} altText="okay">Okay</ToastAction>
+                        ),
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     return (
@@ -272,20 +295,20 @@ const ActivityConductedEdit = (props: Props) => {
                                 </AlertDescription>
                             </Alert>
 
-                              {/* ID HIDDEN */}
-                              <FormField 
-                                control={form.control} 
-                                name={`_id`} 
+                            {/* ID HIDDEN */}
+                            <FormField
+                                control={form.control}
+                                name={`_id`}
                                 render={({ field }) => (
-                                  <FormItem className='hidden'>
-                                    <FormLabel className='text-grey-800'>ID</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="ID" autoComplete='off' {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
+                                    <FormItem className='hidden'>
+                                        <FormLabel className='text-grey-800'>ID</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="ID" autoComplete='off' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
                                 )}
-                              />
+                            />
                             <div>
 
                                 <FormField
@@ -302,12 +325,66 @@ const ActivityConductedEdit = (props: Props) => {
                                     )}
                                 />
 
-                                
+                                <FormField
+                                    control={form.control}
+                                    name="facultiesInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className='my-4'>
+                                            <FormLabel className='text-gray-800'>Faculties Involved Somaiya Mail Address</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu" {...field} autoComplete='off' />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Write mutiple email seperated by commas(,)
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="departmentInvolved"
+                                    render={({ field }) => (
+                                        <FormItem className=''>
+                                            <FormLabel className='text-gray-800'>Department Involved</FormLabel>
+                                            <FormControl>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className='w-full overflow-hidden'>
+                                                            {field.value?.length > 0 ? field.value.join(', ') : "Select Involved Departments"}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="">
+                                                        <DropdownMenuLabel>Select Departments</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {departments.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option}
+                                                                checked={field.value?.includes(option)}
+                                                                onCheckedChange={() => {
+                                                                    const newValue = field.value?.includes(option)
+                                                                        ? field.value.filter(val => val !== option)
+                                                                        : [...(field.value || []), option];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                {option}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                             </div>
 
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
 
-                            <FormField
+                                <FormField
                                     control={form.control}
                                     name="organizedBy"
                                     render={({ field }) => (
@@ -342,10 +419,10 @@ const ActivityConductedEdit = (props: Props) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className='text-gray-800'>Activity Conducted Mode</FormLabel>
-                                            <Select 
-                                              onValueChange={field.onChange} 
-                                              defaultValue={field.value}
-                                              value={field.value}
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
