@@ -31,7 +31,7 @@ const Notifications = () => {
 
     const getNotifications: Function = () => {
 
-        axios.get('/head/notifications', {
+        axios.get('/common/notifications', {
             headers: {
                 'token': localStorage.getItem('token'),
                 'email': email

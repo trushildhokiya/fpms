@@ -247,7 +247,7 @@ const HeadNavbar = () => {
                         </DropdownMenu>
                     </div>
                     <div className="mx-5">
-                        <Link to='/hod/notifications'>
+                        <Link to='/common/notifications'>
                             <Bell />
                         </Link>
                     </div>

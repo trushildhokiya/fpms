@@ -53,7 +53,6 @@ const AdminConsultancyDisplay = lazy(() => import("./container/views/admin/conta
 const HeadDashboard = lazy(() => import("./container/views/head/container/dashboard/dashboard"));
 const Faculty = lazy(() => import("./container/views/head/container/faculties/Faculty"));
 const Notify = lazy(() => import("./container/views/head/container/notify/Notify"));
-const Notifications = lazy(() => import("./container/views/head/container/notifications/Notifications"));
 const HeadPatentDisplay = lazy(() => import("./container/views/head/container/display/patent"));
 const HeadCopyrightDisplay = lazy(() => import("./container/views/head/container/display/copyright"));
 const HeadJournalDisplay = lazy(() => import("./container/views/head/container/display/journal"));
@@ -69,6 +68,11 @@ const HeadConsultancyDisplay = lazy(() => import("./container/views/head/contain
  * FACULTY IMPORTS
  */
 const FacultyDashboard = lazy(() => import("./container/views/faculty/container/dashboard/dashboard"));
+
+/**
+ * COMMON IMPORTS 
+ */
+const Notifications = lazy(() => import("./container/views/common/notifications/Notifications"));
 
 /**
  * PROTECTED ROUTES
@@ -222,7 +226,7 @@ function App() {
           <Route path='/hod/display/awards-honors' element={<HeadProtectedRoute> <HeadAwardsHonorsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/projects' element={<HeadProtectedRoute> <HeadProjectsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/consultancy' element={<HeadProtectedRoute> <HeadConsultancyDisplay /> </HeadProtectedRoute>} />
-          <Route path='/hod/notifications' element={<HeadProtectedRoute> <Notifications /> </HeadProtectedRoute>} />
+          <Route path='/common/notifications' element={<CommonProtectedRoute> <Notifications /> </CommonProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />
           <Route path='/common/forms/experience' element={<CommonProtectedRoute> <ExperienceForm /> </CommonProtectedRoute>} />

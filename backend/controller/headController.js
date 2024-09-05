@@ -9,10 +9,8 @@ const Projects = require('../models/projects')
 const Consultancy = require('../models/consultancy')
 const BookChapter = require('../models/book-chapter')
 const NeedBasedProjects = require('../models/need-based-projects')
-const Notification = require('../models/notification')
 const nodemailer = require('nodemailer');
-const consultancy = require('../models/consultancy');
-
+const Notification = require('../models/notification')
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -51,29 +49,7 @@ const createNotification = asyncHandler(async (req, res) => {
 
 })
 
-/**
- * GET NOTIFICATIONS
- */
 
-const getNotifications = asyncHandler(async (req, res) => {
-
-    const { email } = req.headers
-
-    const user = await Faculty.findOne({ email: email })
-
-    if (!user) {
-        //Error
-        res.status(401)
-        throw new Error('User not found')
-    }
-
-    const department = user.department
-
-    const notification = await Notification.find({ department: department })
-
-    res.status(200).json(notification)
-
-})
 
 /**
  * GET FACULTIES LIST
@@ -195,12 +171,12 @@ const toggleFacultyApproval = asyncHandler(async (req, res) => {
     }
 
 
-    // transporter.sendMail(mailOptions, (err, info) => {
-    //     if (err) {
-    //         res.status(500)
-    //         throw new Error('Internal Server Error in mailer!')
-    //     }
-    // });
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            res.status(500)
+            throw new Error('Internal Server Error in mailer!')
+        }
+    });
 
 
     res.status(200).json({
@@ -626,7 +602,6 @@ function calculateYearlyCount(data, category, year) {
 
 module.exports = {
     createNotification,
-    getNotifications,
     getFacultiesList,
     toggleFacultyApproval,
     getPatentData,

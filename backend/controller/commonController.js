@@ -26,6 +26,7 @@ const validator = require('validator')
 const moment = require('moment')
 const path = require('path')
 const uuid = require('uuid')
+const Notification = require('../models/notification')
 
 /**
  * CONSTANTS
@@ -112,6 +113,29 @@ const getProfileData = asyncHandler(async (req, res) => {
   res.status(200).json(profileData);
 });
 
+/**
+ * GET NOTIFICATIONS
+ */
+
+const getNotifications = asyncHandler(async (req, res) => {
+
+  const { email } = req.headers
+
+  const user = await Faculty.findOne({ email: email })
+
+  if (!user) {
+      //Error
+      res.status(401)
+      throw new Error('User not found')
+  }
+
+  const department = user.department
+
+  const notification = await Notification.find({ department: department })
+
+  res.status(200).json(notification)
+
+})
 
 const updateProfile = asyncHandler(async (req, res) => {
 
@@ -4679,4 +4703,5 @@ module.exports = {
   // Other operations
   profileImageUpdate,
   bulkUploader,
+  getNotifications,
 };

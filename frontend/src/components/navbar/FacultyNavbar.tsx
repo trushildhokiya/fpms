@@ -240,7 +240,7 @@ const FacultyNavbar = () => {
                         </DropdownMenu>
                     </div>
                     <div className="mx-5">
-                        <Link to='/faculty/notifications'>
+                        <Link to='/common/notifications'>
                             <Bell />
                         </Link>
                     </div>
