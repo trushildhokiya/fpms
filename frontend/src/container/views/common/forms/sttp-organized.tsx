@@ -56,6 +56,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -73,7 +74,7 @@ const pdfFileSchema = z
     return ACCEPTED_FILE_TYPES.includes(file.type);
   }, "File must be a pdf");
 
-const formSchema = z
+  const formSchema = z
   .object({
     title: z.string().min(1, {
       message: "Title is required!"
@@ -102,37 +103,37 @@ const formSchema = z
     principalInvestigator: z
       .string()
       .min(1, {
-        message: "principal Investigator is required!",
+        message: "Principal Investigator is required!",
       })
       .max(100, {
-        message: "principal Investigator must not exceed 100 characters",
+        message: "Principal Investigator must not exceed 100 characters",
       }),
 
     coInvestigator: z
       .string()
       .min(1, {
-        message: "co-investigator is required!",
+        message: "Co-investigator is required!",
       })
       .max(100, {
-        message: "co-investigator must not exceed 100 characters",
+        message: "Co-investigator must not exceed 100 characters",
       }),
 
     coordinator: z
       .string()
       .min(1, {
-        message: "coordinator is required!",
+        message: "Coordinator is required!",
       })
       .max(100, {
-        message: "coordinator must not exceed 100 characters",
+        message: "Coordinator must not exceed 100 characters",
       }),
 
-    coCoordintor: z
+    coCoordinator: z 
       .string()
       .min(1, {
-        message: "co-coordinator is required!",
+        message: "Co-coordinator is required!",
       })
       .max(100, {
-        message: "co-coordinator must not exceed 100 characters",
+        message: "Co-coordinator must not exceed 100 characters",
       }),
 
     organizedBy: z
@@ -147,23 +148,23 @@ const formSchema = z
     associationWith: z
       .string()
       .min(1, {
-        message: "association with is required!",
+        message: "Association with is required!",
       })
       .max(100, {
-        message: "association with must not exceed 100 characters",
+        message: "Association with must not exceed 100 characters",
       }),
 
     venue: z
       .string()
       .min(1, {
-        message: "venue is required!",
+        message: "Venue is required!",
       })
       .max(100, {
-        message: "venue must not exceed 100 characters",
+        message: "Venue must not exceed 100 characters",
       }),
 
     mode: z.string().min(1, {
-      message: "mode is required!",
+      message: "Mode is required!",
     }),
 
     fromDate: z.date(),
@@ -171,11 +172,11 @@ const formSchema = z
     totalDays: z.coerce.number().nonnegative(),
 
     level: z.string().min(1, {
-      message: "level is required!",
+      message: "Level is required!",
     }),
 
-    fundingRecieved: z.string().min(1, {
-      message: "Funded or not is required!",
+    fundingReceived: z.string().min(1, {  
+      message: "Funding status is required!",
     }),
 
     fundingAgency: z
@@ -188,11 +189,11 @@ const formSchema = z
       }),
 
     fundingAgencyType: z.string().min(1, {
-      message: "funding agency type is required!",
+      message: "Funding agency type is required!",
     }),
 
     sanctionedAmount: z.coerce.number().nonnegative(),
-    recievedAmount: z.coerce.number().nonnegative(),
+    receivedAmount: z.coerce.number().nonnegative(),  
 
     remarks: z
       .string()
@@ -200,11 +201,11 @@ const formSchema = z
         message: "Remarks is required!",
       })
       .max(200, {
-        message: "Remarks must not exceed 100 characters",
+        message: "Remarks must not exceed 200 characters", 
       }),
 
     videoUrl: z.string().min(1).url({
-      message: "Not a valid Url",
+      message: "Not a valid URL",
     }),
 
     fundSanctionedLetter: pdfFileSchema,
@@ -227,6 +228,7 @@ const SttpOrganizedForm = (props: Props) => {
   // command
   const [open, setOpen] = useState(false);
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -254,12 +256,12 @@ const SttpOrganizedForm = (props: Props) => {
     defaultValues: {
       title: "",
       type: "",
-      facultiesInvolved: [],
+      facultiesInvolved: [], 
       departmentInvolved: [],
       principalInvestigator: "",
       coInvestigator: "",
       coordinator: "",
-      coCoordintor: "",
+      coCoordinator: "",  
       organizedBy: "",
       associationWith: "",
       venue: "",
@@ -268,11 +270,11 @@ const SttpOrganizedForm = (props: Props) => {
       toDate: new Date(),
       totalDays: 0,
       level: "",
-      fundingRecieved: "",
+      fundingReceived: "", 
       fundingAgency: "",
       fundingAgencyType: "",
       sanctionedAmount: 0,
-      recievedAmount: 0,
+      receivedAmount: 0,
       remarks: "",
       videoUrl: "",
       fundSanctionedLetter: new File([], ""),
@@ -283,7 +285,7 @@ const SttpOrganizedForm = (props: Props) => {
       supportingDocuments: new File([], ""),
       report: new File([], ""),
       photos: new File([], ""),
-    },
+    }    
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -300,7 +302,7 @@ const SttpOrganizedForm = (props: Props) => {
             title: "STTP/FDP added successfully",
             description:
               "Your STTP/FDP information has been added successfully",
-            action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+            action: <ToastAction className='' onClick={()=>navigate('/common/display/sttp-organized')} altText="okay">Okay</ToastAction>,
           });
           form.reset();
         }
@@ -554,7 +556,7 @@ const SttpOrganizedForm = (props: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="coCoordintor"
+                  name="coCoordinator"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-800">
@@ -821,7 +823,7 @@ const SttpOrganizedForm = (props: Props) => {
               <div className="grid md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
-                  name="fundingRecieved"
+                  name="fundingReceived"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-800">
@@ -866,6 +868,7 @@ const SttpOrganizedForm = (props: Props) => {
                         <SelectContent>
                           <SelectItem value="government">Government</SelectItem>
                           <SelectItem value="private">Private</SelectItem>
+                          <SelectItem value="na">Not Applicable</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -917,7 +920,7 @@ const SttpOrganizedForm = (props: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="recievedAmount"
+                  name="receivedAmount"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-800">

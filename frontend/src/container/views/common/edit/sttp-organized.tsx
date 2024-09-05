@@ -1,3 +1,4 @@
+//@ts-nocheck
 import FacultyNavbar from "@/components/navbar/FacultyNavbar";
 import HeadNavbar from "@/components/navbar/HeadNavbar";
 import { useSelector } from "react-redux";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -46,16 +48,19 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { useNavigate, useParams } from "react-router-dom";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type Props = {};
 interface STTPOrganized {
     _id: string;
     title: string;
     type: string;
+    departmentInvolved: string[];
+    facultiesInvolved: string[];
     principalInvestigator: string;
     coInvestigator: string;
     coordinator: string;
-    coCoordintor: string;
+    coCoordinator: string;  // Corrected typo
     organizedBy: string;
     associationWith: string;
     venue: string;
@@ -65,22 +70,25 @@ interface STTPOrganized {
     totalDays: number;
     level: string;
     remarks: string;
-    fundingRecieved: string;
+    fundingReceived: string; // Corrected typo
     fundingAgencyType: string;
     fundingAgency: string;
     sanctionedAmount: number;
-    recievedAmount: number;
-    uploadFundSanctionedLetter: string;
-    uploadUtilizationCertificate: string;
-    uploadBanner: string;
-    uploadScheduleOfOrganizer: string;
-    uploadCertificateLOA: string;
-    uploadSupportingDocuments: string;
-    uploadReport: string;
-    uploadPhotos: string;
+    receivedAmount: number; // Corrected typo
+    fundSanctionedLetter: string;
+    utilizationCertificate: string;
+    banner: string;
+    schedule: string;
+    certificate: string;
+    supportingDocuments: string;
+    report: string;
+    photos: string;
     videoUrl: string;
+    createdAt: string;
+    updatedAt: string;
     __v: number;
 }
+
 
 /**
  * SCHEMAS
@@ -97,63 +105,97 @@ const pdfFileSchema = z
     }, "File must be a pdf");
 
 const formSchema = z.object({
-    _id:z.string().optional(),
+    _id: z.string().optional(),
 
     title: z.string().min(1, {
         message: "Title is required!"
-    }).max(100, {
-        message: "Title must not exceed 100 characters"
+    }).max(300, {
+        message: "Title must not exceed 300 characters"
     }),
+    facultiesInvolved: z
+        .string({
+            invalid_type_error: "Faculties Somaiya ID is required!",
+        })
+        .transform((value) => value.split(",").map((email) => email.trim()))
+        .refine(
+            (emails) =>
+                emails.every((email) => z.string().email().safeParse(email).success),
+            {
+                message: "Each faculty email must be a valid email address",
+            }
+        ),
+
+    departmentInvolved: z.array(z.string()).nonempty(),
 
     type: z.string().min(1, {
-        message: "Type is required!"
+        message: "Type is required!",
     }),
 
-    principalInvestigator: z.string().min(1, {
-        message: "principal Investigator is required!"
-    }).max(100, {
-        message: "principal Investigator must not exceed 100 characters"
-    }),
+    principalInvestigator: z
+        .string()
+        .min(1, {
+            message: "Principal Investigator is required!",
+        })
+        .max(100, {
+            message: "Principal Investigator must not exceed 100 characters",
+        }),
 
-    coInvestigator: z.string().min(1, {
-        message: "co-investigator is required!"
-    }).max(100, {
-        message: "co-investigator must not exceed 100 characters"
-    }),
+    coInvestigator: z
+        .string()
+        .min(1, {
+            message: "Co-investigator is required!",
+        })
+        .max(100, {
+            message: "Co-investigator must not exceed 100 characters",
+        }),
 
-    coordinator: z.string().min(1, {
-        message: "coordinator is required!"
-    }).max(100, {
-        message: "coordinator must not exceed 100 characters"
-    }),
+    coordinator: z
+        .string()
+        .min(1, {
+            message: "Coordinator is required!",
+        })
+        .max(100, {
+            message: "Coordinator must not exceed 100 characters",
+        }),
 
-    coCoordintor: z.string().min(1, {
-        message: "co-coordinator is required!"
-    }).max(100, {
-        message: "co-coordinator must not exceed 100 characters"
-    }),
+    coCoordinator: z
+        .string()
+        .min(1, {
+            message: "Co-coordinator is required!",
+        })
+        .max(100, {
+            message: "Co-coordinator must not exceed 100 characters",
+        }),
 
-    organizedBy: z.string().min(1, {
-        message: "Organized by is required!"
-    }).max(100, {
-        message: "Organized by must not exceed 100 characters"
-    }),
+    organizedBy: z
+        .string()
+        .min(1, {
+            message: "Organized by is required!",
+        })
+        .max(100, {
+            message: "Organized by must not exceed 100 characters",
+        }),
 
-    associationWith: z.string().min(1, {
-        message: "association with is required!"
-    }).max(100, {
-        message: "association with must not exceed 100 characters"
-    }),
+    associationWith: z
+        .string()
+        .min(1, {
+            message: "Association with is required!",
+        })
+        .max(100, {
+            message: "Association with must not exceed 100 characters",
+        }),
 
-
-    venue: z.string().min(1, {
-        message: "venue is required!"
-    }).max(100, {
-        message: "venue must not exceed 100 characters"
-    }),
+    venue: z
+        .string()
+        .min(1, {
+            message: "Venue is required!",
+        })
+        .max(100, {
+            message: "Venue must not exceed 100 characters",
+        }),
 
     mode: z.string().min(1, {
-        message: "mode is required!"
+        message: "Mode is required!",
     }),
 
     fromDate: z.date(),
@@ -161,44 +203,50 @@ const formSchema = z.object({
     totalDays: z.coerce.number().nonnegative(),
 
     level: z.string().min(1, {
-        message: "level is required!"
+        message: "Level is required!",
     }),
 
-    fundingRecieved: z.string().min(1, {
-        message: "Funded or not is required!"
+    fundingReceived: z.string().min(1, {
+        message: "Funding status is required!",
     }),
 
-    fundingAgency: z.string().min(1, {
-        message: "Funding Agency is required!"
-    }).max(100, {
-        message: "Funding Agency must not exceed 100 characters"
-    }),
+    fundingAgency: z
+        .string()
+        .min(1, {
+            message: "Funding Agency is required!",
+        })
+        .max(100, {
+            message: "Funding Agency must not exceed 100 characters",
+        }),
 
     fundingAgencyType: z.string().min(1, {
-        message: "funding agency type is required!"
+        message: "Funding agency type is required!",
     }),
 
     sanctionedAmount: z.coerce.number().nonnegative(),
-    recievedAmount: z.coerce.number().nonnegative(),
+    receivedAmount: z.coerce.number().nonnegative(),
 
-    remarks: z.string().min(1, {
-        message: "Remarks is required!"
-    }).max(200, {
-        message: "Remarks must not exceed 100 characters"
-    }),
+    remarks: z
+        .string()
+        .min(1, {
+            message: "Remarks is required!",
+        })
+        .max(200, {
+            message: "Remarks must not exceed 200 characters",
+        }),
 
     videoUrl: z.string().min(1).url({
-        message: "Not a valid Url"
+        message: "Not a valid URL",
     }),
 
-    fundSanctionedLetter: pdfFileSchema,
-    utilizationCertificate: pdfFileSchema,
-    banner: pdfFileSchema,
-    schedule: pdfFileSchema,
-    certificate: pdfFileSchema,
-    supportingDocuments: pdfFileSchema,
-    report: pdfFileSchema,
-    photos: pdfFileSchema,
+    fundSanctionedLetter: z.union([pdfFileSchema, z.any().optional()]),
+    utilizationCertificate: z.union([pdfFileSchema, z.any().optional()]),
+    banner: z.union([pdfFileSchema, z.any().optional()]),
+    schedule: z.union([pdfFileSchema, z.any().optional()]),
+    certificate: z.union([pdfFileSchema, z.any().optional()]),
+    supportingDocuments: z.union([pdfFileSchema, z.any().optional()]),
+    report: z.union([pdfFileSchema, z.any().optional()]),
+    photos: z.union([pdfFileSchema, z.any().optional()]),
 
 }).refine((data) => new Date(data.toDate) > new Date(data.fromDate), {
     message: "End date must be greater than start date",
@@ -208,26 +256,35 @@ const formSchema = z.object({
 const SttpOrganizedEdit = (props: Props) => {
 
     const user = useSelector((state: any) => state.user);
-    const { toast }= useToast()
+    const { toast } = useToast()
     const { id } = useParams()
+    const navigate = useNavigate()
+    
+    const departments = [
+        "Computer",
+        "Information Technology",
+        "Artificial Intelligence and Data Science",
+        "Electronics and Telecommunication",
+        "Basic Science and Humanities",
+    ];
 
     useEffect(() => {
-        // Fetch the patent data
+        // Fetch the  data
         axios
-          .get(`/common/sttp-organized/${id}`)
-          .then((res) => {
-    
-            const data: STTPOrganized = res.data
-            form.reset({
-              ...data,
-              fromDate: new Date(data.fromDate),
-              toDate: new Date(data.toDate),
+            .get(`/common/sttp-organized/${id}`)
+            .then((res) => {
+                const data: STTPOrganized = res.data
+                form.reset({
+                    ...data,
+                    fromDate: new Date(data.fromDate),
+                    facultiesInvolved: data.facultiesInvolved.join(', '),
+                    toDate: new Date(data.toDate),
+                })
             })
-          })
-          .catch((err) => {
-            console.error("Error fetching patent data:", err);
-          });
-      }, []);
+            .catch((err) => {
+                console.error("Error fetching  data:", err);
+            });
+    }, []);
 
     // command
     const [open, setOpen] = useState(false);
@@ -248,13 +305,14 @@ const SttpOrganizedEdit = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            _id:"",
             title: "",
             type: "",
+            facultiesInvolved: [],
+            departmentInvolved: [],
             principalInvestigator: "",
             coInvestigator: "",
             coordinator: "",
-            coCoordintor: "",
+            coCoordinator: "",
             organizedBy: "",
             associationWith: "",
             venue: "",
@@ -263,22 +321,22 @@ const SttpOrganizedEdit = (props: Props) => {
             toDate: new Date(),
             totalDays: 0,
             level: "",
-            fundingRecieved: "",
+            fundingReceived: "",
             fundingAgency: "",
             fundingAgencyType: "",
             sanctionedAmount: 0,
-            recievedAmount: 0,
+            receivedAmount: 0,
             remarks: "",
             videoUrl: "",
-            fundSanctionedLetter: new File([], ''),
-            utilizationCertificate: new File([], ''),
-            banner: new File([], ''),
-            schedule: new File([], ''),
-            certificate: new File([], ''),
-            supportingDocuments: new File([], ''),
-            report: new File([], ''),
-            photos: new File([], '')
-        },
+            fundSanctionedLetter: new File([], ""),
+            utilizationCertificate: new File([], ""),
+            banner: new File([], ""),
+            schedule: new File([], ""),
+            certificate: new File([], ""),
+            supportingDocuments: new File([], ""),
+            report: new File([], ""),
+            photos: new File([], ""),
+        }
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
@@ -288,21 +346,21 @@ const SttpOrganizedEdit = (props: Props) => {
                 "Content-Type": "multipart/form-data",
             },
         })
-        .then((res) => {
+            .then((res) => {
 
-            if (res.data.message === "success") {
-                toast({
-                    title: "STTP/FDP added successfully",
-                    description:
-                        "Your STTP/FDP information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
-                });
-                form.reset();
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+                if (res.data.message === "success") {
+                    toast({
+                        title: "STTP/FDP added successfully",
+                        description:
+                            "Your STTP/FDP information has been added successfully",
+                        action: <ToastAction className='' onClick={()=>navigate('/common/display/sttp-organized')} altText="okay">Okay</ToastAction>,
+                    });
+                    form.reset();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     return (
@@ -355,8 +413,6 @@ const SttpOrganizedEdit = (props: Props) => {
                 <div className="p-2 font-Poppins text-xl">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
-
                             {/* BASIC DETAILS */}
                             <h2
                                 id="basicDetails"
@@ -400,12 +456,11 @@ const SttpOrganizedEdit = (props: Props) => {
                                 name="type"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-800">
-                                            Type
-                                        </FormLabel>
+                                        <FormLabel className="text-gray-800">Type</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
+                                            value={field.value}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -421,9 +476,77 @@ const SttpOrganizedEdit = (props: Props) => {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name="facultiesInvolved"
+                                render={({ field }) => (
+                                    <FormItem className="my-4">
+                                        <FormLabel className="text-gray-800">
+                                            Faculties Involved Somaiya Mail Address
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="eg: maxmiller@somaiya.edu, david@somaiya.edu"
+                                                {...field}
+                                                autoComplete="off"
+                                            />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Write mutiple email seperated by commas(,)
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="departmentInvolved"
+                                render={({ field }) => (
+                                    <FormItem className="">
+                                        <FormLabel className="text-gray-800">
+                                            Department Involved
+                                        </FormLabel>
+                                        <FormControl>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="w-full overflow-hidden"
+                                                    >
+                                                        {field.value?.length > 0
+                                                            ? field.value.join(", ")
+                                                            : "Select Involved Departments"}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="">
+                                                    <DropdownMenuLabel>
+                                                        Select Departments
+                                                    </DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    {departments.map((option) => (
+                                                        <DropdownMenuCheckboxItem
+                                                            key={option}
+                                                            checked={field.value?.includes(option)}
+                                                            onCheckedChange={() => {
+                                                                const newValue = field.value?.includes(option)
+                                                                    ? field.value.filter((val) => val !== option)
+                                                                    : [...(field.value || []), option];
+                                                                field.onChange(newValue);
+                                                            }}
+                                                        >
+                                                            {option}
+                                                        </DropdownMenuCheckboxItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <div className="grid md:grid-cols-2 gap-6">
-
                                 <FormField
                                     control={form.control}
                                     name="principalInvestigator"
@@ -486,7 +609,7 @@ const SttpOrganizedEdit = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="coCoordintor"
+                                    name="coCoordinator"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -503,7 +626,6 @@ const SttpOrganizedEdit = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-
 
                                 <FormField
                                     control={form.control}
@@ -545,15 +667,12 @@ const SttpOrganizedEdit = (props: Props) => {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
                                     name="venue"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Venue
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Venue</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="venue"
@@ -566,18 +685,16 @@ const SttpOrganizedEdit = (props: Props) => {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
                                     name="mode"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Mode
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Mode</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -599,9 +716,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                     name="fromDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className="text-grey-800">
-                                                From Date
-                                            </FormLabel>
+                                            <FormLabel className="text-grey-800">From Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -638,9 +753,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                     name="toDate"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className="text-grey-800">
-                                                To Date
-                                            </FormLabel>
+                                            <FormLabel className="text-grey-800">To Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -693,18 +806,16 @@ const SttpOrganizedEdit = (props: Props) => {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
                                     name="level"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-800">
-                                                Level
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Level</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -712,7 +823,9 @@ const SttpOrganizedEdit = (props: Props) => {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="international">International</SelectItem>
+                                                    <SelectItem value="international">
+                                                        International
+                                                    </SelectItem>
                                                     <SelectItem value="national">National</SelectItem>
                                                     <SelectItem value="state">State</SelectItem>
                                                     <SelectItem value="regional">Regional</SelectItem>
@@ -723,15 +836,12 @@ const SttpOrganizedEdit = (props: Props) => {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
                                     name="remarks"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
-                                            <FormLabel className="text-gray-800">
-                                                Remarks
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Remarks</FormLabel>
                                             <FormControl>
                                                 <Textarea
                                                     placeholder="remarks (NA if not)"
@@ -743,7 +853,6 @@ const SttpOrganizedEdit = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-
                             </div>
 
                             <Separator className="bg-red-800" />
@@ -760,15 +869,16 @@ const SttpOrganizedEdit = (props: Props) => {
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>NOTE</AlertTitle>
                                 <AlertDescription>
-                                    Please fill all the funding details correctly as per your knowledge. Also read all instructions given under specific fields in the form.
+                                    Please fill all the funding details correctly as per your
+                                    knowledge. Also read all instructions given under specific
+                                    fields in the form.
                                 </AlertDescription>
                             </Alert>
 
                             <div className="grid md:grid-cols-2 gap-6">
-
                                 <FormField
                                     control={form.control}
-                                    name="fundingRecieved"
+                                    name="fundingReceived"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -777,6 +887,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -804,6 +915,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -813,6 +925,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                                 <SelectContent>
                                                     <SelectItem value="government">Government</SelectItem>
                                                     <SelectItem value="private">Private</SelectItem>
+                                                    <SelectItem value="na">Not Applicable</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -864,7 +977,7 @@ const SttpOrganizedEdit = (props: Props) => {
 
                                 <FormField
                                     control={form.control}
-                                    name="recievedAmount"
+                                    name="receivedAmount"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-800">
@@ -882,9 +995,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-
                             </div>
-
 
                             {/* PROOF UPLOADS */}
                             <Separator className="bg-red-800" />
@@ -899,13 +1010,13 @@ const SttpOrganizedEdit = (props: Props) => {
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertTitle>NOTE</AlertTitle>
                                     <AlertDescription>
-                                        STTP/FDP uploads must be in a single pdf file of maximum size 5MB.
+                                        STTP/FDP uploads must be in a single pdf file of maximum
+                                        size 5MB.
                                     </AlertDescription>
                                 </Alert>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
-
                                 <FormField
                                     control={form.control}
                                     name="fundSanctionedLetter"
@@ -1071,9 +1182,7 @@ const SttpOrganizedEdit = (props: Props) => {
                                     name="videoUrl"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
-                                            <FormLabel className="text-gray-800">
-                                                Video Url
-                                            </FormLabel>
+                                            <FormLabel className="text-gray-800">Video Url</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="video url"
@@ -1085,7 +1194,6 @@ const SttpOrganizedEdit = (props: Props) => {
                                         </FormItem>
                                     )}
                                 />
-
                             </div>
 
                             <Button type="submit" className="bg-red-800 hover:bg-red-700">
