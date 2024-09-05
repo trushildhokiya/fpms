@@ -302,15 +302,15 @@ const CourseCertificateDisplay = (props: Props) => {
             <div className="container font-Poppins my-10">
 
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                Activities Conducted Details
+                Course Certification
                 </h1>
 
                 <div className="my-10">
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Conducted Activities</CardTitle>
-                            <CardDescription>Conducted Activities details of the faculty is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Course Certifications</CardTitle>
+                            <CardDescription>Course certification of faculties is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>

@@ -3823,14 +3823,6 @@ const deleteActivityConducted = asyncHandler(async (req, res) => {
 
 })
 
-/**
- * ACTIVITY CONDUCTED END
-*/
-
-
-/**
- * COURSE CERTIFICATION
-*/
 
 const addCourseCertification = asyncHandler(async (req, res) => {
 
@@ -3923,7 +3915,6 @@ const updateCourseCertification = asyncHandler(async (req, res) => {
       throw new Error("Course Certification not found")
     }
 
-    // Update the Course Certification
     // Update the certificate
     if (req.file) {
       if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
@@ -3957,7 +3948,6 @@ const deleteCourseCertification = asyncHandler(async (req, res) => {
       throw new Error('Course Certification not found');
     }
 
-    // Delete the associated file
     // Delete the certificate
     if (courseCertification.certificate && fs.existsSync(courseCertification.certificate)) {
       fs.unlinkSync(courseCertification.certificate);

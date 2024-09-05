@@ -272,6 +272,8 @@ function App() {
           <Route path='/common/edit/seminar-attended/:id' element={<CommonProtectedRoute> <SeminarAttendedEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/seminar-conducted/:id' element={<CommonProtectedRoute> <SeminarConductedEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/edit/seminar-organized/:id' element={<CommonProtectedRoute> <SeminarOrganizedEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/awards-recieved/:id' element={<CommonProtectedRoute> <AwardRecievedEditForm /> </CommonProtectedRoute>} />
+          <Route path='/common/edit/course-certification/:id' element={<CommonProtectedRoute> <CourseCertificateEditForm /> </CommonProtectedRoute>} />
           <Route path='/common/display/profile' element={<CommonProtectedRoute> <ProfileDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/experience' element={<CommonProtectedRoute> <ExperienceDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/research-profile' element={<CommonProtectedRoute> <ResearchProfileDisplay /> </CommonProtectedRoute>} />
@@ -292,6 +294,8 @@ function App() {
           <Route path='/common/display/seminar-attended' element={<CommonProtectedRoute> <SeminarAttendedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/seminar-conducted' element={<CommonProtectedRoute> <SeminarConductedDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/display/seminar-organized' element={<CommonProtectedRoute> <SeminarOrganizedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/awards-recieved' element={<CommonProtectedRoute> <AwardRecievedDisplay /> </CommonProtectedRoute>} />
+          <Route path='/common/display/course-certification' element={<CommonProtectedRoute> <CourseCertificateDisplay /> </CommonProtectedRoute>} />
           <Route path='/common/upload/bulk' element={<CommonProtectedRoute> <BulkUpload /> </CommonProtectedRoute>} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>

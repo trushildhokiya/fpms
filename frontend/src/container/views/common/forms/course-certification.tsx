@@ -45,6 +45,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -117,6 +118,7 @@ const CourseCertificate = (props: Props) => {
   const user = useSelector((state: any) => state.user);
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -161,7 +163,7 @@ const CourseCertificate = (props: Props) => {
             title: "Course Certificate added successfully",
             description:
               "Your Course Certificate information has been added successfully",
-            action: <ToastAction altText="okay">Okay</ToastAction>,
+            action: <ToastAction altText="okay" onClick={()=>navigate('/common/display/course-certification')}>Okay</ToastAction>,
           });
           form.reset();
         }
