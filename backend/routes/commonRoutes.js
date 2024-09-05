@@ -109,6 +109,7 @@ const {
   deleteSeminarOrganized,
   updateSeminarOrganized,
   getNotifications,
+  updateConsultancy,
 } = require("../controller/commonController");
 
 const {
@@ -3046,6 +3047,13 @@ router.route('/consultancy').post(facultyAuthenticator, consultancyFileUpload.fi
   { name: 'completionCertificate', maxCount: 1 },
   { name: 'supportingDocuments', maxCount: 1 },
 ]), addConsultancy)
+
+router.route('/consultancy').put(facultyAuthenticator, consultancyFileUpload.fields([
+  { name: 'sanctionedOrder', maxCount: 1 },
+  { name: 'transactionProof', maxCount: 1 },
+  { name: 'completionCertificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+]), updateConsultancy)
 
 
 router.route('/consultancy').get(facultyAuthenticator, getConsultancyData)

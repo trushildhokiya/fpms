@@ -41,7 +41,7 @@ import axios from 'axios'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 import { ToastAction } from '@/components/ui/toast'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 type Props = {}
 
@@ -119,6 +119,8 @@ const pdfFileSchema = z
     )
 
 const formSchema = z.object({
+
+    _id: z.string().optional(),
     projectTitle: z.string().min(2, {
         message: "Project Title required!"
     }).max(100, {
@@ -188,6 +190,7 @@ const ConsultancyForm = (props: Props) => {
     // command
     const [open, setOpen] = useState(false)
     const { id } = useParams()
+    const navigate = useNavigate()
 
     //constants
 
@@ -224,7 +227,7 @@ const ConsultancyForm = (props: Props) => {
                     coInvestigators: data.coInvestigators.join(', '),
                     startDate: new Date(data.startDate),
                     endDate: new Date(data.endDate),
-                    transactionDetails:data.transactionDetails.map( transaction => ({
+                    transactionDetails: data.transactionDetails.map(transaction => ({
                         ...transaction,
                         purchaseInvoiceDate: new Date(transaction.purchaseInvoiceDate),
                         purchaseOrderDate: new Date(transaction.purchaseOrderDate)
@@ -242,6 +245,7 @@ const ConsultancyForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id: "",
             projectTitle: "",
             principalInvestigator: "",
             coInvestigators: [''],
@@ -271,8 +275,30 @@ const ConsultancyForm = (props: Props) => {
         name: "transactionDetails"
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {  
-        console.log(values);
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        axios.put('/common/consultancy', values, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then((res) => {
+                if (res.data.message === 'success') {
+
+                    toast({
+                        title: "Consultancy updated successfully",
+                        description: "Your consultancy information has been updated successfully",
+                        action: (
+                            <ToastAction className='' onClick={() => {navigate('/common/display/consultancy') }} altText="okay">Okay</ToastAction>
+                        ),
+                    })
+                    form.reset()
+
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+
     }
 
     const handleTransactionClick = (event: any) => {
@@ -495,6 +521,21 @@ const ConsultancyForm = (props: Props) => {
                                     Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
                                 </AlertDescription>
                             </Alert>
+
+                            {/* ID HIDDEN */}
+                            <FormField
+                                control={form.control}
+                                name={`_id`}
+                                render={({ field }) => (
+                                    <FormItem className='hidden'>
+                                        <FormLabel className='text-grey-800'>ID</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="ID" autoComplete='off' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <div className="">
                                 <FormField

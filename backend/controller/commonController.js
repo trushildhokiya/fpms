@@ -124,9 +124,9 @@ const getNotifications = asyncHandler(async (req, res) => {
   const user = await Faculty.findOne({ email: email })
 
   if (!user) {
-      //Error
-      res.status(401)
-      throw new Error('User not found')
+    //Error
+    res.status(401)
+    throw new Error('User not found')
   }
 
   const department = user.department
@@ -1652,6 +1652,9 @@ const getNeedBasedProjectData = asyncHandler(async (req, res) => {
 
 });
 
+const updateNeedBasdProject = asyncHandler(async (req, res) => {
+
+})
 
 const deleteNeedBasedProject = asyncHandler(async (req, res) => {
 
@@ -1917,6 +1920,80 @@ const addConsultancy = asyncHandler(async (req, res) => {
     message: "success",
   });
 
+});
+
+const updateConsultancy = asyncHandler(async (req, res) => {
+  const data = req.body;
+  
+  try {
+    // Find the consultancy document
+    const consultancy = await Consultancy.findById(req.body._id);
+
+    if (!consultancy) {
+      res.status(404);
+      throw new Error("No consultancy found");
+    }
+
+    // File handling for each file field
+    if (req.files) {
+      // Sanctioned Order
+      if (req.files.sanctionedOrder) {
+        if (consultancy.sanctionedOrder && fs.existsSync(consultancy.sanctionedOrder)) {
+          fs.unlinkSync(consultancy.sanctionedOrder);
+        }
+        data.sanctionedOrder = req.files.sanctionedOrder[0].path;
+      }
+
+      // Transaction Proof
+      if (req.files.transactionProof) {
+        if (consultancy.transactionProof && fs.existsSync(consultancy.transactionProof)) {
+          fs.unlinkSync(consultancy.transactionProof);
+        }
+        data.transactionProof = req.files.transactionProof[0].path;
+      }
+
+      // Completion Certificate
+      if (req.files.completionCertificate) {
+        if (consultancy.completionCertificate && fs.existsSync(consultancy.completionCertificate)) {
+          fs.unlinkSync(consultancy.completionCertificate);
+        }
+        data.completionCertificate = req.files.completionCertificate[0].path;
+      }
+
+      // Supporting Documents
+      if (req.files.supportingDocuments) {
+        if (consultancy.supportingDocuments && fs.existsSync(consultancy.supportingDocuments)) {
+          fs.unlinkSync(consultancy.supportingDocuments);
+        }
+        data.supportingDocuments = req.files.supportingDocuments[0].path;
+      }
+    }
+
+    // Handle transaction updates if new transactions are provided
+    if (data.transactionDetails) {
+      // Delete old transactions
+      await Transaction.deleteMany({ _id: { $in: consultancy.transactionDetails } });
+
+      // Create new transactions
+      const transaction_ids = [];
+      for (const entry of data.transactionDetails) {
+        const createdTransaction = await Transaction.create(entry);
+        transaction_ids.push(createdTransaction._id);
+      }
+      data.transactionDetails = transaction_ids;
+    }
+
+    // Update the consultancy document
+    await consultancy.updateOne(data);
+
+    res.status(200).json({
+      message: 'success'
+    });
+
+  } catch (err) {
+    res.status(400);
+    throw new Error(err.message);
+  }
 });
 
 
@@ -3233,7 +3310,7 @@ const getSeminarOrganizedById = asyncHandler(async (req, res) => {
 
   // Get required data
 
-  
+
   const { email } = req.decodedData
   const { id } = req.params
 
@@ -3258,11 +3335,11 @@ const getSeminarOrganizedData = asyncHandler(async (req, res) => {
 
   // Get required data
   const { email } = req.decodedData
-  
+
 
   // Find user
   const user = await Faculty.findOne({ email: email })
-  
+
   if (!user) {
     res.status(400);
     throw new Error("User not found!")
@@ -3274,7 +3351,7 @@ const getSeminarOrganizedData = asyncHandler(async (req, res) => {
   // Extract the populated consultancy data
   const seminarOrganizedData = user.seminarOrganized
 
-  
+
   // Send the response
   res.status(200).json(seminarOrganizedData);
 
@@ -4668,6 +4745,7 @@ module.exports = {
   updateConference,
   updateBook,
   updateBookChapter,
+  updateConsultancy,
   updateAwardsHonors,
   updateAwardRecieved,
   updateActivityConducted,
