@@ -89,3 +89,20 @@ npm start # prod server
 ```txt
 http://localhost:5000/api-docs
 ```
+
+---
+
+## Release Notes
+
+### Version 0.1.a (Cygnus)
+
+**Release Date:**  05-09-2024
+
+**Features in Current Release:**
+
+- **Bulk Upload:** Import faculty profiles from CSV files for quick updates and additions.
+- **Advanced Report Generation:** Create detailed, customizable reports with advanced filtering and analysis.
+- **Kernel Navigation:** Improved UI for easier navigation through faculty profiles and system modules.
+- **Collaborative Profile Management:** Forms updated automatically to display co-authors or collaborators on their profiles.
+- **Notification System:** Get timely alerts for important updates, approvals, or changes.
+- **Cross-Device Support:** Optimized for desktops, tablets, and smartphones. Available as downloadable apps for mobile and desktop, ensuring a seamless experience across all platforms.
