@@ -241,10 +241,10 @@ const CourseCertificateDisplay = (props: Props) => {
     const header = (
         <div className="flex w-full justify-end gap-6 flex-wrap font-Poppins">
             <Button className='rounded-full bg-green-600' onClick={() => exportCSV(false)}>
-                <Table className='w-5 h-5 mr-2' /> Excel
+                <Table className='w-5 h-5 mr-2' /> Download
             </Button>
             <Button className='rounded-full bg-red-600' onClick={() => exportPdf()}>
-                <FileDown className='w-5 h-5 mr-2' /> PDF
+                <FileDown className='w-5 h-5 mr-2' /> Download
             </Button>
         </div>
     );

@@ -3519,7 +3519,6 @@ const updateAwardRecieved = asyncHandler(async (req, res) => {
       throw new Error("Awards Received not found")
     }
 
-    // Update the Award Received
     // Update the certificate in Award Received
     if (req.files.certificate) {
 
@@ -3601,14 +3600,6 @@ const deleteAwardRecieved = asyncHandler(async (req, res) => {
 
 })
 
-/**
- * AWARDS RECEIVED END
-*/
-
-
-/**
- * ACTIVITY CONDUCTED
-*/
 
 const addActivityConducted = asyncHandler(async (req, res) => {
 

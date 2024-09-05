@@ -54,6 +54,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { ToastAction } from "@/components/ui/toast";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -127,6 +128,7 @@ const AwardRecievedForm = (props: Props) => {
 
   // command
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -170,7 +172,7 @@ const AwardRecievedForm = (props: Props) => {
             title: "Awards Received added successfully",
             description:
               "Your Awards Received information has been added successfully",
-            action: <ToastAction altText="okay">Okay</ToastAction>,
+            action: <ToastAction altText="okay" onClick={()=>navigate('/common/display/awards-recieved')}>Okay</ToastAction>,
           });
           form.reset();
         }

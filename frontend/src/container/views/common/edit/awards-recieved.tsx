@@ -1,7 +1,7 @@
 import FacultyNavbar from "@/components/navbar/FacultyNavbar";
 import HeadNavbar from "@/components/navbar/HeadNavbar";
 import { useSelector } from "react-redux";
-import { z } from "zod";
+import { date, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -169,7 +169,10 @@ const AwardRecievedEditForm = (props: Props) => {
         .get(`/common/awards-recieved/${id}`)
         .then((res) => {
             const data: AwardRecieved = res.data
-            form.reset(data)
+            form.reset({
+              ...data,
+              date:new Date(data.date)
+            })
         })
         .catch((err) => {
             console.error("Error fetching Awards Recieved data:", err);
