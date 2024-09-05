@@ -42,7 +42,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 type Props = {}
 
@@ -120,6 +120,7 @@ const pdfFileSchema = z
     )
 
 const formSchema = z.object({
+    _id: z.string().optional(),
     projectTitle: z.string().min(2, {
         message: "Project Title required!"
     }).max(300, {
@@ -192,6 +193,7 @@ const ProjectForm = (props: Props) => {
 
     const user = useSelector((state: any) => state.user)
     const { toast } = useToast()
+    const navigate = useNavigate()
 
     //constants
 
@@ -233,7 +235,7 @@ const ProjectForm = (props: Props) => {
                     coInvestigators: data.coInvestigators.join(', '),
                     startDate: new Date(data.startDate),
                     endDate: new Date(data.endDate),
-                    transactionDetails:data.transactionDetails.map( transaction => ({
+                    transactionDetails: data.transactionDetails.map(transaction => ({
                         ...transaction,
                         purchaseInvoiceDate: new Date(transaction.purchaseInvoiceDate),
                         purchaseOrderDate: new Date(transaction.purchaseOrderDate)
@@ -250,6 +252,7 @@ const ProjectForm = (props: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            _id: "",
             projectTitle: "",
             principalInvestigator: "",
             coInvestigators: [''],
@@ -281,8 +284,29 @@ const ProjectForm = (props: Props) => {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
+        axios.put('/common/projects', values, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then((res) => {
+                if (res.data.message === 'success') {
 
-        console.log(values)
+                    toast({
+                        title: "Project updated successfully",
+                        description: "Your Project information has been updated successfully",
+                        action: (
+                            <ToastAction className='' onClick={() => { navigate('/common/display/projects') }} altText="okay">Okay</ToastAction>
+                        ),
+                    })
+                    form.reset()
+
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+
     }
 
     const handleTransactionClick = (event: any) => {
@@ -507,6 +531,21 @@ const ProjectForm = (props: Props) => {
                                     Please fill all the details correctly as per your knowledege. Also read all instructions given under specific fields in the form
                                 </AlertDescription>
                             </Alert>
+
+                            {/* ID HIDDEN */}
+                            <FormField
+                                control={form.control}
+                                name={`_id`}
+                                render={({ field }) => (
+                                    <FormItem className='hidden'>
+                                        <FormLabel className='text-grey-800'>ID</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="ID" autoComplete='off' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <div className="">
                                 <FormField

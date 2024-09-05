@@ -110,6 +110,7 @@ const {
   updateSeminarOrganized,
   getNotifications,
   updateConsultancy,
+  updateProject,
 } = require("../controller/commonController");
 
 const {
@@ -3067,6 +3068,13 @@ router.route('/projects').post(facultyAuthenticator, projectFileUpload.fields([
   { name: 'completionCertificate', maxCount: 1 },
   { name: 'supportingDocuments', maxCount: 1 },
 ]), addProject)
+
+router.route('/projects').put(facultyAuthenticator, projectFileUpload.fields([
+  { name: 'sanctionedOrder', maxCount: 1 },
+  { name: 'transactionProof', maxCount: 1 },
+  { name: 'completionCertificate', maxCount: 1 },
+  { name: 'supportingDocuments', maxCount: 1 },
+]), updateProject)
 
 
 router.route('/projects').get(facultyAuthenticator, getProjectsData)

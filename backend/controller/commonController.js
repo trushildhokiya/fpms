@@ -2166,6 +2166,81 @@ const addProject = asyncHandler(async (req, res) => {
 });
 
 
+const updateProject = asyncHandler(async (req, res) => {
+  const data = req.body;
+
+  try {
+    // Find the project document
+    const project = await Project.findById(req.body._id);
+
+    if (!project) {
+      res.status(404);
+      throw new Error("No project found");
+    }
+
+    // File handling for each file field
+    if (req.files) {
+      // Sanctioned Order
+      if (req.files.sanctionedOrder) {
+        if (project.sanctionedOrder && fs.existsSync(project.sanctionedOrder)) {
+          fs.unlinkSync(project.sanctionedOrder);
+        }
+        data.sanctionedOrder = req.files.sanctionedOrder[0].path;
+      }
+
+      // Transaction Proof
+      if (req.files.transactionProof) {
+        if (project.transactionProof && fs.existsSync(project.transactionProof)) {
+          fs.unlinkSync(project.transactionProof);
+        }
+        data.transactionProof = req.files.transactionProof[0].path;
+      }
+
+      // Completion Certificate
+      if (req.files.completionCertificate) {
+        if (project.completionCertificate && fs.existsSync(project.completionCertificate)) {
+          fs.unlinkSync(project.completionCertificate);
+        }
+        data.completionCertificate = req.files.completionCertificate[0].path;
+      }
+
+      // Supporting Documents
+      if (req.files.supportingDocuments) {
+        if (project.supportingDocuments && fs.existsSync(project.supportingDocuments)) {
+          fs.unlinkSync(project.supportingDocuments);
+        }
+        data.supportingDocuments = req.files.supportingDocuments[0].path;
+      }
+    }
+
+    // Handle transaction updates if new transactions are provided
+    if (data.transactionDetails) {
+      // Delete old transactions
+      await Transaction.deleteMany({ _id: { $in: project.transactionDetails } });
+
+      // Create new transactions
+      const transaction_ids = [];
+      for (const entry of data.transactionDetails) {
+        const createdTransaction = await Transaction.create(entry);
+        transaction_ids.push(createdTransaction._id);
+      }
+      data.transactionDetails = transaction_ids;
+    }
+
+    // Update the consultancy document
+    await project.updateOne(data);
+
+    res.status(200).json({
+      message: 'success'
+    });
+
+  } catch (err) {
+    res.status(400);
+    throw new Error(err.message);
+  }
+});
+
+
 const getProjectsData = asyncHandler(async (req, res) => {
 
   // Get required data
@@ -4746,6 +4821,7 @@ module.exports = {
   updateBook,
   updateBookChapter,
   updateConsultancy,
+  updateProject,
   updateAwardsHonors,
   updateAwardRecieved,
   updateActivityConducted,
