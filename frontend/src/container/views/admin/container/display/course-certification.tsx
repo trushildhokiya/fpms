@@ -9,7 +9,7 @@ import { DataTable } from 'primereact/datatable'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { FileDown, Table } from 'lucide-react'
+import { FileDown, Table} from 'lucide-react'
 import autoTable from 'jspdf-autotable'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import jsPDF from 'jspdf'
@@ -19,57 +19,50 @@ import Logo from '@/assets/image/logo.png'
  * SCHEMAS 
  */
 
-interface ActivityConducted {
+interface CourseCertification {
     _id: string;
     title: string;
     organizedBy: string;
+    venue: string;
     associationWith: string;
-    departmentInvolved: string[];
-    facultiesInvolved: string[];
     mode: string;
-    level: string;
-    participants: number;
     fromDate: Date;
     toDate: Date;
-    venue: string;
+    totalDays: number;
+    level: string;
     remarks: string;
-    invitationLetter: string;
     certificate: string;
-    banner: string;
-    report: string;
-    photos: string;
-    videoLink: string;
     createdAt: string;
     updatedAt: string;
     __v: number;
-}
+  }
 
-const AdminActivityConductedDisplay = () => {
+const AdminCourseCertificateDisplay = () => {
 
     // constants
     const user = useSelector((state: any) => state.user)
-    const [data, setData] = useState<ActivityConducted[]>([]);
+    const [data, setData] = useState<CourseCertification[]>([]);
     const [totalRecords, setTotalRecords] = useState(0)
     const dt = useRef<any>(null);
 
     // funcions
 
     // function to convert date strings to Date objects
-    const convertDates = (activity_conducteds: ActivityConducted[]) => {
-        return activity_conducteds.map(activity_conducted => ({
-            ...activity_conducted,
-            fromDate: new Date(activity_conducted.fromDate),
-            toDate: new Date(activity_conducted.toDate),
+    const convertDates = (course_certifications: CourseCertification[]) => {
+        return course_certifications.map(course_certification => ({
+            ...course_certification,
+            fromDate: new Date(course_certification.fromDate),
+            toDate: new Date(course_certification.toDate),
         }));
     };
 
     // useEffect to fetch data
     useEffect(() => {
-        axios.get('/admin/data/activity-conducted').then((res) => {
-            const convertedData = convertDates(res.data);
-            setData(convertedData);
-            setTotalRecords(convertedData.length)
-        })
+        axios.get('/admin/data/course-certification').then((res) => {
+                const convertedData = convertDates(res.data);
+                setData(convertedData);
+                setTotalRecords(convertedData.length)
+            })
             .catch((err) => {
                 console.log(err);
             })
@@ -104,87 +97,22 @@ const AdminActivityConductedDisplay = () => {
 
 
     // template functions
-    const idBodyTemplate = (rowData: ActivityConducted) => {
+    const idBodyTemplate = (rowData: CourseCertification) => {
         return <Badge className='bg-amber-400 bg-opacity-55 hover:bg-amber-300 text-amber-700'>{rowData._id}</Badge>;
     };
 
-    const remarksBodyTemplate = (rowData: ActivityConducted) => {
+    const remarksBodyTemplate = (rowData: CourseCertification) => {
         return <ScrollPanel className='w-full h-36 text-sm leading-6'>{rowData.remarks}</ScrollPanel>
     }
 
-    const toDateBodyTemplate = (rowData: ActivityConducted) => rowData.toDate.toLocaleDateString()
+    const toDateBodyTemplate = (rowData: CourseCertification) => rowData.toDate.toLocaleDateString()
 
-    const fromDateBodyTemplate = (rowData: ActivityConducted) => rowData.fromDate.toLocaleDateString()
+    const fromDateBodyTemplate = (rowData: CourseCertification) => rowData.fromDate.toLocaleDateString()
 
-    const invitationLetterBodyTemplate = (rowData: ActivityConducted) => {
-        const invitationLetterURL = rowData.invitationLetter ? axios.defaults.baseURL + "/" + rowData.invitationLetter.split('uploads')[1] : null;
-        return invitationLetterURL ? (
-            <Link target='_blank' referrerPolicy='no-referrer' to={invitationLetterURL}>
-                <Button variant={'link'} className='text-indigo-800'>Download</Button>
-            </Link>
-        ) : (
-            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
-        );
-    };
-
-    const certificateBodyTemplate = (rowData: ActivityConducted) => {
-        const certificateURL = rowData.certificate ? axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1] : null;
-        return certificateURL ? (
-            <Link target='_blank' referrerPolicy='no-referrer' to={certificateURL}>
-                <Button variant={'link'} className='text-indigo-800'>Download</Button>
-            </Link>
-        ) : (
-            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
-        );
-    };
-
-    const departmentInvolvedBodyTemplate = (rowData: ActivityConducted) => {
-        return rowData.departmentInvolved.map((department: string) => (
-            <Badge key={department} className='bg-purple-400 hover:bg-purple-300 bg-opacity-85 text-purple-900'>{department}</Badge>
-        ));
-    };
-
-    const facultyInvolvedBodyTemplate = (rowData: ActivityConducted) => rowData.facultiesInvolved.join(", ")
-
-
-    const bannerBodyTemplate = (rowData: ActivityConducted) => {
-        const bannerURL = rowData.banner ? axios.defaults.baseURL + "/" + rowData.banner.split('uploads')[1] : null;
-        return bannerURL ? (
-            <Link target='_blank' referrerPolicy='no-referrer' to={bannerURL}>
-                <Button variant={'link'} className='text-indigo-800'>Download</Button>
-            </Link>
-        ) : (
-            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
-        );
-    };
-
-    const reportBodyTemplate = (rowData: ActivityConducted) => {
-        const reportURL = rowData.report ? axios.defaults.baseURL + "/" + rowData.report.split('uploads')[1] : null;
-        return reportURL ? (
-            <Link target='_blank' referrerPolicy='no-referrer' to={reportURL}>
-                <Button variant={'link'} className='text-indigo-800'>Download</Button>
-            </Link>
-        ) : (
-            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
-        );
-    };
-
-    const photosBodyTemplate = (rowData: ActivityConducted) => {
-        const photosURL = rowData.photos ? axios.defaults.baseURL + "/" + rowData.photos.split('uploads')[1] : null;
-        return photosURL ? (
-            <Link target='_blank' referrerPolicy='no-referrer' to={photosURL}>
-                <Button variant={'link'} className='text-indigo-800'>Download</Button>
-            </Link>
-        ) : (
-            <Button variant={'link'} className='text-gray-400' disabled>No File</Button>
-        );
-    };
-
-
-    const URLBodyTemplate = (rowData: ActivityConducted) => {
+    const certificateBodyTemplate = (rowData: CourseCertification) => {
         return (
-            <Link target='_blank' referrerPolicy='no-referrer' to={rowData.videoLink}>
-                <Button variant={'link'} className='text-indigo-800' >View</Button>
+            <Link target='_blank' referrerPolicy='no-referrer' to={axios.defaults.baseURL + "/" + rowData.certificate.split('uploads')[1]}>
+                <Button variant={'link'} className='text-indigo-800' >Download</Button>
             </Link>
         )
     }
@@ -210,27 +138,22 @@ const AdminActivityConductedDisplay = () => {
         // define columns
         interface Column {
             header: string;
-            dataKey: keyof ActivityConducted;
+            dataKey: keyof CourseCertification;
         }
 
         const columns: Column[] = [
             { header: 'ID', dataKey: '_id' },
             { header: 'Title', dataKey: 'title' },
-            { header: 'Activity Organized By', dataKey: 'organizedBy' },
+            { header: 'Course Organized By', dataKey: 'organizedBy' },
+            { header: 'Venue', dataKey: 'venue' },
             { header: 'In Association with', dataKey: 'associationWith' },
             { header: 'Mode', dataKey: 'mode' },
-            { header: 'Level', dataKey: 'level' },
-            { header: 'No. of Participants', dataKey: 'participants' },
             { header: 'From Date', dataKey: 'fromDate' },
             { header: 'To Date', dataKey: 'toDate' },
-            { header: 'Venue', dataKey: 'venue' },
+            { header: 'No of Days', dataKey: 'totalDays' },
+            { header: 'Level', dataKey: 'level' },
             { header: 'Remarks', dataKey: 'remarks' },
-            { header: 'Invitation Letter', dataKey: 'invitationLetter' },
             { header: 'Certificate', dataKey: 'certificate' },
-            { header: 'Banner', dataKey: 'banner' },
-            { header: 'Photos', dataKey: 'report' },
-            { header: 'Report', dataKey: 'photos' },
-            { header: 'Video Url', dataKey: 'videoLink' },
             { header: 'Created At', dataKey: 'createdAt' },
             { header: 'Updated At', dataKey: 'updatedAt' },
             { header: '__v', dataKey: '__v' },
@@ -283,7 +206,7 @@ const AdminActivityConductedDisplay = () => {
             } else if (typeof value === 'object') {
                 return JSON.stringify(value);
             } else {
-                return value
+                return value.toString();
             }
         };
 
@@ -307,7 +230,7 @@ const AdminActivityConductedDisplay = () => {
         addBackgroundImage()
 
         // Save the PDF
-        doc.save('activity-conducted-data.pdf');
+        doc.save('course-certification-data.pdf');
     };
 
 
@@ -330,38 +253,31 @@ const AdminActivityConductedDisplay = () => {
             <div className="container font-Poppins my-10">
 
                 <h1 className='text-3xl underline font-AzoSans uppercase text-red-800 tracking-wide underline-offset-4'>
-                    Activities Conducted Details
+                Course Certification
                 </h1>
 
                 <div className="my-10">
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institution Conducted Activities</CardTitle>
-                            <CardDescription>Conducted Activities details of all the faculties is shown below</CardDescription>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institution Course Certifications</CardTitle>
+                            <CardDescription>Course certification of all the faculties is shown below</CardDescription>
                         </CardHeader>
 
                         <CardContent className='font-Poppins'>
-                            <DataTable exportFilename='my-activity-conducted' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
+                            <DataTable exportFilename='my-course-certification' ref={dt} header={header} footer={footerTemplate} value={data} scrollable removableSort sortMode='multiple' paginator rows={5} paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" rowsPerPageOptions={[5, 10, 25, 50]} onValueChange={(e) => setTotalRecords(e.length)} showGridlines size='large'>
                                 <Column field="_id" style={{ minWidth: '250px' }} body={idBodyTemplate} header="ID"></Column>
                                 <Column field="title" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Title' sortable header="Title"></Column>
-                                <Column field="departmentInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by department' header="Departments Involved" body={departmentInvolvedBodyTemplate}></Column>
-                                <Column field="facultiesInvolved" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by faculty' header="Faculties Involved" body={facultyInvolvedBodyTemplate}></Column>
                                 <Column field="organizedBy" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Organized By' sortable header="Activity Organized By"></Column>
+                                <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
                                 <Column field="associationWith" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Association with' sortable header="In Association With"></Column>
                                 <Column field="mode" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Mode' sortable header="Mode"></Column>
+                                <Column field="from date" style={{ minWidth: '250px' }}  dataType='date' filter filterPlaceholder='Search by From Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
+                                <Column field="to date" style={{ minWidth: '250px' }}  dataType='date' filter filterPlaceholder='Search by To Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
+                                <Column field="totalDays" style={{ minWidth: '250px' }} header="No. of Days"></Column>
                                 <Column field="level" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Level' sortable header="Level"></Column>
-                                <Column field="participants" style={{ minWidth: '250px' }} header="No. of Participants"></Column>
-                                <Column field="from date" style={{ minWidth: '250px' }} dataType='date' filter filterPlaceholder='Search by From Date' filterElement={dateFilterTemplate} header="From Date" body={fromDateBodyTemplate}></Column>
-                                <Column field="to date" style={{ minWidth: '250px' }} dataType='date' filter filterPlaceholder='Search by To Date' filterElement={dateFilterTemplate} header="To Date" body={toDateBodyTemplate}></Column>
-                                <Column field="venue" style={{ minWidth: '250px' }} filter filterPlaceholder='Search by Venue' sortable header="Venue"></Column>
                                 <Column field="remarks" style={{ minWidth: '250px' }} header="Remarks" body={remarksBodyTemplate}></Column>
-                                <Column field="invitationLetter" style={{ minWidth: '250px' }} header="Invitation Letter" body={invitationLetterBodyTemplate}></Column>
                                 <Column field="certificate" style={{ minWidth: '250px' }} header="Certificate" body={certificateBodyTemplate}></Column>
-                                <Column field="banner" style={{ minWidth: '250px' }} header="Banner" body={bannerBodyTemplate}></Column>
-                                <Column field="report" style={{ minWidth: '250px' }} header="Report" body={reportBodyTemplate}></Column>
-                                <Column field="photos" style={{ minWidth: '250px' }} header="Photos" body={photosBodyTemplate}></Column>
-                                <Column field="videoLink" style={{ minWidth: '200px' }} body={URLBodyTemplate} header="Video Url"></Column>
                             </DataTable>
                         </CardContent>
                     </Card>
@@ -371,4 +287,4 @@ const AdminActivityConductedDisplay = () => {
     )
 }
 
-export default AdminActivityConductedDisplay
+export default AdminCourseCertificateDisplay
