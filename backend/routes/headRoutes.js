@@ -13,7 +13,17 @@ const { createNotification,
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
-    getDashboardData
+    getDashboardData,
+    getCourseCertificationData,
+    getHeadCourseCertificationData,
+    getHeadActivityConductedData,
+    getHeadAwardRecievedData,
+    getHeadSeminarAttendedData,
+    getHeadSeminarConductedData,
+    getHeadSeminarOrganizedData,
+    getHeadSttpAttendedData,
+    getHeadSttpConductedData,
+    getHeadSttpOrganizedData
 } = require('../controller/headController')
 const router = express.Router()
 
@@ -208,6 +218,24 @@ router.route('/data/award-honors').get(headAuthenticator, getAwardsHonorsData)
 router.route('/data/projects').get(headAuthenticator, getProjectsData)
 
 router.route('/data/consultancy').get(headAuthenticator, getConsultancyData)
+
+router.route('/data/course-certification').get(headAuthenticator, getHeadCourseCertificationData)
+
+router.route('/data/activity-conducted').get(headAuthenticator, getHeadActivityConductedData)
+
+router.route('/data/awards-recieved').get(headAuthenticator, getHeadAwardRecievedData)
+
+router.route('/data/seminar-attended').get(headAuthenticator, getHeadSeminarAttendedData)
+
+router.route('/data/seminar-conducted').get(headAuthenticator, getHeadSeminarConductedData)
+
+router.route('/data/seminar-organized').get(headAuthenticator, getHeadSeminarOrganizedData)
+
+router.route('/data/sttp-attended').get(headAuthenticator, getHeadSttpAttendedData)
+
+router.route('/data/sttp-conducted').get(headAuthenticator, getHeadSttpConductedData)
+
+router.route('/data/sttp-organized').get(headAuthenticator, getHeadSttpOrganizedData)
 
 router.route('/dashboard').get(headAuthenticator,getDashboardData)
 

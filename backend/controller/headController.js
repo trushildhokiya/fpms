@@ -9,6 +9,15 @@ const Projects = require('../models/projects')
 const Consultancy = require('../models/consultancy')
 const BookChapter = require('../models/book-chapter')
 const NeedBasedProjects = require('../models/need-based-projects')
+const AwardRecieved = require('../models/awards-recieved')
+const ActivityConducted = require('../models/activity-conducted')
+const CourseCertification = require('../models/course-certification')
+const SttpAttended = require('../models/sttp-attended')
+const SttpConducted = require('../models/sttp-conducted')
+const SttpOrganized = require('../models/sttp-organized')
+const SeminarAttended = require('../models/seminar-attended')
+const SeminarConducted = require('../models/seminar-conducted')
+const SeminarOrganized = require('../models/seminar-organized')
 const nodemailer = require('nodemailer');
 const Notification = require('../models/notification')
 const transporter = nodemailer.createTransport({
@@ -414,6 +423,190 @@ const getConsultancyData = asyncHandler(async (req, res) => {
     res.status(200).json(consultancyData);
 });
 
+// AWARDS SECTION
+
+/**
+ * GET Activity Conducted DATA
+ */
+const getHeadActivityConductedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Activity Conducted
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('activityConducted');
+
+    // Extract and flatten the Activity Conducted data
+    const activityConductedData = departmentFacultyData
+        .map(faculty => faculty.activityConducted)
+        .flat();
+
+    res.status(200).json(activityConductedData);
+});
+
+/**
+ * GET Course Certification DATA
+ */
+const getHeadCourseCertificationData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their courseCertification
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('courseCertification');
+
+    // Extract and flatten the awardsHonors data
+    const courseCertificationData = departmentFacultyData
+        .map(faculty => faculty.courseCertification)
+        .flat();
+
+    res.status(200).json(courseCertificationData);
+});
+/**
+ * GET Award Recieved DATA
+ */
+const getHeadAwardRecievedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Award Recieved
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('awardRecieved');
+
+    // Extract and flatten the Award Recieved data
+    const awardRecievedData = departmentFacultyData
+        .map(faculty => faculty.awardRecieved)
+        .flat();
+
+    res.status(200).json(awardRecievedData);
+});
+/**
+ * GET Seminar Conducted DATA
+ */
+const getHeadSeminarConductedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Seminar Conducted
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('seminarConducted');
+
+    // Extract and flatten the Seminar Conducted data
+    const seminarConductedData = departmentFacultyData
+        .map(faculty => faculty.seminarConducted)
+        .flat();
+
+    res.status(200).json(seminarConductedData);
+});
+/**
+ * GET Seminar Organized DATA
+ */
+const getHeadSeminarOrganizedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Seminar Organized
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('seminarOrganized');
+
+    // Extract and flatten the Seminar Organized data
+    const seminarOrganizedData = departmentFacultyData
+        .map(faculty => faculty.seminarOrganized)
+        .flat();
+
+    res.status(200).json(seminarOrganizedData);
+});
+/**
+ * GET Seminar Attended DATA
+ */
+const getHeadSeminarAttendedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Seminar Attended
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('seminarAttended');
+
+    // Extract and flatten the Seminar Attended data
+    const seminarAttendedData = departmentFacultyData
+        .map(faculty => faculty.seminarAttended)
+        .flat();
+
+    res.status(200).json(seminarAttendedData);
+});
+/**
+ * GET Sttp Organized DATA
+ */
+const getHeadSttpOrganizedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Sttp Organized
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('sttpOrganized');
+
+    // Extract and flatten the Sttp Organized data
+    const sttpOrganizedData = departmentFacultyData
+        .map(faculty => faculty.sttpOrganized)
+        .flat();
+
+    res.status(200).json(sttpOrganizedData);
+});
+/**
+ * GET sttp Attended DATA
+ */
+const getHeadSttpAttendedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their sttp Attended
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('sttpAttended');
+
+    // Extract and flatten the sttp Attended data
+    const sttpAttendedData = departmentFacultyData
+        .map(faculty => faculty.sttpAttended)
+        .flat();
+
+    res.status(200).json(sttpAttendedData);
+});
+
+/**
+ * GET Sttp Conducted DATA
+ */
+const getHeadSttpConductedData = asyncHandler(async (req, res) => {
+    // Get department from the decoded token data
+    const { department } = req.decodedData;
+    
+    // Construct case-insensitive regex for department
+    const regex = new RegExp(department, 'i');
+
+    // Find all faculty members in the department using the regex and populate their Sttp Conducted
+    const departmentFacultyData = await Faculty.find({ department: regex }).populate('sttpConducted');
+
+    // Extract and flatten the Sttp Conducted data
+    const sttpConductedData = departmentFacultyData
+        .map(faculty => faculty.sttpConducted)
+        .flat();
+
+    res.status(200).json(sttpConductedData);
+});
 
 const getDashboardData = asyncHandler(async (req, res) => {
     // Get department from decoded data
@@ -614,5 +807,14 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
+getHeadCourseCertificationData,
+    getHeadActivityConductedData,
+    getHeadAwardRecievedData,
+    getHeadSeminarConductedData,
+    getHeadSeminarOrganizedData,
+    getHeadSeminarAttendedData,
+    getHeadSttpOrganizedData, 
+    getHeadSttpAttendedData,
+    getHeadSttpConductedData,
     getDashboardData
 }

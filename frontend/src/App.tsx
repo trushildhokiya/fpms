@@ -63,6 +63,15 @@ const HeadNeedBasedProjectDisplay = lazy(() => import("./container/views/head/co
 const HeadAwardsHonorsDisplay = lazy(() => import("./container/views/head/container/display/award-honors"));
 const HeadProjectsDisplay = lazy(() => import("./container/views/head/container/display/projects"));
 const HeadConsultancyDisplay = lazy(() => import("./container/views/head/container/display/consultancy"));
+const HeadCourseCertificateDisplay = lazy(() => import("./container/views/head/container/display/course-certification"));
+const HeadActivityConductedDisplay = lazy(() => import("./container/views/head/container/display/activity-conducted"));
+const HeadAwardRecievedDisplay = lazy(() => import("./container/views/head/container/display/awards-recieved"));
+const HeadSeminarAttendedDisplay = lazy(() => import("./container/views/head/container/display/seminar-attended"));
+const HeadSeminarConductedDisplay = lazy(() => import("./container/views/head/container/display/seminar-conducted"));
+const HeadSeminarOrganizedDisplay = lazy(() => import("./container/views/head/container/display/seminar-organised"));
+const HeadSttpAttendedDisplay = lazy(() => import("./container/views/head/container/display/sttp-attended"));
+const HeadSttpConductedDisplay = lazy(() => import("./container/views/head/container/display/sttp-conducted"));
+const HeadSttpOrganizedDisplay = lazy(() => import("./container/views/head/container/display/sttp-organized"));
 
 /**
  * FACULTY IMPORTS
@@ -226,6 +235,15 @@ function App() {
           <Route path='/hod/display/awards-honors' element={<HeadProtectedRoute> <HeadAwardsHonorsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/projects' element={<HeadProtectedRoute> <HeadProjectsDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/consultancy' element={<HeadProtectedRoute> <HeadConsultancyDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/activity-conducted' element={<HeadProtectedRoute> <HeadActivityConductedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/awards-recieved' element={<HeadProtectedRoute> <HeadAwardRecievedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/seminar-attended' element={<HeadProtectedRoute> <HeadSeminarAttendedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/seminar-conducted' element={<HeadProtectedRoute> <HeadSeminarConductedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/seminar-organised' element={<HeadProtectedRoute> <HeadSeminarOrganizedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/sttp-attended' element={<HeadProtectedRoute> <HeadSttpAttendedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/sttp-conducted' element={<HeadProtectedRoute> <HeadSttpConductedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/sttp-organized' element={<HeadProtectedRoute> <HeadSttpOrganizedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/course-certification' element={<HeadProtectedRoute> <HeadCourseCertificateDisplay /> </HeadProtectedRoute>} />
           <Route path='/common/notifications' element={<CommonProtectedRoute> <Notifications /> </CommonProtectedRoute>} />
           <Route path='/faculty' element={<FacultyProtectedRoute> <FacultyDashboard /></FacultyProtectedRoute>} />
           <Route path='/common/forms/profile' element={<CommonProtectedRoute> <ProfileForm /> </CommonProtectedRoute>} />

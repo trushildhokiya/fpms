@@ -16,7 +16,6 @@ import { ScrollPanel } from 'primereact/scrollpanel'
 import jsPDF from 'jspdf'
 import Logo from '@/assets/image/logo.png'
 
-type Props = {}
 
 /**
  * SCHEMAS 
@@ -40,7 +39,7 @@ interface CourseCertification {
     __v: number;
   }
 
-const CourseCertificateDisplay = (props: Props) => {
+const HeadCourseCertificateDisplay = () => {
 
     // constants
     const user = useSelector((state: any) => state.user)
@@ -263,7 +262,7 @@ const CourseCertificateDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>My Course Certifications</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Departmental Course Certifications</CardTitle>
                             <CardDescription>Course certification of faculties is shown below</CardDescription>
                         </CardHeader>
 
@@ -290,4 +289,4 @@ const CourseCertificateDisplay = (props: Props) => {
     )
 }
 
-export default CourseCertificateDisplay
+export default HeadCourseCertificateDisplay

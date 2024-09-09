@@ -4030,31 +4030,31 @@ const deleteActivityConducted = asyncHandler(async (req, res) => {
 
 
 const addCourseCertification = asyncHandler(async (req, res) => {
+   //get required data
+   const data = req.body;
+   const { email } = req.decodedData;
+ 
+   // find user
+   const user = await Faculty.findOne({ email: email });
+ 
+  //  check user status
+   if (!user) {
+     res.status(400);
+     throw new Error("User not found!");
+   }
+ 
+   // add file paths to data
+   const certificateURL = req.file.path;
+   data.certificate = certificateURL;
+ 
+   // Create a new Course Certification entry in the database
+   const courseCertification = await CourseCertification.create(data);
 
-  //get required data
-  const data = req.body;
-  const { email } = req.decodedData;
+   // Add the newly created Course Certification's ID to the user's courseCertification array
+   user.courseCertification.push(courseCertification._id)
 
-  // find user
-  const user = await Faculty.findOne({ email: email });
-
-  if (!user) {
-    res.status(400);
-    throw new Error("User not found!");
-  }
-
-  // add file paths to data
-  const certificateURL = req.file.path;
-  data.certificate = certificateURL;
-
-  // create new Course Certification entry
-  const courseCertification = await CourseCertification.create(data);
-
-  // add ref id to faculty 
-  await Faculty.findOneAndUpdate(
-    { email: email },
-    { $push: { courseCertification: courseCertification._id } }
-  );
+   // Save the updated user document to the database
+   await user.save()
 
   res.status(200).json({
     message: "success",
