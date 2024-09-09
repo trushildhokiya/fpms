@@ -68,7 +68,7 @@ const HeadActivityConductedDisplay = lazy(() => import("./container/views/head/c
 const HeadAwardRecievedDisplay = lazy(() => import("./container/views/head/container/display/awards-recieved"));
 const HeadSeminarAttendedDisplay = lazy(() => import("./container/views/head/container/display/seminar-attended"));
 const HeadSeminarConductedDisplay = lazy(() => import("./container/views/head/container/display/seminar-conducted"));
-const HeadSeminarOrganizedDisplay = lazy(() => import("./container/views/head/container/display/seminar-organised"));
+const HeadSeminarOrganizedDisplay = lazy(() => import("./container/views/head/container/display/seminar-organized"));
 const HeadSttpAttendedDisplay = lazy(() => import("./container/views/head/container/display/sttp-attended"));
 const HeadSttpConductedDisplay = lazy(() => import("./container/views/head/container/display/sttp-conducted"));
 const HeadSttpOrganizedDisplay = lazy(() => import("./container/views/head/container/display/sttp-organized"));
@@ -156,7 +156,7 @@ const SttpAttendedEditForm = lazy(() => import('./container/views/common/edit/st
 const SttpOrganizedEditForm = lazy(() => import('./container/views/common/edit/sttp-organized'));
 const SeminarAttendedEditForm = lazy(() => import('./container/views/common/edit/seminar-attended'));
 const SeminarConductedEditForm = lazy(() => import('./container/views/common/edit/seminar-conducted'));
-const SeminarOrganizedEditForm = lazy(() => import('./container/views/common/edit/seminar-organised'));
+const SeminarOrganizedEditForm = lazy(() => import('./container/views/common/edit/seminar-organized'));
 
 
 /**
@@ -183,7 +183,7 @@ const SttpAttendedDisplay = lazy(() => import('./container/views/common/display/
 const SttpOrganizedDisplay = lazy(() => import('./container/views/common/display/sttp-organized'));
 const SeminarAttendedDisplay = lazy(() => import('./container/views/common/display/seminar-attended'));
 const SeminarConductedDisplay = lazy(() => import('./container/views/common/display/seminar-conducted'));
-const SeminarOrganizedDisplay = lazy(() => import('./container/views/common/display/seminar-organised'));
+const SeminarOrganizedDisplay = lazy(() => import('./container/views/common/display/seminar-organized'));
 const ProjectsDisplay = lazy(() => import("./container/views/common/display/projects"));
 const BulkUpload = lazy(() => import("@/container/views/common/bulk/bulk"));
 
@@ -239,7 +239,7 @@ function App() {
           <Route path='/hod/display/awards-recieved' element={<HeadProtectedRoute> <HeadAwardRecievedDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/seminar-attended' element={<HeadProtectedRoute> <HeadSeminarAttendedDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/seminar-conducted' element={<HeadProtectedRoute> <HeadSeminarConductedDisplay /> </HeadProtectedRoute>} />
-          <Route path='/hod/display/seminar-organised' element={<HeadProtectedRoute> <HeadSeminarOrganizedDisplay /> </HeadProtectedRoute>} />
+          <Route path='/hod/display/seminar-organized' element={<HeadProtectedRoute> <HeadSeminarOrganizedDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/sttp-attended' element={<HeadProtectedRoute> <HeadSttpAttendedDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/sttp-conducted' element={<HeadProtectedRoute> <HeadSttpConductedDisplay /> </HeadProtectedRoute>} />
           <Route path='/hod/display/sttp-organized' element={<HeadProtectedRoute> <HeadSttpOrganizedDisplay /> </HeadProtectedRoute>} />

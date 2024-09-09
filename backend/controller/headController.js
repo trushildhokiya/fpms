@@ -443,7 +443,12 @@ const getHeadActivityConductedData = asyncHandler(async (req, res) => {
         .map(faculty => faculty.activityConducted)
         .flat();
 
-    res.status(200).json(activityConductedData);
+    // Remove duplicate results using filter and indexOf
+    const uniqueActivityConductedData = activityConductedData.filter((item, index, self) =>
+        index === self.findIndex(existingActivity  => existingActivity._id.toString() === item._id.toString())
+    );
+
+    res.status(200).json(uniqueActivityConductedData);
 });
 
 /**
@@ -523,8 +528,13 @@ const getHeadSeminarOrganizedData = asyncHandler(async (req, res) => {
     const seminarOrganizedData = departmentFacultyData
         .map(faculty => faculty.seminarOrganized)
         .flat();
+    
+    // Remove duplicate results using filter and indexOf
+    const uniqueSeminarOrganizedData = seminarOrganizedData.filter((item, index, self) =>
+        index === self.findIndex(existingSeminar  => existingSeminar._id.toString() === item._id.toString())
+    );
 
-    res.status(200).json(seminarOrganizedData);
+    res.status(200).json(uniqueSeminarOrganizedData);
 });
 /**
  * GET Seminar Attended DATA
@@ -563,8 +573,13 @@ const getHeadSttpOrganizedData = asyncHandler(async (req, res) => {
     const sttpOrganizedData = departmentFacultyData
         .map(faculty => faculty.sttpOrganized)
         .flat();
+    
+    // Remove duplicate results using filter and indexOf
+    const uniqueSttpOrganizedData = sttpOrganizedData.filter((item, index, self) =>
+        index === self.findIndex(existingSttp  => existingSttp._id.toString() === item._id.toString())
+    );
 
-    res.status(200).json(sttpOrganizedData);
+    res.status(200).json(uniqueSttpOrganizedData);
 });
 /**
  * GET sttp Attended DATA

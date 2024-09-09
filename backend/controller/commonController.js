@@ -3849,7 +3849,6 @@ const addActivityConducted = asyncHandler(async (req, res) => {
       );
     }
 
-
     res.status(200).json({
       message: "success",
     });
@@ -3867,6 +3866,7 @@ const getActivityConductedData = asyncHandler(async (req, res) => {
 
   // Find user
   const user = await Faculty.findOne({ email: email })
+  console.log(user)
 
   if (!user) {
     res.status(400);

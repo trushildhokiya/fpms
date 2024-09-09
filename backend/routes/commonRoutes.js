@@ -3254,13 +3254,13 @@ router.route('/seminar-organized').put(facultyAuthenticator, seminarOrganizedFil
 
 
 // Seminar Conducted Routes
-router.route('/seminar-conducted/:id').get(facultyAuthenticator, getSeminarConductedById);
+router.route('/seminar-organized/:id').get(facultyAuthenticator, getSeminarConductedById);
 
-router.route('/seminar-conducted').get(facultyAuthenticator, getSeminarConductedData);
+router.route('/seminar-organized').get(facultyAuthenticator, getSeminarConductedData);
 
-router.route('/seminar-conducted').delete(facultyAuthenticator, deleteSeminarConducted);
+router.route('/seminar-organized').delete(facultyAuthenticator, deleteSeminarConducted);
 
-router.route('/seminar-conducted').post(facultyAuthenticator, seminarConductedFileUpload.fields([
+router.route('/seminar-organized').post(facultyAuthenticator, seminarConductedFileUpload.fields([
   { name: 'certificate', maxCount: 1 },
   { name: 'invitationLetter', maxCount: 1 },
   { name: 'photos', maxCount: 1 }

@@ -40,7 +40,7 @@ import axios from 'axios'
 import { ToastAction } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
-
+import { useNavigate } from "react-router-dom";
 
 /**
  * SCHEMAS 
@@ -123,6 +123,7 @@ const ActivityConducted = () => {
     const user = useSelector((state: any) => state.user)
     const [open, setOpen] = useState(false)
     const { toast }= useToast()
+    const navigate = useNavigate()
     
     //functions
     //key-board events
@@ -185,7 +186,7 @@ const ActivityConducted = () => {
                     title: "Activities Conducted added successfully",
                     description:
                         "Your conducted activities information has been added successfully",
-                    action: <ToastAction className='' altText="okay">Okay</ToastAction>,
+                    action: <ToastAction altText="okay" onClick={()=>navigate('/common/display/activity-conducted')}>Okay</ToastAction>,
                 });
                 form.reset();
             }
