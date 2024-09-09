@@ -449,10 +449,10 @@ const SeminarOrganizedDisplay = (props: Props) => {
     const header = (
         <div className="flex w-full justify-end gap-6 flex-wrap font-Poppins">
             <Button className='rounded-full bg-green-600' onClick={() => exportCSV(false)}>
-                <Table className='w-5 h-5 mr-2' /> Download
+                <Table className='w-5 h-5 mr-2' /> Excel
             </Button>
             <Button className='rounded-full bg-red-600' onClick={() => exportPdf()}>
-                <FileDown className='w-5 h-5 mr-2' /> Download
+                <FileDown className='w-5 h-5 mr-2' /> PDF
             </Button>
         </div>
     );

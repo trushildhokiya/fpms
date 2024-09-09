@@ -497,6 +497,63 @@ const HeadNavbar = () => {
                                                 </DropdownMenuSub>
                                                 <DropdownMenuSub>
                                                     <DropdownMenuSubTrigger> Achievements </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/hod/display/sttp-conducted'>
+                                                                    <DropdownMenuItem>
+                                                                        Sttp/Fdp Conducted
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/sttp-attended'>
+                                                                    <DropdownMenuItem>
+                                                                    Sttp/Fdp Attended
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/sttp-organized'>
+                                                                    <DropdownMenuItem>
+                                                                    Sttp/Fdp Organized
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/hod/display/seminar-conducted'>
+                                                                    <DropdownMenuItem>
+                                                                        Seminars Conducted
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/seminar-attended'>
+                                                                    <DropdownMenuItem>
+                                                                    Seminars Attended
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/seminar-organized'>
+                                                                    <DropdownMenuItem>
+                                                                    Seminars Organized
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuGroup>
+                                                                <Link to='/hod/display/course-certification'>
+                                                                    <DropdownMenuItem>
+                                                                        Course Certfication
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/awards-recieved'>
+                                                                    <DropdownMenuItem>
+                                                                        Awards and Recognitions
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                                <Link to='/hod/display/activity-conducted'>
+                                                                    <DropdownMenuItem>
+                                                                        Activity Conducted
+                                                                    </DropdownMenuItem>
+                                                                </Link>
+                                                            </DropdownMenuGroup>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
                                                 </DropdownMenuSub>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>

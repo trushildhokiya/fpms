@@ -390,10 +390,10 @@ const NeedBasedProjectDisplay = (props: Props) => {
     const header = (
         <div className="flex w-full justify-end gap-6 font-Poppins flex-wrap">
             <Button className='rounded-full bg-green-600' onClick={() => exportCSV(false)}>
-                <Table className='w-5 h-5 mr-2' /> Download
+                <Table className='w-5 h-5 mr-2' /> Excel
             </Button>
             <Button className='rounded-full bg-red-600' onClick={() => exportPdf()}>
-                <FileDown className='w-5 h-5 mr-2' /> Download
+                <FileDown className='w-5 h-5 mr-2' /> PDF
             </Button>
         </div>
     );
@@ -401,7 +401,7 @@ const NeedBasedProjectDisplay = (props: Props) => {
     const headerStudent = (
         <div className="flex w-full justify-end gap-6 font-Poppins flex-wrap">
             <Button className='rounded-full bg-green-600' onClick={() => exportCSV02(false)}>
-                <Table className='w-5 h-5 mr-2' /> Download
+                <Table className='w-5 h-5 mr-2' /> Excel
             </Button>
 
         </div>
