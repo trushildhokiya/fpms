@@ -14,7 +14,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
 
 interface Award {
     _id: string;
@@ -29,7 +28,7 @@ interface Award {
 }
 
 
-const AwardsHonorsDisplay = (props: Props) => {
+const AwardsHonorsDisplay = () => {
 
     // constants
     const [data, setData] = useState<Award[]>([]);

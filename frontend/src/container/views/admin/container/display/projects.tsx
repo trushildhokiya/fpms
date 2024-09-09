@@ -25,8 +25,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-
 interface Project {
     _id: string;
     projectTitle: string;
@@ -87,7 +85,7 @@ interface TransactionData {
 }
 
 
-const ProjectsDisplay = (props: Props) => {
+const ProjectsDisplay = () => {
 
     // constants
     const [data, setData] = useState<Project[]>([]);

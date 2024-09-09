@@ -14,8 +14,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-
 
 interface BookChapter {
     _id: string;
@@ -43,9 +41,7 @@ interface BookChapter {
 }
 
 
-
-
-const BookChapterDisplay = (props: Props) => {
+const BookChapterDisplay = () => {
 
     // constants
     const [data, setData] = useState<BookChapter[]>([]);

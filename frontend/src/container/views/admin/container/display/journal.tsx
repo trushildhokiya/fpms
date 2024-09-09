@@ -14,8 +14,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-
 interface Journal {
     _id: string;
     title: string;
@@ -42,7 +40,7 @@ interface Journal {
     __v: number;
 }
 
-const JournalDisplay = (props: Props) => {
+const JournalDisplay = () => {
 
     // constants
     const [data, setData] = useState<Journal[]>([]);

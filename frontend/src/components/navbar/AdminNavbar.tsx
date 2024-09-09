@@ -122,7 +122,7 @@ const AdminNavbar = () => {
                                                                     Attended
                                                                 </DropdownMenuItem>
                                                             </Link>
-                                                            <Link to='/admin/display/eminar-organized'>
+                                                            <Link to='/admin/display/seminar-organized'>
                                                                 <DropdownMenuItem>
                                                                     Organized
                                                                 </DropdownMenuItem>
@@ -154,9 +154,7 @@ const AdminNavbar = () => {
                         </DropdownMenu>
                     </div>
                     <div className="mx-5">
-
                         <DropdownMenu>
-
                             <DropdownMenuTrigger>
                                 <span className="flex items-center">
                                     Research

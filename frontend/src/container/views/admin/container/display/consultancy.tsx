@@ -25,7 +25,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
 
 interface Consultancy {
     _id: string;
@@ -86,7 +85,7 @@ interface TransactionData {
 }
 
 
-const ConsultancyDisplay = (props: Props) => {
+const ConsultancyDisplay = () => {
 
     // constants
     const [data, setData] = useState<Consultancy[]>([]);

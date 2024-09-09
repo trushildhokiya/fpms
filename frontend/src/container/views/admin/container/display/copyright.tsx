@@ -15,8 +15,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-
 interface Copyright {
     _id: string;
     title: string;
@@ -35,7 +33,7 @@ interface Copyright {
     __v: number;
 }
 
-const CopyrightDisplay = (props: Props) => {
+const CopyrightDisplay = () => {
 
     // constants
     const [data, setData] = useState<Copyright[]>([]);
@@ -280,7 +278,7 @@ const CopyrightDisplay = (props: Props) => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Departmental Copyrights</CardTitle>
+                            <CardTitle className='tracking-wide font-bold text-gray-700 text-3xl py-2'>Institution Copyrights</CardTitle>
                             <CardDescription>Copyright details of the faculties is shown below</CardDescription>
                         </CardHeader>
 

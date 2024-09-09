@@ -16,8 +16,6 @@ import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
 
-type Props = {}
-
 interface Conference {
     _id: string;
     title: string;
@@ -50,7 +48,7 @@ interface Conference {
 }
 
 
-const ConferenceDisplay = (props: Props) => {
+const ConferenceDisplay = () => {
 
     // constants
     const [data, setData] = useState<Conference[]>([]);

@@ -24,8 +24,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-
 interface Student {
     _id: string;
     name: string;
@@ -71,7 +69,7 @@ interface Project {
 }
 
 
-const NeedBasedProjectDisplay = (props: Props) => {
+const NeedBasedProjectDisplay = () => {
 
     // constants
     const user = useSelector((state: any) => state.user)

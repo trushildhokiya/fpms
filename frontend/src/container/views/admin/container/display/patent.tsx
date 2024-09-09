@@ -15,7 +15,6 @@ import AdminNavbar from '@/components/navbar/AdminNavbar'
 import Logo from '@/assets/image/logo.png'
 import { useSelector } from 'react-redux'
 
-type Props = {}
 
 interface Patent {
     _id: string;
@@ -35,7 +34,7 @@ interface Patent {
     __v: number;
 }
 
-const PatentDisplay = (props: Props) => {
+const PatentDisplay = () => {
 
     // constants
     const [data, setData] = useState<Patent[]>([]);
