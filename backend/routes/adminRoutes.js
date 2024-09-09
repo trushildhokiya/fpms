@@ -1,6 +1,6 @@
 const express = require('express')
 const { adminProfileImageUpload } = require('../middleware/fileUpload')
-const { profileImageUpdate, registerUsers, facultyList, headList, adminList, getPatentData, getCopyrightData, getJournalData, getConferenceData, getBookData, getBookChapterData, getNeedBasedProjectsData, getAwardsHonorsData, getProjectsData, getConsultancyData, getDashboardData, toggleRole } = require('../controller/adminController')
+const { profileImageUpdate, registerUsers, facultyList, headList, adminList, getPatentData, getCopyrightData, getJournalData, getConferenceData, getBookData, getBookChapterData, getNeedBasedProjectsData, getAwardsHonorsData, getProjectsData, getConsultancyData, getDashboardData, toggleRole, getAdminActivityConductedData, getAdminAwardRecievedData, getAdminCourseCertificationData, getAdminSeminarAttendedData, getAdminSeminarConductedData, getAdminSeminarOrganizedData, getAdminSttpAttendedData, getAdminSttpConductedData, getAdminSttpOrganizedData } = require('../controller/adminController')
 const adminAuthenticator = require('../middleware/adminAuthenticator')
 const router = express.Router()
 
@@ -241,6 +241,24 @@ router.route('/data/award-honors').get(adminAuthenticator, getAwardsHonorsData)
 router.route('/data/projects').get(adminAuthenticator, getProjectsData)
 
 router.route('/data/consultancy').get(adminAuthenticator, getConsultancyData)
+
+router.route('/data/activity-conducted').get(adminAuthenticator, getAdminActivityConductedData)
+
+router.route('/data/awards-recieved').get(adminAuthenticator, getAdminAwardRecievedData)
+
+router.route('/data/course-certification').get(adminAuthenticator, getAdminCourseCertificationData)
+
+router.route('/data/seminar-attended').get(adminAuthenticator, getAdminSeminarAttendedData)
+
+router.route('/data/seminar-conducted').get(adminAuthenticator, getAdminSeminarConductedData)
+
+router.route('/data/seminar-organized').get(adminAuthenticator, getAdminSeminarOrganizedData)
+
+router.route('/data/sttp-attended').get(adminAuthenticator, getAdminSttpAttendedData)
+
+router.route('/data/sttp-conducted').get(adminAuthenticator, getAdminSttpConductedData)
+
+router.route('/data/sttp-organized').get(adminAuthenticator, getAdminSttpOrganizedData)
 
 router.route('/dashboard').get(adminAuthenticator,getDashboardData)
 

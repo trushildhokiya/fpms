@@ -45,6 +45,15 @@ const AdminNeedBasedProjectDisplay = lazy(() => import("./container/views/admin/
 const AdminAwardsHonorsDisplay = lazy(() => import("./container/views/admin/container/display/award-honors"));
 const AdminProjectsDisplay = lazy(() => import("./container/views/admin/container/display/projects"));
 const AdminConsultancyDisplay = lazy(() => import("./container/views/admin/container/display/consultancy"));
+const AdminActivityConductedDisplay = lazy(() => import("./container/views/admin/container/display/activity-conducted"));
+const AdminAwardRecievedDisplay = lazy(() => import("./container/views/admin/container/display/awards-recieved"));
+const AdminCourseCertificateDisplay = lazy(() => import("./container/views/admin/container/display/course-certification"));
+const AdminSeminarAttendedDisplay = lazy(() => import("./container/views/admin/container/display/seminar-attended"));
+const AdminSeminarConductedDisplay = lazy(() => import("./container/views/admin/container/display/seminar-conducted"));
+const AdminSeminarOrganizedDisplay = lazy(() => import("./container/views/admin/container/display/seminar-organized"));
+const AdminSttpAttendedDisplay = lazy(() => import("./container/views/admin/container/display/sttp-attended"));
+const AdminSttpConductedDisplay = lazy(() => import("./container/views/admin/container/display/sttp-conducted"));
+const AdminSttpOrganizedDisplay = lazy(() => import("./container/views/admin/container/display/sttp-organized"));
 
 
 /**
@@ -220,6 +229,15 @@ function App() {
           <Route path='/admin/display/awards-honors' element={<AdminProtectedRoute> <AdminAwardsHonorsDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/display/projects' element={<AdminProtectedRoute> <AdminProjectsDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/display/consultancy' element={<AdminProtectedRoute> <AdminConsultancyDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/activity-conducted' element={<AdminProtectedRoute> <AdminActivityConductedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/awards-recieved' element={<AdminProtectedRoute> <AdminAwardRecievedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/course-certification' element={<AdminProtectedRoute> <AdminCourseCertificateDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/seminar-attended' element={<AdminProtectedRoute> <AdminSeminarAttendedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/seminar-conducted' element={<AdminProtectedRoute> <AdminSeminarConductedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/seminar-organized' element={<AdminProtectedRoute> <AdminSeminarOrganizedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/sttp-attended' element={<AdminProtectedRoute> <AdminSttpAttendedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/sttp-conducted' element={<AdminProtectedRoute> <AdminSttpConductedDisplay /> </AdminProtectedRoute>} />
+          <Route path='/admin/display/sttp-organized' element={<AdminProtectedRoute> <AdminSttpOrganizedDisplay /> </AdminProtectedRoute>} />
           <Route path='/admin/profile' element={<AdminProtectedRoute> <Profile /> </AdminProtectedRoute>} />
           <Route path='/admin/users/:type' element={<AdminProtectedRoute> <DisplayUsers /> </AdminProtectedRoute>} />
           <Route path='/hod' element={<HeadProtectedRoute><HeadDashboard /> </HeadProtectedRoute>} />

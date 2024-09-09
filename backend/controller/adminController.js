@@ -11,6 +11,15 @@ const BookChapter = require('../models/book-chapter')
 const Book = require('../models/book')
 const Projects = require('../models/projects')
 const Consultancy = require('../models/consultancy')
+const AwardRecieved = require('../models/awards-recieved')
+const ActivityConducted = require('../models/activity-conducted')
+const CourseCertification = require('../models/course-certification')
+const SttpAttended = require('../models/sttp-attended')
+const SttpConducted = require('../models/sttp-conducted')
+const SttpOrganized = require('../models/sttp-organized')
+const SeminarAttended = require('../models/seminar-attended')
+const SeminarConducted = require('../models/seminar-conducted')
+const SeminarOrganized = require('../models/seminar-organized')
 const fs = require('fs');
 const bcrypt = require('bcrypt')
 const nodemailer = require("nodemailer");
@@ -220,7 +229,6 @@ const getCopyrightData = asyncHandler(async (req, res) => {
  * GET JOURNAL DATA
  */
 const getJournalData = asyncHandler(async (req, res) => {
-
     const journalData = await Journal.find()
     res.status(200).json(journalData)
 })
@@ -230,7 +238,6 @@ const getJournalData = asyncHandler(async (req, res) => {
  * GET CONFERENCE DATA
  */
 const getConferenceData = asyncHandler(async (req, res) => {
-
     const conferenceData = await Conference.find()
     res.status(200).json(conferenceData)
 })
@@ -249,7 +256,6 @@ const getBookData = asyncHandler(async (req, res) => {
  * GET BOOK CHAPTER DATA
  */
 const getBookChapterData = asyncHandler(async (req, res) => {
-
     const bookChapterData = await BookChapter.find()
     res.status(200).json(bookChapterData)
 })
@@ -258,7 +264,6 @@ const getBookChapterData = asyncHandler(async (req, res) => {
  * GET NEED BASED PROJECT DATA
  */
 const getNeedBasedProjectsData = asyncHandler(async (req, res) => {
-
     const needBasedProjectsData = await NeedBasedProjects.find()
     res.status(200).json(needBasedProjectsData)
 })
@@ -287,11 +292,81 @@ const getProjectsData = asyncHandler(async (req, res) => {
  * GET CONSULTANCY DATA
  */
 const getConsultancyData = asyncHandler(async (req, res) => {
-
     const consultancyData = await Consultancy.find().populate('transactionDetails')
     res.status(200).json(consultancyData)
 
 })
+
+/**
+ * AWARDS SECTION START
+ */
+/**
+ * GET ACTIVITY CONDUCTED DATA
+ */
+const getAdminActivityConductedData = asyncHandler(async (req, res) => {
+    const activityConductedData = await ActivityConducted.find()
+    res.status(200).json(activityConductedData)
+})
+/**
+ * GET Course Certification DATA
+ */
+const getAdminCourseCertificationData = asyncHandler(async (req, res) => {
+    const courseCertificationData = await CourseCertification.find()
+    res.status(200).json(courseCertificationData)
+})
+/**
+ * GET Award Recieved Data 
+ */
+const getAdminAwardRecievedData = asyncHandler(async (req, res) => {
+    const awardRecievedData = await AwardRecieved.find()
+    res.status(200).json(awardRecievedData)
+})
+/**
+ * GET Seminar Conducted Data
+ */
+const getAdminSeminarConductedData = asyncHandler(async (req, res) => {
+    const seminarConductedData = await SeminarConducted.find()
+    res.status(200).json(seminarConductedData)
+})
+/**
+ * GET Seminar Organized Data
+ */
+const getAdminSeminarOrganizedData = asyncHandler(async (req, res) => {
+    const seminarOrganizedData = await SeminarOrganized.find()
+    res.status(200).json(seminarOrganizedData)
+})
+/**
+ * GET Seminar Attended Data
+ */
+const getAdminSeminarAttendedData = asyncHandler(async (req, res) => {
+    const seminarAttendedData = await SeminarAttended.find()
+    res.status(200).json(seminarAttendedData)
+})
+/**
+ * GET Sttp Organized Data
+ */
+const getAdminSttpOrganizedData = asyncHandler(async (req, res) => {
+    const sttpOrganizedData = await SttpOrganized.find()
+    res.status(200).json(sttpOrganizedData)
+})
+/**
+ * GET Sttp Attended Data
+ */
+const getAdminSttpAttendedData = asyncHandler(async (req, res) => {
+    const sttpAttendedData = await SttpAttended.find()
+    res.status(200).json(sttpAttendedData)
+})
+/**
+ * GET Sttp Conducted Data
+ */
+const getAdminSttpConductedData = asyncHandler(async (req, res) => {
+    const sttpConductedData = await SttpConducted.find()
+    res.status(200).json(sttpConductedData)
+})
+
+/**
+ * AWARDS SECTION END
+ */
 
 const getDashboardData = asyncHandler(async (req, res) => {
 
@@ -479,8 +554,6 @@ const getPieData = (data, department) => {
     catch (err) {
         console.log(err);
     }
-
-
 }
 
 
@@ -533,6 +606,15 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
+    getAdminActivityConductedData,
+    getAdminAwardRecievedData,
+    getAdminCourseCertificationData,
+    getAdminSeminarAttendedData,
+    getAdminSeminarConductedData,
+    getAdminSeminarOrganizedData,
+    getAdminSttpAttendedData,
+    getAdminSttpConductedData,
+    getAdminSttpOrganizedData,
     getDashboardData,
     toggleRole
 };
