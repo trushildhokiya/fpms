@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../../assets/svg/kjsitLogo.svg';
 import { Sling as Hamburger } from 'hamburger-react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Trophy } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -61,7 +61,98 @@ const AdminNavbar = () => {
                     <div className="mx-5">
                         <Link to="/admin">Dashboard</Link>
                     </div>
-                    <div className="mx-5">Others</div>
+                    <div className="mx-5">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <span className="flex items-center">
+                                    Others
+                                    <span>
+                                        <ChevronDown />
+                                    </span>
+                                </span>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='w-56'>
+                                <DropdownMenuLabel>Others</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>
+                                            <Trophy className="mr-2 h-4 w-4" />
+                                            <span>Achievements</span>
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        Sttp/Fdp
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <Link to='/admin/display/sttp-conducted'>
+                                                                <DropdownMenuItem>
+                                                                    Conducted
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/admin/display/sttp-attended'>
+                                                                <DropdownMenuItem>
+                                                                    Attended
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/admin/display/sttp-organized'>
+                                                                <DropdownMenuItem>
+                                                                    Organized
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        Seminars
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <Link to='/admin/display/seminar-conducted'>
+                                                                <DropdownMenuItem>
+                                                                    Conducted
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/admin/display/seminar-attended'>
+                                                                <DropdownMenuItem>
+                                                                    Attended
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <Link to='/admin/display/eminar-organized'>
+                                                                <DropdownMenuItem>
+                                                                    Organized
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                                <DropdownMenuSeparator />
+                                                <Link to='/admin/display/course-certification'>
+                                                    <DropdownMenuItem>
+                                                        Course Certification
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/admin/display/awards-recieved'>
+                                                    <DropdownMenuItem>
+                                                        Awards and Recognitions
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <Link to='/admin/display/activity-conducted'>
+                                                    <DropdownMenuItem>
+                                                        Activity Conducted
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                     <div className="mx-5">
 
                         <DropdownMenu>
