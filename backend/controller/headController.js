@@ -379,12 +379,12 @@ const getAwardsHonorsData = asyncHandler(async (req, res) => {
 
 /**
  * GET MAJOR MINOR PROJECTS DATA
- */
+*/
 const getProjectsData = asyncHandler(async (req, res) => {
-
+    
     // get department
     const { department } = req.decodedData;
-
+    
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
 
@@ -396,21 +396,21 @@ const getProjectsData = asyncHandler(async (req, res) => {
             }
         }
     }).populate('transactionDetails');
-
+    
     res.status(200).json(projectsData);
 });
 
 /**
  * GET CONSULTANCY DATA
- */
+*/
 const getConsultancyData = asyncHandler(async (req, res) => {
 
     // get department
     const { department } = req.decodedData;
-
+    
     // construct case insensitive regex
     const regex = new RegExp(department, 'i');
-
+    
     // get departmental consultancy data
     const consultancyData = await Consultancy.find({
         departmentInvolved: {
@@ -419,7 +419,7 @@ const getConsultancyData = asyncHandler(async (req, res) => {
             }
         }
     }).populate('transactionDetails');
-
+    
     res.status(200).json(consultancyData);
 });
 
@@ -807,7 +807,7 @@ module.exports = {
     getAwardsHonorsData,
     getProjectsData,
     getConsultancyData,
-getHeadCourseCertificationData,
+    getHeadCourseCertificationData,
     getHeadActivityConductedData,
     getHeadAwardRecievedData,
     getHeadSeminarConductedData,
