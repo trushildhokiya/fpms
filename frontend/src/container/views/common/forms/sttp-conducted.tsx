@@ -183,7 +183,7 @@ const SttpConductedForm = (props: Props) => {
                     title: "STTP/FDP added successfully",
                     description:
                         "Your STTP/FDP information has been added successfully",
-                    action: <ToastAction className='' onClick={()=>navigate('/faculty')} altText="okay">Okay</ToastAction>,
+                    action: <ToastAction className='' onClick={()=>navigate('/common/display/sttp-conducted')} altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
             }

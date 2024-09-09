@@ -169,7 +169,7 @@ const SeminarConductedForm = (props: Props) => {
                     title: "Seminar Conducted added successfully",
                     description:
                         "Your Seminar Conducted information has been added successfully",
-                    action: <ToastAction className='' onClick={()=>navigate('/faculty')} altText="okay">Okay</ToastAction>,
+                    action: <ToastAction className='' onClick={()=>navigate('/common/display/seminar-conducted')} altText="okay">Okay</ToastAction>,
                 });
                 form.reset();
             }
