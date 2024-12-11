@@ -137,9 +137,7 @@ const formSchema = z.object({
 
   digitalObjectIdentifier: z
     .string()
-    .min(2, {
-      message: "Digital Object Identifier required!",
-    })
+    .min(2)
     .max(100, {
       message: "Digital Object Identifier must not exceed 100 characters",
     }),
@@ -148,9 +146,7 @@ const formSchema = z.object({
 
   paperUrl: z
     .string()
-    .min(1, {
-      message: "Paper Link Required!",
-    })
+    .min(1)
     .max(500, {
       message: "Paper Link exceeded",
     })
