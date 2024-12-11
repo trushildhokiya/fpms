@@ -53,7 +53,7 @@ const swaggerOptions = {
             }
         },
         servers: [{
-            url: `http://localhost:${PORT}`
+            url: `https://fpmsbackend.kjsieit.com`
         }]
     },
 

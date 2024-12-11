@@ -6,9 +6,24 @@ import axios from 'axios'
 import { store } from './app/store.ts'
 import { Provider } from 'react-redux'
 
-axios.defaults.baseURL = 'http://localhost:5000'
-axios.defaults.headers.common['token'] = localStorage.getItem('token') ;
+axios.defaults.baseURL = 'https://fpmsbackend.kjsieit.com'
 
+// Request Interceptor: Add token to request header
+axios.interceptors.request.use(
+  (config) => {
+    // Get the token from localStorage
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Attach token to the headers of the request
+      config.headers['token'] = token;
+    }
+    return config;
+  },
+  (error) => {
+    // Handle any errors that occur during the request setup
+    return Promise.reject(error);
+  }
+);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

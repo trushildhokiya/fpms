@@ -206,7 +206,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
             department: faculty.department
         }, process.env.JWT_SECRET, { expiresIn: '5m' })
 
-        const url = `http://localhost:5173/auth/reset-password/${token}`
+        const url = `https://fpmsbackend.kjsieit.com/auth/reset-password/${token}`
 
         const mailOptions = {
             from: '"FPMS SERVER 💀" <phantomcoder325@gmail.com>',

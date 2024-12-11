@@ -183,7 +183,7 @@ const BulkUpload = () => {
 
     const handleDownload = () => {
         if (selectedStatus) {
-            const filePath = `/src/utils/data/${selectedStatus.value}.csv`;
+            const filePath = `/data/${selectedStatus.value}.csv`;
             const link = document.createElement('a');
             link.href = filePath;
             link.setAttribute('download', `${selectedStatus.value}.csv`);

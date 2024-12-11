@@ -604,7 +604,7 @@ const ConferenceForm: React.FC = (props: Props) => {
                                   field.onChange(newValue);
                                 }}
                               >
-                                {option}
+                                {option=="Computer"? "Computer Engineering" : option}
                               </DropdownMenuCheckboxItem>
                             ))}
                           </DropdownMenuContent>

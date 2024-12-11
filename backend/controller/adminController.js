@@ -32,7 +32,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const baseUrl = 'http://localhost:5000';
+const baseUrl = 'https://fpmsbackend.kjsieit.com';
 
 
 /**

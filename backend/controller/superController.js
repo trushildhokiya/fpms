@@ -6,7 +6,7 @@ const superadmin = require('../models/superadmin');
 const faculty = require('../models/faculty');
 const admin = require('../models/admin');
 
-const baseUrl = 'http://localhost:5000';
+const baseUrl = 'https://fpmsbackend.kjsieit.com';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',

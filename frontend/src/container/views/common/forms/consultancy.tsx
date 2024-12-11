@@ -534,7 +534,7 @@ const ConsultancyForm = (props: Props) => {
                                                                     field.onChange(newValue);
                                                                 }}
                                                             >
-                                                                {option}
+                                                                {option=="Computer"? "Computer Engineering" : option}
                                                             </DropdownMenuCheckboxItem>
                                                         ))}
                                                     </DropdownMenuContent>

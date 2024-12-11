@@ -31,7 +31,7 @@ const Notification = require('../models/notification')
 /**
  * CONSTANTS
  */
-const baseUrl = 'http://localhost:5000';
+const baseUrl = 'https://fpmsbackend.kjsieit.com';
 
 /**
  * UPDATE PROFILE IMAGE
