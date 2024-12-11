@@ -340,7 +340,7 @@ const QualificationForm = (props: Props) => {
                         name={`qualificationDetails.${index}.status`}
                         render={({ field }) => (
                             <FormItem className=''>
-                                <FormLabel className='text-gray-800'>Experience Type</FormLabel>
+                                <FormLabel className='text-gray-800'>Status</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
